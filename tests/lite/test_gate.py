@@ -43,6 +43,19 @@ for _env_var in ["CODEX_THREAD_ID", "CODEX_CI"]:
 
 # ── path to scripts ────────────────────────────────────────────────────────────
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+
+# Every subprocess here drives a full hook round trip: bash, the payload capture,
+# verify-gate.sh, verify_gate.py, rule-validator.py, and a replayed command. On
+# Windows that is a dozen process spawns per call, and a test that does two round
+# trips measured 27s against a 30s budget — so the suite oscillated between 11 and
+# 12 failures by luck of scheduling, and the pre-commit gate reported whichever
+# test lost the race as a new regression.
+#
+# This bounds harness overhead, not behaviour: no assertion below depends on the
+# value, and a genuine hang still exceeds any finite bound. The gate itself is not
+# slow — a full run against the fixture repository measures 2.8s.
+HARNESS_TIMEOUT_SECS = 120
+
 SCRIPTS_DIR = REPO_ROOT / "scripts" / "lite"
 RUN_CHECK = SCRIPTS_DIR / "run_check.py"
 VERIFY_PY = SCRIPTS_DIR / "verify_gate.py"
@@ -86,7 +99,7 @@ def _generate_review_keypair(tmp: Path, prefix: str) -> dict[str, Path | list[Pa
         ],
         capture_output=True,
         text=True,
-        timeout=15,
+        timeout=HARNESS_TIMEOUT_SECS,
         check=True,
     )
     private_key.chmod(0o600)
@@ -146,7 +159,7 @@ def _run_py(
         [sys.executable, str(script)] + list(args),
         capture_output=True,
         text=True,
-        timeout=30,
+        timeout=HARNESS_TIMEOUT_SECS,
         env=full_env,
         cwd=str(cwd or REPO_ROOT),
     )
@@ -164,7 +177,7 @@ def _run_sh(
         ["bash", str(script)] + list(args),
         capture_output=True,
         text=True,
-        timeout=30,
+        timeout=HARNESS_TIMEOUT_SECS,
         env=full_env,
         cwd=str(cwd or REPO_ROOT),
         input=stdin_text,
@@ -472,7 +485,7 @@ def _run_check(
         args,
         capture_output=True,
         text=True,
-        timeout=15,
+        timeout=HARNESS_TIMEOUT_SECS,
         cwd=str(tmp),
     )
 
@@ -505,7 +518,7 @@ def _run_rule_validator(
         input=response,
         capture_output=True,
         text=True,
-        timeout=15,
+        timeout=HARNESS_TIMEOUT_SECS,
         cwd=str(tmp),
         env={
             **os.environ,
@@ -867,7 +880,7 @@ class TestSourceImmutability:
             [sys.executable, str(RUN_CHECK), "--", *command],
             capture_output=True,
             text=True,
-            timeout=15,
+            timeout=HARNESS_TIMEOUT_SECS,
             cwd=str(self.tmp),
         )
         assert result.returncode == 2
@@ -879,7 +892,7 @@ class TestSourceImmutability:
             [sys.executable, str(RUN_CHECK), "--", "python3", "-c", "print('ok')"],
             capture_output=True,
             text=True,
-            timeout=15,
+            timeout=HARNESS_TIMEOUT_SECS,
             cwd=str(self.tmp),
         )
         assert result.returncode == 2
@@ -938,7 +951,7 @@ class TestSourceImmutability:
             cwd=self.tmp,
             capture_output=True,
             text=True,
-            timeout=15,
+            timeout=HARNESS_TIMEOUT_SECS,
         )
         assert missing_map.returncode == 2
         assert "acceptance_criteria[0].test_refs" in missing_map.stderr
@@ -958,7 +971,7 @@ class TestSourceImmutability:
             cwd=self.tmp,
             capture_output=True,
             text=True,
-            timeout=15,
+            timeout=HARNESS_TIMEOUT_SECS,
         )
         assert mapped.returncode == 0, mapped.stderr
         evidence = json.loads(
@@ -1810,7 +1823,7 @@ class TestGuardSh:
             ["bash", str(guard)] + list(files),
             capture_output=True,
             text=True,
-            timeout=15,
+            timeout=HARNESS_TIMEOUT_SECS,
             cwd=str(self.tmp),
             env=full_env,
         )
@@ -1933,7 +1946,7 @@ class TestVerifyGateSh:
             ["bash", str(VERIFY_SH), "--platform", platform],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=HARNESS_TIMEOUT_SECS,
             cwd=str(self.tmp),
             env=full_env,
             input=stdin_json,
@@ -1944,7 +1957,7 @@ class TestVerifyGateSh:
             ["bash", str(STOP_SH), "--platform", "codex"],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=HARNESS_TIMEOUT_SECS,
             cwd=str(self.tmp),
             env=os.environ.copy(),
             input=json.dumps(payload),
@@ -1962,7 +1975,7 @@ class TestVerifyGateSh:
             ["bash", str(VERIFY_SH), "--platform", "unknownbot"],
             capture_output=True,
             text=True,
-            timeout=15,
+            timeout=HARNESS_TIMEOUT_SECS,
             cwd=str(self.tmp),
         )
         assert r.returncode == 1
@@ -1975,7 +1988,7 @@ class TestVerifyGateSh:
                 ["bash", str(VERIFY_SH), "--platform", platform],
                 capture_output=True,
                 text=True,
-                timeout=15,
+                timeout=HARNESS_TIMEOUT_SECS,
                 cwd=str(self.tmp),
             )
             # Clean repo → gate open (exit 0), no "Unknown platform" error
@@ -2157,7 +2170,7 @@ class TestVerifyGateSh:
             ["bash", str(VERIFY_SH), "--platform", "claude"],
             capture_output=True,
             text=True,
-            timeout=20,
+            timeout=HARNESS_TIMEOUT_SECS,
             cwd=str(self.tmp),
             input=big_input,
         )

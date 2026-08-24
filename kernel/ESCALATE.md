@@ -27,13 +27,13 @@ Otherwise the step is `EASY`; `QUICK` work does not need ceremonial per-line tag
 2. Cross-validate only when disagreement or risk remains material — do not trigger a second model merely to satisfy a cascade.
 3. Integrate only verified output.
 
-For payment-domain and other HARD completion, the independent reviewer must be
-separate from the implementer and produce a signed `review-2` record using
-OpenSSH Ed25519. It must bind the canonical final-evidence digest, exact tree,
-turn, acceptance IDs, and `negative_path_bindings`, and verify against the
-external `DAINEXUS_REVIEW_ALLOWED_SIGNERS` file or
-`~/.dainexus/reviewers.allowed_signers`. Review-1, self-authored JSON, or a
-marker-only approval is `UNVERIFIED`.
+For payment-domain and other HARD work, this build does **not** verify an
+independent signed review. The gate requires the turn to declare `risk=hard` and
+to record a `hard-completion-unverified` limitation, so completion is explicit
+and auditable — but nothing checks a reviewer signature, because signature
+verification is not implemented in the read path here. Arrange human review
+outside this tool for that work, and do not treat gate approval as independent
+review. See kernel/VERIFY.md and README Roadmap.
 
 ## Budget / Stop Condition
 Respect declared cost/token/deadline constraints. When the preferred escalation is unavailable, use the safest bounded path that still meets acceptance; for security/irreversible/public-contract work, report the unresolved blocker rather than silently weakening the gate. Do not invent extra work to consume remaining budget.

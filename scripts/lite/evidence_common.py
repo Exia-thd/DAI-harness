@@ -10,6 +10,7 @@ import re
 import shlex
 import stat
 import subprocess
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
@@ -44,6 +45,23 @@ MAX_EVIDENCE_BYTES = 4 * 1024 * 1024
 # derived from source this fingerprint already covers, and are rewritten by
 # the mere act of importing a module or running a test — which is what the
 # gate and its replay step do.
+# Dependency trees and generated indexes. Hashing ignored content is deliberate —
+# a change must not be hidable in a gitignored file — but these directories are
+# not authored: node_modules is reproduced from the tracked lockfile, and
+# .gitnexus is an index derived from tracked source. Both are covered already,
+# transitively, by the files that determine them.
+#
+# Measured on this repository before excluding them: 25,911 ignored files
+# totalling 346 MB, and one fingerprint took ~40 seconds. The gate computes the
+# fingerprint up to five times per invocation, so a single verification ran for
+# minutes — past the 15s subprocess timeouts in its own test suite, and past the
+# git timeout, which surfaced as the gate reporting its own slowness as a
+# verification failure. The reference carries the same design and never felt it:
+# that tree has no node_modules.
+_DERIVED_TREE_RE = re.compile(
+    r"(?:^|/)(?:node_modules|\.gitnexus|\.venv|venv|\.git)(?:/|$)"
+)
+
 _DERIVED_CACHE_RE = re.compile(
     r"(?:^|/)(?:__pycache__|\.pytest_cache|\.ruff_cache|\.mypy_cache"
     r"|\.tox|\.nox|\.hypothesis|htmlcov)(?:/|$)"
@@ -727,6 +745,21 @@ def parse_timestamp(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
 
 
+DEFAULT_GIT_TIMEOUT_SECS = 45.0
+MAX_GIT_TIMEOUT_SECS = 180.0
+
+
+def _git_timeout() -> float:
+    raw = os.environ.get("DAINEXUS_GIT_TIMEOUT_SECS", "")
+    try:
+        value = float(raw) if raw.strip() else DEFAULT_GIT_TIMEOUT_SECS
+    except ValueError:
+        value = DEFAULT_GIT_TIMEOUT_SECS
+    if value <= 0:
+        return 0.001
+    return min(value, MAX_GIT_TIMEOUT_SECS)
+
+
 def _run_git(workspace: Path, args: list[str], *, check: bool = False) -> bytes:
     result = subprocess.run(
         ["git", *args],
@@ -735,7 +768,11 @@ def _run_git(workspace: Path, args: list[str], *, check: bool = False) -> bytes:
         # Git prompts (credentials, editors) read stdin. Inheriting a pipe that
         # never closes turns a fast command into a timeout.
         stdin=subprocess.DEVNULL,
-        timeout=10,
+        # The gate runs inside the pre-commit hook, where git holds the index
+        # and every call queues behind it. Ten seconds was enough for a quiet
+        # shell and not for a loaded commit: fingerprinting timed out and the
+        # gate reported its own contention as a verification failure.
+        timeout=_git_timeout(),
         check=False,
     )
     if check and result.returncode != 0:
@@ -762,7 +799,7 @@ def _ignored_verify_path(path: str) -> bool:
     # and replaying a recorded check runs the project's tests, so leaving it in
     # means the act of verifying invalidates the evidence being verified.
     # Measured: one pytest run created two .pyc files and changed the digest.
-    if _DERIVED_CACHE_RE.search(normalized):
+    if _DERIVED_CACHE_RE.search(normalized) or _DERIVED_TREE_RE.search(normalized):
         return True
     return any(
         normalized == directory or normalized.startswith(directory + "/")
@@ -828,6 +865,16 @@ def _git_paths(workspace: Path, args: list[str]) -> list[str]:
     ]
 
 
+class FingerprintUnavailable(RuntimeError):
+    """The worktree could not be fingerprinted, so nothing may be compared.
+
+    This is not a fingerprint value and must never be turned into one. A digest
+    derived from an error message looks like a fingerprint, never matches
+    anything, and changes with the wording of the error — which reads as
+    tampering rather than as the outage it is.
+    """
+
+
 def worktree_fingerprint(workspace: Path) -> str:
     """Hash HEAD plus staged/unstaged tracked, untracked, and ignored source state.
 
@@ -845,7 +892,8 @@ def worktree_fingerprint(workspace: Path) -> str:
     # fingerprint-dependent tests flipped between runs. Retry once — the
     # timeouts observed here were transient — then refuse to guess.
     inside = b""
-    for attempt in (1, 2):
+    attempts = 4
+    for attempt in range(1, attempts + 1):
         try:
             inside = _run_git(workspace, ["rev-parse", "--is-inside-work-tree"]).strip()
             break
@@ -853,8 +901,11 @@ def worktree_fingerprint(workspace: Path) -> str:
             # No git on this machine: the non-git walk below is the answer.
             break
         except (OSError, subprocess.SubprocessError, RuntimeError) as error:
-            if attempt == 2:
-                raise RuntimeError(
+            if attempt < attempts:
+                time.sleep(min(2.0 * attempt, 5.0))
+                continue
+            if True:
+                raise FingerprintUnavailable(
                     "git did not answer while fingerprinting the worktree; "
                     "refusing to emit a fingerprint that may not be comparable"
                 ) from error
@@ -914,8 +965,12 @@ def worktree_fingerprint(workspace: Path) -> str:
             digest.update(record.encode("utf-8", "surrogateescape"))
             digest.update(b"\0")
         return f"TREE:{digest.hexdigest()}"
+    except FingerprintUnavailable:
+        raise
     except (OSError, subprocess.SubprocessError, RuntimeError, ValueError) as error:
-        return f"GITERR:{hashlib.sha256(str(error).encode()).hexdigest()}"
+        raise FingerprintUnavailable(
+            f"the worktree could not be fingerprinted: {error}"
+        ) from error
 
 
 def changed_files(workspace: Path) -> list[str]:

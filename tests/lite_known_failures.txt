@@ -3,20 +3,19 @@
 # reporting. This file once pinned the test telling us the gate accepted
 # hand-typed evidence; it did.
 #
-# What remains is the HARD completion family that was never ported from the
-# reference: signed review-2 Ed25519 verification, RED->GREEN chain validation
-# with controlled mutation backcheck, the prose linter, and the Codex-platform
-# evidence-discovery paths. They fail CLOSED — the capability is absent, not
-# bypassed — and completion_checks reports an explicit UNVERIFIED for any
-# hard-signal turn rather than passing silently.
+# What remains is the HARD completion family never ported from the reference:
+# signed review-2 Ed25519 verification, RED->GREEN chain validation with
+# controlled mutation backcheck, the prose linter, and two Codex-platform
+# evidence-discovery paths. They fail CLOSED — absent capability, not bypass.
 #
-# Final-command replay is NO LONGER in this list: it is implemented and wired
-# into completion_checks, which main() now calls. Verified both directions —
-# a hand-written record whose command really fails is blocked with
-# "REPLAY: final command returncode 1 does not match stored exit_code 0", and
-# an honest run through run_check.py opens the gate.
+# No longer here, because they are implemented and verified:
+#   final-command replay          a record whose command really fails is blocked
+#   turn-to-filename binding      evidence must be named for the turn it claims
+#   path-traversal in the turn    a payload turn cannot escape the verify dir
+#   newest-file fallback          a turn no longer inherits an older record
 #
-# kernel/VERIFY.md and kernel/ESCALATE.md still promise the rest: port, or amend.
+# kernel/VERIFY.md and kernel/ESCALATE.md now state what is enforced and what is
+# not, rather than promising the unported half.
 tests/lite/test_gate.py::TestDirtyBaseline::test_unstaged_source_change_after_evidence_mismatches_same_head_and_index
 tests/lite/test_gate.py::TestEvidenceV2BypassRegressions::test_hard_payment_requires_approved_strong_chain_and_mutation_match
 tests/lite/test_gate.py::TestEvidenceV2BypassRegressions::test_link_traversal_and_same_tree_red_mutation_rejected
@@ -26,7 +25,5 @@ tests/lite/test_gate.py::TestEvidenceV2BypassRegressions::test_signed_review_rej
 tests/lite/test_gate.py::TestEvidenceV2BypassRegressions::test_signed_review_rejects_replayed_review_for_different_turn
 tests/lite/test_gate.py::TestEvidenceV2BypassRegressions::test_signed_review_rejects_untrusted_attacker_key
 tests/lite/test_gate.py::TestEvidenceValidation::test_missing_evidence_blocked
-tests/lite/test_gate.py::TestEvidenceValidation::test_no_turn_ignores_newer_review_and_historical_records
 tests/lite/test_gate.py::TestVerifyGateSh::test_codex_mapped_symlink_evidence_is_blocked_without_fallback
-tests/lite/test_gate.py::TestVerifyGateSh::test_codex_unmapped_platform_turn_id_discovers_correlated_final_evidence
 tests/lite/test_gate.py::test_verify_gate_selftest

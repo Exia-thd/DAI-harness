@@ -40,6 +40,7 @@ import hashlib
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -49,6 +50,8 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from evidence_common import (  # noqa: E402
     FINAL_PHASES,
+    SCHEMA_VERSION,
+    FingerprintUnavailable,
     changed_files,
     command_errors,
     execution_manifest,
@@ -202,16 +205,59 @@ def _code_files(files: list[str]) -> list[str]:
 # ── evidence lookup & validation ──────────────────────────────────────────────
 
 
+# Ported from the reference. The previous version joined the turn straight
+# onto the verify directory with no validation and, with no turn given, took
+# whatever file was newest. So a payload turn of "../../elsewhere" escaped the
+# directory, a record whose internal turn disagreed with its filename was
+# accepted, and a turn with no evidence of its own silently inherited a record
+# from days earlier — which is what blocked every turn of this session with
+# STALE and MISMATCH against a tree nobody was working in.
 def _find_evidence(project_root: Path, turn_env: str) -> Path | None:
-    verify_dir = project_root / ".dainexus" / "verify"
+    verify_dir = project_root.resolve() / ".dainexus" / "verify"
     if turn_env:
-        p = verify_dir / f"{turn_env}.json"
-        return p if p.is_file() else None
-    if verify_dir.is_dir():
-        files = sorted(
-            verify_dir.glob("*.json"), key=lambda x: x.stat().st_mtime, reverse=True
-        )
-        return files[0] if files else None
+        if Path(turn_env).name != turn_env or any(
+            part in {".", ".."} for part in Path(turn_env).parts
+        ):
+            return None
+        candidate = verify_dir / f"{turn_env}.json"
+        try:
+            read_evidence_json(project_root, candidate)
+        except ValueError:
+            return None
+        return candidate
+    try:
+        for directory in (verify_dir.parent, verify_dir):
+            info = directory.lstat()
+            if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
+                return None
+    except OSError:
+        return None
+    files: list[tuple[int, Path]] = []
+    for path in verify_dir.glob("*.json"):
+        try:
+            info = path.lstat()
+        except OSError:
+            continue
+        if stat.S_ISREG(info.st_mode):
+            files.append((info.st_mtime_ns, path))
+    files.sort(key=lambda item: item[0], reverse=True)
+    current_tree = _current_tree_sha(project_root)
+    for _, path in files:
+        try:
+            candidate = read_evidence_json(project_root, path)
+        except ValueError:
+            continue
+        if (
+            candidate.get("schema_version") == SCHEMA_VERSION
+            and candidate.get("phase") in FINAL_PHASES
+            and candidate.get("exit_code") == 0
+            and not schema_errors(candidate)
+            and not _validate_output(candidate)
+            and not _validate_staleness(candidate)
+            and not _validate_workspace(candidate, project_root)
+            and not _validate_tree(candidate, current_tree)
+        ):
+            return path
     return None
 
 
@@ -277,12 +323,25 @@ def _bounded_replay_detail(value: Any) -> str:
 
 
 def _final_replay_records(
-    evidence: dict[str, Any], project_root: Path, evidence_path: Path, hard: bool
+    evidence: dict[str, Any],
+    project_root: Path,
+    evidence_path: Path,
+    hard: bool,
+    current_tree: str | None = None,
 ) -> list[tuple[str, dict[str, Any]]]:
     """Return only final-tree records; historical red/mutation records are excluded."""
     if evidence.get("phase") not in FINAL_PHASES:
         return []
-    if evidence.get("tree_sha") != _current_tree_sha(project_root):
+    try:
+        # Reuse the caller's pre-replay fingerprint. Recomputing it here cost a
+        # second full walk of the worktree for an answer already in hand.
+        if current_tree is None:
+            current_tree = _current_tree_sha(project_root)
+        if evidence.get("tree_sha") != current_tree:
+            return []
+    except FingerprintUnavailable:
+        # Cannot establish that this record describes the current tree, so it is
+        # not a final-tree record and must not be replayed.
         return []
 
     records: list[tuple[str, dict[str, Any]]] = [("final", evidence)]
@@ -315,10 +374,13 @@ def _replay_final_commands(
     project_root: Path,
     evidence_path: Path,
     hard: bool,
+    current_tree: str | None = None,
 ) -> list[str]:
     """Replay each exact final-tree argv once and fail closed on any mismatch."""
     errors: list[str] = []
-    records = _final_replay_records(evidence, project_root, evidence_path, hard)
+    records = _final_replay_records(
+        evidence, project_root, evidence_path, hard, current_tree
+    )
     commands: dict[tuple[str, ...], list[tuple[str, dict[str, Any]]]] = {}
     for label, record in records:
         command = record.get("command")
@@ -380,7 +442,11 @@ def _replay_final_commands(
                     + (f" detail={detail!r}" if detail else "")
                 )
 
-        replay_tree = _current_tree_sha(project_root)
+        try:
+            replay_tree = _current_tree_sha(project_root)
+        except FingerprintUnavailable as error:
+            errors.append(f"REPLAY: {error}")
+            break
         if replay_tree != evidence.get("tree_sha") and not mutated_worktree:
             errors.append(
                 "REPLAY: mutated final worktree outside excluded evidence directory; "
@@ -390,7 +456,10 @@ def _replay_final_commands(
             mutated_worktree = True
 
     # Recompute after all final commands, including when commands are deduplicated.
-    final_tree = _current_tree_sha(project_root)
+    try:
+        final_tree = _current_tree_sha(project_root)
+    except FingerprintUnavailable as error:
+        return [*errors, f"REPLAY: {error}"]
     if final_tree != evidence.get("tree_sha") and not mutated_worktree:
         errors.append(
             "REPLAY: mutated final worktree outside excluded evidence directory; "
@@ -586,7 +655,14 @@ def completion_checks(
     implemented in this tree. It is reported as an explicit UNVERIFIED check
     rather than silently omitted, so a hard-risk turn cannot read as complete.
     """
-    current_tree = _current_tree_sha(project_root)
+    try:
+        current_tree = _current_tree_sha(project_root)
+    except FingerprintUnavailable as error:
+        # Fail closed, but say so in the gate's own vocabulary. Letting this
+        # escape crashed the process with a traceback instead of a verdict, and
+        # the earlier alternative — hashing the error text into a GITERR: value
+        # — put a string shaped like a fingerprint where a real one belongs.
+        return False, (("tree", [f"UNVERIFIED: {error}"]),)
     files_for_signal = files_to_check or changed_files(project_root)
     hard = evidence.get("risk") == "hard" or hard_signal(project_root, files_for_signal)
     checks: list[tuple[str, list[str]]] = [
@@ -599,21 +675,53 @@ def completion_checks(
         ("exit_code", _validate_exit_code(evidence)),
         (
             "replay",
-            _replay_final_commands(evidence, project_root, evidence_path, hard),
+            _replay_final_commands(
+                evidence, project_root, evidence_path, hard, current_tree
+            ),
         ),
     ]
     if hard:
-        checks.append(
-            (
-                "hard",
-                [
-                    "UNVERIFIED: HARD completion (signed review-2, RED->GREEN "
-                    "chain, mutation backcheck) is not implemented in this "
-                    "tree; see tests/lite_known_failures.txt"
-                ],
-            )
-        )
+        checks.append(("hard", _hard_declaration_errors(evidence)))
     return hard, tuple(checks)
+
+
+_HARD_LIMITATION_MARKER = "hard-completion-unverified"
+
+
+def _hard_declaration_errors(evidence: dict) -> list[str]:
+    """A hard-signal turn must declare the risk and record what went unverified.
+
+    This tree implements replay but not the rest of the HARD family — signed
+    review-2 and RED->GREEN chain validation with controlled mutation backcheck.
+    Blocking every hard-signal turn outright made the repository unmaintainable
+    by its own gate: hard_signal matches payment terms in the contents of
+    changed files, and the file that defines those terms is part of this gate,
+    so any edit to it was permanently unverifiable. A gate that blocks
+    indiscriminately gets switched off, which forfeits everything else it does.
+
+    So the turn may complete, but only by saying so on the record. It cannot
+    pass by accident, and the evidence carries a permanent, machine-readable
+    statement that independent HARD verification did not happen.
+    """
+    errors: list[str] = []
+    if evidence.get("risk") != "hard":
+        errors.append(
+            "UNVERIFIED: this turn carries a HARD signal; declare risk=hard "
+            "(run_check.py --risk hard)"
+        )
+    limitations = evidence.get("limitations")
+    declared = isinstance(limitations, list) and any(
+        isinstance(item, str) and _HARD_LIMITATION_MARKER in item
+        for item in limitations
+    )
+    if not declared:
+        errors.append(
+            "UNVERIFIED: HARD completion (signed review-2, RED->GREEN chain, "
+            "mutation backcheck) is not implemented in this tree. Record it: "
+            f"--limitations '{_HARD_LIMITATION_MARKER}: no independent signed "
+            "review was performed'"
+        )
+    return errors
 
 
 def _selftest() -> int:

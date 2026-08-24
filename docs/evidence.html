@@ -54,7 +54,7 @@ không phải giả định). Gate vẫn nhận evidence v1 cũ.</p>
 <p>Cuối mỗi lượt, hook gọi <code>verify_gate.py</code>. Nếu có file code thay đổi, gate đòi
 một evidence hợp lệ. 8 phép kiểm tra độc lập:</p>
 <table><thead><tr><th>Lý do từ chối</th><th>Nghĩa là</th></tr></thead><tbody><tr><td><code>MISSING</code></td><td>Không có file evidence nào</td></tr><tr><td><code>STALE</code></td><td>Evidence quá cũ (mặc định &gt;1 giờ, đổi qua <code>DAINEXUS_STALENESS_SECS</code>)</td></tr><tr><td><code>MISMATCH</code></td><td>Workspace hoặc tree-sha đã đổi từ lúc ghi — tức là code bị sửa <em>sau</em> khi test chạy</td></tr><tr><td><code>FAILED</code></td><td><code>exit_code</code> ≠ 0 — lệnh kiểm chứng thật sự trượt</td></tr><tr><td><code>FORGED</code></td><td>Sai schema, command rỗng, hoặc output khớp mẫu bịa (<code>placeholder</code>, <code>TODO</code>, <code>&lt;output&gt;</code>)</td></tr><tr><td><code>SECRETS</code></td><td>Output chứa secret chưa che (API key, token, private key) — chính file evidence đã nhiễm</td></tr><tr><td><code>STUBS</code></td><td>File đã sửa còn TODO/FIXME/NotImplementedError</td></tr><tr><td><code>MISREPORTED</code></td><td>VERIFY block trong câu trả lời không khớp evidence — claim bị viết lại, command khác, hoặc chỗ đáng lẽ là digest thì dán văn xuôi</td></tr></tbody></table>
-<div class="code-block"><div class="code-head"><span class="file">scripts/lite/verify_gate.py:464</span><span class=cap>so khớp tree-sha</span></div><pre><code>def _validate_tree(ev: dict, current_tree: str) -&gt; list[str]:
+<div class="code-block"><div class="code-head"><span class="file">scripts/lite/verify_gate.py:533</span><span class=cap>so khớp tree-sha</span></div><pre><code>def _validate_tree(ev: dict, current_tree: str) -&gt; list[str]:
     ev_tree = ev.get("tree_sha", "")
     if not ev_tree:
         return ["MISMATCH: tree_sha missing in evidence"]
@@ -129,7 +129,7 @@ Nếu không dựng được RED, phải nói thẳng và nêu rõ điều đó 
 Nếu gate chỉ nhìn mã thoát của pytest thì nó <strong>không bao giờ xanh được</strong> — và một cổng
 vĩnh viễn đỏ chỉ dạy người ta cách bỏ qua nó.</p>
 <p><code>scripts/ci/pytest_gate.py</code> (192 dòng) so kết quả với
-<code>tests/known_failures.txt</code>: hiện có <strong>58 test</strong> đỏ kế thừa
+<code>tests/known_failures.txt</code>: hiện có <strong>56 test</strong> đỏ kế thừa
 trên 15 file. Gate chỉ fail khi xuất hiện một failure <em>không</em> nằm trong danh sách đó.
 Test nào rời khỏi danh sách cũng được báo, để baseline không âm thầm phình ra.</p>
 <p>Baseline phải đo trong môi trường tất định, nếu không nó ghi lại cái shell chứ không ghi lại mã nguồn:

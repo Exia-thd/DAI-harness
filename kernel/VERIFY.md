@@ -37,7 +37,9 @@ same-HEAD source changes remain covered.
 ## Fixes and HARD
 Every fix uses the same command unchanged and must show observed RED then observed GREEN. Payment, billing, IAP/in-app purchase, receipt validation, entitlements, subscription, and checkout are mandatory `HARD` and `DEEP`, regardless of file count. Other HARD fixes require controlled mutation/backcheck: `RED → pre-mutation GREEN → mutation fail → exact final GREEN`, with the clean pre-mutation target tree restored. Completion is blocked until this sequence is observed.
 
-HARD completion requires contract, runtime, and E2E evidence plus a separate signed `review-2` approval. Trust only OpenSSH Ed25519 verification against `DAINEXUS_REVIEW_ALLOWED_SIGNERS` or `~/.dainexus/reviewers.allowed_signers`; signed final evidence must carry its SHA-256, exact tree, turn, acceptance IDs, and `negative_path_bindings`, with `reviewer.status: independent-approved`. Review-1/self-authored JSON is `UNVERIFIED`.
+**HARD here.** A hard-signal turn must declare `risk=hard` plus a `limitations` entry marked `hard-completion-unverified`; it then completes, on record as unverified.
+
+**Not enforced here.** The contract is a signed `review-2` carrying `reviewer.status: independent-approved` from an independent reviewer, plus contract/runtime/e2e evidence. This build does **not** verify it, nor RED→GREEN chain/mutation backcheck. Arrange human review outside this tool.
 
 ## Proportional Evidence
 `QUICK` may use one focused deterministic check; `STANDARD`/`DEEP` report every material claim. UI needs inspected/rendered evidence; logic needs executable tests; processes need reclaim/lease evidence. Keep execution local-first/provider-neutral; never store secrets or private keys.

@@ -10,6 +10,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import collections
+import threading
 import os
 import platform
 import shutil
@@ -52,6 +54,26 @@ class StepResult:
     duration_ms: int
     status: str
     note: str = ""
+    # A failing step used to record only its exit code, so the report said a
+    # step failed and never which assertion did. Diagnosing one intermittent
+    # failure then took six runs that each had to be watched live.
+    output_tail: str = ""
+
+
+MAX_STEP_TAIL_LINES = 60
+
+
+def _pump(stream, tail) -> None:
+    """Mirror a step's output to this process and retain the last lines."""
+    if stream is None:
+        return
+    try:
+        for raw in stream:
+            line = raw.decode("utf-8", "replace").rstrip()
+            print(line, flush=True)
+            tail.append(line)
+    except (OSError, ValueError):
+        pass
 
 
 def _which(name: str) -> str | None:
@@ -118,6 +140,8 @@ class LocalCI:
             args,
             cwd=cwd,
             env=step_env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
             # Git hooks hand us a stdin that never reaches EOF; a step that reads
             # it would block until the step timeout instead of failing fast.
             stdin=subprocess.DEVNULL,
@@ -126,6 +150,13 @@ class LocalCI:
                 subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0
             ),
         )
+        # Stream to the console as before, and keep a bounded tail so a failure
+        # explains itself in the report without needing a live observer.
+        tail: collections.deque[str] = collections.deque(maxlen=MAX_STEP_TAIL_LINES)
+        reader = threading.Thread(
+            target=_pump, args=(process.stdout, tail), daemon=True
+        )
+        reader.start()
         try:
             code = int(process.wait(timeout=timeout or self.timeout))
             note = ""
@@ -154,10 +185,16 @@ class LocalCI:
                     except subprocess.TimeoutExpired:
                         pass
             code = 124
+        reader.join(timeout=5)
         duration_ms = int((time.monotonic() - started) * 1000)
         status = "pass" if code == 0 else "fail"
+        # Only failures carry their tail: a passing step's output is noise in the
+        # report, and a failing one is the whole reason to read it.
+        output_tail = "" if code == 0 else chr(10).join(tail)
         self.results.append(
-            StepResult(name, args, str(cwd), code, duration_ms, status, note)
+            StepResult(
+                name, args, str(cwd), code, duration_ms, status, note, output_tail
+            )
         )
         if check and code != 0:
             self.failed = True
