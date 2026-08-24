@@ -54,18 +54,18 @@ không phải giả định). Gate vẫn nhận evidence v1 cũ.</p>
 <p>Cuối mỗi lượt, hook gọi <code>verify_gate.py</code>. Nếu có file code thay đổi, gate đòi
 một evidence hợp lệ. 8 phép kiểm tra độc lập:</p>
 <table><thead><tr><th>Lý do từ chối</th><th>Nghĩa là</th></tr></thead><tbody><tr><td><code>MISSING</code></td><td>Không có file evidence nào</td></tr><tr><td><code>STALE</code></td><td>Evidence quá cũ (mặc định &gt;1 giờ, đổi qua <code>DAINEXUS_STALENESS_SECS</code>)</td></tr><tr><td><code>MISMATCH</code></td><td>Workspace hoặc tree-sha đã đổi từ lúc ghi — tức là code bị sửa <em>sau</em> khi test chạy</td></tr><tr><td><code>FAILED</code></td><td><code>exit_code</code> ≠ 0 — lệnh kiểm chứng thật sự trượt</td></tr><tr><td><code>FORGED</code></td><td>Sai schema, command rỗng, hoặc output khớp mẫu bịa (<code>placeholder</code>, <code>TODO</code>, <code>&lt;output&gt;</code>)</td></tr><tr><td><code>SECRETS</code></td><td>Output chứa secret chưa che (API key, token, private key) — chính file evidence đã nhiễm</td></tr><tr><td><code>STUBS</code></td><td>File đã sửa còn TODO/FIXME/NotImplementedError</td></tr><tr><td><code>MISREPORTED</code></td><td>VERIFY block trong câu trả lời không khớp evidence — claim bị viết lại, command khác, hoặc chỗ đáng lẽ là digest thì dán văn xuôi</td></tr></tbody></table>
-<div class="code-block"><div class="code-head"><span class="file">scripts/lite/verify_gate.py:287</span><span class=cap>so khớp tree-sha</span></div><pre><code>def _validate_tree(ev: dict, current_tree: str) -&gt; list[str]:
+<div class="code-block"><div class="code-head"><span class="file">scripts/lite/verify_gate.py:464</span><span class=cap>so khớp tree-sha</span></div><pre><code>def _validate_tree(ev: dict, current_tree: str) -&gt; list[str]:
     ev_tree = ev.get("tree_sha", "")
     if not ev_tree:
         return ["MISMATCH: tree_sha missing in evidence"]
     if ev_tree == current_tree:
         return []
-    # Both DIRTY: compare HEAD part only (index may have evolved)
-    if ev_tree.startswith("DIRTY:") and current_tree.startswith("DIRTY:"):
-        if ev_tree.split(":")[1] == current_tree.split(":")[1]:
-            return []
-    if ev_tree.startswith("NONGIT") or current_tree.startswith("NONGIT"):
-        return []
+    # No prefix waives this comparison. NONGIT:&lt;sha256&gt; is an exact digest of a
+    # non-git worktree, not an "unknown" marker, and treating the prefix as a
+    # pass let `NONGIT:` + 64 zeros open the gate on sabotaged code inside a real
+    # git repository. The DIRTY:&lt;head&gt;:&lt;index&gt; form is no longer produced by
+    # _current_tree_sha at all. The reference compares fingerprints by equality
+    # and nothing else; so does this.
     return [
         f"MISMATCH: tree_sha changed since evidence was written. "
         f"Evidence: {ev_tree!r}, Current: {current_tree!r}"

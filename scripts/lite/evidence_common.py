@@ -38,6 +38,19 @@ MAX_EVIDENCE_BYTES = 4 * 1024 * 1024
 # independent subagent review. Hashing these paths makes the act of reviewing
 # invalidate the evidence it is reviewing. Keep the exclusion explicit and
 # narrow: project configuration and source under .dainexus remain covered.
+# Regenerable tool caches. Named explicitly rather than excluding ignored
+# files as a class: hashing ignored content is deliberate, so that a change
+# cannot be hidden in a gitignored file. These specific directories are
+# derived from source this fingerprint already covers, and are rewritten by
+# the mere act of importing a module or running a test — which is what the
+# gate and its replay step do.
+_DERIVED_CACHE_RE = re.compile(
+    r"(?:^|/)(?:__pycache__|\.pytest_cache|\.ruff_cache|\.mypy_cache"
+    r"|\.tox|\.nox|\.hypothesis|htmlcov)(?:/|$)"
+    r"|\.py[co]$"
+    r"|(?:^|/)\.coverage(?:\.|$)"
+)
+
 _FINGERPRINT_RUNTIME_DIRS = frozenset(
     {
         ".dainexus/cache",
@@ -742,6 +755,14 @@ def _ignored_verify_path(path: str) -> bool:
     if normalized == ".dainexus/memory.db" or normalized.startswith(
         ".dainexus/memory.db-"
     ):
+        return True
+    # Compiled bytecode is derived from source that this fingerprint already
+    # covers, so hashing it adds no coverage — but it is written as a side
+    # effect of merely importing a module. The gate imports its own validators,
+    # and replaying a recorded check runs the project's tests, so leaving it in
+    # means the act of verifying invalidates the evidence being verified.
+    # Measured: one pytest run created two .pyc files and changed the digest.
+    if _DERIVED_CACHE_RE.search(normalized):
         return True
     return any(
         normalized == directory or normalized.startswith(directory + "/")

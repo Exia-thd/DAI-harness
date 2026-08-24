@@ -1,20 +1,22 @@
 # Inherited red in the evidence-gate suite. Each entry was diagnosed, not merely
 # recorded — a baseline that pins an unexamined failure hides the defect it is
-# reporting. This file once pinned
-# test_echo_v1_and_missing_acceptance_mapping_rejected, which was telling us the
-# gate accepted hand-typed schema-v1 evidence on real code changes. It did.
+# reporting. This file once pinned the test telling us the gate accepted
+# hand-typed evidence; it did.
 #
-# This list was also unstable for a while: worktree_fingerprint treated a git
-# timeout as "not a repository", so fingerprint-dependent tests flipped between
-# runs and the baseline could never be tightened. Fixed; the failing set is now
-# identical across runs.
+# What remains is the HARD completion family that was never ported from the
+# reference: signed review-2 Ed25519 verification, RED->GREEN chain validation
+# with controlled mutation backcheck, the prose linter, and the Codex-platform
+# evidence-discovery paths. They fail CLOSED — the capability is absent, not
+# bypassed — and completion_checks reports an explicit UNVERIFIED for any
+# hard-signal turn rather than passing silently.
 #
-# What remains is the HARD completion family: signed review-2 Ed25519
-# verification, RED->GREEN chain validation, controlled mutation backcheck,
-# final-command replay, and the prose linter (_lint_text). Those live in the
-# reference's verify_gate.py and were never ported here. They fail CLOSED — the
-# capability is absent, not bypassed. kernel/VERIFY.md and kernel/ESCALATE.md
-# still promise them: port, or amend.
+# Final-command replay is NO LONGER in this list: it is implemented and wired
+# into completion_checks, which main() now calls. Verified both directions —
+# a hand-written record whose command really fails is blocked with
+# "REPLAY: final command returncode 1 does not match stored exit_code 0", and
+# an honest run through run_check.py opens the gate.
+#
+# kernel/VERIFY.md and kernel/ESCALATE.md still promise the rest: port, or amend.
 tests/lite/test_gate.py::TestDirtyBaseline::test_unstaged_source_change_after_evidence_mismatches_same_head_and_index
 tests/lite/test_gate.py::TestEvidenceV2BypassRegressions::test_hard_payment_requires_approved_strong_chain_and_mutation_match
 tests/lite/test_gate.py::TestEvidenceV2BypassRegressions::test_link_traversal_and_same_tree_red_mutation_rejected
@@ -23,9 +25,6 @@ tests/lite/test_gate.py::TestEvidenceV2BypassRegressions::test_red_green_rejects
 tests/lite/test_gate.py::TestEvidenceV2BypassRegressions::test_signed_review_rejects_mutated_final_evidence
 tests/lite/test_gate.py::TestEvidenceV2BypassRegressions::test_signed_review_rejects_replayed_review_for_different_turn
 tests/lite/test_gate.py::TestEvidenceV2BypassRegressions::test_signed_review_rejects_untrusted_attacker_key
-tests/lite/test_gate.py::TestEvidenceValidation::test_final_replay_fails_closed_for_timeout_and_missing_command
-tests/lite/test_gate.py::TestEvidenceValidation::test_final_replay_rejects_hand_authored_pass_in_both_validators
-tests/lite/test_gate.py::TestEvidenceValidation::test_final_replay_rejects_project_owned_check_mutating_worktree
 tests/lite/test_gate.py::TestEvidenceValidation::test_missing_evidence_blocked
 tests/lite/test_gate.py::TestEvidenceValidation::test_no_turn_ignores_newer_review_and_historical_records
 tests/lite/test_gate.py::TestVerifyGateSh::test_codex_mapped_symlink_evidence_is_blocked_without_fallback

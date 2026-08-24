@@ -44,13 +44,20 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from evidence_common import (  # noqa: E402
+    FINAL_PHASES,
     changed_files,
+    command_errors,
     execution_manifest,
     hard_signal,
+    link_values,
     phase_errors,
+    read_evidence_json,
+    redact,
+    resolve_evidence_link,
     schema_errors,
     worktree_fingerprint,
 )
@@ -208,6 +215,16 @@ def _find_evidence(project_root: Path, turn_env: str) -> Path | None:
     return None
 
 
+# Replay bounds, matching the reference implementation.
+MAX_REPLAY_TIMEOUT_SECS = 300.0
+DEFAULT_REPLAY_TIMEOUT_SECS = 300.0
+MAX_REPLAY_DETAIL_CHARS = 4096
+_SECRET_ENV_NAME = re.compile(
+    r"(?:^|_)(?:API[_-]?KEY|ACCESS[_-]?KEY|SECRET(?:[_-]?KEY)?|TOKEN|"
+    r"PASSWORD|PASSWD|CREDENTIALS?|PRIVATE[_-]?KEY|AUTH(?:ORIZATION)?)(?:_|$)",
+    re.IGNORECASE,
+)
+
 SUPPORTED_SCHEMAS = {"2"}
 
 
@@ -221,6 +238,166 @@ def _validate_schema(ev: dict) -> list[str]:
     reference implementation uses and is already vendored here byte-identically.
     """
     return schema_errors(ev)
+
+
+# ── final-command replay (ported from the reference implementation) ─────────
+# Every other check verifies the record's internal consistency. This one is the
+# only check of the world: it re-runs the exact stored argv and requires the
+# stored exit code. Without it a hand-written record that is merely
+# self-consistent opens the gate on sabotaged code.
+
+
+def _replay_timeout() -> float:
+    raw = os.environ.get("DAINEXUS_REPLAY_TIMEOUT_SECS", "")
+    try:
+        value = float(raw) if raw.strip() else DEFAULT_REPLAY_TIMEOUT_SECS
+    except ValueError:
+        value = DEFAULT_REPLAY_TIMEOUT_SECS
+    if value <= 0:
+        return 0.001
+    return min(value, MAX_REPLAY_TIMEOUT_SECS)
+
+
+def _replay_env() -> dict[str, str]:
+    """Keep normal process discovery/environment while dropping secret-like names."""
+    return {
+        name: value
+        for name, value in os.environ.items()
+        if not _SECRET_ENV_NAME.search(name)
+    }
+
+
+def _bounded_replay_detail(value: Any) -> str:
+    if value is None:
+        return ""
+    text = redact(str(value))
+    if len(text) > MAX_REPLAY_DETAIL_CHARS:
+        return text[:MAX_REPLAY_DETAIL_CHARS] + "...[truncated]"
+    return text
+
+
+def _final_replay_records(
+    evidence: dict[str, Any], project_root: Path, evidence_path: Path, hard: bool
+) -> list[tuple[str, dict[str, Any]]]:
+    """Return only final-tree records; historical red/mutation records are excluded."""
+    if evidence.get("phase") not in FINAL_PHASES:
+        return []
+    if evidence.get("tree_sha") != _current_tree_sha(project_root):
+        return []
+
+    records: list[tuple[str, dict[str, Any]]] = [("final", evidence)]
+    if not hard:
+        return records
+
+    links = link_values(evidence)
+    for relation in ("contract", "runtime", "e2e"):
+        raw_path = links.get(relation)
+        if not raw_path:
+            continue
+        path, error = resolve_evidence_link(project_root, raw_path)
+        if error or path is None or path.resolve() == evidence_path.resolve():
+            continue
+        try:
+            linked = read_evidence_json(project_root, path)
+        except ValueError:
+            continue
+        if (
+            linked.get("phase") in FINAL_PHASES
+            and linked.get("exit_code") == 0
+            and linked.get("tree_sha") == evidence.get("tree_sha")
+        ):
+            records.append((relation, linked))
+    return records
+
+
+def _replay_final_commands(
+    evidence: dict[str, Any],
+    project_root: Path,
+    evidence_path: Path,
+    hard: bool,
+) -> list[str]:
+    """Replay each exact final-tree argv once and fail closed on any mismatch."""
+    errors: list[str] = []
+    records = _final_replay_records(evidence, project_root, evidence_path, hard)
+    commands: dict[tuple[str, ...], list[tuple[str, dict[str, Any]]]] = {}
+    for label, record in records:
+        command = record.get("command")
+        command_diagnostics = command_errors(command)
+        if command_diagnostics:
+            errors.extend(
+                f"REPLAY: {label} command refused by schema: {diagnostic}"
+                for diagnostic in command_diagnostics
+            )
+            continue
+        assert isinstance(command, list)
+        commands.setdefault(tuple(command), []).append((label, record))
+
+    mutated_worktree = False
+    for command_tuple, command_records in commands.items():
+        command = list(command_tuple)
+        try:
+            result = subprocess.run(
+                command,
+                cwd=str(project_root),
+                env=_replay_env(),
+                shell=False,
+                capture_output=True,
+                text=True,
+                timeout=_replay_timeout(),
+                check=False,
+            )
+        except subprocess.TimeoutExpired as error:
+            detail = _bounded_replay_detail(
+                getattr(error, "stderr", None) or getattr(error, "output", None)
+            )
+            suffix = f" detail={detail!r}" if detail else ""
+            errors.append(
+                "REPLAY: final-tree command timed out before proving exit_code=0"
+                f" after {_replay_timeout():g}s{suffix}"
+            )
+            continue
+        except (OSError, UnicodeError) as error:
+            detail = _bounded_replay_detail(error)
+            errors.append(
+                "REPLAY: final-tree command could not be started safely"
+                + (f": {detail}" if detail else "")
+            )
+            continue
+
+        detail = _bounded_replay_detail((result.stdout or "") + (result.stderr or ""))
+        for label, record in command_records:
+            expected = record.get("exit_code")
+            if result.returncode != expected:
+                errors.append(
+                    f"REPLAY: {label} command returncode {result.returncode} does not "
+                    f"match stored exit_code {expected}"
+                    + (f" detail={detail!r}" if detail else "")
+                )
+            elif result.returncode != 0:
+                errors.append(
+                    f"REPLAY: {label} final-tree command returned nonzero exit_code "
+                    f"{result.returncode}; final evidence must replay with 0"
+                    + (f" detail={detail!r}" if detail else "")
+                )
+
+        replay_tree = _current_tree_sha(project_root)
+        if replay_tree != evidence.get("tree_sha") and not mutated_worktree:
+            errors.append(
+                "REPLAY: mutated final worktree outside excluded evidence directory; "
+                "replay changed tracked, untracked, ignored, or submodule content. "
+                f"Evidence: {evidence.get('tree_sha')!r}, Current: {replay_tree!r}"
+            )
+            mutated_worktree = True
+
+    # Recompute after all final commands, including when commands are deduplicated.
+    final_tree = _current_tree_sha(project_root)
+    if final_tree != evidence.get("tree_sha") and not mutated_worktree:
+        errors.append(
+            "REPLAY: mutated final worktree outside excluded evidence directory; "
+            "replay changed tracked, untracked, ignored, or submodule content. "
+            f"Evidence: {evidence.get('tree_sha')!r}, Current: {final_tree!r}"
+        )
+    return errors
 
 
 def _validate_output(ev: dict) -> list[str]:
@@ -290,12 +467,12 @@ def _validate_tree(ev: dict, current_tree: str) -> list[str]:
         return ["MISMATCH: tree_sha missing in evidence"]
     if ev_tree == current_tree:
         return []
-    # Both DIRTY: compare HEAD part only (index may have evolved)
-    if ev_tree.startswith("DIRTY:") and current_tree.startswith("DIRTY:"):
-        if ev_tree.split(":")[1] == current_tree.split(":")[1]:
-            return []
-    if ev_tree.startswith("NONGIT") or current_tree.startswith("NONGIT"):
-        return []
+    # No prefix waives this comparison. NONGIT:<sha256> is an exact digest of a
+    # non-git worktree, not an "unknown" marker, and treating the prefix as a
+    # pass let `NONGIT:` + 64 zeros open the gate on sabotaged code inside a real
+    # git repository. The DIRTY:<head>:<index> form is no longer produced by
+    # _current_tree_sha at all. The reference compares fingerprints by equality
+    # and nothing else; so does this.
     return [
         f"MISMATCH: tree_sha changed since evidence was written. "
         f"Evidence: {ev_tree!r}, Current: {current_tree!r}"
@@ -400,8 +577,12 @@ def completion_checks(
     correlation step died at module load and every turn carrying a VERIFY block
     was rejected for a reason unrelated to its evidence.
 
-    The HARD family the reference also aggregates here — signed review-2 chain
-    validation, controlled mutation backcheck, final-command replay — is not
+    Final-command replay is now included: it re-runs the exact stored argv and
+    requires the stored exit code, which is the only check here that examines
+    the world rather than the record's internal consistency.
+
+    The remaining HARD family the reference also aggregates — signed review-2
+    and RED->GREEN chain validation with controlled mutation backcheck — is not
     implemented in this tree. It is reported as an explicit UNVERIFIED check
     rather than silently omitted, so a hard-risk turn cannot read as complete.
     """
@@ -416,6 +597,10 @@ def completion_checks(
         ("tree", _validate_tree(evidence, current_tree)),
         ("phase", phase_errors(evidence, final=True)),
         ("exit_code", _validate_exit_code(evidence)),
+        (
+            "replay",
+            _replay_final_commands(evidence, project_root, evidence_path, hard),
+        ),
     ]
     if hard:
         checks.append(
@@ -423,8 +608,8 @@ def completion_checks(
                 "hard",
                 [
                     "UNVERIFIED: HARD completion (signed review-2, RED->GREEN "
-                    "chain, mutation backcheck, replay) is not implemented in "
-                    "this tree; see tests/lite_known_failures.txt"
+                    "chain, mutation backcheck) is not implemented in this "
+                    "tree; see tests/lite_known_failures.txt"
                 ],
             )
         )
@@ -690,16 +875,12 @@ def main() -> None:
             ev = {}
 
         if ev:
-            current_tree = _current_tree_sha(workspace)
-            for check_fn, label in [
-                (lambda: _validate_schema(ev), "schema"),
-                (lambda: _validate_output(ev), "output"),
-                (lambda: _validate_staleness(ev), "staleness"),
-                (lambda: _validate_workspace(ev, workspace), "workspace"),
-                (lambda: _validate_tree(ev, current_tree), "tree"),
-                (lambda: _validate_exit_code(ev), "exit_code"),
-            ]:
-                errs = check_fn()
+            # One decision path. This ran its own shorter list before, which
+            # omitted the phase check and the HARD marker and, once replay
+            # landed, would have omitted that too: the CLI gate and
+            # rule-validator.py could reach opposite verdicts on one record.
+            _hard, completion = completion_checks(ev, workspace, ev_path, code_changed)
+            for label, errs in completion:
                 if errs:
                     _err(f"Evidence {label} check failed:")
                     for e in errs:
