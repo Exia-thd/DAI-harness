@@ -16,6 +16,11 @@
 #
 # kernel/VERIFY.md and kernel/ESCALATE.md now state what is enforced and what is
 # not, rather than promising the unported half.
+#
+# One entry - test_codex_mapped_symlink_evidence_is_blocked_without_fallback -
+# skips rather than fails on a host that cannot create symlinks (Windows
+# without Developer Mode). It stays listed because it still fails where the
+# fixture can be built; a skip is not a fix.
 tests/lite/test_gate.py::TestDirtyBaseline::test_unstaged_source_change_after_evidence_mismatches_same_head_and_index
 tests/lite/test_gate.py::TestEvidenceV2BypassRegressions::test_hard_payment_requires_approved_strong_chain_and_mutation_match
 tests/lite/test_gate.py::TestEvidenceV2BypassRegressions::test_link_traversal_and_same_tree_red_mutation_rejected

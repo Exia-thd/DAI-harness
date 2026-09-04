@@ -175,7 +175,7 @@ describe("Docs Hub continuity gate", () => {
           ".dainexus/cache/docs-index.json",
           "skills/art-director/SKILL.md",
           "kernel/SOLVE.md",
-          ".cursor/rules/guard.md",
+          ".cursor/rules/guard.mdc",
           "AGENTS.md",
           "product-manifest.json",
           "src/main.ts",
@@ -190,7 +190,7 @@ describe("Docs Hub continuity gate", () => {
         ["docs/Roadmap.md"],
       ),
     ).toEqual([
-      ".cursor/rules/guard.md",
+      ".cursor/rules/guard.mdc",
       "AGENTS.md",
       "Assets/World.unity",
       "docs/Roadmap.md",
@@ -228,6 +228,18 @@ describe("Docs Hub continuity gate", () => {
     expect(complete.verifiedOutputPaths).toContain(
       "projects/gate-project/index.html",
     );
+    for (const section of [
+      "structure",
+      "roadmap",
+      "flows",
+      "backlog",
+      "documents",
+      "health",
+    ]) {
+      expect(complete.verifiedOutputPaths).toContain(
+        `projects/gate-project/${section}.html`,
+      );
+    }
   });
 
   it("passes documentation-only and test-only changes without pretending they are material", () => {

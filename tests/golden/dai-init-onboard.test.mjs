@@ -14,6 +14,9 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+// npm ships as npm.cmd on Windows; execFileSync does not append the extension
+// and fails with ENOENT on a bare `npm`. runtime-smoke already does this.
+const npm = process.platform === "win32" ? "npm.cmd" : "npm";
 const cliPath = join(repoRoot, "src/cli/dist/index.js");
 const fixtureRoot = mkdtempSync(join(tmpdir(), "dai-nexus-golden-"));
 const startedAt = Date.now();
@@ -39,9 +42,11 @@ function assertEnvelope(result, tool, ok = true) {
 }
 
 try {
-  execFileSync("npm", ["--prefix", "src/cli", "run", "build"], {
+  execFileSync(npm, ["--prefix", "src/cli", "run", "build"], {
     cwd: repoRoot,
     stdio: "inherit",
+    // Node will not execute a .cmd shim directly; it needs the shell.
+    shell: process.platform === "win32",
   });
 
   const target = join(fixtureRoot, "sample-app");

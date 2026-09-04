@@ -64,14 +64,30 @@ MAX_STEP_TAIL_LINES = 60
 
 
 def _pump(stream, tail) -> None:
-    """Mirror a step's output to this process and retain the last lines."""
+    """Drain a step's output, and mirror it when the console can render it.
+
+    Mirroring used to be a plain print(), which raises UnicodeEncodeError the
+    moment a step emits a character the console codepage lacks - a vitest tick
+    mark on cp1252 is enough. UnicodeEncodeError is a ValueError, so the
+    handler below swallowed it and this thread died. Nothing drained the pipe
+    after that: the step filled its 64KB buffer, blocked on write, and timed
+    out ten minutes later having reported only its banner. Draining is the
+    contract here; mirroring is best effort and must never end it.
+    """
     if stream is None:
         return
+    mirror = getattr(sys.stdout, "buffer", None)
     try:
         for raw in stream:
             line = raw.decode("utf-8", "replace").rstrip()
-            print(line, flush=True)
             tail.append(line)
+            if mirror is None:
+                continue
+            try:
+                mirror.write(line.encode("utf-8", "replace") + b"\n")
+                mirror.flush()
+            except (OSError, ValueError):
+                mirror = None
     except (OSError, ValueError):
         pass
 
@@ -123,6 +139,7 @@ class LocalCI:
         args = [str(item) for item in argv]
         print(f"\n==> local-ci: {name}")
         print("    " + " ".join(args))
+        sys.stdout.flush()
         if self.dry_run:
             self.results.append(StepResult(name, args, str(cwd), None, 0, "dry-run"))
             return 0

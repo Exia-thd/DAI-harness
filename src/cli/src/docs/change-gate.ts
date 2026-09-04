@@ -251,11 +251,29 @@ function isTrackedPath(projectRoot: string, path: string): boolean {
   return result.status === 0;
 }
 
-function runGitOutput(projectRoot: string, args: string[]): Buffer {
+/** Budget for a Git *query* - diff, ls-files, rev-parse. */
+const GIT_QUERY_TIMEOUT_MS = 10_000;
+/**
+ * Budget for bulk snapshot work - clone and checkout-index materialize the
+ * whole tree, which is filesystem-bound and an order of magnitude slower than
+ * a query. Measured here: 12s to clone, 15s to check out ~1700 files. Under
+ * the query budget the snapshot always timed out, and spawnSync reports that
+ * with an empty stderr, so the gate blamed Git for being unreadable.
+ */
+const GIT_SNAPSHOT_TIMEOUT_MS = Number.parseInt(
+  process.env.DAINEXUS_DOCS_GIT_SNAPSHOT_TIMEOUT_MS ?? "120000",
+  10,
+);
+
+function runGitOutput(
+  projectRoot: string,
+  args: string[],
+  timeout: number = GIT_QUERY_TIMEOUT_MS,
+): Buffer {
   const result = spawnSync("git", ["-C", projectRoot, ...args], {
     encoding: "buffer",
     stdio: ["ignore", "pipe", "pipe"],
-    timeout: 10_000,
+    timeout,
   });
   if (result.error || result.status !== 0) {
     const stderr = Buffer.isBuffer(result.stderr)
@@ -371,25 +389,32 @@ function selectedProjectView(
   const temporaryParent = mkdtempSync(join(tmpdir(), "dai-nexus-docs-view-"));
   try {
     const snapshotRoot = join(temporaryParent, "repository");
-    runGitOutput(repositoryRoot, [
-      "clone",
-      "--quiet",
-      "--no-checkout",
-      "--local",
-      "--",
+    runGitOutput(
       repositoryRoot,
-      snapshotRoot,
-    ]);
+      [
+        "clone",
+        "--quiet",
+        "--no-checkout",
+        "--local",
+        "--",
+        repositoryRoot,
+        snapshotRoot,
+      ],
+      GIT_SNAPSHOT_TIMEOUT_MS,
+    );
     if (mode === "staged") {
-      runGitOutput(repositoryRoot, [
-        "checkout-index",
-        "--all",
-        "--force",
-        `--prefix=${snapshotRoot}/`,
-      ]);
+      runGitOutput(
+        repositoryRoot,
+        ["checkout-index", "--all", "--force", `--prefix=${snapshotRoot}/`],
+        GIT_SNAPSHOT_TIMEOUT_MS,
+      );
     } else {
       const head = gitText(projectRoot, ["rev-parse", "--verify", "HEAD"]);
-      runGitOutput(snapshotRoot, ["checkout", "--quiet", "--detach", head]);
+      runGitOutput(
+        snapshotRoot,
+        ["checkout", "--quiet", "--detach", head],
+        GIT_SNAPSHOT_TIMEOUT_MS,
+      );
     }
     return {
       projectRoot: resolve(snapshotRoot, projectPath),
@@ -627,13 +652,17 @@ function outputRelativePath(outputDir: string, candidate: string): string {
 }
 
 function verifyOutput(outputDir: string, catalog: DocsCatalog): string[] {
+  const projectRoot = `projects/${encodeURIComponent(catalog.project.id)}`;
   const required = [
     ".dainexus-docs-hub",
     "index.html",
     "style.css",
     "app.js",
     "search-index.json",
-    `projects/${encodeURIComponent(catalog.project.id)}/index.html`,
+    `${projectRoot}/index.html`,
+    ...["structure", "roadmap", "flows", "backlog", "documents", "health"].map(
+      (section) => `${projectRoot}/${section}.html`,
+    ),
     ...catalog.documents.map((document) => document.route),
   ];
   for (const path of required) {

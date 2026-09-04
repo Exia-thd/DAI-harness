@@ -35,6 +35,77 @@ SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 TREE_FINGERPRINT_RE = re.compile(r"^(?:TREE|NONGIT):[0-9a-f]{64}$")
 MAX_EVIDENCE_BYTES = 4 * 1024 * 1024
 
+# --- Portable filesystem primitives -----------------------------------------
+#
+# The reference tree is POSIX-only: it locks with fcntl and refuses to touch a
+# path without O_NOFOLLOW.  Neither exists on Windows, and degrading to
+# "cannot check" would silently turn a gate into a no-op, so provide real
+# equivalents instead.
+
+try:
+    import fcntl as _fcntl
+except ImportError:  # Windows
+    _fcntl = None
+    import msvcrt as _msvcrt
+
+HAS_NOFOLLOW = hasattr(os, "O_NOFOLLOW")
+
+
+def lock_exclusive(handle) -> None:
+    """Block until this process holds an exclusive lock on ``handle``."""
+
+    if _fcntl is not None:
+        _fcntl.flock(handle.fileno(), _fcntl.LOCK_EX)
+        return
+    # msvcrt locks a byte range rather than the whole file, and LK_LOCK gives
+    # up after roughly ten seconds; retry so a slow writer blocks us instead of
+    # letting two writers into the same state file.
+    handle.seek(0)
+    while True:
+        try:
+            _msvcrt.locking(handle.fileno(), _msvcrt.LK_LOCK, 1)
+            return
+        except OSError:
+            time.sleep(0.05)
+
+
+def unlock(handle) -> None:
+    if _fcntl is not None:
+        _fcntl.flock(handle.fileno(), _fcntl.LOCK_UN)
+        return
+    handle.seek(0)
+    try:
+        _msvcrt.locking(handle.fileno(), _msvcrt.LK_UNLCK, 1)
+    except OSError:
+        pass
+
+
+def is_symlink(path: Path) -> bool:
+    """Whether ``path`` itself is a symlink, without following it.
+
+    Stands in for the O_NOFOLLOW open flag where the platform lacks it. It is
+    a check-then-open, so callers must still confirm the opened descriptor's
+    identity with ``os.fstat``; that pair is what closes the race.
+    """
+
+    try:
+        return stat.S_ISLNK(path.lstat().st_mode)
+    except OSError:
+        return False
+
+
+def fchmod(fd: int, mode: int, path: Path | str | None = None) -> None:
+    """``os.fchmod`` where it exists, falling back to a path-based chmod."""
+
+    if hasattr(os, "fchmod"):
+        os.fchmod(fd, mode)
+    elif path is not None:
+        try:
+            os.chmod(path, mode)
+        except OSError:
+            pass
+
+
 # Runtime-owned state changes as a consequence of verification, hooks, and
 # independent subagent review. Hashing these paths makes the act of reviewing
 # invalidate the evidence it is reviewing. Keep the exclusion explicit and
@@ -76,6 +147,7 @@ _FINGERPRINT_RUNTIME_DIRS = frozenset(
         ".dainexus/local-ci-venv",
         ".dainexus/memory-bank",
         ".dainexus/metrics",
+        ".dainexus/runtime",
         ".dainexus/subagent-context",
         ".dainexus/telemetry",
         ".dainexus/verify",
@@ -1112,7 +1184,9 @@ def read_evidence_bytes(
             opened.append(current)
         file_fd = os.open(
             relative.parts[-1],
-            os.O_RDONLY | nofollow | cloexec,
+            # Binary: Windows text mode would translate CRLF and change
+            # the digest of evidence this gate is meant to bind exactly.
+            os.O_RDONLY | getattr(os, "O_BINARY", 0) | nofollow | cloexec,
             dir_fd=current,
         )
         opened.append(file_fd)

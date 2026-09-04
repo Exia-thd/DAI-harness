@@ -513,7 +513,8 @@ jsonc_parser_module() {
     for candidate in \
         "${CANONICAL_STAGE_DIR:-}/node_modules/jsonc-parser" \
         "$CANONICAL_SERVER_DIR/node_modules/jsonc-parser" \
-        "$DAINEXUS_DIR/mcp/node_modules/jsonc-parser"; do
+        "$DAINEXUS_DIR/mcp/node_modules/jsonc-parser" \
+        "$DAINEXUS_DIR/node_modules/jsonc-parser"; do
         if [[ -n "$candidate" ]] && [[ -f "$candidate/lib/umd/main.js" ]]; then
             printf '%s\n' "$candidate"
             return 0
@@ -735,15 +736,33 @@ def inject(point):
         raise OSError(f"injected durability failure at {boundary}")
 
 def fsync_file(path):
-    with open(path, "rb") as handle:
+    # Windows refuses FlushFileBuffers on a read-only handle (EBADF), so open
+    # for update. If even that is denied, the preceding rename is already
+    # atomic; only the extra durability barrier is lost.
+    try:
+        handle = open(path, "rb+")
+    except OSError:
+        return
+    try:
         os.fsync(handle.fileno())
+    except OSError:
+        pass
+    finally:
+        handle.close()
 
 def fsync_dir(path):
-    descriptor = os.open(path, os.O_RDONLY)
     try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
+        descriptor = os.open(path, os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory as a descriptor. The rename
+        # above is already atomic there; only this extra durability
+        # barrier is unavailable.
+        descriptor = -1
+    if descriptor != -1:
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
 
 def file_state(path):
     if not os.path.lexists(path):
@@ -865,11 +884,18 @@ if os.environ.get("DAINEXUS_TEST_SIGKILL_DURABILITY_AT") == f"{label}:before-unl
     os.kill(os.getppid(), signal.SIGKILL)
     os._exit(137)
 os.unlink(target)
-descriptor = os.open(parent, os.O_RDONLY)
 try:
-    os.fsync(descriptor)
-finally:
-    os.close(descriptor)
+    descriptor = os.open(parent, os.O_RDONLY)
+except OSError:
+    # Windows cannot open a directory as a descriptor. The rename
+    # above is already atomic there; only this extra durability
+    # barrier is unavailable.
+    descriptor = -1
+if descriptor != -1:
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
 PY
 }
 
@@ -893,11 +919,18 @@ def inject(point):
         raise OSError(f"injected durability failure at {boundary}")
 
 def fsync_dir(path):
-    descriptor = os.open(path, os.O_RDONLY)
     try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
+        descriptor = os.open(path, os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory as a descriptor. The rename
+        # above is already atomic there; only this extra durability
+        # barrier is unavailable.
+        descriptor = -1
+    if descriptor != -1:
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
 
 if not os.path.isdir(root) or os.path.islink(root):
     raise SystemExit(f"durability tree is unsafe: {root}")
@@ -940,11 +973,18 @@ if os.environ.get("DAINEXUS_TEST_SIGKILL_DURABILITY_AT") == boundary:
 if os.environ.get("DAINEXUS_TEST_DURABILITY_FAIL_AT") == boundary:
     raise OSError(f"injected durability failure at {boundary}")
 for directory in (target, os.path.dirname(target)):
-    descriptor = os.open(directory, os.O_RDONLY)
     try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
+        descriptor = os.open(directory, os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory as a descriptor. The rename
+        # above is already atomic there; only this extra durability
+        # barrier is unavailable.
+        descriptor = -1
+    if descriptor != -1:
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
 boundary = f"{label}:after-parent"
 if os.environ.get("DAINEXUS_TEST_DURABILITY_FAIL_AT") == boundary:
     raise OSError(f"injected durability failure at {boundary}")
@@ -986,12 +1026,24 @@ print(os.path.join(root, f"config-{hashlib.sha256(os.fsencode(path)).hexdigest()
 PY
 }
 
+owner_pid() {
+    # Under MSYS/Git Bash, $$ is an emulated POSIX pid from a different
+    # namespace than the Windows one, so a native process lookup on it finds
+    # nothing and the lock owner can never be established. MSYS exposes the
+    # real pid; fall back to $$ everywhere else.
+    local winpid
+    if winpid="$(cat "/proc/$$/winpid" 2>/dev/null)" && [ -n "$winpid" ]; then
+        printf '%s' "$winpid"
+    else
+        printf '%s' "$$"
+    fi
+}
+
 acquire_owned_lock() {
     local lock_dir="$1" owner_token="$2" attempt result
     validate_sensitive_path "$lock_dir" directory || return 1
     for ((attempt = 0; attempt < 600; attempt += 1)); do
-        if python3 - "$lock_dir" "$owner_token" "$$" "$HOME" "${PROJECT_ROOT:-}" <<'PY'
-import fcntl
+        if python3 - "$lock_dir" "$owner_token" "$(owner_pid)" "$HOME" "${PROJECT_ROOT:-}" <<'PY'
 import json
 import os
 import platform
@@ -999,6 +1051,29 @@ import shutil
 import subprocess
 import sys
 import uuid
+
+# Windows has no fcntl. Lock a single byte with msvcrt instead: same
+# mutual exclusion, and failing to lock at all would let two setups race
+# over the same owner token.
+try:
+    import fcntl
+except ImportError:
+    fcntl = None
+    import msvcrt
+    import time as _time
+
+
+def lock_exclusive(handle):
+    if fcntl is not None:
+        fcntl.flock(handle, fcntl.LOCK_EX)
+        return
+    handle.seek(0)
+    while True:
+        try:
+            msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+            return
+        except OSError:
+            _time.sleep(0.05)
 
 lock, token, pid_text, home, project = sys.argv[1:]
 pid = int(pid_text)
@@ -1030,6 +1105,29 @@ def process_identity(candidate):
         value = json.loads(overrides).get(str(candidate))
         if value is not None:
             return value.get("birth"), value.get("state", "")
+    if platform.system() == "Windows":
+        # No /proc and no ps. Win32_Process gives the creation time that
+        # makes a pid identity exact, which is the whole point of the check;
+        # a live process is by definition not a zombie, so state is empty.
+        try:
+            probe = subprocess.run(
+                [
+                    "powershell", "-NoProfile", "-NonInteractive", "-Command",
+                    (
+                        "$p = Get-CimInstance Win32_Process -Filter "
+                        + '"ProcessId=' + str(candidate) + '"' + "; "
+                        "if (-not $p) { exit 1 }; "
+                        "$p.CreationDate.ToString('o')"
+                    ),
+                ],
+                check=False, capture_output=True, text=True,
+            )
+        except OSError:
+            return None, ""
+        birth = probe.stdout.strip()
+        if probe.returncode != 0 or not birth:
+            return None, ""
+        return birth, ""
     if platform.system() == "Linux":
         try:
             raw = open(f"/proc/{candidate}/stat", encoding="utf-8").read()
@@ -1054,7 +1152,7 @@ birth, state = process_identity(pid)
 if not birth or state.startswith("Z"):
     raise SystemExit("could not establish live lock owner identity")
 with open(guard_path, "a+", encoding="utf-8") as guard:
-    fcntl.flock(guard, fcntl.LOCK_EX)
+    lock_exclusive(guard)
     if os.path.lexists(lock):
         owner = {}
         try:
@@ -1082,16 +1180,30 @@ with open(guard_path, "a+", encoding="utf-8") as guard:
         handle.flush()
         os.fsync(handle.fileno())
     os.replace(owner_tmp, os.path.join(lock, "owner.json"))
-    lock_fd = os.open(lock, os.O_RDONLY)
     try:
-        os.fsync(lock_fd)
-    finally:
-        os.close(lock_fd)
-    parent_fd = os.open(parent, os.O_RDONLY)
+        lock_fd = os.open(lock, os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory as a descriptor. The rename
+        # above is already atomic there; only this extra durability
+        # barrier is unavailable.
+        lock_fd = -1
+    if lock_fd != -1:
+        try:
+            os.fsync(lock_fd)
+        finally:
+            os.close(lock_fd)
     try:
-        os.fsync(parent_fd)
-    finally:
-        os.close(parent_fd)
+        parent_fd = os.open(parent, os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory as a descriptor. The rename
+        # above is already atomic there; only this extra durability
+        # barrier is unavailable.
+        parent_fd = -1
+    if parent_fd != -1:
+        try:
+            os.fsync(parent_fd)
+        finally:
+            os.close(parent_fd)
 PY
         then
             return 0
@@ -1111,19 +1223,41 @@ release_owned_lock() {
     local lock_dir="$1" owner_token="$2"
     validate_sensitive_path "$lock_dir" directory || return 1
     python3 - "$lock_dir" "$owner_token" <<'PY'
-import fcntl
 import json
 import os
 import shutil
 import sys
 import uuid
 
+# Windows has no fcntl. Lock a single byte with msvcrt instead: same
+# mutual exclusion, and failing to lock at all would let two setups race
+# over the same owner token.
+try:
+    import fcntl
+except ImportError:
+    fcntl = None
+    import msvcrt
+    import time as _time
+
+
+def lock_exclusive(handle):
+    if fcntl is not None:
+        fcntl.flock(handle, fcntl.LOCK_EX)
+        return
+    handle.seek(0)
+    while True:
+        try:
+            msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+            return
+        except OSError:
+            _time.sleep(0.05)
+
 lock, token = sys.argv[1:]
 parent = os.path.dirname(lock)
 os.makedirs(parent, exist_ok=True)
 quarantine = ""
 with open(f"{lock}.guard", "a+", encoding="utf-8") as guard:
-    fcntl.flock(guard, fcntl.LOCK_EX)
+    lock_exclusive(guard)
     if os.path.isdir(lock):
         try:
             with open(os.path.join(lock, "owner.json"), encoding="utf-8") as handle:
@@ -1216,11 +1350,18 @@ with open(temporary, "w", encoding="utf-8") as handle:
     handle.flush()
     os.fsync(handle.fileno())
 os.replace(temporary, journal)
-directory_fd = os.open(os.path.dirname(journal), os.O_RDONLY)
 try:
-    os.fsync(directory_fd)
-finally:
-    os.close(directory_fd)
+    directory_fd = os.open(os.path.dirname(journal), os.O_RDONLY)
+except OSError:
+    # Windows cannot open a directory as a descriptor. The rename
+    # above is already atomic there; only this extra durability
+    # barrier is unavailable.
+    directory_fd = -1
+if directory_fd != -1:
+    try:
+        os.fsync(directory_fd)
+    finally:
+        os.close(directory_fd)
 PY
 }
 
@@ -1249,7 +1390,7 @@ initialize_runtime_transaction() {
     validate_sensitive_path "$CANONICAL_SERVER_DIR" directory || return 1
     validate_sensitive_path "$TRANSACTION_DIR" directory || return 1
     validate_sensitive_path "$CANONICAL_STAGE_DIR" directory || return 1
-    python3 - "$TRANSACTION_JOURNAL" "$TRANSACTION_DIR" "$TRANSACTION_TOKEN" "$$" \
+    python3 - "$TRANSACTION_JOURNAL" "$TRANSACTION_DIR" "$TRANSACTION_TOKEN" "$(owner_pid)" \
         "$PROJECT_ROOT" "$CANONICAL_SERVER_DIR" "$CANONICAL_STAGE_DIR" <<'PY'
 import json
 import os
@@ -1281,17 +1422,31 @@ with open(temporary, "w", encoding="utf-8") as handle:
     handle.flush()
     os.fsync(handle.fileno())
 os.replace(temporary, journal)
-directory_fd = os.open(os.path.dirname(journal), os.O_RDONLY)
 try:
-    os.fsync(directory_fd)
-finally:
-    os.close(directory_fd)
+    directory_fd = os.open(os.path.dirname(journal), os.O_RDONLY)
+except OSError:
+    # Windows cannot open a directory as a descriptor. The rename
+    # above is already atomic there; only this extra durability
+    # barrier is unavailable.
+    directory_fd = -1
+if directory_fd != -1:
+    try:
+        os.fsync(directory_fd)
+    finally:
+        os.close(directory_fd)
 os.mkdir(transaction_dir, mode=0o700)
-transactions_fd = os.open(os.path.dirname(transaction_dir), os.O_RDONLY)
 try:
-    os.fsync(transactions_fd)
-finally:
-    os.close(transactions_fd)
+    transactions_fd = os.open(os.path.dirname(transaction_dir), os.O_RDONLY)
+except OSError:
+    # Windows cannot open a directory as a descriptor. The rename
+    # above is already atomic there; only this extra durability
+    # barrier is unavailable.
+    transactions_fd = -1
+if transactions_fd != -1:
+    try:
+        os.fsync(transactions_fd)
+    finally:
+        os.close(transactions_fd)
 PY
     TRANSACTION_ACTIVE="true"
     TRANSACTION_LOCK_DIRS=()
@@ -1373,11 +1528,18 @@ try:
         os.utime(backup, ns=(st.st_atime_ns, st.st_mtime_ns))
     except Exception:
         pass
-    dir_fd = os.open(os.path.dirname(backup), os.O_RDONLY)
     try:
-        os.fsync(dir_fd)
-    finally:
-        os.close(dir_fd)
+        dir_fd = os.open(os.path.dirname(backup), os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory as a descriptor. The rename
+        # above is already atomic there; only this extra durability
+        # barrier is unavailable.
+        dir_fd = -1
+    if dir_fd != -1:
+        try:
+            os.fsync(dir_fd)
+        finally:
+            os.close(dir_fd)
     print(f"{digest.hexdigest()}:{mode:o}:{st.st_dev}:{st.st_ino}:{st.st_mtime_ns}:{st.st_ctime_ns}:{st.st_size}")
 finally:
     os.close(fd)
@@ -1537,11 +1699,18 @@ for item in reversed(data["files"]):
             os.fsync(handle.fileno())
     else:
         os.unlink(target)
-    directory_fd = os.open(os.path.dirname(target), os.O_RDONLY)
     try:
-        os.fsync(directory_fd)
-    finally:
-        os.close(directory_fd)
+        directory_fd = os.open(os.path.dirname(target), os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory as a descriptor. The rename
+        # above is already atomic there; only this extra durability
+        # barrier is unavailable.
+        directory_fd = -1
+    if directory_fd != -1:
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
 
 for failure in failures:
     print(f"CRITICAL: {failure}", file=sys.stderr)
@@ -1613,19 +1782,33 @@ import sys
 runtime, active, envelope = sys.argv[1:]
 os.rename(runtime, active)
 for directory in (os.path.dirname(active), envelope):
-    descriptor = os.open(directory, os.O_RDONLY)
+    try:
+        descriptor = os.open(directory, os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory as a descriptor. The rename
+        # above is already atomic there; only this extra durability
+        # barrier is unavailable.
+        descriptor = -1
+    if descriptor != -1:
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+owner = os.path.join(envelope, "owner.json")
+os.unlink(owner)
+os.rmdir(envelope)
+try:
+    descriptor = os.open(os.path.dirname(envelope), os.O_RDONLY)
+except OSError:
+    # Windows cannot open a directory as a descriptor. The rename
+    # above is already atomic there; only this extra durability
+    # barrier is unavailable.
+    descriptor = -1
+if descriptor != -1:
     try:
         os.fsync(descriptor)
     finally:
         os.close(descriptor)
-owner = os.path.join(envelope, "owner.json")
-os.unlink(owner)
-os.rmdir(envelope)
-descriptor = os.open(os.path.dirname(envelope), os.O_RDONLY)
-try:
-    os.fsync(descriptor)
-finally:
-    os.close(descriptor)
 PY
 }
 
@@ -1672,11 +1855,18 @@ else:
         handle.flush()
         os.fsync(handle.fileno())
     os.replace(temporary, owner_path)
-    trash_fd = os.open(trash, os.O_RDONLY)
     try:
-        os.fsync(trash_fd)
-    finally:
-        os.close(trash_fd)
+        trash_fd = os.open(trash, os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory as a descriptor. The rename
+        # above is already atomic there; only this extra durability
+        # barrier is unavailable.
+        trash_fd = -1
+    if trash_fd != -1:
+        try:
+            os.fsync(trash_fd)
+        finally:
+            os.close(trash_fd)
 
 runtime = os.path.join(trash, "runtime")
 if os.path.lexists(runtime):
@@ -1733,11 +1923,18 @@ elif marker_mode != "journal":
     raise SystemExit("invalid runtime ownership mode")
 os.rename(source, runtime)
 for directory in {os.path.dirname(source), trash}:
-    directory_fd = os.open(directory, os.O_RDONLY)
     try:
-        os.fsync(directory_fd)
-    finally:
-        os.close(directory_fd)
+        directory_fd = os.open(directory, os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory as a descriptor. The rename
+        # above is already atomic there; only this extra durability
+        # barrier is unavailable.
+        directory_fd = -1
+    if directory_fd != -1:
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
 PY
 }
 
@@ -1825,11 +2022,18 @@ cleanup_transaction_journal() {
 import os
 import sys
 for directory in dict.fromkeys(sys.argv[1:]):
-    descriptor = os.open(directory, os.O_RDONLY)
     try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
+        descriptor = os.open(directory, os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory as a descriptor. The rename
+        # above is already atomic there; only this extra durability
+        # barrier is unavailable.
+        descriptor = -1
+    if descriptor != -1:
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
 PY
 }
 
@@ -1889,11 +2093,18 @@ restore_transaction_runtime() {
 import os
 import sys
 for directory in sys.argv[1:]:
-    descriptor = os.open(directory, os.O_RDONLY)
     try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
+        descriptor = os.open(directory, os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory as a descriptor. The rename
+        # above is already atomic there; only this extra durability
+        # barrier is unavailable.
+        descriptor = -1
+    if descriptor != -1:
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
 PY
         return 0
     fi
@@ -2023,10 +2234,13 @@ import sys
 
 left, right, label = sys.argv[1:]
 system = platform.system()
-libc = ctypes.CDLL(None, use_errno=True)
-if system == "Darwin" and hasattr(libc, "renameatx_np"):
+# CDLL(None) means 'the main program' on POSIX but is a TypeError on
+# Windows, which crashed this probe before it could reach the deliberate
+# unsupported-platform exit below.
+libc = ctypes.CDLL(None, use_errno=True) if os.name == "posix" else None
+if libc is not None and system == "Darwin" and hasattr(libc, "renameatx_np"):
     result = libc.renameatx_np(-2, os.fsencode(left), -2, os.fsencode(right), 0x00000002)
-elif system == "Linux" and hasattr(libc, "renameat2"):
+elif libc is not None and system == "Linux" and hasattr(libc, "renameat2"):
     result = libc.renameat2(-100, os.fsencode(left), -100, os.fsencode(right), 0x2)
 else:
     raise SystemExit(f"atomic directory exchange is unsupported on {system}")
@@ -2041,11 +2255,18 @@ if label:
     if os.environ.get("DAINEXUS_TEST_DURABILITY_FAIL_AT") == boundary:
         raise OSError(f"injected durability failure at {boundary}")
 for directory in (left, right, os.path.dirname(left)):
-    descriptor = os.open(directory, os.O_RDONLY)
     try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
+        descriptor = os.open(directory, os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory as a descriptor. The rename
+        # above is already atomic there; only this extra durability
+        # barrier is unavailable.
+        descriptor = -1
+    if descriptor != -1:
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
 if label:
     boundary = f"{label}:after-parent"
     if os.environ.get("DAINEXUS_TEST_DURABILITY_FAIL_AT") == boundary:
@@ -2380,19 +2601,19 @@ for (const managed of ['dai-nexus', 'gitnexus']) {
 }
 if (ledgerChanged && ledgerTmp) fs.writeFileSync(ledgerTmp, JSON.stringify(ledger, null, 2));
 
-const dai-nexus = {};
+const daiNexus = {};
 if (platform === 'opencode') {
-  Object.assign(dai-nexus, { type: 'local', command: [tsx, server], enabled: true });
-  setValue([rootKey, 'dai-nexus'], dai-nexus);
+  Object.assign(daiNexus, { type: 'local', command: [tsx, server], enabled: true });
+  setValue([rootKey, 'dai-nexus'], daiNexus);
   setValue([rootKey, 'gitnexus'], { type: 'local', command: [gitnexus, 'mcp'], enabled: true });
 } else {
-  Object.assign(dai-nexus, { command: tsx, args: [server] });
+  Object.assign(daiNexus, { command: tsx, args: [server] });
   if (platform === 'cursor') {
-    dai-nexus.env = { DAINEXUS_WORKSPACE: '${workspaceFolder}', AGENTS_WORKSPACE: '${workspaceFolder}' };
+    daiNexus.env = { DAINEXUS_WORKSPACE: '${workspaceFolder}', AGENTS_WORKSPACE: '${workspaceFolder}' };
   } else if (workspace) {
-    dai-nexus.env = { DAINEXUS_WORKSPACE: workspace, AGENTS_WORKSPACE: workspace };
+    daiNexus.env = { DAINEXUS_WORKSPACE: workspace, AGENTS_WORKSPACE: workspace };
   }
-  setValue([rootKey, 'dai-nexus'], dai-nexus);
+  setValue([rootKey, 'dai-nexus'], daiNexus);
   setValue([rootKey, 'gitnexus'], { command: gitnexus, args: ['mcp'] });
 }
 if (platform !== 'zed' && platform !== 'opencode') {
@@ -2995,7 +3216,7 @@ prefix = original_text.rstrip()
 parsed_prefix = tomllib.loads(original_text)
 quoted = lambda value: json.dumps(value, ensure_ascii=True)
 managed_sections = {
-    "dai-nexus": f'''[mcp_servers.dainexus]
+    "dai-nexus": f'''[mcp_servers.dai-nexus]
 enabled = true
 transport = {{ type = "stdio" }}
 command = {quoted(tsx)}
@@ -3132,11 +3353,18 @@ def digest(path):
         return hashlib.file_digest(handle, "sha256").hexdigest()
 
 def fsync_dir(path):
-    descriptor = os.open(path, os.O_RDONLY)
     try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
+        descriptor = os.open(path, os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory as a descriptor. The rename
+        # above is already atomic there; only this extra durability
+        # barrier is unavailable.
+        descriptor = -1
+    if descriptor != -1:
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
 
 for item in data["files"]:
     path = item["path"]
@@ -3244,11 +3472,18 @@ import os
 import sys
 with open(sys.argv[1], "rb") as handle:
     os.fsync(handle.fileno())
-directory_fd = os.open(os.path.dirname(sys.argv[1]), os.O_RDONLY)
 try:
-    os.fsync(directory_fd)
-finally:
-    os.close(directory_fd)
+    directory_fd = os.open(os.path.dirname(sys.argv[1]), os.O_RDONLY)
+except OSError:
+    # Windows cannot open a directory as a descriptor. The rename
+    # above is already atomic there; only this extra durability
+    # barrier is unavailable.
+    directory_fd = -1
+if directory_fd != -1:
+    try:
+        os.fsync(directory_fd)
+    finally:
+        os.close(directory_fd)
 PY
     durable_publish_directory "$prepared_stage" "$CANONICAL_STAGE_DIR" "runtime-stage" || return 1
 
@@ -3349,11 +3584,18 @@ with open(path, "w", encoding="utf-8") as handle:
     handle.write("\n")
     handle.flush()
     os.fsync(handle.fileno())
-directory = os.open(os.path.dirname(path), os.O_RDONLY)
 try:
-    os.fsync(directory)
-finally:
-    os.close(directory)
+    directory = os.open(os.path.dirname(path), os.O_RDONLY)
+except OSError:
+    # Windows cannot open a directory as a descriptor. The rename
+    # above is already atomic there; only this extra durability
+    # barrier is unavailable.
+    directory = -1
+if directory != -1:
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
 PY
 
     log_ok "Canonical MCP server staged and validated"
@@ -3454,7 +3696,7 @@ for (const [name, path] of Object.entries({
 const manifest = {
   manifest_version: '1.0',
   workspace,
-  dai-nexus: { version, canonical, server: serverPath },
+  'dai-nexus': { version, canonical, server: serverPath },
   servers: [
     { name: 'dai-nexus', type: 'dai-nexus-mcp-server', path: serverPath, enabled: true, auto_start: true },
     { name: 'gitnexus', type: 'gitnexus', command: gitnexusCommand, args: ['mcp'], enabled: true, auto_start: true },

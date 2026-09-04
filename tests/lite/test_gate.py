@@ -79,6 +79,23 @@ from evidence_common import (  # noqa: E402
 _REVIEW_FIXTURES: dict[Path, dict[str, object]] = {}
 
 
+def _can_symlink(directory) -> bool:
+    """Whether this host lets an unprivileged process create a symlink.
+
+    Windows needs Developer Mode or SeCreateSymbolicLinkPrivilege, so a test
+    that attacks the gate with a symlink cannot even build its fixture there.
+    Skipping is honest; asserting a pass we never exercised would not be.
+    """
+
+    probe = Path(directory) / "._symlink_probe"
+    try:
+        probe.symlink_to(directory)
+    except OSError:
+        return False
+    probe.unlink()
+    return True
+
+
 def _generate_review_keypair(tmp: Path, prefix: str) -> dict[str, Path | list[Path]]:
     """Generate a disposable external Ed25519 keypair beside, not inside, tmp."""
     key_dir = Path(tempfile.mkdtemp(prefix=f"{tmp.name}_{prefix}_", dir=tmp.parent))
@@ -1969,6 +1986,113 @@ class TestVerifyGateSh:
         assert r.returncode == 0, r.stderr
         assert "No code changes" in r.stdout
 
+    def test_codex_typed_stop_no_code_returns_verified_decision(self):
+        """A clean native Stop still exposes its typed completion state."""
+        result = self._stop_gate(
+            {
+                "hook_event_name": "Stop",
+                "session_id": "clean-stop-session",
+                "turn": "clean-stop-turn",
+                "last_assistant_message": "No verification claim is being made.",
+            }
+        )
+
+        assert result.returncode == 0, result.stderr
+        assert json.loads(result.stdout) == {
+            "continue": True,
+            "dai-nexus": {
+                "schema": "dai-nexus-stop-decision/v1",
+                "host_action": "allow_stop",
+                "completion_state": "verified",
+                "retry_suppressed": False,
+                "reason_code": "no_code_changes",
+            },
+        }
+
+    def test_codex_custom_manifest_sources_skip_docs_but_keep_code_governed(self):
+        """Manifest JSON/YAML/assets are continuity; a code file remains gated."""
+        forge = self.tmp / ".dainexus"
+        forge.mkdir()
+        source = self.tmp / "knowledge"
+        source.mkdir()
+        (source / "guide.json").write_text('{"title":"Guide"}\n', encoding="utf-8")
+        (source / "diagram.svg").write_text("<svg />\n", encoding="utf-8")
+        (self.tmp / "docs").mkdir()
+        (self.tmp / "docs/project-state.json").write_text(
+            json.dumps({"status": {"updated_at": "2026-08-25T00:00:00Z"}}),
+            encoding="utf-8",
+        )
+        (forge / "docs-manifest.json").write_text(
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "project": {"id": "fixture", "title": "Fixture"},
+                    "sources": [{"path": "knowledge", "type": "documentation"}],
+                    "project_docs": {
+                        "schema_version": 1,
+                        "state": "docs/project-state.json",
+                    },
+                    "truth": ["docs/project-state.json"],
+                    "privacy": {"mode": "allowlist", "allow": ["knowledge", "docs"]},
+                }
+            ),
+            encoding="utf-8",
+        )
+        env = {
+            **os.environ,
+            "DAINEXUS_DOCS_CONTINUITY_MODE": "observe",
+            "DAINEXUS_STOP_STATE_DIR": str(self.tmp / "stop-state-docs"),
+            "DAINEXUS_DOCS_CONTINUITY_STATE_DIR": str(
+                self.tmp / "continuity-state-docs"
+            ),
+        }
+        docs_result = subprocess.run(
+            ["bash", str(STOP_SH), "--platform", "codex"],
+            cwd=self.tmp,
+            env=env,
+            input=json.dumps(
+                {
+                    "hook_event_name": "Stop",
+                    "session_id": "custom-docs-session",
+                    "turn": "custom-docs-turn",
+                    "last_assistant_message": "No code changes were made.",
+                    "files": ["knowledge/guide.json", "knowledge/diagram.svg"],
+                }
+            ),
+            text=True,
+            capture_output=True,
+            timeout=HARNESS_TIMEOUT_SECS,
+        )
+        assert docs_result.returncode == 0, docs_result.stderr
+        assert json.loads(docs_result.stdout)["continue"] is True
+        assert (
+            json.loads(docs_result.stdout)["dai-nexus"]["completion_state"]
+            == "unverified"
+        )
+
+        code_result = subprocess.run(
+            ["bash", str(STOP_SH), "--platform", "codex"],
+            cwd=self.tmp,
+            env={
+                **env,
+                "DAINEXUS_STOP_STATE_DIR": str(self.tmp / "stop-state-code"),
+            },
+            input=json.dumps(
+                {
+                    "hook_event_name": "Stop",
+                    "session_id": "custom-code-session",
+                    "turn": "custom-code-turn",
+                    "last_assistant_message": "No code changes were made.",
+                    "files": ["knowledge/worker.py"],
+                }
+            ),
+            text=True,
+            capture_output=True,
+            timeout=HARNESS_TIMEOUT_SECS,
+        )
+        assert code_result.returncode == 0, code_result.stderr
+        assert json.loads(code_result.stdout)["decision"] == "block"
+
     def test_invalid_platform_blocked(self):
         """Unknown platform name → gate blocks with error."""
         r = subprocess.run(
@@ -2067,7 +2191,10 @@ class TestVerifyGateSh:
 
         accepted = self._stop_gate(payload)
         assert accepted.returncode == 0, accepted.stderr
-        assert json.loads(accepted.stdout) == {"continue": True}
+        accepted_payload = json.loads(accepted.stdout)
+        assert accepted_payload["continue"] is True
+        assert accepted_payload["dai-nexus"]["completion_state"] == "verified"
+        assert accepted_payload["dai-nexus"]["host_action"] == "allow_stop"
 
         payload["last_assistant_message"] = response.replace(
             "COMMAND:", "COMMAND: unrelated ", 1
@@ -2075,6 +2202,265 @@ class TestVerifyGateSh:
         rejected = self._stop_gate(payload)
         assert rejected.returncode == 0, rejected.stderr
         assert json.loads(rejected.stdout)["decision"] == "block"
+
+    def test_codex_unmapped_platform_turn_field_discovers_correlated_final_evidence(
+        self,
+    ):
+        """Codex may put its routing UUID in `turn`, not only in `turn_id`."""
+        source = self.tmp / "fixture.py"
+        source.write_text("print('changed')\n")
+        evidence = _make_evidence(self.tmp, turn="internal-evidence-for-opaque-turn")
+        response = _strict_response(evidence)
+        payload = {
+            "hook_event_name": "Stop",
+            "last_assistant_message": response,
+            "turn": "codex-platform-routing-uuid",
+            "session_id": "opaque-turn-session",
+            "stop_hook_active": True,
+        }
+
+        accepted = self._stop_gate(payload)
+
+        assert accepted.returncode == 0, accepted.stderr
+        parsed = json.loads(accepted.stdout)
+        assert parsed["continue"] is True
+        assert parsed["dai-nexus"]["completion_state"] == "verified"
+        assert parsed["dai-nexus"]["host_action"] == "allow_stop"
+
+    def test_codex_identical_invalid_stop_reentry_is_bounded(self):
+        """The first invalid Stop retries; its identical re-entry must terminate."""
+        source = self.tmp / "fixture.py"
+        source.write_text("print('changed')\n")
+        evidence = _make_evidence(self.tmp, turn="bounded-reentry-evidence")
+        payload = {
+            "hook_event_name": "Stop",
+            "last_assistant_message": _strict_response(evidence).replace(
+                "COMMAND:", "COMMAND: mismatched ", 1
+            ),
+            "turn": "codex-routing-reentry",
+            "session_id": "bounded-reentry-session",
+            "stop_hook_active": True,
+        }
+        state_dir = self.tmp / ".dainexus" / "runtime" / "stop-attempts"
+        env = {**os.environ, "DAINEXUS_STOP_STATE_DIR": str(state_dir)}
+
+        first = subprocess.run(
+            ["bash", str(STOP_SH), "--platform", "codex"],
+            capture_output=True,
+            text=True,
+            timeout=HARNESS_TIMEOUT_SECS,
+            cwd=str(self.tmp),
+            env=env,
+            input=json.dumps(payload),
+        )
+        second = subprocess.run(
+            ["bash", str(STOP_SH), "--platform", "codex"],
+            capture_output=True,
+            text=True,
+            timeout=HARNESS_TIMEOUT_SECS,
+            cwd=str(self.tmp),
+            env=env,
+            input=json.dumps(payload),
+        )
+
+        first_payload = json.loads(first.stdout)
+        second_payload = json.loads(second.stdout)
+        assert first_payload["decision"] == "block"
+        assert first_payload["dai-nexus"] == {
+            "schema": "dai-nexus-stop-decision/v1",
+            "host_action": "request_retry",
+            "completion_state": "unverified",
+            "retry_suppressed": False,
+            "reason_code": "validation_failed",
+        }
+        assert second_payload["continue"] is True
+        assert second_payload["dai-nexus"]["host_action"] == "allow_stop"
+        assert second_payload["dai-nexus"]["completion_state"] == "unverified"
+        assert second_payload["dai-nexus"]["retry_suppressed"] is True
+        assert second_payload["dai-nexus"]["reason_code"] == "duplicate_invalid_stop"
+
+    def test_codex_retry_state_symlink_lock_fails_open_without_external_write(self):
+        """An attacker-controlled lock symlink cannot redirect Stop state writes."""
+        source = self.tmp / "fixture.py"
+        source.write_text("print('changed')\n")
+        evidence = _make_evidence(self.tmp, turn="symlink-lock-evidence")
+        payload = {
+            "hook_event_name": "Stop",
+            "last_assistant_message": _strict_response(evidence).replace(
+                "COMMAND:", "COMMAND: mismatched ", 1
+            ),
+            "turn": "symlink-lock-routing",
+            "session_id": "symlink-lock-session",
+        }
+        state_dir = self.tmp / ".dainexus" / "runtime" / "stop-attempts"
+        state_dir.mkdir(parents=True)
+        outside = Path(tempfile.mkdtemp(prefix="fw_external_stop_state_"))
+        try:
+            outside_target = outside / "redirected-lock"
+            if not _can_symlink(state_dir):
+                pytest.skip("host cannot create symlinks")
+            (state_dir / ".lock").symlink_to(outside_target)
+            env = {**os.environ, "DAINEXUS_STOP_STATE_DIR": str(state_dir)}
+            result = subprocess.run(
+                ["bash", str(STOP_SH), "--platform", "codex"],
+                capture_output=True,
+                text=True,
+                timeout=HARNESS_TIMEOUT_SECS,
+                cwd=str(self.tmp),
+                env=env,
+                input=json.dumps(payload),
+            )
+            assert result.returncode == 0, result.stderr
+            assert json.loads(result.stdout)["decision"] == "block"
+            assert not outside_target.exists()
+            assert list(outside.iterdir()) == []
+            assert not list(state_dir.glob("*.json"))
+        finally:
+            shutil.rmtree(outside, ignore_errors=True)
+
+    def test_codex_oversized_retry_state_fails_open_without_rewrite(self):
+        """Oversized retry state is rejected before an unbounded read/allocation."""
+        source = self.tmp / "fixture.py"
+        source.write_text("print('changed')\n")
+        evidence = _make_evidence(self.tmp, turn="oversized-state-evidence")
+        payload = {
+            "hook_event_name": "Stop",
+            "last_assistant_message": _strict_response(evidence).replace(
+                "COMMAND:", "COMMAND: mismatched ", 1
+            ),
+            "turn": "oversized-state-routing",
+            "session_id": "oversized-state-session",
+        }
+        state_dir = self.tmp / ".dainexus" / "runtime" / "stop-attempts"
+        env = {**os.environ, "DAINEXUS_STOP_STATE_DIR": str(state_dir)}
+        first = subprocess.run(
+            ["bash", str(STOP_SH), "--platform", "codex"],
+            capture_output=True,
+            text=True,
+            timeout=HARNESS_TIMEOUT_SECS,
+            cwd=str(self.tmp),
+            env=env,
+            input=json.dumps(payload),
+        )
+        assert json.loads(first.stdout)["decision"] == "block"
+        record = next(state_dir.glob("*.json"))
+        oversized = b"{" + (b" " * (64 * 1024 + 1)) + b"}"
+        record.write_bytes(oversized)
+        second = subprocess.run(
+            ["bash", str(STOP_SH), "--platform", "codex"],
+            capture_output=True,
+            text=True,
+            timeout=HARNESS_TIMEOUT_SECS,
+            cwd=str(self.tmp),
+            env=env,
+            input=json.dumps(payload),
+        )
+        assert second.returncode == 0, second.stderr
+        assert json.loads(second.stdout)["decision"] == "block"
+        assert record.read_bytes() == oversized
+
+    @pytest.mark.parametrize(
+        ("platform", "first_returncode"),
+        [("claude", 2), ("gemini", 2), ("cursor", 1)],
+    )
+    def test_non_codex_identical_invalid_stop_reentry_is_bounded(
+        self, platform: str, first_returncode: int
+    ):
+        """Every supported Stop host must share the same bounded retry state."""
+        source = self.tmp / "fixture.py"
+        source.write_text("print('changed')\n")
+        evidence = _make_evidence(self.tmp, turn=f"{platform}-bounded-evidence")
+        payload = {
+            "hook_event_name": "Stop",
+            "last_assistant_message": _strict_response(evidence).replace(
+                "COMMAND:", "COMMAND: mismatched ", 1
+            ),
+            "turn": f"{platform}-routing-reentry",
+            "session_id": f"{platform}-bounded-session",
+            "stop_hook_active": True,
+        }
+        state_dir = self.tmp / ".dainexus" / "runtime" / "stop-attempts"
+        env = {**os.environ, "DAINEXUS_STOP_STATE_DIR": str(state_dir)}
+        command = ["bash", str(STOP_SH), "--platform", platform]
+
+        first = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            timeout=HARNESS_TIMEOUT_SECS,
+            cwd=str(self.tmp),
+            env=env,
+            input=json.dumps(payload),
+        )
+        second = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            timeout=HARNESS_TIMEOUT_SECS,
+            cwd=str(self.tmp),
+            env=env,
+            input=json.dumps(payload),
+        )
+
+        assert first.returncode == first_returncode
+        assert second.returncode == 0
+        records = list(state_dir.glob("*.json"))
+        assert len(records) == 1
+        state = json.loads(records[0].read_text(encoding="utf-8"))
+        assert state["attempts"] == 1
+        assert len(state["keys"]) == 1
+
+    def test_codex_stop_replays_canonical_evidence_once(self):
+        """One Stop invocation must execute the evidence command exactly once."""
+        source = self.tmp / "fixture.py"
+        source.write_text("print('changed')\n")
+        counter_script = self.tmp / "tests" / "replay_counter.py"
+        counter_script.write_text(
+            "import os\n"
+            "from pathlib import Path\n"
+            "counter = Path(os.environ['DAINEXUS_TEST_REPLAY_COUNTER'])\n"
+            "value = int(counter.read_text()) if counter.exists() else 0\n"
+            "counter.write_text(str(value + 1))\n"
+            "print('ok')\n",
+            encoding="utf-8",
+        )
+        counter = self.tmp.parent / f"{self.tmp.name}-replay-count"
+        counter.unlink(missing_ok=True)
+        evidence = _make_evidence(
+            self.tmp,
+            turn="single-replay-evidence",
+            command=[sys.executable, "tests/replay_counter.py"],
+            output="ok\n",
+            test_refs=["tests/replay_counter.py"],
+        )
+        payload = {
+            "hook_event_name": "Stop",
+            "last_assistant_message": _strict_response(evidence),
+            "turn": "codex-routing-single-replay",
+            "session_id": "single-replay-session",
+        }
+        env = {
+            **os.environ,
+            "DAINEXUS_TEST_REPLAY_COUNTER": str(counter),
+            "DAINEXUS_STOP_STATE_DIR": str(
+                self.tmp / ".dainexus" / "runtime" / "stop-attempts"
+            ),
+        }
+
+        result = subprocess.run(
+            ["bash", str(STOP_SH), "--platform", "codex"],
+            capture_output=True,
+            text=True,
+            timeout=HARNESS_TIMEOUT_SECS,
+            cwd=str(self.tmp),
+            env=env,
+            input=json.dumps(payload),
+        )
+
+        assert result.returncode == 0, result.stderr
+        assert json.loads(result.stdout)["continue"] is True
+        assert counter.read_text(encoding="utf-8") == "1"
+        counter.unlink(missing_ok=True)
 
     def test_codex_mapped_symlink_evidence_is_blocked_without_fallback(self):
         """Mapped evidence must remain a bounded regular file inside the workspace."""
@@ -2086,6 +2472,8 @@ class TestVerifyGateSh:
         try:
             external = external_dir / "symlink-turn.json"
             evidence.replace(external)
+            if not _can_symlink(evidence.parent):
+                pytest.skip("host cannot create symlinks")
             evidence.symlink_to(external)
             payload = {
                 "hook_event_name": "Stop",

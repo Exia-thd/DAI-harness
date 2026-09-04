@@ -876,8 +876,11 @@ def _assert_regular_or_missing(path: Path, *, directory: bool = False) -> None:
 
 def _open_nofollow(path: Path, flags: int, mode: int = 0o600) -> int:
     nofollow = getattr(os, "O_NOFOLLOW", 0)
+    # Binary: os.open defaults to text mode on Windows, which would
+    # translate CRLF inside the raw event-log bytes this reader splits on.
+    binary = getattr(os, "O_BINARY", 0)
     try:
-        fd = os.open(path, flags | nofollow, mode)
+        fd = os.open(path, flags | nofollow | binary, mode)
         if not stat.S_ISREG(os.fstat(fd).st_mode):
             os.close(fd)
             raise EventLogError(f"event log must be a regular file: {path}")

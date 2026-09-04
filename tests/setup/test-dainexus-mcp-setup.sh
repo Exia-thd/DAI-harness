@@ -15,6 +15,10 @@ OPERATOR_HOME="${HOME:-}"
 export HOME="$TEST_HOME"
 export XDG_CONFIG_HOME="$TEST_HOME/.config"
 TEMPLATE_DIR="$DAINEXUS_DIR/scripts/templates"
+JSONC_PARSER_MODULE="$DAINEXUS_DIR/mcp/node_modules/jsonc-parser"
+if [[ ! -f "$JSONC_PARSER_MODULE/lib/umd/main.js" ]]; then
+    JSONC_PARSER_MODULE="$DAINEXUS_DIR/node_modules/jsonc-parser"
+fi
 
 # ─── Colors ──────────────────────────────────────────────────────
 RED='\033[0;31m'
@@ -749,7 +753,7 @@ NODE
 [ui]
 theme = "light"
 description = """keep this text exactly:
-[mcp_servers.dainexus]
+[mcp_servers.dai-nexus]
 command = "not-a-table-inside-a-string"
 """
 nested = [["[mcp_servers.gitnexus]", "keep"], ["# not a comment"]]
@@ -757,21 +761,21 @@ nested = [["[mcp_servers.gitnexus]", "keep"], ["# not a comment"]]
 mcp_servers.gitnexus.command = "stale-gitnexus"
 mcp_servers.gitnexus.args = ["remove-dotted-assignment"]
 
-[mcp_servers.dainexus]
+[mcp_servers.dai-nexus]
 command = "stale"
 args = ["stale.ts"]
 
-[mcp_servers.dainexus.env]
+[mcp_servers.dai-nexus.env]
 STALE = "remove-me"
 
-[[mcp_servers.dainexus.targets]]
+[[mcp_servers.dai-nexus.targets]]
 name = "remove-array-descendant"
 
 # Preserve this table comment.
 [unrelated]
 value = 7
 description = """literal-looking TOML must remain:
-[mcp_servers.dainexus.env]
+[mcp_servers.dai-nexus.env]
 TOKEN = "inside-multiline-string"
 """
 nested = [["[[mcp_servers.gitnexus.targets]]"], ["keep", "array"]]
@@ -898,7 +902,7 @@ NODE
     fi
 
     cat > "$TEST_HOME/.codex/comment-only.toml" <<EOF
-# [mcp_servers.dainexus]
+# [mcp_servers.dai-nexus]
 # command = "$TEST_HOME/.dainexus/mcp-server/node_modules/.bin/tsx"
 # args = ["$TEST_HOME/.dainexus/mcp-server/src/index.ts"]
 EOF
@@ -936,7 +940,7 @@ PY
     printf '%s\n' "$unusable" > "$TEST_HOME/.gemini/settings.json"
     printf '%s\n' "$unusable" > "$TEST_HOME/.gemini/config/mcp_config.json"
     printf '{}\n' > "$TEST_HOME/.gemini/mcp-server-enablement.json"
-    printf '[mcp_servers.dainexus]\ncommand = ""\nargs = []\n[mcp_servers.gitnexus]\ncommand = ""\nargs = []\n' \
+    printf '[mcp_servers.dai-nexus]\ncommand = ""\nargs = []\n[mcp_servers.gitnexus]\ncommand = ""\nargs = []\n' \
         > "$TEST_HOME/.codex/config.toml"
     printf '{"context_servers":{"dai-nexus":{"command":"","args":[]},"gitnexus":{"command":"","args":[]},},}\n' \
         > "$zed_dir/settings.json"
@@ -969,17 +973,17 @@ PY
         "$TEST_HOME/.config/opencode/opencode.jsonc" "$desktop_config" <<'NODE'
 const fs = require('fs');
 const [tsx, server, home, zed, opencode, desktop] = process.argv.slice(2);
-const generic = {mcpServers:{dai-nexus:{command:tsx,args:[server,'--unexpected']}}};
+const generic = {mcpServers:{'dai-nexus':{command:tsx,args:[server,'--unexpected']}}};
 for (const path of [`${home}/.cursor/mcp.json`, `${home}/.claude.json`,
                     `${home}/.gemini/settings.json`, `${home}/.gemini/config/mcp_config.json`, desktop]) {
   fs.mkdirSync(require('path').dirname(path), {recursive:true});
   fs.writeFileSync(path, JSON.stringify(generic));
 }
-fs.writeFileSync(zed, JSON.stringify({context_servers:{dai-nexus:{command:tsx,args:[server,'--unexpected']}}}));
-fs.writeFileSync(opencode, JSON.stringify({mcp:{dai-nexus:{type:'local',command:[tsx,server,'--unexpected']}}}));
+fs.writeFileSync(zed, JSON.stringify({context_servers:{'dai-nexus':{command:tsx,args:[server,'--unexpected']}}}));
+fs.writeFileSync(opencode, JSON.stringify({mcp:{'dai-nexus':{type:'local',command:[tsx,server,'--unexpected']}}}));
 NODE
     cat > "$TEST_HOME/.codex/config.toml" <<EOF
-[mcp_servers.dainexus]
+[mcp_servers.dai-nexus]
 command = "$canonical_tsx"
 args = ["$canonical_server", "--unexpected"]
 EOF
@@ -1214,13 +1218,13 @@ EOF
 EOF
     cat > "$uninstall_home/.codex/config.toml" <<'EOF'
 # Preserve Codex header.
-[mcp_servers.dainexus]
+[mcp_servers.dai-nexus]
 command = "'$uninstall_home'/.dainexus/mcp-server/node_modules/.bin/tsx"
-[mcp_servers.dainexus.env]
+[mcp_servers.dai-nexus.env]
 TOKEN = "must-not-be-reparented"
-[mcp_servers.dainexus.env.deep]
+[mcp_servers.dai-nexus.env.deep]
 value = 1
-[[mcp_servers.dainexus.targets]]
+[[mcp_servers.dai-nexus.targets]]
 name = "remove-array-descendant"
 [mcp_servers.gitnexus]
 command = "'$uninstall_home'/.dainexus/gitnexus"
@@ -1232,15 +1236,15 @@ name = "remove-array-descendant"
 [unrelated]
 value = 7
 description = """literal-looking TOML must remain:
-[mcp_servers.dainexus.env]
+[mcp_servers.dai-nexus.env]
 TOKEN = "inside-multiline-string"
 """
 nested = [["[[mcp_servers.gitnexus.targets]]"], ["keep", "array"]]
 EOF
     cat > "$opencode_root/config.toml" <<'EOF'
 # Preserve legacy OpenCode header.
-mcp_servers.dainexus.command = "'$uninstall_home'/.dainexus/mcp-server/node_modules/.bin/tsx"
-mcp_servers.dainexus.args = [
+mcp_servers.dai-nexus.command = "'$uninstall_home'/.dainexus/mcp-server/node_modules/.bin/tsx"
+mcp_servers.dai-nexus.args = [
   "must-not-be-reparented",
 ]
 mcp_servers.gitnexus.command = "'$uninstall_home'/.dainexus/gitnexus"
@@ -1258,7 +1262,7 @@ EOF
     mark_owned_test_runtime "$uninstall_home"
     local uninstall_ledger="$uninstall_home/.dainexus/.mcp-config-ledger.json"
     node - "$uninstall_ledger" "$uninstall_home" "$opencode_root" "$zed_config" \
-        "$desktop_config" "$DAINEXUS_DIR/mcp/node_modules/jsonc-parser" <<'NODE'
+        "$desktop_config" "$JSONC_PARSER_MODULE" <<'NODE'
 const fs = require('fs');
 const crypto = require('crypto');
 const [ledgerPath, home, opencodeRoot, zedPath, desktopPath, parserModule] = process.argv.slice(2);
@@ -1322,7 +1326,7 @@ PY
     if HOME="$uninstall_home" XDG_CONFIG_HOME="$uninstall_xdg" \
         bash "$fresh_script" --uninstall  && \
         node - "$uninstall_home" "$opencode_root" "$zed_config" "$desktop_config" \
-            "$DAINEXUS_DIR/mcp/node_modules/jsonc-parser" <<'NODE' &&
+            "$JSONC_PARSER_MODULE" <<'NODE' &&
 const fs = require('fs');
 const [home, opencodeRoot, zedPath, desktopPath, parserModule] = process.argv.slice(2);
 for (const path of [`${home}/.cursor/mcp.json`, `${home}/.claude.json`,
@@ -1518,7 +1522,7 @@ test_round7_safety_boundaries() {
         "$safety_home/.codex/config.toml" ; then
         fail "TOML writer overwrote a non-cooperative external update"
     elif grep -Fq '[external]' "$safety_home/.codex/config.toml" && \
-        ! grep -Fq 'mcp_servers.dainexus' "$safety_home/.codex/config.toml"; then
+        ! grep -Fq 'mcp_servers.dai-nexus' "$safety_home/.codex/config.toml"; then
         pass "TOML optimistic replace aborts without overwriting an external writer"
     else
         fail "TOML optimistic conflict did not preserve the external bytes"
@@ -1662,7 +1666,7 @@ EOF
     local toml_target="${TEST_PROJECT}/config.toml"
     cat > "$toml_target" <<'EOF'
 # Unrelated comment
-[mcp_servers.dainexus]
+[mcp_servers.dai-nexus]
 command = "stale"
 
 [unrelated]
@@ -1699,7 +1703,7 @@ with open(ledger_path, "w", encoding="utf-8") as handle:
 PY
     if prepare_toml_mcp_removal "$toml_target" "$toml_tmp" ; then
         local toml_ok="true"
-        if grep -q "mcp_servers.dainexus" "$toml_tmp"; then
+        if grep -q "mcp_servers.dai-nexus" "$toml_tmp"; then
             fail "TOML removal didn't remove dai-nexus"
             toml_ok="false"
         fi
@@ -1777,7 +1781,7 @@ ${BLUE}▶ Testing Durable Client-Config Ownership Ledger${NC}"
     gitnexus_path="$(command -v gitnexus)"
     mkdir -p "$(dirname "$codex_config")"
     cat > "$codex_config" <<EOF
-[mcp_servers.dainexus]
+[mcp_servers.dai-nexus]
 enabled = true
 transport = { type = "stdio" }
 command = "$canonical_tsx"

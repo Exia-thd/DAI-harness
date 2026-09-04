@@ -1,7 +1,9 @@
 import json
 import re
 import shlex
+import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -10,6 +12,25 @@ README = ROOT / "README.md"
 INVENTORY = ROOT / "docs" / "capability-maturity.json"
 MATURITY = {"stable", "beta", "experimental", "docs-only"}
 AUTOMATED_EVIDENCE = re.compile(r"(^tests/|\.test\.[^.]+$|^scripts/ci/)")
+
+
+def _resolve_launcher(argv: list[str]) -> list[str]:
+    """Bind a declared launcher to the executable this host actually has.
+
+    Windows resolves a bare `python3` to the Microsoft Store alias stub, and
+    ships npm/npx/pytest only as `.CMD`/`.EXE` shims that subprocess will not
+    find without an extension - so an unresolved launcher fails for a reason
+    that has nothing to do with the capability under test.
+    """
+
+    if not argv:
+        return argv
+    if argv[0] in {"python", "python3"}:
+        return [sys.executable, *argv[1:]]
+    if argv[0] == "pytest":
+        return [sys.executable, "-m", "pytest", *argv[1:]]
+    resolved = shutil.which(argv[0])
+    return [resolved, *argv[1:]] if resolved else argv
 
 
 def _readme_capabilities() -> set[str]:
@@ -42,7 +63,7 @@ def test_every_readme_capability_has_maturity_and_existing_evidence() -> None:
                 f"beta verification command is not bound to its evidence: {item['id']}"
             )
             result = subprocess.run(
-                shlex.split(command),
+                _resolve_launcher(shlex.split(command)),
                 cwd=ROOT,
                 capture_output=True,
                 text=True,

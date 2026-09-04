@@ -118,6 +118,43 @@
       ]
     },
     {
+      "id": "rule-context-lifecycle",
+      "title": "Keep canonical rule context visible across supported agent runtimes without blocking normal work",
+      "status": "done",
+      "priority": "critical",
+      "owner": "Runtime maintainers",
+      "target_date": null,
+      "depends_on": [
+        "docs-continuity"
+      ],
+      "references": [
+        {
+          "path": "docs/guides/docs-hub.md",
+          "anchor": "rule-context-and-stop-lifecycle"
+        }
+      ]
+    },
+    {
+      "id": "documentation-governance",
+      "title": "Prevent duplicate, out-of-scope, transient, and stale project documentation",
+      "status": "done",
+      "priority": "critical",
+      "owner": "Documentation maintainers",
+      "target_date": null,
+      "depends_on": [
+        "docs-continuity"
+      ],
+      "references": [
+        {
+          "path": "skills/_shared/protocols/documentation-governance.md"
+        },
+        {
+          "path": "docs/guides/docs-hub.md",
+          "anchor": "documentation-write-governance"
+        }
+      ]
+    },
+    {
       "id": "bounded-peer-collaboration",
       "title": "Provide parent-mediated bounded advisory exchange between specialist roles",
       "status": "done",
@@ -135,14 +172,112 @@
       ]
     },
     {
-      "id": "production-evidence",
-      "title": "Complete live provider/runtime evidence required by the active roadmap",
+      "id": "roadmap-truth-reset",
+      "title": "Separate roadmap completion axes and replay exact local verifier contracts",
+      "status": "done",
+      "priority": "critical",
+      "owner": "DAI Nexus maintainers",
+      "target_date": null,
+      "depends_on": [
+        "docs-continuity"
+      ],
+      "references": [
+        {
+          "path": "docs/active-roadmap.md"
+        }
+      ]
+    },
+    {
+      "id": "harness-host-contract",
+      "title": "Specify and contract-test HarnessAdapter v1 lifecycle modes",
+      "status": "done",
+      "priority": "critical",
+      "owner": "Runtime maintainers",
+      "target_date": null,
+      "depends_on": [
+        "roadmap-truth-reset"
+      ],
+      "references": [
+        {
+          "path": "docs/active-roadmap.md"
+        }
+      ]
+    },
+    {
+      "id": "trajectory-lifecycle",
+      "title": "Add the canonical trajectory ledger and reversible lifecycle receipts",
+      "status": "planned",
+      "priority": "critical",
+      "owner": "Runtime maintainers",
+      "target_date": null,
+      "depends_on": [
+        "harness-host-contract"
+      ],
+      "references": [
+        {
+          "path": "docs/active-roadmap.md"
+        }
+      ]
+    },
+    {
+      "id": "execution-containment",
+      "title": "Add filesystem, network, identity, and trust-boundary containment",
+      "status": "planned",
+      "priority": "critical",
+      "owner": "Runtime maintainers",
+      "target_date": null,
+      "depends_on": [
+        "harness-host-contract",
+        "trajectory-lifecycle"
+      ],
+      "references": [
+        {
+          "path": "docs/active-roadmap.md"
+        }
+      ]
+    },
+    {
+      "id": "record-replay",
+      "title": "Record, normalize, and strictly replay the full agent loop",
       "status": "planned",
       "priority": "high",
       "owner": "Runtime maintainers",
       "target_date": null,
       "depends_on": [
-        "docs-continuity"
+        "trajectory-lifecycle",
+        "execution-containment"
+      ],
+      "references": [
+        {
+          "path": "docs/active-roadmap.md"
+        }
+      ]
+    },
+    {
+      "id": "production-evidence",
+      "title": "Add provider adapters and complete paired live routing evidence",
+      "status": "planned",
+      "priority": "high",
+      "owner": "Runtime maintainers",
+      "target_date": null,
+      "depends_on": [
+        "record-replay"
+      ],
+      "references": [
+        {
+          "path": "docs/active-roadmap.md"
+        }
+      ]
+    },
+    {
+      "id": "long-running-handoff",
+      "title": "Add optional structured long-running handoff and fresh evaluation",
+      "status": "planned",
+      "priority": "medium",
+      "owner": "Runtime maintainers",
+      "target_date": null,
+      "depends_on": [
+        "production-evidence"
       ],
       "references": [
         {
@@ -291,6 +426,111 @@
       ]
     },
     {
+      "id": "runtime-token-routing",
+      "title": "Task-start runtime and token-aware subagent routing",
+      "status": "active",
+      "trigger": "A new user request starts.",
+      "steps": [
+        {
+          "id": "detect-runtime",
+          "name": "DETECT RUNTIME",
+          "actor": "Orchestrator",
+          "inputs": [
+            "Current system context",
+            "Active tool capability schema"
+          ],
+          "outputs": [
+            "Execution surface and provider",
+            "Advertised models, controls, and concurrency"
+          ],
+          "references": [
+            {
+              "path": "docs/pipeline-reference.md",
+              "anchor": "runtime-and-subagent-economics"
+            }
+          ]
+        },
+        {
+          "id": "shape-work",
+          "name": "SHAPE WORK",
+          "actor": "Orchestrator",
+          "inputs": [
+            "Objective",
+            "Acceptance",
+            "Dependency graph"
+          ],
+          "outputs": [
+            "Independent bounded scopes or parent-serial plan",
+            "Candidate role tiers"
+          ],
+          "references": [
+            {
+              "path": "docs/pipeline-reference.md",
+              "anchor": "planning-and-optimization"
+            }
+          ]
+        },
+        {
+          "id": "check-token-prices",
+          "name": "CHECK TOKEN PRICES",
+          "actor": "Orchestrator",
+          "inputs": [
+            "Exact advertised candidate models",
+            "Current first-party pricing sources"
+          ],
+          "outputs": [
+            "Input, cached-input, and output rates",
+            "Token and cost estimate ranges or UNVERIFIED"
+          ],
+          "references": [
+            {
+              "path": "docs/pipeline-reference.md",
+              "anchor": "runtime-and-subagent-economics"
+            }
+          ]
+        },
+        {
+          "id": "rank-candidates",
+          "name": "RANK CANDIDATES",
+          "actor": "Orchestrator",
+          "inputs": [
+            "Role fit and acceptance confidence",
+            "Critical-path latency",
+            "Token and cost ranges"
+          ],
+          "outputs": [
+            "Effectiveness-first model choice",
+            "Fastest adequate bounded topology"
+          ],
+          "references": [
+            {
+              "path": "docs/pipeline-reference.md",
+              "anchor": "runtime-and-subagent-economics"
+            }
+          ]
+        },
+        {
+          "id": "execute-plan",
+          "name": "EXECUTE PLAN",
+          "actor": "Orchestrator",
+          "inputs": [
+            "Spawn/no-spawn decision",
+            "Stop conditions"
+          ],
+          "outputs": [
+            "Parent-owned serial execution or bounded subagent dispatch",
+            "Auditable routing rationale"
+          ],
+          "references": [
+            {
+              "path": "docs/pipeline-reference.md",
+              "anchor": "runtime-and-subagent-economics"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "docs-continuity-gate",
       "title": "Continuous project documentation gate",
       "status": "active",
@@ -381,6 +621,127 @@
             {
               "path": "docs/guides/docs-hub.md",
               "anchor": "safety-model"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rule-context-lifecycle",
+      "title": "Provider-neutral rule context and bounded Docs continuity",
+      "status": "active",
+      "trigger": "A supported agent runtime starts a session, subagent, agent turn, or model invocation.",
+      "steps": [
+        {
+          "id": "receive-lifecycle-event",
+          "name": "Receive native lifecycle event",
+          "actor": "Codex, Claude, Gemini, Antigravity, or Cursor",
+          "inputs": [
+            "Native hook payload",
+            "Current project or installed framework root"
+          ],
+          "outputs": [
+            "Platform and event identity"
+          ],
+          "references": [
+            {
+              "path": "docs/guides/docs-hub.md",
+              "anchor": "rule-context-and-stop-lifecycle"
+            }
+          ]
+        },
+        {
+          "id": "resolve-rule-inventory",
+          "name": "Resolve and validate canonical inventory",
+          "actor": "Rule-context hook",
+          "inputs": [
+            "kernel/rule-manifest.json",
+            "Bounded local rule sources"
+          ],
+          "outputs": [
+            "Active canonical rules",
+            "Source hashes or fail-open allow"
+          ],
+          "references": [
+            {
+              "path": "docs/guides/docs-hub.md",
+              "anchor": "rule-context-and-stop-lifecycle"
+            }
+          ]
+        },
+        {
+          "id": "inject-bounded-context",
+          "name": "Inject bounded rule context",
+          "actor": "Rule-context hook",
+          "inputs": [
+            "Complete rule inventory",
+            "Per-host context budget"
+          ],
+          "outputs": [
+            "Every rule ID, path, and hash",
+            "Fair excerpts or compact inventory"
+          ],
+          "references": [
+            {
+              "path": "docs/guides/docs-hub.md",
+              "anchor": "rule-context-and-stop-lifecycle"
+            }
+          ]
+        },
+        {
+          "id": "execute-and-refresh",
+          "name": "Execute work and refresh project control",
+          "actor": "Parent or bounded specialist",
+          "inputs": [
+            "Current workspace evidence",
+            "Injected canonical context"
+          ],
+          "outputs": [
+            "Scoped project change",
+            "Canonical state and HTML checkpoint"
+          ],
+          "references": [
+            {
+              "path": "docs/guides/docs-hub.md",
+              "anchor": "continuous-html-refresh"
+            }
+          ]
+        },
+        {
+          "id": "inspect-stop-continuity",
+          "name": "Inspect Docs continuity at Stop",
+          "actor": "Read-only continuity check",
+          "inputs": [
+            "Material changed paths",
+            "Manifest, state, and build receipt metadata"
+          ],
+          "outputs": [
+            "Current, stale, irrelevant, or UNVERIFIED continuity status"
+          ],
+          "references": [
+            {
+              "path": "docs/guides/docs-hub.md",
+              "anchor": "rule-context-and-stop-lifecycle"
+            }
+          ]
+        },
+        {
+          "id": "bounded-stop-decision",
+          "name": "Continue without retry storm",
+          "actor": "Canonical Stop gate",
+          "inputs": [
+            "Continuity mode and status",
+            "Existing verification result"
+          ],
+          "outputs": [
+            "Normal Stop validation",
+            "At most one stale-receipt refresh request",
+            "Allow plus UNVERIFIED on second pass or infrastructure error"
+          ],
+          "references": [
+            {
+              "path": "docs/guides/docs-hub.md",
+              "anchor": "rule-context-and-stop-lifecycle"
             }
           ]
         }
@@ -510,6 +871,26 @@
   ],
   "backlog": [
     {
+      "id": "runtime-token-economics-preflight",
+      "title": "Identify the active agent runtime and optimize subagent routing with current token prices",
+      "type": "feature",
+      "status": "done",
+      "priority": "high",
+      "owner": "DAI Nexus maintainers",
+      "acceptance": [
+        "Every request identifies the active execution surface, provider, capability source, and available concurrency before dispatch planning.",
+        "Every candidate subagent model is compared using current first-party input, cached-input, and output token pricing; missing or host-specific actual cost stays explicitly UNVERIFIED.",
+        "Routing prioritizes acceptance effectiveness, then wall-clock speed, total tokens, and estimated token cost; small coupled work records no-spawn.",
+        "A cheaper model is rejected when its retry, verification, or critical-path risk makes the overall plan less effective."
+      ],
+      "references": [
+        {
+          "path": "docs/pipeline-reference.md",
+          "anchor": "runtime-and-subagent-economics"
+        }
+      ]
+    },
+    {
       "id": "wire-docs-gate",
       "title": "Wire the change-aware Docs Hub gate into precommit, full local CI, and required release checks",
       "type": "feature",
@@ -536,6 +917,8 @@
       "owner": "CLI maintainers",
       "acceptance": [
         "Every canonical project-state section is visible without JavaScript.",
+        "Each recorded project flow is shown as a Mermaid-derived static SVG with arrows, Mermaid source, and ordered-step fallback.",
+        "README exposes the continuous baseline, checkpoint, strict-gate, and final-build lifecycle plus the generated control-center paths.",
         "Missing, empty, stale, blocked, and unknown states remain explicit.",
         "The portal is usable at mobile and desktop widths without horizontal viewport overflow."
       ],
@@ -612,14 +995,14 @@
     "lifecycle": "active",
     "health": "on_track",
     "phase": "SUSTAIN",
-    "summary": "Three defects in the gate's own error handling, two of them mine from the day before. worktree_fingerprint had a 'refuse to guess' branch that raised, and an outer handler that caught the raise and returned GITERR:<hash of the error text> — a string shaped like a fingerprint, never matching anything, changing with the wording of the error. The other path raised outside that handler entirely and crashed the gate with a traceback instead of a verdict. Both are now one named failure, FingerprintUnavailable, which callers turn into a readable blocking check. Verified by forcing git to time out: no traceback, and the tree check reports UNVERIFIED with the reason. Second, a hard-signal turn was blocked unconditionally because this tree implements replay but not signed review-2 or chain validation. That made the repository unmaintainable by its own gate: hard_signal matches payment terms in the contents of changed files, and the file defining those terms is part of the gate, so any edit to it was permanently unverifiable. A gate that blocks indiscriminately gets switched off. Such a turn now completes only by declaring risk=hard and recording a hard-completion-unverified limitation, so it cannot pass by accident and the evidence carries a permanent statement that no independent review happened. Third, kernel/VERIFY.md and kernel/ESCALATE.md promised Ed25519 review-2 verification that no code here performs; they now state plainly what is enforced and what is not, because an unenforceable guarantee in the boot payload is worse than an honest absence. Also corrected a claim I made without measuring: replay does not slow the hook the way I reported. The real figures from the CI reports are unit 474s to 634s and gate 156s to 246s. Also: the gate could not validate itself during a commit. Every git call used a ten-second timeout, which is ample in a quiet shell and not while the pre-commit hook holds the index and replay fingerprints the worktree repeatedly — so the gate reported its own contention as a verification failure and the commit aborted at python-gate-tests after 464s, well inside its 1200s budget. Git calls now allow 45s, bounded at 180s and overridable, and the fingerprint retries four times with backoff before refusing. It still refuses when git genuinely never answers: verified at four attempts against a git that always times out. Finally, _find_evidence was ported from the reference. It had joined the payload's turn straight onto the verify directory with no validation, and with no turn given it took whatever file was newest — so a turn of '../../elsewhere' escaped the directory, a record whose internal turn disagreed with its filename was accepted, and a turn with no evidence of its own silently inherited one from days earlier. That last is what blocked every turn of this session with STALE and MISMATCH against a tree nobody was working in. Candidates now pass through read_evidence_json, which binds a v2 record's turn to its filename, and through the full validator chain. Gate suite 67 to 69 passing, 11 baselined, exactly matching. This was found only because local-ci now records a failing step's output: six earlier attempts reported nothing but an exit code. Then the measurement that explained the whole day: worktree_fingerprint hashed 25,911 ignored files totalling 346 MB on every call — all of node_modules, plus an 80 MB GitNexus index — and took about 40 seconds. The gate computed it up to five times per invocation. Hashing ignored content is deliberate so a change cannot be hidden in one, but node_modules is reproduced from the tracked lockfile and .gitnexus is derived from tracked source, so both are already covered transitively. Excluding them by name took the fingerprint to 3.9s, and threading the pre-replay value through cut five computations to three. The reference carries the same design and never felt it: that tree has no node_modules. With the gate no longer minutes slow, the suite's subprocess timeouts stopped expiring at random; they are now one named constant with headroom, and two consecutive runs give an identical 69 passing and 11 baselined. Amending the kernel then hit two of its own contract tests, which is the system working. A token budget caps VERIFY.md at 1000 tokens because it loads every session, and a policy test requires VERIFY.md to state the payment-review contract verbatim. Removing the promise outright failed the second; the honest resolution states both — what a verified HARD record must carry, and that this build does not check it — inside the budget at 996 tokens. Two more baselined unit tests now pass and were unpinned; both were the dead completion_checks import.",
-    "updated_at": "2026-08-24T18:05:41+07:00",
+    "summary": "Ported every upstream change since the last sync point: 19 new files, 61 merged, 1 removed. The Stop lifecycle is now one Python engine, stop_gate.py, with stop-gate.sh and verify-gate.sh reduced to thin entry points, so a single Stop event replays completion evidence at most once instead of twice. New alongside it: continuity_check.py and scripts/memory/continuity.py for hash-chained project/session checkpoints, rule-context-hook.py plus kernel/rule-manifest.json for provider-native canonical-rule injection, documentation-governance.md, HarnessAdapter and LifecycleLeaseStore in the MCP runtime, and verify-roadmap-completion.py replaying the roadmap manifest at schema v2. The merge was three-way against the upstream fork point, so this tree's own corrections survived rather than being overwritten: the interpreter probe in both gate entry points, the fingerprint exclusions that keep it at 4.7s instead of 40s, FingerprintUnavailable, the workspace-anchored stub check, and AUDIT.md in the generated boot bundle. Upstream is POSIX-only, and importing it surfaced defects that would have made the new subsystems inert, wrong, or actively unsafe here. The one that matters most for correctness: os.open defaults to text mode on Windows, so every content digest taken through it was computed over CRLF-translated bytes the file does not contain - the docs continuity check called a correct receipt stale, and the same flaw sat in read_evidence_bytes, where a wrong digest is the gate's entire subject. Six readers now open binary. The one that matters most for safety: the Codex Stop path compared an MSYS /c/... script directory against git's C:/... project root, concluded the project's own gate was a foreign global install, and deferred - opening the gate on every Codex turn. Both paths are now canonicalized before comparison, and a fabricated completion claim is blocked again on CODEX as well as CLAUDE. The lifecycle lease store called POSIX ps, got nothing, and threw process_identity_unavailable, so the MCP server refused to start at all; it now has a Windows inspector built on Win32_Process, and binds pgid to the pid because Windows has no process groups and nothing here signals one. The installer compared a raw extracted hook path against a path.resolve'd one, which can never match on Windows, so every run appended another identical Stop hook; HOME arrived as an MSYS path that node resolved against the wrong drive; fcntl and O_NOFOLLOW do not exist and the imported code either raised at import or degraded to 'cannot check', so they are now portable primitives in evidence_common with an lstat-plus-fstat identity check standing in for O_NOFOLLOW; directory descriptors do not exist either, so the retry-state writer gained a path-anchored branch and 27 directory-fsync barriers now tolerate their absence rather than aborting, since os.replace is already atomic there. npm and npx exist only as .CMD shims that subprocess cannot find, which had every roadmap deliverable failing for a reason unrelated to the deliverable. The upstream README section 10 that this tree had dropped is restored, so the capability inventory matches its headings again. Tests that cannot build their fixture without symlink privilege now skip rather than fail, and the roadmap verifier's volatile mounts fall back to directory junctions, which need no privilege. Results: gate suite 78 passing, 10 baselined, 2 skipped, and zero regressions against the recorded baseline; unit tests at baseline with one entry unpinned because it now passes; MCP 179 passing; CLI 135 passing; smoke 22 passing. Two environment gaps remain and are not code defects: jq is absent from PATH, so the policy gate fails closed and the runtime-smoke deliverable cannot pass here, and the boot payload is 7233 of 7000 tokens - it was 7246 before this port, so the overrun predates it.",
+    "updated_at": "2026-08-26T16:22:12+07:00",
     "blockers": [],
     "risks": [],
     "next_actions": [
       {
-        "id": "production-evidence",
-        "title": "Complete the live provider and runtime evidence tracked by the active roadmap.",
+        "id": "trajectory-lifecycle",
+        "title": "Implement the H2 TrajectoryLedger, cancellation/disposer semantics, and quiescence receipts.",
         "owner": "Runtime maintainers",
         "due_date": null
       }
