@@ -1,0 +1,13 @@
+{
+  "name": "@dai-nexus/codegraph-reference",
+  "private": true,
+  "type": "module",
+  "description": "Freezes a GitNexus-built index into a neutral reference graph, and diffs any engine against it.",
+  "scripts": {
+    "extract": "node extract.mjs ../../../.gitnexus/lbug snapshot",
+    "compare": "node compare.mjs"
+  },
+  "dependencies": {
+    "@ladybugdb/core": "0.20.2"
+  }
+}

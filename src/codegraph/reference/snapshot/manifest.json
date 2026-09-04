@@ -1,0 +1,48 @@
+{
+  "source": "C:\\Users\\thdat\\Downloads\\forgewright\\dai-nexus\\.gitnexus\\lbug",
+  "reader": {
+    "ladybugdb": "0.20.2",
+    "storageVersion": 47
+  },
+  "extractedAt": "2026-09-03T10:46:42.062Z",
+  "provenance": {
+    "lastCommit": "d897e0c3f6e5c6155f70312b81f5536d404451eb",
+    "indexedAt": "2026-08-14T10:52:27.263Z",
+    "branch": "main",
+    "schemaVersion": 5,
+    "fileCount": 1574,
+    "stats": {
+      "files": 1574,
+      "nodes": 24069,
+      "edges": 33375,
+      "communities": 474,
+      "processes": 300,
+      "embeddings": 0
+    }
+  },
+  "counts": {
+    "Class": 193,
+    "Community": 368,
+    "Const": 630,
+    "Delegate": 1,
+    "Enum": 1,
+    "File": 1574,
+    "Folder": 469,
+    "Function": 2119,
+    "Interface": 336,
+    "Method": 1110,
+    "Namespace": 7,
+    "Process": 300,
+    "Property": 431,
+    "Route": 11,
+    "Section": 15802,
+    "Struct": 1,
+    "Tool": 13,
+    "Variable": 703,
+    "CodeRelation": 33375
+  },
+  "totals": {
+    "nodes": 24069,
+    "edges": 33375
+  }
+}

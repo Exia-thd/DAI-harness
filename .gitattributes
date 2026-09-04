@@ -9,3 +9,8 @@
 # esbuild writes LF. Without this, core.autocrlf keeps trying to convert the
 # committed bundle and leaves it permanently reported as modified.
 src/cli/dist/** text eol=lf
+
+# The reference graph is a 12MB frozen snapshot, not a source file. Pinning it
+# keeps core.autocrlf from rewriting every record on checkout and reporting the
+# whole snapshot as permanently modified, the same reason src/cli/dist is pinned.
+src/codegraph/reference/snapshot/** text eol=lf
