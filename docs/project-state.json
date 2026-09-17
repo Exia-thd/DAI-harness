@@ -995,8 +995,8 @@
     "lifecycle": "active",
     "health": "on_track",
     "phase": "SUSTAIN",
-    "summary": "GitNexus is PolyForm Noncommercial, so this project cannot ship on it. Its index is now frozen as an oracle before replacement: 24,069 nodes and 33,375 edges over this repository, read out through LadybugDB into neutral JSONL under src/codegraph/reference, plus a comparator that is itself tested for the property that matters - it must fail when a graph is wrong and say how. Records are compared as a multiset because CodeRelation carries no line column, so two calls to the same function are one triple and two records; set semantics dropped 949 of them. Stripping every CALLS edge from a copy is detected as exactly 4,289 missing. Sizing from the snapshot: 97.1% of nodes and 70.0% of edges are reachable from single-file parsing, 18.6% of edges need cross-file resolution, and 11.4% are derived by community detection and entry-point tracing. The index is 66% markdown headings, and 21.8% of those sections exist only because GitNexus parses inside fenced code blocks. Preceding this, the upstream harness port landed on Windows, with the local CI output pump fixed: it mirrored each line with print(), a cp1252 console rejected a vitest tick mark, UnicodeEncodeError is a ValueError and was swallowed, the drain thread died, and every test step timed out after ten minutes having reported only its banner.",
-    "updated_at": "2026-09-04T19:40:00+07:00",
+    "summary": "Memory now runs on the vendored DAI memory plugin (vendor/dai-memory, pinned by PROVENANCE.json and synced with scripts/vendor/sync-dai-memory.mjs). The dn memory tools go through scripts/lite/dai_memory.py, and scripts/lite/migrate-memory.py moves recorded rows out of the legacy memory.db without duplicates. GitNexus stays until the plugin covers every capability the harness uses; impact, context and trace are in, execution flows are next. The older memory stores are retired only at that switch-over.",
+    "updated_at": "2026-09-17T16:40:00+07:00",
     "blockers": [],
     "risks": [],
     "next_actions": [

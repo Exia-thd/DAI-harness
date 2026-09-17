@@ -8,6 +8,8 @@ Exposes pipeline state + memory to any MCP-capable IDE (Claude Code,
 Cursor, Zed, Gemini CLI, ...) via 8 dn_* tools.
 
 State: .dainexus/pipeline-state.json (atomic writes)
+Memory: the DAI memory layer (sources in vendor/dai-memory, installed by
+`python scripts/lite/dai_memory.py install`), store at <project>/.memory
 
 Register in Claude Code via .mcp.json:
     {"mcpServers": {"dai-nexus": {"command": "py", "args": ["-3", "mcp/server.py"]}}}
@@ -26,10 +28,7 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts" / "lite"))
-try:
-    from memory import MemoryDB  # noqa: E402
-except ImportError:
-    MemoryDB = None
+import dai_memory  # noqa: E402
 
 PROTOCOL_VERSION = "2024-11-05"
 SERVER_INFO = {"name": "dai-nexus", "version": "0.2.0"}
@@ -43,17 +42,18 @@ GATES = {"define": ["gate1_brd", "gate2_architecture"], "ship": ["gate3_release"
 DEFAULT_STATE = {
     "goal": None,
     "mode": None,
-    "status": "idle",          # idle | running | blocked_on_gate | failed | done
+    "status": "idle",  # idle | running | blocked_on_gate | failed | done
     "phase_index": -1,
     "phases": [{"key": k, "status": "pending"} for k in PHASE_KEYS],
     "pending_gate": None,
-    "gates": {},               # gate name -> {approved, summary, ts}
+    "gates": {},  # gate name -> {approved, summary, ts}
     "failure_reason": None,
     "updated_at": None,
 }
 
 
 # ── state persistence ─────────────────────────────────────────────────────────
+
 
 def load_state() -> dict:
     if STATE_FILE.is_file():
@@ -74,6 +74,7 @@ def save_state(state: dict) -> None:
 
 
 # ── tool implementations ──────────────────────────────────────────────────────
+
 
 def tool_start_pipeline(args: dict) -> dict:
     state = json.loads(json.dumps(DEFAULT_STATE))
@@ -102,7 +103,9 @@ def tool_advance_phase(_args: dict) -> dict:
             state["status"] = "blocked_on_gate"
             state["pending_gate"] = gate
             save_state(state)
-            return {"error": f"gate '{gate}' not approved — call dn_request_gate_approval first"}
+            return {
+                "error": f"gate '{gate}' not approved — call dn_request_gate_approval first"
+            }
     state["phases"][idx]["status"] = "passed"
     if idx + 1 >= len(PHASE_KEYS):
         state["status"] = "done"
@@ -125,7 +128,10 @@ def tool_request_gate_approval(args: dict) -> dict:
         "ts": time.time(),
     }
     save_state(state)
-    return {"requested": gate, "note": "present summary to the user and WAIT; then call dn_approve_gate"}
+    return {
+        "requested": gate,
+        "note": "present summary to the user and WAIT; then call dn_approve_gate",
+    }
 
 
 def tool_approve_gate(args: dict) -> dict:
@@ -154,33 +160,56 @@ def tool_fail_pipeline(args: dict) -> dict:
     return {"failed": True, "reason": state["failure_reason"]}
 
 
+# ── memory: the DAI memory layer ───────────────────────────────────────────────
+#
+# Both tools go through scripts/lite/dai_memory.py, which holds the category
+# mapping and the rule that a failure comes back as an error, never as an empty
+# result.
+
+
 def tool_memory_add(args: dict) -> dict:
-    if MemoryDB is None:
-        return {"error": "memory module unavailable"}
-    db = MemoryDB(str(PROJECT_ROOT / ".dainexus" / "memory.db"))
-    return db.add(
-        args.get("text", ""),
-        category=args.get("category", "general"),
+    text = str(args.get("text", ""))
+    if not text.strip():
+        return {"error": "dn_memory_add needs text"}
+    stamp = time.strftime("%Y-%m-%d", time.gmtime())
+    return dai_memory.write(
+        text,
+        cwd=PROJECT_ROOT,
+        category=str(args.get("category", "general")),
         importance=int(args.get("importance", 5)),
-        source="mcp",
+        source_ref=f"mcp:{stamp}",
     )
 
 
 def tool_memory_search(args: dict) -> dict:
-    if MemoryDB is None:
-        return {"error": "memory module unavailable"}
-    db = MemoryDB(str(PROJECT_ROOT / ".dainexus" / "memory.db"))
-    return {"results": db.memory_search(args.get("query", ""), limit=int(args.get("limit", 5)))}
+    query = str(args.get("query", ""))
+    if not query.strip():
+        return {"error": "dn_memory_search needs a query"}
+    return dai_memory.search(query, cwd=PROJECT_ROOT, limit=int(args.get("limit", 5)))
 
 
 TOOLS = {
     "dn_start_pipeline": (
         tool_start_pipeline,
         "Start a new pipeline run. Resets state.",
-        {"type": "object",
-         "properties": {"goal": {"type": "string"}, "mode": {"type": "string",
-             "enum": ["QUICK", "REVIEW", "TEST", "FEATURE", "SHIP", "FULL_BUILD"]}},
-         "required": ["goal"]},
+        {
+            "type": "object",
+            "properties": {
+                "goal": {"type": "string"},
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "QUICK",
+                        "REVIEW",
+                        "TEST",
+                        "FEATURE",
+                        "SHIP",
+                        "FULL_BUILD",
+                    ],
+                },
+            },
+            "required": ["goal"],
+        },
     ),
     "dn_get_state": (
         tool_get_state,
@@ -195,41 +224,60 @@ TOOLS = {
     "dn_request_gate_approval": (
         tool_request_gate_approval,
         "Register a gate approval request (gate1_brd, gate2_architecture, gate3_release).",
-        {"type": "object",
-         "properties": {"gate": {"type": "string"}, "summary": {"type": "string"}},
-         "required": ["gate"]},
+        {
+            "type": "object",
+            "properties": {"gate": {"type": "string"}, "summary": {"type": "string"}},
+            "required": ["gate"],
+        },
     ),
     "dn_approve_gate": (
         tool_approve_gate,
         "Record the user's gate decision. Only call AFTER the user explicitly decided.",
-        {"type": "object",
-         "properties": {"gate": {"type": "string"}, "approved": {"type": "boolean"}},
-         "required": ["gate", "approved"]},
+        {
+            "type": "object",
+            "properties": {"gate": {"type": "string"}, "approved": {"type": "boolean"}},
+            "required": ["gate", "approved"],
+        },
     ),
     "dn_fail_pipeline": (
         tool_fail_pipeline,
         "Mark the pipeline failed with a reason.",
-        {"type": "object", "properties": {"reason": {"type": "string"}}, "required": ["reason"]},
+        {
+            "type": "object",
+            "properties": {"reason": {"type": "string"}},
+            "required": ["reason"],
+        },
     ),
     "dn_memory_add": (
         tool_memory_add,
-        "Persist an observation to project memory (SQLite+FTS5, auto-tagged, secret-redacted).",
-        {"type": "object",
-         "properties": {"text": {"type": "string"}, "category": {"type": "string"},
-                        "importance": {"type": "integer"}},
-         "required": ["text"]},
+        "Record an observation in project memory (the DAI memory layer: embedded, "
+        "secret-redacted, anchored to the code its source names). category decides the "
+        "layer: decision/convention/constraint, error/incident, procedure.",
+        {
+            "type": "object",
+            "properties": {
+                "text": {"type": "string"},
+                "category": {"type": "string"},
+                "importance": {"type": "integer"},
+            },
+            "required": ["text"],
+        },
     ),
     "dn_memory_search": (
         tool_memory_search,
-        "Search project memory (BM25 + RRF fusion).",
-        {"type": "object",
-         "properties": {"query": {"type": "string"}, "limit": {"type": "integer"}},
-         "required": ["query"]},
+        "Search project memory: keyword, semantic, recency, code-graph and memory-graph "
+        "branches fused by RRF, with a report of which branches contributed.",
+        {
+            "type": "object",
+            "properties": {"query": {"type": "string"}, "limit": {"type": "integer"}},
+            "required": ["query"],
+        },
     ),
 }
 
 
 # ── JSON-RPC dispatch ─────────────────────────────────────────────────────────
+
 
 def handle(msg: dict) -> dict | None:
     method = msg.get("method", "")
@@ -260,7 +308,12 @@ def handle(msg: dict) -> dict | None:
         try:
             payload = TOOLS[name][0](params.get("arguments") or {})
             result = {
-                "content": [{"type": "text", "text": json.dumps(payload, ensure_ascii=False, default=str)}],
+                "content": [
+                    {
+                        "type": "text",
+                        "text": json.dumps(payload, ensure_ascii=False, default=str),
+                    }
+                ],
                 "isError": "error" in payload,
             }
         except Exception as e:

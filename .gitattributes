@@ -14,3 +14,9 @@ src/cli/dist/** text eol=lf
 # keeps core.autocrlf from rewriting every record on checkout and reporting the
 # whole snapshot as permanently modified, the same reason src/cli/dist is pinned.
 src/codegraph/reference/snapshot/** text eol=lf
+
+# The memory layer is a pinned copy whose every file is hashed in
+# vendor/dai-memory/PROVENANCE.json. Any line-ending conversion would change
+# those bytes and make an untouched copy read as edited, so none is applied:
+# the files stay exactly as the memory layer committed them.
+vendor/dai-memory/** -text

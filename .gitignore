@@ -66,6 +66,13 @@ mutants/
 .qoder/
 _local_tmp_edits/
 
+# The vendored memory layer builds and installs in place. Its sources are
+# tracked and hashed; what installing and building them produces is not.
+vendor/dai-memory/node_modules/
+vendor/dai-memory/packages/*/node_modules/
+vendor/dai-memory/packages/*/dist/
+vendor/dai-memory/packages/*/tsconfig.tsbuildinfo
+
 # NOTE on deliberate inclusions:
 #   src/cli/dist/       tracked — the docs-continuity gate runs the built CLI
 #   .claude/            tracked — tests/unit_tests/test_hook_schema.py reads the
