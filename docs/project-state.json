@@ -995,8 +995,8 @@
     "lifecycle": "active",
     "health": "on_track",
     "phase": "SUSTAIN",
-    "summary": "Memory and code intelligence run on the vendored DAI memory plugin (vendor/dai-memory, pinned by PROVENANCE.json, installed outside the repository by scripts/lite/dai_memory.py install). The plugin now answers impact, context and trace over its own code graph, and builds execution flows: entry points, forward traces, and a query that groups what it finds by flow. GitNexus stays until the plugin covers every capability the harness uses; change analysis (detect_changes, pr_review) is next, and the commit gate switches to it then. The older memory stores are retired only at that switch-over.",
-    "updated_at": "2026-09-18T11:00:22+07:00",
+    "summary": "Memory and code intelligence run on the vendored DAI memory plugin (vendor/dai-memory, pinned by PROVENANCE.json, installed outside the repository by scripts/lite/dai_memory.py install). The plugin answers impact, context and trace, builds execution flows with a query that groups by them, and reads a diff as declarations: detect-changes and review, with hunks matched on the committed side and a stale graph declared. GitNexus stays until the plugin covers every capability the harness uses; rename is next, and the commit gate switches over at the end. The older memory stores are retired only at that switch-over.",
+    "updated_at": "2026-09-18T14:48:51+07:00",
     "blockers": [],
     "risks": [],
     "next_actions": [
