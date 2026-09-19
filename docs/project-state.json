@@ -995,8 +995,8 @@
     "lifecycle": "active",
     "health": "on_track",
     "phase": "SUSTAIN",
-    "summary": "Memory and code intelligence run on the vendored DAI memory plugin (vendor/dai-memory, pinned by PROVENANCE.json, installed outside the repository by scripts/lite/dai_memory.py install). The plugin answers impact, context and trace, builds execution flows, reads a diff as declarations, renames through the call graph, states invariants, groups the call graph, answers a read-only Cypher query, maps the HTTP surface, and joins untrusted input to dangerous calls through the call graph -- each with what it cannot see stated in the answer. GitNexus stays until the plugin covers every capability the harness uses; multi-repository groups and the wiki remain, and the commit gate switches over last. The older memory stores are retired only at that switch-over.",
-    "updated_at": "2026-09-20T01:51:50+07:00",
+    "summary": "Memory and code intelligence run on the vendored DAI memory plugin (vendor/dai-memory, pinned by PROVENANCE.json, installed outside the repository by scripts/lite/dai_memory.py install). The plugin now covers every capability the harness uses GitNexus for: impact, context, trace, execution flows and query, change analysis, rename, invariants, code clusters, read-only Cypher, status and clean, the HTTP surface, taint and the intra-function view, multi-repository groups, and a wiki generated from the graph and the memory with no model involved. What remains is the switch-over: the commit gate, MCP configuration, skills, installers and docs move to this layer, GitNexus is removed, and the harness's older memory stores are retired.",
+    "updated_at": "2026-09-20T03:02:21+07:00",
     "blockers": [],
     "risks": [],
     "next_actions": [
