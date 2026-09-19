@@ -996,7 +996,7 @@
     "health": "on_track",
     "phase": "SUSTAIN",
     "summary": "Memory and code intelligence run on the vendored DAI memory plugin (vendor/dai-memory, pinned by PROVENANCE.json, installed outside the repository by scripts/lite/dai_memory.py install). The plugin answers impact, context and trace, builds execution flows with a query grouped by them, reads a diff as declarations (detect-changes, review), renames through the call graph, and now states invariants (check), groups the call graph (code-clusters), answers one read-only Cypher query, and reports status; its MCP server also serves resources. GitNexus stays until the plugin covers every capability the harness uses; the API surface (routes, shape_check, api_impact, tool_map) is next, then program dependence and taint, groups and the wiki, and the commit gate switches over last. The older memory stores are retired only at that switch-over.",
-    "updated_at": "2026-09-19T22:12:42+07:00",
+    "updated_at": "2026-09-19T23:25:18+07:00",
     "blockers": [],
     "risks": [],
     "next_actions": [
