@@ -1,6 +1,6 @@
 {
   "source": "https://github.com/Exia-thd/DAI-memory-layer-plugin",
-  "commit": "98b3247096e984a5d0f151bc6b13479f23bb4fad",
+  "commit": "32c97df80f2f6bb2204c85d2ff9b9bcb53c38199",
   "files": {
     "LICENSE": "231761d76528970e7b0e0e9cf4b986515a855e72944fd0139b0b5c38177f296c",
     "bin/build-stamp.mjs": "5c3ce58fe11c0fd28e8da1805b503e86942fa99d0b58b0bae344cbab776e8f83",
@@ -27,7 +27,7 @@
     "packages/core/grammars/tree-sitter-lua.wasm": "df08a1704e504c70b8dba4a3e6f8e0c99a4fb94e1b1693d2969f53141d09f0d4",
     "packages/core/grammars/tree-sitter-ql.wasm": "f7f01c27f942a76ffceb30cb194fe669f81a21971126a57d9bf876bdaffa85dc",
     "packages/core/grammars/tree-sitter-yaml.wasm": "0a0e5ebcfeb0b2bf272d071396eeed107b2c4b2617b69d5959b13f78b357a4d6",
-    "packages/core/package.json": "317cf0dcf364d3929f236ddcacc7095067c9d3db1cdeb9c130d965e6cf5110aa",
+    "packages/core/package.json": "c3ae1ce24547d4cdf3176ba41858d910a26bcce5a981952ab07e7d7355d6877f",
     "packages/core/src/doctor.ts": "07e91c485fad27566e62d6f6f5a736f4cc368ef3180a311fcc1ce0701ae6020a",
     "packages/core/src/embed/hash-provider.ts": "4eff99e24b03888c8a903a720ec240100f1d33f56f1c76acbec63b8a6cb574b7",
     "packages/core/src/embed/index.ts": "3d57ac906f315c257c1b988ec57ecc580a3b25489bb7181b69eeeae441aab1e3",
@@ -71,7 +71,7 @@
     "packages/core/src/util/paths.ts": "62c60b0cf13cd97cacad80bb3eddc5bf064a9f89536c8aa00816fee87be492cb",
     "packages/core/src/util/tokenize.ts": "f7527ac5424c85a5a8293668d102fbfa9511552ea28668ebc5e4d494fce658fa",
     "packages/core/tsconfig.json": "3a4cc05588a5a4f3c9916e83747c82b399052d315e4c2d046b064dfc60e9489a",
-    "pnpm-lock.yaml": "e29fa624085dd16d7592f65dcf4438b0f4487ba5049b5a26a48d6bd33b8abf7c",
+    "pnpm-lock.yaml": "5a993b17ec4d5ccb6e46f9b957a2876f8f56f14ca99e3872a416e9b0d38293e9",
     "pnpm-workspace.yaml": "477e6c5f8b033a1ecb7f8919ad2726e4328c7893c4ad6228d62471425b22dbe7",
     "tsconfig.base.json": "cd9795aeaf39d176c27cdb22f6c93f878b7fe5c0f29ba8533a2291c50da3eb5c"
   }
