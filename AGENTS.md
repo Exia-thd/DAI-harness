@@ -50,7 +50,7 @@ You are a software engineering agent. Follow this file exactly.
 ## Boot Step 5.5 — Memory Load
 Load persistent memory before processing the request; total injection ≤ 500 tokens.
 1. Read `.dainexus/memory-bank/activeContext.md` if present (≤150 tokens; truncate beyond that).
-2. Run `python scripts/lite/memory.py search "<keywords from the request>" --limit 3` and inject the top results (≤200 tokens). No results → skip silently.
+2. Call `dn_memory_search` with the keywords from the request (limit 3) and inject the top results (≤200 tokens). No results → skip silently.
 3. Log `✓ Memory loaded: [N] sources injected`.
 
 **Truncation rule**: if a source exceeds its cap, take the first N characters (cap × 4) and append `...[truncated]`. Never exceed 500 tokens across all sources.

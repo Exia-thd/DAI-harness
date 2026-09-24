@@ -73,6 +73,7 @@ export const docsManifestSchema = z
     adapters: z
       .object({
         git: z.boolean().optional(),
+        dai_memory: z.boolean().optional(),
         gitnexus: z.boolean().optional(),
         evidence_summary: z.boolean().optional(),
       })
@@ -214,7 +215,7 @@ export function createDefaultManifest(projectRootInput: string): DocsManifest {
     ],
     adapters: {
       git: true,
-      gitnexus: existsSync(join(projectRoot, ".gitnexus", "meta.json")),
+      dai_memory: existsSync(join(projectRoot, ".memory", "meta.json")),
       evidence_summary: false,
     },
     privacy: {

@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 
 interface CallNode {
   uid: string;
@@ -250,27 +250,70 @@ function scanClientFile(
   return flows;
 }
 
-// 4. Trace the server call graph from GitNexus recursively
-function traceServerCall(symbolUid: string, visited: Set<string> = new Set(), depth = 0): CallNode | null {
-  if (depth > 5 || visited.has(symbolUid)) return null;
-  visited.add(symbolUid);
+// 4. Trace the server call graph from the DAI memory layer recursively.
+// The layer is installed outside the repository; scripts/lite/dai_memory.py
+// knows where, and DAI_MEMORY_ENGINE overrides it. Resolved once, lazily.
+let memoryCli: string | null | undefined;
+function resolveMemoryCli(): string | null {
+  if (memoryCli !== undefined) return memoryCli;
+  memoryCli = null;
+  const override = process.env.DAI_MEMORY_ENGINE;
+  const candidates: string[] = [];
+  if (override) candidates.push(override);
+  for (const [command, ...prefix] of [['py', '-3'], ['python3'], ['python']]) {
+    if (override) break;
+    try {
+      const engine = execFileSync(command, [...prefix, path.join('scripts', 'lite', 'dai_memory.py'), 'where'], {
+        encoding: 'utf-8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).trim();
+      if (engine) candidates.push(engine);
+      break;
+    } catch {
+      // not this interpreter, or not installed: try the next
+    }
+  }
+  for (const engine of candidates) {
+    const cli = path.join(engine, 'bin', 'dai-memory.mjs');
+    if (fs.existsSync(cli)) {
+      memoryCli = cli;
+      break;
+    }
+  }
+  if (!memoryCli) {
+    console.warn('  [!] DAI memory engine not installed; run: python scripts/lite/dai_memory.py install');
+  }
+  return memoryCli;
+}
+
+type SymbolRef = { name: string; file?: string; uid?: string };
+
+function traceServerCall(ref: SymbolRef, visited: Set<string> = new Set(), depth = 0): CallNode | null {
+  const key = ref.uid ?? `${ref.file ?? ''}:${ref.name}`;
+  if (depth > 5 || visited.has(key)) return null;
+  visited.add(key);
+
+  const cli = resolveMemoryCli();
+  if (!cli) return null;
 
   try {
-    const command = `gitnexus context -r "${repoName}" "${symbolUid}"`;
-    const output = execSync(command, { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'] });
+    const args = [cli, 'context', ref.name, '--json'];
+    if (ref.uid) args.push('--uid', ref.uid);
+    else if (ref.file) args.push('--file', ref.file);
+    const output = execFileSync('node', args, { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'] });
     const result = JSON.parse(output);
 
-    if (result.status !== 'found') return null;
+    if (result.status !== 'ok' || !result.symbol) return null;
 
     const symbol = result.symbol;
     const node: CallNode = {
-      uid: symbol.uid,
+      uid: symbol.id,
       name: symbol.name,
       filePath: symbol.filePath,
       calls: [],
     };
 
-    const outgoingCalls = result.outgoing?.calls || [];
+    const outgoingCalls: Array<{ id?: string; name: string; filePath?: string }> = result.callees || [];
     for (const call of outgoingCalls) {
       // Noise Filter: check if the call name is in the blocklist or starts with console.
       if (EXCLUDE_SYMBOLS.has(call.name) || call.name.startsWith('console.')) {
@@ -282,9 +325,9 @@ function traceServerCall(symbolUid: string, visited: Set<string> = new Set(), de
         call.filePath &&
         !call.filePath.includes('node_modules') &&
         !call.filePath.startsWith('node:') &&
-        call.uid
+        call.id
       ) {
-        const childNode = traceServerCall(call.uid, new Set(visited), depth + 1);
+        const childNode = traceServerCall({ name: call.name, uid: call.id }, new Set(visited), depth + 1);
         if (childNode) {
           node.calls.push(childNode);
         }
@@ -293,7 +336,7 @@ function traceServerCall(symbolUid: string, visited: Set<string> = new Set(), de
 
     return node;
   } catch (error) {
-    // If gitnexus fails, return a basic node without children
+    // If the lookup fails, return no node rather than a guessed one
     return null;
   }
 }
@@ -427,9 +470,9 @@ function main() {
   // 3. Trace Server call graphs for each flow
   for (const flow of flows) {
     if (flow.routeFile) {
-      const symbolUid = `Function:${flow.routeFile.replace(/\\/g, '/')}:${flow.method}`;
-      console.log(`  Tracing server call graph cho: ${symbolUid}`);
-      flow.serverCallTree = traceServerCall(symbolUid);
+      const routeFile = flow.routeFile.replace(/\\/g, '/');
+      console.log(`  Tracing server call graph cho: ${routeFile}:${flow.method}`);
+      flow.serverCallTree = traceServerCall({ name: flow.method, file: routeFile });
     }
   }
 

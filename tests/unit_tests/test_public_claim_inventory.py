@@ -15,7 +15,7 @@ def test_public_claim_inventory_is_complete_and_scoped() -> None:
         "README.md": "public-product",
         "docs/guides/testing-stack.md": "public-guide",
         "docs/adr/ADR-002-kuzudb-readonly-mcp.md": "architecture-decision",
-        "docs/guides/gitnexus.md": "public-guide",
+        "docs/guides/dai-memory.md": "public-guide",
         "docs/facebook-post-token-studio.md": "historical-unverified-marketing",
     }
     assert {item["path"]: item["classification"] for item in documents} == (

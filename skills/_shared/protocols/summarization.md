@@ -120,8 +120,8 @@ Summarization runs as **Middleware ⑤** in the chain:
 When summarization compresses context:
   1. Extract decisions + blockers from compressed content
   2. Pass to Memory Manager:
-     scripts/lite/memory.py add "Decision: [extracted]" --category decisions
-     scripts/lite/memory.py add "Blocker: [extracted]" --category blockers
+     scripts/lite/dai_memory.py add "Decision: [extracted]" --category decisions
+     scripts/lite/dai_memory.py add "Blocker: [extracted]" --category blockers
   3. This ensures no information is permanently lost — it moves to memory
 ```
 

@@ -7,28 +7,32 @@ ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "ci" / "verify-wiki-drift.sh"
 
 
-def make_fake_npx(tmp_path: Path) -> Path:
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
-    npx = bin_dir / "npx"
-    npx.write_text(
-        "#!/usr/bin/env bash\necho 'Status: up-to-date'\nexit 0\n",
-        encoding="utf-8",
+def make_fake_memory_layer(tmp_path: Path) -> None:
+    """A stand-in for the installed memory layer, in the shape the verifier asks for.
+
+    The verifier resolves the engine through scripts/lite/dai_memory.py and asks
+    its CLI for `status`. Both are faked here so the test is about the
+    verifier's handling of documentation, not about a real index.
+    """
+    engine = tmp_path / "engine"
+    (engine / "bin").mkdir(parents=True)
+    (engine / "bin" / "dai-memory.mjs").write_text(
+        "console.log('indexed at abc123  -- current');\n", encoding="utf-8"
     )
-    npx.chmod(0o755)
-    return bin_dir
+    resolver = tmp_path / "scripts" / "lite" / "dai_memory.py"
+    resolver.parent.mkdir(parents=True)
+    resolver.write_text(f"print({str(engine)!r})\n", encoding="utf-8")
+    (tmp_path / ".memory").mkdir()
 
 
 def run_verifier(
     tmp_path: Path, threshold: str = "0.3"
 ) -> subprocess.CompletedProcess[str]:
-    (tmp_path / ".gitnexus").mkdir()
-    env = os.environ.copy()
-    env["PATH"] = f"{make_fake_npx(tmp_path)}:{env['PATH']}"
+    make_fake_memory_layer(tmp_path)
     return subprocess.run(
         ["bash", str(SCRIPT), "--threshold", threshold],
         cwd=tmp_path,
-        env=env,
+        env=os.environ.copy(),
         text=True,
         capture_output=True,
         check=False,

@@ -42,14 +42,20 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "${PROJECT_ROOT}"
 
-# ── GitNexus: resolve binary path ────────────────────────────────────────────
-GITNEXUS_BIN=""
-if command -v gitnexus &>/dev/null; then
-  GITNEXUS_BIN="gitnexus"
-elif [[ -x "/opt/homebrew/bin/gitnexus" ]]; then
-  GITNEXUS_BIN="/opt/homebrew/bin/gitnexus"
-elif [[ -x "${HOME}/.local/bin/gitnexus" ]]; then
-  GITNEXUS_BIN="${HOME}/.local/bin/gitnexus"
+# ── DAI memory layer: resolve the engine ────────────────────────────────────
+# The code graph comes from the vendored memory layer, installed outside the
+# repository; scripts/lite/dai_memory.py knows where. DAI_MEMORY_ENGINE wins.
+MEMORY_CLI=""
+if [[ -n "${DAI_MEMORY_ENGINE:-}" && -f "${DAI_MEMORY_ENGINE}/bin/dai-memory.mjs" ]]; then
+  MEMORY_CLI="${DAI_MEMORY_ENGINE}/bin/dai-memory.mjs"
+else
+  for python_cmd in "py -3" python3 python; do
+    engine="$(${python_cmd} scripts/lite/dai_memory.py where 2>/dev/null)" || continue
+    if [[ -n "$engine" && -f "${engine}/bin/dai-memory.mjs" ]]; then
+      MEMORY_CLI="${engine}/bin/dai-memory.mjs"
+      break
+    fi
+  done
 fi
 
 # ── protected path patterns (glob-style, relative to project root) ─────────────
@@ -66,6 +72,7 @@ PROTECTED_PATTERNS=(
   "secrets/*:secrets-directory"
   ".git/*:git-internals"
   ".gitnexus/*:index-file"
+  ".memory/*:index-file"
   ".dainexus-node/*:index-file"
   ".dainexus/memory.db*:memory-db"
   "memory.db*:memory-db"
@@ -285,32 +292,31 @@ fi
 
 log_info "No protected-path violations and no deny patterns found."
 
-# ── GitNexus code intelligence (advisory) ────────────────────────────────────
-if [[ -d ".gitnexus" && -n "$GITNEXUS_BIN" ]]; then
-  log_info "Running GitNexus checks (${GITNEXUS_BIN})..."
+# ── Code graph checks (DAI memory layer) ─────────────────────────────────────
+# Import cycles block, as they did under GitNexus; they are the only rule the
+# layer reports at warning level. The change impact is advisory.
+if [[ -f ".memory/meta.json" && -n "$MEMORY_CLI" ]]; then
+  log_info "Running code graph checks (${MEMORY_CLI})..."
 
-  # Determine repo name from root directory (dynamic — no hardcoding)
-  REPO_NAME="$(basename "${PROJECT_ROOT}")"
-
-  if "${GITNEXUS_BIN}" check --cycles -r "${REPO_NAME}" &>/dev/null 2>&1; then
-    log_info "GitNexus: No circular imports detected."
+  if node "$MEMORY_CLI" check --fail-on warning &>/dev/null; then
+    log_info "Code graph: no circular imports."
   else
-    log_error "GitNexus: Circular imports detected — guard BLOCKED."
-    "${GITNEXUS_BIN}" check --cycles -r "${REPO_NAME}" || true
+    log_error "Code graph: circular imports detected — guard BLOCKED."
+    node "$MEMORY_CLI" check --fail-on warning || true
     exit 1
   fi
 
   if git rev-parse --is-inside-work-tree &>/dev/null 2>&1; then
-    changes="$("${GITNEXUS_BIN}" detect-changes -r "${REPO_NAME}" 2>&1 || true)"
-    if [[ -n "$changes" && "$changes" != *"No changes detected"* ]]; then
-      echo -e "${BLUE}[GUARD] GitNexus Change Impact:${NC}"
+    changes="$(node "$MEMORY_CLI" detect-changes --scope working 2>&1 || true)"
+    if [[ -n "$changes" && "$changes" != *"No changed"* && "$changes" != *"no changed"* ]]; then
+      echo -e "${BLUE}[GUARD] Change impact:${NC}"
       echo "$changes" | sed 's/^/  /'
     fi
   fi
-elif [[ -d ".gitnexus" && -z "$GITNEXUS_BIN" ]]; then
-  log_warn "GitNexus index present but 'gitnexus' binary not found — skipping analysis."
+elif [[ -f ".memory/meta.json" ]]; then
+  log_warn "Code graph present but the memory engine is not installed — run: python scripts/lite/dai_memory.py install"
 else
-  log_warn "GitNexus index (.gitnexus/) not found — consider running 'gitnexus analyze'."
+  log_warn "No code graph (.memory/) — consider running: dai-memory init"
 fi
 
 # ── HARD-signal exit ─────────────────────────────────────────────────────────

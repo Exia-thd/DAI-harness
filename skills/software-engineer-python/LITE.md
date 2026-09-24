@@ -10,12 +10,12 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Target Python environment, dependencies, and modules are defined | `cat requirements.txt \|\| cat pyproject.toml \|\| cat setup.cfg` | ... | run the check command and paste output |
-| GitNexus symbol index and call graphs are present and initialized | `gitnexus analyze --status \|\| find . -name \"*.gitnexus\"` | ... | run the check command and paste output |
+| The DAI memory code graph is present and initialized | `dai-memory status` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Software Engineer Python Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
 
-1. IMPACT | Analyze symbol blast-radius and upstream dependency impacts via GitNexus | Warn the user if the impact analysis returns a HIGH or CRITICAL risk level.
+1. IMPACT | Analyze symbol blast-radius and upstream dependency impacts via the DAI memory code graph | Warn the user if the impact analysis returns a HIGH or CRITICAL risk level.
 2. IMPLEMENT | Author modular Python classes, function routines, and type annotations | Ensure code adheres strictly to PEP 8, implements context managers, and has zero hardcoded credentials.
 3. STRESS-TEST | Execute property-based (Hypothesis) and mutation tests (mutmut) | Confirm the testing suite passes cleanly and the code quality score achieves Grade A (>90).
 
@@ -23,18 +23,18 @@ Format: `n. ACTION | TARGET | CHECK`
 - **Mutable Default Parameters**: Using mutable structures as defaults (e.g., `def append(item, container=[])`) leading to shared reference leaks across calls.
 - **Unmanaged File/Socket Handles**: Neglecting to wrap stream access and remote connections within explicit context managers (`with`), triggering OS resource leaks.
 - **Silent Exception Swallowing**: Implementing broad, non-specific try-except blocks (e.g., `except Exception: pass`) that mask critical runtime exceptions or traceback logs.
-- **Modifying High-Risk Symbols Directly**: Modifying shared interfaces without first evaluating upstream impact metrics via GitNexus symbol diagnostics (`gitnexus_impact`).
+- **Modifying High-Risk Symbols Directly**: Modifying shared interfaces without first evaluating upstream impact metrics via code graph impact analysis (dai-memory) (`dai-memory impact`).
 - **Non-Compliant Resource Directories**: Saving design documents, API specifications, or logs under `docs/` using CamelCase instead of lowercase kebab-case.
 
 ### Step 1: Ground target project settings and environment engine
 ```bash
 cat requirements.txt
-gitnexus analyze --status
+dai-memory status
 ```
 
-### Step 2: Perform GitNexus impact check before modifying the core processor
+### Step 2: Perform dai-memory impact check before modifying the core processor
 ```bash
-gitnexus_impact --target "DataExporter" --direction "upstream"
+dai-memory impact DataExporter --direction upstream
 ```
 
 ### Step 3: Implement memory-safe, exception-robust Python processor class in `src/services/data_exporter.py`

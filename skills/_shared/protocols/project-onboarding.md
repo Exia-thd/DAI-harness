@@ -58,41 +58,36 @@ find_by_name(".editorconfig"), find_by_name("biome.json")
 
 ## Phase 1.5 — Code Intelligence (Optional Enhancement)
 
-Build a knowledge graph of the codebase for deep structural analysis. Powered by [GitNexus](https://github.com/abhigyanpatwari/GitNexus).
+Build a code graph of the codebase for deep structural analysis. Powered by the DAI memory layer (`vendor/dai-memory`, a submodule of the plugin's own repository), which keeps the graph in the project's `.memory/`.
 
-**Auto-skip if:** project has <10 source files, OR `.gitnexus/` exists and is <24h old.
+**Auto-skip if:** project has <10 source files, OR `.memory/meta.json` exists and its `lastCommit` is HEAD.
 
 ```
-1. Check CLI:
-   command -v gitnexus || npx gitnexus --version
+1. Check the engine:
+   python scripts/lite/dai_memory.py where    # exit 0 = installed
 
-   → If NOT found: PAUSE and notify user (see below)
-   → If found: proceed to step 2
+   → If NOT installed: PAUSE and notify user (see below)
+   → If installed: proceed to step 2
 
 2. Index codebase:
-   gitnexus analyze              # Build knowledge graph (AST → relationships → clusters)
-   gitnexus analyze --skills     # Generate per-community SKILL.md files
+   dai-memory init               # store + scan: declarations, calls, imports, flows, communities
 
 3. Verify index:
-   - Check .gitnexus/ directory created
-   - Count symbols, relationships, communities from index
+   - Check .memory/meta.json created
+   - dai-memory status           # indexed commit, whether it is current, graph size
 
 4. Populate profile:
    code_intelligence: {
      indexed: true,
-     engine: "gitnexus",
-     symbols_count: N,
-     relationships_count: N,
-     communities_count: N,
-     processes_count: N,
-     index_path: ".gitnexus/",
+     engine: "dai-memory",
+     index_path: ".memory/",
+     indexed_commit: "<meta.json lastCommit>",
      indexed_at: "ISO-8601",
-     mcp_available: true,
-     skills_generated: ["community-a", "community-b", ...]
+     mcp_available: true
    }
 ```
 
-### When GitNexus is NOT installed — User Notification
+### When the memory engine is NOT installed — User Notification
 
 Do NOT silently skip. Pause and present a clear explanation using notify_user:
 
@@ -108,8 +103,9 @@ notify_user:
    • Review code chất lượng hơn — phát hiện rủi ro trước khi commit
    • Debug nhanh hơn — trace ngược chuỗi gọi để tìm root cause
 
-   Cài đặt rất đơn giản (yêu cầu Node.js):
-   npm install -g gitnexus
+   Cài đặt (yêu cầu Node.js; cài ra ngoài repo, không cần mạng
+   ngoài npm):
+   python scripts/lite/dai_memory.py install
 
    Bạn muốn làm gì?"
   Options:
@@ -120,9 +116,9 @@ notify_user:
 ```
 
 **If user selects "Tôi sẽ cài ngay":**
-- Wait for user to run `npm install -g gitnexus`
-- Verify: `command -v gitnexus` → if found, proceed to step 2
-- If still not found, guide troubleshooting (PATH issues, permissions)
+- Wait for user to run `python scripts/lite/dai_memory.py install`
+- Verify: `python scripts/lite/dai_memory.py where` exits 0 → proceed to step 2
+- If it still fails, check that `vendor/dai-memory` is initialised (`git submodule update --init vendor/dai-memory`) and that Node.js is on PATH
 
 **If user selects "Bỏ qua":**
 - Set `code_intelligence.indexed = false`
@@ -136,10 +132,10 @@ notify_user:
   Windows: Download from https://nodejs.org (LTS version)
   Linux:   curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - && sudo apt install -y nodejs
   ```
-- After Node.js installed, guide: `npm install -g gitnexus`
+- After Node.js installed, guide: `python scripts/lite/dai_memory.py install`
 - Then proceed to step 2
 
-**Error handling:** If `gitnexus analyze` fails (timeout, parse error, etc.), mark as `code_intelligence.indexed = false` — never fail onboarding because of Code Intelligence. Log the error for debugging.
+**Error handling:** If `dai-memory init` fails (timeout, parse error, etc.), mark as `code_intelligence.indexed = false` — never fail onboarding because of Code Intelligence. Log the error for debugging.
 
 **Output:** Populate `code_intelligence` section of project profile. See `code-intelligence.md` protocol for usage by downstream skills.
 
@@ -153,7 +149,7 @@ Generates a project-specific MCP server that exposes codebase intelligence to an
 1. Check prerequisites:
    - code_intelligence.indexed == true (from Phase 1.5)
    - Node.js available (command -v node)
-   → If Code Intelligence not indexed: SKIP — MCP requires GitNexus data
+   → If Code Intelligence not indexed: SKIP — MCP requires the code graph
    → If Node.js missing: SKIP with note to user
 
 2. Generate MCP server:

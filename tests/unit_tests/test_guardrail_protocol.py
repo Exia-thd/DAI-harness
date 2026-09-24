@@ -179,9 +179,15 @@ def test_no_dainexus_node_in_dryrun():
     with open(DRYRUN_PATH, "r") as f:
         content = f.read()
     assert "DAI Nexus Node" not in content, (
-        "dryrun-interceptor.md should use GitNexus, not DAI Nexus Node"
+        "dryrun-interceptor.md should use the DAI memory code graph, not DAI Nexus Node"
     )
-    assert "GitNexus" in content, "dryrun-interceptor.md should reference GitNexus"
+    # GitNexus was replaced by the DAI memory layer; impact evidence names it.
+    assert "dai-memory" in content, (
+        "dryrun-interceptor.md should reference the dai-memory code graph"
+    )
+    assert "GitNexus" not in content, (
+        "dryrun-interceptor.md still points at the removed GitNexus"
+    )
 
 
 # --- Git credentials added to Rule 2 ---

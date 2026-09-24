@@ -27,7 +27,7 @@
 ```
 Setup:   Xóa .dainexus/mcp-server/mcp-config.json (nếu có)
 Request:  "Build a React app"
-Expect:   Tự động chạy gitnexus analyze
+Expect:   Tự động chạy dai-memory ingest
          Thông báo: "ℹ Auto-initialized DAI Nexus Node index..."
          Không làm gì khác trước khi init xong
 Status:   ⬜
@@ -206,7 +206,7 @@ Status:   ⬜
 
 ```
 Setup:   Sau khi complete 1 task
-Expected: Memory hook chạy (scripts/lite/memory.py add)
+Expected: Memory hook chạy (scripts/lite/dai_memory.py add)
          Context có trong session tiếp theo
 Status:   ⬜
 ```

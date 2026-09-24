@@ -1,0 +1,3 @@
+[submodule "vendor/dai-memory"]
+	path = vendor/dai-memory
+	url = https://github.com/Exia-thd/DAI-memory-layer-plugin.git

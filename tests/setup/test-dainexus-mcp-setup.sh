@@ -14,6 +14,15 @@ TEST_HOME="$TEST_PROJECT/home"
 OPERATOR_HOME="${HOME:-}"
 export HOME="$TEST_HOME"
 export XDG_CONFIG_HOME="$TEST_HOME/.config"
+# The installer registers the DAI memory layer's server. The tests give it a
+# stand-in engine rather than installing the real one; only the path matters.
+# Outside TEST_PROJECT, which every test deletes and recreates.
+export DAI_MEMORY_ENGINE="$(mktemp -d "${TMPDIR:-/tmp}/fw-test-engine.XXXXXX")"
+mkdir -p "$DAI_MEMORY_ENGINE/bin"
+printf '#!/usr/bin/env node\n' > "$DAI_MEMORY_ENGINE/bin/dai-memory.mjs"
+MEMORY_NODE="$(command -v node)"
+MEMORY_CLI="$DAI_MEMORY_ENGINE/bin/dai-memory.mjs"
+export MEMORY_NODE MEMORY_CLI
 TEMPLATE_DIR="$DAINEXUS_DIR/scripts/templates"
 JSONC_PARSER_MODULE="$DAINEXUS_DIR/mcp/node_modules/jsonc-parser"
 if [[ ! -f "$JSONC_PARSER_MODULE/lib/umd/main.js" ]]; then
@@ -126,7 +135,7 @@ cleanup() {
 }
 # The trap command assigns status before reading it in the same shell.
 # shellcheck disable=SC2154
-trap 'status=$?; cleanup; exit $status' EXIT HUP INT TERM
+trap 'status=$?; cleanup; rm -rf "$DAI_MEMORY_ENGINE"; exit $status' EXIT HUP INT TERM
 
 # ─── Tests ─────────────────────────────────────────────────────
 test_help() {
@@ -302,30 +311,33 @@ EOF
     cat > "${TEST_HOME}/.cursor/mcp.json" <<'EOF'
 {
   "theme": "high-contrast",
-  "disabledMcpServers": ["other", "dai-nexus", "gitnexus"],
-  "disabled_mcp_servers": ["gitnexus", "keep-disabled"],
+  "disabledMcpServers": ["other", "dai-nexus", "dai-memory", "gitnexus"],
+  "disabled_mcp_servers": ["dai-memory", "keep-disabled"],
   "mcpServers": {"other": {"command": "other-server"}}
 }
 EOF
     if HOME="$TEST_HOME" PATH="$portable_bin:$PATH" \
         bash "${SCRIPT_DIR}/dainexus-mcp-setup.sh" --cursor  && \
-        node - "${TEST_HOME}/.cursor/mcp.json" "$portable_bin/gitnexus" <<'NODE'
+        node - "${TEST_HOME}/.cursor/mcp.json" <<'NODE'
 const fs = require('fs');
-const [path, gitnexus] = process.argv.slice(2);
+const [path] = process.argv.slice(2);
 const config = JSON.parse(fs.readFileSync(path, 'utf8'));
 const disabled = [...config.disabledMcpServers, ...config.disabled_mcp_servers];
 process.exit(
   config.theme === 'high-contrast' &&
   config.mcpServers.other.command === 'other-server' &&
-  config.mcpServers.gitnexus.command === gitnexus &&
-  !disabled.includes('dai-nexus') && !disabled.includes('gitnexus') &&
+  config.mcpServers['dai-memory'].command === process.env.MEMORY_NODE &&
+  JSON.stringify(config.mcpServers['dai-memory'].args) === JSON.stringify([process.env.MEMORY_CLI, 'serve']) &&
+  !disabled.includes('dai-nexus') && !disabled.includes('dai-memory') &&
+  // gitnexus is no longer this script's to manage: a user's choice stays.
+  disabled.includes('gitnexus') &&
   disabled.includes('other') && disabled.includes('keep-disabled') ? 0 : 1
 );
 NODE
     then
         pass "Setup enables managed servers and preserves unrelated JSON settings"
     else
-        fail "Disabled server cleanup or portable GitNexus resolution failed"
+        fail "Disabled server cleanup or memory server registration failed"
     fi
 
     cp -a "${TEST_HOME}/.dainexus/mcp-server" "${TEST_PROJECT}/runtime-before-preflight"
@@ -545,7 +557,7 @@ NODE
         node - "$concurrent_config" <<'NODE'
 const config = JSON.parse(require('fs').readFileSync(process.argv[2], 'utf8'));
 process.exit(config.keep === 'setting' && config.alpha === 'one' && config.beta === 'two' &&
-  config.mcpServers.dainexus && config.mcpServers.gitnexus ? 0 : 1);
+  config.mcpServers['dai-nexus'] && config.mcpServers['dai-memory'] ? 0 : 1);
 NODE
     then
         pass "Concurrent config updates serialize without losing unrelated settings"
@@ -736,11 +748,11 @@ test_platform_flags() {
     printf '{"mcpServers":{},"keep":"claude-user-state"}\n' > "$TEST_HOME/.claude.json"
     HOME="$TEST_HOME" PATH="$platform_bin:$PATH" \
         bash "${SCRIPT_DIR}/dainexus-mcp-setup.sh" --claude-code > /dev/null 2>&1 && \
-        node - "$TEST_HOME/.claude.json" "$platform_bin/gitnexus" <<'NODE'
+        node - "$TEST_HOME/.claude.json" <<'NODE'
 const fs = require('fs');
-const [path, gitnexus] = process.argv.slice(2);
+const [path] = process.argv.slice(2);
 const config = JSON.parse(fs.readFileSync(path, 'utf8'));
-process.exit(config.keep === 'claude-user-state' && config.mcpServers.gitnexus.command === gitnexus ? 0 : 1);
+process.exit(config.keep === 'claude-user-state' && config.mcpServers['dai-memory'].command === process.env.MEMORY_NODE ? 0 : 1);
 NODE
     if [[ $? -eq 0 ]] && cmp -s "$TEST_PROJECT/claude-settings-before.json" "$TEST_HOME/.claude/settings.json"; then
         pass "--claude-code uses ~/.claude.json and preserves hook settings byte-identically"
@@ -782,17 +794,17 @@ nested = [["[[mcp_servers.gitnexus.targets]]"], ["keep", "array"]]
 EOF
     if HOME="$TEST_HOME" PATH="$platform_bin:$PATH" \
         bash "${SCRIPT_DIR}/dainexus-mcp-setup.sh" --codex > /dev/null 2>&1 && \
-        python3 - "$TEST_HOME/.codex/config.toml" "$TEST_HOME/.dainexus/mcp-server" "$platform_bin/gitnexus" <<'PY'
-import sys, tomllib
-path, runtime, gitnexus = sys.argv[1:]
+        python3 - "$TEST_HOME/.codex/config.toml" "$TEST_HOME/.dainexus/mcp-server" <<'PY'
+import os, sys, tomllib
+path, runtime = sys.argv[1:]
 with open(path, "rb") as handle:
     root = tomllib.load(handle)
 config = root["mcp_servers"]
-fw, gn = config["dai-nexus"], config["gitnexus"]
+fw, mem = config["dai-nexus"], config["dai-memory"]
 raise SystemExit(0 if fw["command"] == f"{runtime}/node_modules/.bin/tsx" and
                  fw["args"] == [f"{runtime}/src/index.ts"] and
-                 "env" not in fw and "targets" not in fw and gn["command"] == gitnexus and
-                 gn["args"] == ["mcp"] and
+                 "env" not in fw and "targets" not in fw and mem["command"] == os.environ["MEMORY_NODE"] and
+                 mem["args"] == [os.environ["MEMORY_CLI"], "serve"] and
                  root["unrelated"]["value"] == 7 and root["ui"]["theme"] == "light" and
                  "not-a-table-inside-a-string" in root["ui"]["description"] and
                  root["ui"]["nested"][0][1] == "keep" else 1)
@@ -826,19 +838,19 @@ PY
 EOF
     if HOME="$TEST_HOME" PATH="$platform_bin:$PATH" \
         bash "${SCRIPT_DIR}/dainexus-mcp-setup.sh" --zed > /dev/null 2>&1 && \
-        node - "$zed_dir/settings.json" "$TEST_HOME/.dainexus/mcp-server" "$platform_bin/gitnexus" \
+        node - "$zed_dir/settings.json" "$TEST_HOME/.dainexus/mcp-server" \
             "$TEST_HOME/.dainexus/mcp-server/node_modules/jsonc-parser" <<'NODE'
 const fs = require('fs');
-const [path, runtime, gitnexus, parserModule] = process.argv.slice(2);
+const [path, runtime, parserModule] = process.argv.slice(2);
 const errors = [];
 const config = require(parserModule).parse(fs.readFileSync(path, 'utf8'), errors, { allowTrailingComma: true });
 if (errors.length) process.exit(1);
-const fw = config.context_servers?.dainexus;
-const gn = config.context_servers?.gitnexus;
+const fw = config.context_servers?.['dai-nexus'];
+const mem = config.context_servers?.['dai-memory'];
 process.exit(config.theme === 'solarized' && config.mcpServers.legacy.keep === true &&
   config.context_servers.other.command === 'other' &&
   fw.command === `${runtime}/node_modules/.bin/tsx` && fw.args[0] === `${runtime}/src/index.ts` &&
-  gn.command === gitnexus && gn.args[0] === 'mcp' ? 0 : 1);
+  mem.command === process.env.MEMORY_NODE && mem.args[0] === process.env.MEMORY_CLI && mem.args[1] === 'serve' ? 0 : 1);
 NODE
     then
         if grep -Fq 'Preserve Zed theme and this comment.' "$zed_dir/settings.json"; then
@@ -867,22 +879,22 @@ EOF
     if HOME="$TEST_HOME" PATH="$platform_bin:$PATH" \
         bash "${SCRIPT_DIR}/dainexus-mcp-setup.sh" --opencode > /dev/null 2>&1 && \
         node - "$TEST_HOME/.config/opencode/opencode.jsonc" "$TEST_HOME/.dainexus/mcp-server" \
-            "$platform_bin/gitnexus" "$TEST_HOME/.dainexus/mcp-server/node_modules/jsonc-parser" \
+            "$TEST_HOME/.dainexus/mcp-server/node_modules/jsonc-parser" \
             "$TEST_PROJECT/.antigravity/mcp-manifest.json" <<'NODE' && \
         cmp -s "$TEST_PROJECT/opencode-json-before.json" "$TEST_HOME/.config/opencode/opencode.json" && \
         grep -Fq 'Preserve the active OpenCode JSONC schema setting.' "$TEST_HOME/.config/opencode/opencode.jsonc"
 const fs = require('fs');
-const [path, runtime, gitnexus, parserModule, manifestPath] = process.argv.slice(2);
+const [path, runtime, parserModule, manifestPath] = process.argv.slice(2);
 const errors = [];
 const config = require(parserModule).parse(fs.readFileSync(path, 'utf8'), errors, { allowTrailingComma: true });
 if (errors.length) process.exit(1);
-const fw = config.mcp?.dainexus;
-const gn = config.mcp?.gitnexus;
+const fw = config.mcp?.['dai-nexus'];
+const mem = config.mcp?.['dai-memory'];
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 process.exit(config.theme === 'system' && config.mcpServers.legacy.keep === true &&
   config.mcp.other.type === 'remote' && fw.type === 'local' && fw.enabled === true &&
   JSON.stringify(fw.command) === JSON.stringify([`${runtime}/node_modules/.bin/tsx`, `${runtime}/src/index.ts`]) &&
-  gn.type === 'local' && JSON.stringify(gn.command) === JSON.stringify([gitnexus, 'mcp']) &&
+  mem.type === 'local' && JSON.stringify(mem.command) === JSON.stringify([process.env.MEMORY_NODE, process.env.MEMORY_CLI, 'serve']) &&
   manifest.platforms.opencode === path ? 0 : 1);
 NODE
     then
@@ -934,17 +946,17 @@ PY
     fi
 
     mkdir -p "$TEST_HOME/.cursor" "$TEST_HOME/.gemini/config" "$TEST_HOME/.codex"
-    local unusable='{"mcpServers":{"dai-nexus":{"command":"","args":[]},"gitnexus":{"command":"","args":[]}}}'
+    local unusable='{"mcpServers":{"dai-nexus":{"command":"","args":[]},"dai-memory":{"command":"","args":[]}}}'
     printf '%s\n' "$unusable" > "$TEST_HOME/.cursor/mcp.json"
     printf '%s\n' "$unusable" > "$TEST_HOME/.claude.json"
     printf '%s\n' "$unusable" > "$TEST_HOME/.gemini/settings.json"
     printf '%s\n' "$unusable" > "$TEST_HOME/.gemini/config/mcp_config.json"
     printf '{}\n' > "$TEST_HOME/.gemini/mcp-server-enablement.json"
-    printf '[mcp_servers.dai-nexus]\ncommand = ""\nargs = []\n[mcp_servers.gitnexus]\ncommand = ""\nargs = []\n' \
+    printf '[mcp_servers.dai-nexus]\ncommand = ""\nargs = []\n[mcp_servers.dai-memory]\ncommand = ""\nargs = []\n' \
         > "$TEST_HOME/.codex/config.toml"
-    printf '{"context_servers":{"dai-nexus":{"command":"","args":[]},"gitnexus":{"command":"","args":[]},},}\n' \
+    printf '{"context_servers":{"dai-nexus":{"command":"","args":[]},"dai-memory":{"command":"","args":[]},},}\n' \
         > "$zed_dir/settings.json"
-    printf '{"mcp":{"dai-nexus":{"type":"local","command":[],},"gitnexus":{"type":"local","command":[],},},}\n' \
+    printf '{"mcp":{"dai-nexus":{"type":"local","command":[],},"dai-memory":{"type":"local","command":[],},},}\n' \
         > "$TEST_HOME/.config/opencode/opencode.jsonc"
     local check_output diagnose_output
     check_output="$(HOME="$TEST_HOME" PATH="$platform_bin:$PATH" \
@@ -1020,7 +1032,7 @@ test_gemini_isolated() {
     printf '#!/usr/bin/env sh\nexit 0\n' > "$gemini_bin/gemini"
     printf '#!/usr/bin/env sh\nexit 0\n' > "$gemini_bin/gitnexus"
     chmod +x "$gemini_bin/gemini" "$gemini_bin/gitnexus"
-    printf '{"dai-nexus":{"enabled":false},"gitnexus":{"enabled":false},"other":{"enabled":false},"custom":{"keep":7}}\n' \
+    printf '{"dai-nexus":{"enabled":false},"dai-memory":{"enabled":false},"other":{"enabled":false},"custom":{"keep":7}}\n' \
         > "$gemini_home/.gemini/mcp-server-enablement.json"
     printf '{"mcpServers":{"existing":{"command":"keep"}},"antigravitySetting":true}\n' \
         > "$gemini_home/.gemini/config/mcp_config.json"
@@ -1030,16 +1042,16 @@ test_gemini_isolated() {
         bash "${SCRIPT_DIR}/dainexus-mcp-setup.sh" --gemini 2>&1)" && \
         node - "$gemini_home/.gemini/settings.json" \
             "$gemini_home/.gemini/mcp-server-enablement.json" \
-            "$project_real" "$gemini_bin/gitnexus" "$TEST_PROJECT/.antigravity/mcp-manifest.json" <<'NODE' &&
+            "$project_real" "$TEST_PROJECT/.antigravity/mcp-manifest.json" <<'NODE' &&
 const fs = require('fs');
-const [settingsPath, enablementPath, project, gitnexus, manifestPath] = process.argv.slice(2);
+const [settingsPath, enablementPath, project, manifestPath] = process.argv.slice(2);
 const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
 const enablement = JSON.parse(fs.readFileSync(enablementPath, 'utf8'));
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 process.exit(
-  settings.mcpServers.dainexus.env.DAINEXUS_WORKSPACE === project &&
-  settings.mcpServers.gitnexus.command === gitnexus &&
-  !('dai-nexus' in enablement) && !('gitnexus' in enablement) &&
+  settings.mcpServers['dai-nexus'].env.DAINEXUS_WORKSPACE === project &&
+  settings.mcpServers['dai-memory'].command === process.env.MEMORY_NODE &&
+  !('dai-nexus' in enablement) && !('dai-memory' in enablement) &&
   enablement.other.enabled === false && enablement.custom.keep === 7 &&
   JSON.stringify(Object.keys(manifest.platforms)) === JSON.stringify(['gemini']) ? 0 : 1
 );
@@ -1095,15 +1107,15 @@ for (const path of [`${home}/.cursor/mcp.json`, `${home}/.claude.json`,
                     `${home}/.gemini/settings.json`, `${home}/.gemini/config/mcp_config.json`,
                     `${home}/.qwen/settings.json`, desktop]) {
   const config = JSON.parse(fs.readFileSync(path, 'utf8'));
-  if (!config.mcpServers?.dainexus || !config.mcpServers?.gitnexus) process.exit(1);
+  if (!config.mcpServers?.['dai-nexus'] || !config.mcpServers?.['dai-memory']) process.exit(1);
 }
 const zedConfig = JSON.parse(fs.readFileSync(zed, 'utf8'));
-if (zedConfig.zedSetting !== true || !zedConfig.context_servers?.dainexus ||
-    !zedConfig.context_servers?.gitnexus || zedConfig.mcpServers) process.exit(1);
+if (zedConfig.zedSetting !== true || !zedConfig.context_servers?.['dai-nexus'] ||
+    !zedConfig.context_servers?.['dai-memory'] || zedConfig.mcpServers) process.exit(1);
 const opencode = JSON.parse(fs.readFileSync(`${home}/.config/opencode/opencode.json`, 'utf8'));
 if (opencode.opencodeSetting !== true || opencode.mcp.other.type !== 'remote' ||
-    opencode.mcp.dainexus.type !== 'local' || !Array.isArray(opencode.mcp.dainexus.command) ||
-    opencode.mcp.gitnexus.type !== 'local' || !Array.isArray(opencode.mcp.gitnexus.command)) process.exit(1);
+    opencode.mcp['dai-nexus'].type !== 'local' || !Array.isArray(opencode.mcp['dai-nexus'].command) ||
+    opencode.mcp['dai-memory'].type !== 'local' || !Array.isArray(opencode.mcp['dai-memory'].command)) process.exit(1);
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 const expected = ['antigravity', 'claude_code', 'claude_desktop', 'codex', 'cursor', 'gemini', 'opencode', 'qwen', 'zed'];
 const expectedPaths = {
@@ -1119,7 +1131,7 @@ NODE
 import sys, tomllib
 with open(sys.argv[1], "rb") as handle:
     servers = tomllib.load(handle)["mcp_servers"]
-raise SystemExit(0 if {"dai-nexus", "gitnexus"}.issubset(servers) else 1)
+raise SystemExit(0 if {"dai-nexus", "dai-memory"}.issubset(servers) else 1)
 PY
     then
         if cmp -s "$TEST_PROJECT/all-claude-settings-before.json" "$all_home/.claude/settings.json"; then
@@ -1334,11 +1346,11 @@ for (const path of [`${home}/.cursor/mcp.json`, `${home}/.claude.json`,
                     `${opencodeRoot}/config.json`]) {
   const config = JSON.parse(fs.readFileSync(path, 'utf8'));
   if (config.keep !== 'unchanged' || config.mcpServers.other.command !== 'keep' ||
-      config.mcpServers.dainexus || config.mcpServers.gitnexus) process.exit(1);
+      config.mcpServers['dai-nexus'] || config.mcpServers['dai-memory'] || config.mcpServers.gitnexus) process.exit(1);
 }
 const zed = JSON.parse(fs.readFileSync(zedPath, 'utf8'));
 if (zed.keep !== 'zed' || zed.context_servers.other.command !== 'keep' ||
-    zed.context_servers.dainexus || zed.context_servers.gitnexus) process.exit(1);
+    zed.context_servers['dai-nexus'] || zed.context_servers['dai-memory'] || zed.context_servers.gitnexus) process.exit(1);
 const parseJsonc = (path) => {
   const errors = [];
   const value = require(parserModule).parse(fs.readFileSync(path, 'utf8'), errors, { allowTrailingComma: true });
@@ -1347,10 +1359,10 @@ const parseJsonc = (path) => {
 };
 const desktop = parseJsonc(desktopPath);
 if (desktop.desktopKeep !== true || desktop.mcpServers.other.command !== 'keep' ||
-    desktop.mcpServers.dainexus || desktop.mcpServers.gitnexus) process.exit(1);
+    desktop.mcpServers['dai-nexus'] || desktop.mcpServers['dai-memory'] || desktop.mcpServers.gitnexus) process.exit(1);
 const opencode = parseJsonc(`${opencodeRoot}/opencode.jsonc`);
 if (opencode.keep !== 'opencode' || opencode.mcp.other.type !== 'remote' ||
-    opencode.mcp.dainexus || opencode.mcp.gitnexus) process.exit(1);
+    opencode.mcp['dai-nexus'] || opencode.mcp['dai-memory'] || opencode.mcp.gitnexus) process.exit(1);
 NODE
         python3 - "$uninstall_home/.codex/config.toml" "$opencode_root/config.toml" <<'PY'
 import sys
@@ -1548,19 +1560,121 @@ test_round7_safety_boundaries() {
     cleanup
 }
 
-test_gitnexus() {
-    [[ "$FAST" == "1" ]] && { skip "GitNexus test (--fast mode)"; return; }
+# Code intelligence moved from GitNexus to the DAI memory layer. A client that
+# was set up before keeps a `gitnexus` entry this script wrote; the next run
+# must take that one out, and must not touch one the user added themselves.
+test_memory_switchover() {
+    [[ "$FAST" == "1" ]] && { skip "Memory switch-over test (--fast mode)"; return; }
 
     echo ""
-    echo -e "${CYAN}━━━ GitNexus ━━━${NC}"
-
-    cd "$PROJECT_ROOT"
-    info "Testing gitnexus binary"
-    if which gitnexus > /dev/null 2>&1; then
-        pass "gitnexus is installed"
-    else
-        skip "gitnexus is not installed locally"
+    echo -e "${CYAN}━━━ GitNexus → DAI memory ━━━${NC}"
+    setup_test_project
+    seed_canonical_dependencies
+    # The JSON writer edits through jsonc-parser; a checkout whose mcp/ has not
+    # been installed has none to seed, so bring the one this suite resolved.
+    if [[ ! -f "$TEST_HOME/.dainexus/mcp-server/node_modules/jsonc-parser/lib/umd/main.js" ]]; then
+        cp -a "$JSONC_PARSER_MODULE" "$TEST_HOME/.dainexus/mcp-server/node_modules/jsonc-parser"
     fi
+    local config="$TEST_HOME/.cursor/mcp.json"
+    local ledger="$TEST_HOME/.dainexus/.mcp-config-ledger.json"
+    mkdir -p "$TEST_HOME/.cursor"
+    printf '{"mcpServers":{}}\n' > "$config"
+    # The writers are driven directly: a full setup also needs an atomic
+    # directory exchange, which not every platform offers, and that is not
+    # what this test is about.
+    write_cursor() {
+        HOME="$TEST_HOME" bash -c 'source "$1"; write_json_mcp_config "$2" cursor' \
+            _ "${SCRIPT_DIR}/dainexus-mcp-setup.sh" "$config" >/dev/null 2>&1
+    }
+
+    if ! write_cursor || ! node -e "
+const servers = JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')).mcpServers;
+const memory = servers['dai-memory'];
+process.exit(servers['dai-nexus'] && memory && memory.command === process.env.MEMORY_NODE &&
+  JSON.stringify(memory.args) === JSON.stringify([process.env.MEMORY_CLI, 'serve']) ? 0 : 1);
+" "$config"; then
+        fail "Setup could not register the memory server"
+        cleanup
+        return
+    fi
+
+    # What an earlier version of this script left behind: a gitnexus entry,
+    # with the ledger record that says this script wrote it.
+    node - "$config" "$ledger" <<'NODE'
+const fs = require('fs');
+const crypto = require('crypto');
+const [configPath, ledgerPath] = process.argv.slice(2);
+const entry = { command: 'gitnexus', args: ['mcp'] };
+const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+config.mcpServers.gitnexus = entry;
+fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+const real = fs.realpathSync(configPath);
+const ledger = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
+ledger.records[crypto.createHash('sha256').update(`${real}:cursor:gitnexus`).digest('hex')] = {
+  canonical_path: real, schema: 'cursor', managed_name: 'gitnexus', created: true, owned: true,
+  normalized_value_sha256: crypto.createHash('sha256').update(JSON.stringify(entry)).digest('hex'),
+};
+fs.writeFileSync(ledgerPath, JSON.stringify(ledger, null, 2));
+NODE
+    if write_cursor && node - "$config" "$ledger" <<'NODE'
+const fs = require('fs');
+const [configPath, ledgerPath] = process.argv.slice(2);
+const servers = JSON.parse(fs.readFileSync(configPath, 'utf8')).mcpServers;
+const records = Object.values(JSON.parse(fs.readFileSync(ledgerPath, 'utf8')).records);
+process.exit(!('gitnexus' in servers) && servers['dai-memory'] &&
+  !records.some((record) => record.managed_name === 'gitnexus') ? 0 : 1);
+NODE
+    then
+        pass "A gitnexus entry this script wrote is removed, with its ledger record"
+    else
+        fail "The owned gitnexus entry survived the switch to the memory server"
+    fi
+
+    # One the user added by hand has no ledger record, and stays.
+    node -e "
+const fs = require('fs');
+const config = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
+config.mcpServers.gitnexus = { command: 'my-own-gitnexus', args: ['mcp'] };
+fs.writeFileSync(process.argv[1], JSON.stringify(config, null, 2));
+" "$config"
+    if write_cursor && grep -Fq '"my-own-gitnexus"' "$config"; then
+        pass "A gitnexus entry the user added is left alone"
+    else
+        fail "Setup removed or rejected a gitnexus entry it does not own"
+    fi
+
+    # No engine, no entry: the config is not touched at all.
+    cp "$config" "$TEST_PROJECT/before-no-engine.json"
+    if DAI_MEMORY_ENGINE="$TEST_PROJECT/no-engine-here" write_cursor; then
+        fail "Setup succeeded without a memory engine"
+    elif cmp -s "$TEST_PROJECT/before-no-engine.json" "$config"; then
+        pass "Setup without a memory engine fails closed, config byte-identical"
+    else
+        fail "Setup without a memory engine changed the config"
+    fi
+
+    # Codex keeps its servers in TOML; the same pair is written there.
+    local codex="$TEST_HOME/.codex/config.toml"
+    mkdir -p "$TEST_HOME/.codex"
+    printf '[ui]\ntheme = "light"\n' > "$codex"
+    if HOME="$TEST_HOME" bash -c 'source "$1"; write_toml_mcp_config "$2"' \
+            _ "${SCRIPT_DIR}/dainexus-mcp-setup.sh" "$codex" >/dev/null 2>&1 && \
+        python3 - "$codex" <<'PY'
+import os, sys, tomllib
+with open(sys.argv[1], "rb") as handle:
+    config = tomllib.load(handle)
+memory = config["mcp_servers"]["dai-memory"]
+raise SystemExit(0 if config["ui"]["theme"] == "light" and "dai-nexus" in config["mcp_servers"] and
+                 memory["command"] == os.environ["MEMORY_NODE"] and
+                 memory["args"] == [os.environ["MEMORY_CLI"], "serve"] and
+                 "gitnexus" not in config["mcp_servers"] else 1)
+PY
+    then
+        pass "Codex TOML gets the memory server and no gitnexus entry"
+    else
+        fail "Codex TOML memory server registration failed"
+    fi
+    cleanup
 }
 
 test_docs() {
@@ -1777,8 +1891,6 @@ ${BLUE}▶ Testing Durable Client-Config Ownership Ledger${NC}"
     local codex_config="$TEST_HOME/.codex/config.toml"
     local canonical_tsx="$TEST_HOME/.dainexus/mcp-server/node_modules/.bin/tsx"
     local canonical_server="$TEST_HOME/.dainexus/mcp-server/src/index.ts"
-    local gitnexus_path
-    gitnexus_path="$(command -v gitnexus)"
     mkdir -p "$(dirname "$codex_config")"
     cat > "$codex_config" <<EOF
 [mcp_servers.dai-nexus]
@@ -1787,11 +1899,11 @@ transport = { type = "stdio" }
 command = "$canonical_tsx"
 args = ["$canonical_server"]
 
-[mcp_servers.gitnexus]
+[mcp_servers.dai-memory]
 enabled = true
 transport = { type = "stdio" }
-command = "$gitnexus_path"
-args = ["mcp"]
+command = "$MEMORY_NODE"
+args = ["$MEMORY_CLI", "serve"]
 EOF
     cp "$codex_config" "$TEST_PROJECT/unowned-codex-before.toml"
     if ! bash "$SCRIPT_DIR/dainexus-mcp-setup.sh" --codex >/dev/null 2>&1; then
@@ -1845,7 +1957,7 @@ for key, record in ledger["records"].items():
     assert re.fullmatch(r"[0-9a-f]{64}", key)
     assert set(record) == required
     assert os.path.isabs(record["canonical_path"])
-    assert record["managed_name"] in {"dai-nexus", "gitnexus"}
+    assert record["managed_name"] in {"dai-nexus", "dai-memory"}
     assert isinstance(record["created"], bool)
     assert record["owned"] is True
     assert re.fullmatch(r"[0-9a-f]{64}", record["normalized_value_sha256"])
@@ -1998,7 +2110,7 @@ PY
     test_all_isolated
     test_uninstall_contracts
     test_round7_safety_boundaries
-    test_gitnexus
+    test_memory_switchover
     test_docs
     test_templates
     test_round8_fixes

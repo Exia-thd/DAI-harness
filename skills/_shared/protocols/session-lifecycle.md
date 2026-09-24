@@ -60,9 +60,9 @@ ELSE:
 
 ```
 IF LOCAL_MEMORY_DISABLED != true AND DAINEXUS_SKIP_MEMORY != 1:
-  Run: python3 scripts/lite/memory.py search "<project-name> <user-request-keywords>" --limit 5
+  Run: dn_memory_search with the project name and the user request keywords (limit 5)
   IF no results returned:
-    Run: python3 scripts/lite/memory.py add "Project initialized" --category project --source "session-start"
+    Run: dn_memory_add "Project initialized" with category project
     Run search again with same query
   Inject results into prompt context (max 800 tokens)
   Log: "✓ Memory loaded: [N] relevant items"
@@ -74,16 +74,16 @@ ELSE:
 ### Step 3.5 — Check Code Intelligence Freshness
 
 ```
-IF .gitnexus/ directory exists AND gitnexus CLI available:
+IF .memory/meta.json exists AND the memory engine is installed (python scripts/lite/dai_memory.py where):
   Check index freshness:
-    last_indexed = .gitnexus/metadata.json → indexed_at
+    last_indexed_commit = .memory/meta.json → lastCommit
     commits_since = git rev-list --count HEAD ^<last_indexed_commit>
 
-  IF commits_since > 0 OR index_age > 1 hour:
+  IF commits_since > 0:
     Log: "⧖ Code Intelligence index stale — auto-reindexing"
-    Run: gitnexus analyze 2>/dev/null
+    Run: dai-memory ingest --quiet
     IF success:
-      Log: "✓ Code Intelligence refreshed ([N] symbols, [M] relationships)"
+      Log: "✓ Code Intelligence refreshed (dai-memory status for the graph size)"
     ELSE:
       Log: "⚠ Code Intelligence reindex failed — using stale index"
       Continue with existing index (stale > nothing)
@@ -91,7 +91,7 @@ IF .gitnexus/ directory exists AND gitnexus CLI available:
     Log: "✓ Code Intelligence index fresh"
 
 ELSE IF project-profile.json → code_intelligence.indexed == false:
-  Log: "ℹ Code Intelligence not set up — run 'gitnexus analyze' for deep code understanding"
+  Log: "ℹ Code Intelligence not set up — run 'dai-memory init' for deep code understanding"
   Continue without Code Intelligence (graceful degradation)
 ```
 
@@ -109,8 +109,8 @@ IF running in Antigravity (Claude Code):
       Log: "✓ MCP manifest found — workspace isolation active"
       IF .dainexus/mcp-server/server.ts exists:
         Log: "  └── dai-nexus-mcp-server: ready"
-      IF gitnexus/ exists:
-        Log: "  └── gitnexus: ready"
+      IF .memory/meta.json exists:
+        Log: "  └── dai-memory: ready"
       # MCP server spawning is handled by dainexus-mcp-launcher.sh
       # (configured once in claude_desktop_config.json)
 
@@ -393,10 +393,10 @@ IF .dainexus/memory-bank/handover-*.md exists (but not HANDOVER.md):
 ```
 IF LOCAL_MEMORY_DISABLED != true AND DAINEXUS_SKIP_MEMORY != 1:
   # Search for recent conversation facts (within current session)
-  python3 scripts/lite/memory.py search "conversation recent" --limit 3
+  dn_memory_search "conversation recent" (limit 3)
   
   # Search for task context relevant to current request
-  python3 scripts/lite/memory.py list --category session --limit 3
+  dn_memory_search "session" (limit 3)
   
   # Inject: "Recent context: [top memories]"
   Log: "✓ Recent turns loaded — [N] relevant items"
@@ -463,7 +463,7 @@ Called after each pipeline phase completes (DEFINE, BUILD, HARDEN, SHIP, SUSTAIN
    }
 
 2. Save phase summary to memory:
-   Run: python3 scripts/lite/memory.py add "Phase [phase_name] completed: [summary]" --category tasks
+   Run: dn_memory_add "Phase [phase_name] completed: [summary]" with category procedure
 
 3. Update quality metrics (see quality-dashboard.md)
 ```
@@ -484,7 +484,7 @@ Called after each strategic gate.
 ```
 1. Update session-log.json → gates.[gate_number] = { decision, feedback, decided_at }
 2. Save to memory:
-   Run: python3 scripts/lite/memory.py add "Gate [N] [decision]: [feedback summary]" --category decisions
+   Run: dn_memory_add "Gate [N] [decision]: [feedback summary]" with category decision
 ```
 
 ### Hook: HEARTBEAT(task_id, status_message)
@@ -621,10 +621,10 @@ BEFORE running the memory add command, auto-generate a summary:
 
 ### Step TC2 — Write Turn-Close Memory (Mandatory)
 
-**MUST run at least one** `scripts/lite/memory.py add` per turn, using a **single compact line** (redact secrets; stay under ~400 chars):
+**MUST record at least one** memory per turn (`dn_memory_add`), using a **single compact line** (redact secrets; stay under ~400 chars):
 
 ```bash
-python3 scripts/lite/memory.py add "REQ: [1-line user goal] | DONE: [what changed or decided] | OPEN: [blockers/questions or none] | SCOPE_UPDATE: [scope change or 'stable'] | CONVERSATION: [auto-summary from TC1]" --category session
+dn_memory_add "REQ: [1-line user goal] | DONE: [what changed or decided] | OPEN: [blockers/questions or none] | SCOPE_UPDATE: [scope change or 'stable'] | CONVERSATION: [auto-summary from TC1]" with category session
 ```
 
 ### SCOPE_UPDATE Field
@@ -658,7 +658,7 @@ IF Turn-Close memory written:
 ELSE:
   Retry once
   IF still failing:
-    Log: "⚠ local_memory add failed" in session-log.json under events
+    Log: "⚠ memory add failed" in session-log.json under events
     Tell user: "Memory sync failed — some context may not persist"
 ```
 
@@ -686,14 +686,14 @@ Called when pipeline completes OR when session is explicitly ended.
    }
 
 3. Save to memory:
-   Run: python3 scripts/lite/memory.py add "Session completed: [summary]. Next: [next_steps]" --category session
+   Run: dn_memory_add "Session completed: [summary]. Next: [next_steps]" with category session
 
 4. Add project identity (if no memories exist):
-   Run: python3 scripts/lite/memory.py add "Project: [name] v[version]" --category project --source "session-end" 2>/dev/null || true
+   Run: dn_memory_add "Project: [name] v[version]" with category project
 
 5. Auto-reindex Code Intelligence:
-   IF .gitnexus/ exists AND gitnexus CLI available:
-     Run: gitnexus analyze 2>/dev/null
+   IF .memory/meta.json exists AND the memory engine is installed:
+     Run: dai-memory ingest --quiet
      IF success:
        Log: "✓ Code Intelligence reindexed for next session"
      ELSE:

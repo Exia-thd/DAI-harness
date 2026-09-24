@@ -114,7 +114,7 @@ function createProject(name = "gate-project"): string {
       max_stale_days: 30,
     },
     truth: ["README.md", "docs/project-state.json"],
-    adapters: { git: true, gitnexus: false, evidence_summary: false },
+    adapters: { git: true, dai_memory: false, evidence_summary: false },
     privacy: {
       mode: "allowlist",
       allow: ["README.md", "docs/Guide.md", "docs/project-state.json"],

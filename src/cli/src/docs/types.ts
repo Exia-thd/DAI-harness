@@ -33,6 +33,8 @@ export interface DocsManifest {
   truth?: string[];
   adapters?: {
     git?: boolean;
+    dai_memory?: boolean;
+    /** Deprecated: the name of dai_memory before GitNexus was replaced. */
     gitnexus?: boolean;
     evidence_summary?: boolean;
   };
@@ -250,12 +252,11 @@ export interface ProjectFacts {
     commit: string | null;
     dirty: boolean | null;
   };
-  gitnexus: {
+  codeIndex: {
     status: "available" | "stale" | "unavailable" | "disabled";
     indexedCommit: string | null;
     indexedAt: string | null;
-    processes: number | null;
-    symbols: number | null;
+    files: number | null;
   };
   profile: Record<string, unknown>;
 }

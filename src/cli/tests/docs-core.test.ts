@@ -670,8 +670,8 @@ describe("privacy-safe scanning and deterministic normalization", () => {
     ).toBe(false);
   });
 
-  it("degrades GitNexus explicitly when stale or unavailable", () => {
-    const unavailableRoot = tempProject("gitnexus-unavailable");
+  it("degrades the code index explicitly when stale or unavailable", () => {
+    const unavailableRoot = tempProject("code-index-unavailable");
     mkdirSync(join(unavailableRoot, "Docs"), { recursive: true });
     writeFileSync(
       join(unavailableRoot, "Docs", "guide.md"),
@@ -683,14 +683,20 @@ describe("privacy-safe scanning and deterministic normalization", () => {
       ...unavailableManifest.manifest,
       adapters: {
         ...unavailableManifest.manifest.adapters,
-        gitnexus: true,
+        dai_memory: true,
       },
     });
-    expect(scanProject(unavailableRoot).project.facts.gitnexus.status).toBe(
+    const unavailableCatalog = scanProject(unavailableRoot);
+    expect(unavailableCatalog.project.facts.codeIndex.status).toBe(
       "unavailable",
     );
+    expect(
+      unavailableCatalog.diagnostics.some(
+        (diagnostic) => diagnostic.code === "CODE_INDEX_UNAVAILABLE",
+      ),
+    ).toBe(true);
 
-    const staleRoot = tempProject("gitnexus-stale");
+    const staleRoot = tempProject("code-index-stale");
     mkdirSync(join(staleRoot, "Docs"), { recursive: true });
     writeFileSync(join(staleRoot, "Docs", "guide.md"), "# Guide\n", "utf8");
     spawnSync("git", ["init"], { cwd: staleRoot });
@@ -703,20 +709,58 @@ describe("privacy-safe scanning and deterministic normalization", () => {
     const staleManifest = initManifest(staleRoot);
     writeJson(staleManifest.path, {
       ...staleManifest.manifest,
-      adapters: { ...staleManifest.manifest.adapters, gitnexus: true },
+      adapters: { ...staleManifest.manifest.adapters, dai_memory: true },
     });
-    writeJson(join(staleRoot, ".gitnexus", "meta.json"), {
+    writeJson(join(staleRoot, ".memory", "meta.json"), {
       lastCommit: "0000000000000000000000000000000000000000",
       indexedAt: "2026-08-01T00:00:00Z",
-      stats: { nodes: 10, processes: 2 },
+      fileHashes: { "Docs/guide.md": "a", "src/a.ts": "b" },
     });
     const staleCatalog = scanProject(staleRoot);
-    expect(staleCatalog.project.facts.gitnexus.status).toBe("stale");
+    expect(staleCatalog.project.facts.codeIndex.status).toBe("stale");
+    expect(staleCatalog.project.facts.codeIndex.files).toBe(2);
     expect(
       staleCatalog.diagnostics.some(
-        (diagnostic) => diagnostic.code === "GITNEXUS_STALE",
+        (diagnostic) => diagnostic.code === "CODE_INDEX_STALE",
       ),
     ).toBe(true);
+
+    // Indexed at the current commit, with a clean tree: nothing to report.
+    const head = spawnSync("git", ["rev-parse", "HEAD"], {
+      cwd: staleRoot,
+      encoding: "utf8",
+    }).stdout.trim();
+    writeJson(join(staleRoot, ".memory", "meta.json"), {
+      lastCommit: head,
+      indexedAt: "2026-08-01T00:00:00Z",
+      fileHashes: {},
+    });
+    expect(scanProject(staleRoot).project.facts.codeIndex.status).toBe(
+      "available",
+    );
+  });
+
+  it("honours the adapter's former gitnexus name in manifests written before", () => {
+    const root = tempProject("code-index-legacy-name");
+    mkdirSync(join(root, "Docs"), { recursive: true });
+    writeFileSync(join(root, "Docs", "guide.md"), "# Guide\n", "utf8");
+    const initialized = initManifest(root);
+    const { dai_memory: _dropped, ...legacyAdapters } =
+      initialized.manifest.adapters ?? {};
+    writeJson(initialized.path, {
+      ...initialized.manifest,
+      adapters: { ...legacyAdapters, gitnexus: true },
+    });
+    expect(scanProject(root).project.facts.codeIndex.status).toBe(
+      "unavailable",
+    );
+
+    // Once the new name is present it decides, whatever the old one says.
+    writeJson(initialized.path, {
+      ...initialized.manifest,
+      adapters: { ...legacyAdapters, gitnexus: true, dai_memory: false },
+    });
+    expect(scanProject(root).project.facts.codeIndex.status).toBe("disabled");
   });
 
   it("preserves successful project output when another batch project fails", () => {

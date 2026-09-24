@@ -161,7 +161,7 @@ const fs = require('fs');
 const config = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 if (!config || Array.isArray(config) || typeof config !== 'object') process.exit(1);
 const managed = Object.keys(config).some((name) =>
-  ['dai-nexus', 'gitnexus'].includes(name.toLowerCase().trim()));
+  ['dai-nexus', 'dai-memory'].includes(name.toLowerCase().trim()));
 process.exit(managed ? 1 : 0);
 NODE
     fi

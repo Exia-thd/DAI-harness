@@ -113,9 +113,9 @@ add_section "ACTIVE CONTEXT" "$ACTIVECONTEXT_CONTENT" "$MAX_ACTIVECONTEXT_TOKENS
 MEM0_CONTENT="NOT_FOUND"
 
 # Guardrail: Check if memory CLI is available
-if command -v python3 &>/dev/null && [ -f "scripts/lite/memory.py" ]; then
+if command -v python3 &>/dev/null && [ -f "scripts/lite/dai_memory.py" ]; then
   # Attempt to fetch recent memories (suppress errors if unconfigured)
-  MEM0_RAW=$(python3 scripts/lite/memory.py search "session recent" --limit 3 2>/dev/null)
+  MEM0_RAW=$(python3 scripts/lite/dai_memory.py search "session recent" --limit 3 2>/dev/null)
   if [ -n "$MEM0_RAW" ] && [ "$MEM0_RAW" != "NOT_FOUND" ]; then
     MEM0_CONTENT=$(echo "$MEM0_RAW" | head -c $((MAX_MEM0_TOKENS * 4)))
   fi

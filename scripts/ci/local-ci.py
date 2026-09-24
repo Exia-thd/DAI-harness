@@ -362,16 +362,23 @@ class LocalCI:
         return found
 
     @property
-    def gitnexus(self) -> list[str]:
-        binary = _which("gitnexus")
-        if binary:
-            return [binary]
-        launcher = ROOT / ".gitnexus" / "run.cjs"
-        if launcher.is_file():
-            return [self.node, str(launcher)]
-        raise GateFailure(
-            "GitNexus is unavailable: install gitnexus or generate .gitnexus/run.cjs"
-        )
+    def dai_memory(self) -> list[str]:
+        """The vendored memory layer's CLI, which answers the code questions.
+
+        Installed outside the repository, one directory per pinned version, so
+        the gate asks the module where it is rather than guessing a path.
+        """
+        sys.path.insert(0, str(ROOT / "scripts" / "lite"))
+        try:
+            import dai_memory  # noqa: PLC0415
+        finally:
+            sys.path.pop(0)
+        if not dai_memory.installed():
+            raise GateFailure(
+                "the memory layer is not installed: run "
+                f"`{dai_memory.INSTALL_HINT}` (it installs to {dai_memory.engine_dir()})"
+            )
+        return [self.node, str(dai_memory.memory_cli())]
 
     def _raw_node_major(self, binary: str) -> int:
         output = self.capture(
@@ -766,24 +773,21 @@ class LocalCI:
             scope = "staged"
             extra: list[str] = []
         elif self._has_worktree_changes():
-            scope = "all"
+            # The layer calls this "working"; GitNexus called it "all".
+            scope = "working"
             extra = []
         else:
             scope = "compare"
             base = self.base_ref or "HEAD~1"
-            extra = ["--base-ref", base]
+            extra = ["--base", base]
         self.run(
-            "gitnexus-change-impact",
+            "change-impact",
             [
-                *self.gitnexus,
+                *self.dai_memory,
                 "detect-changes",
                 "--scope",
                 scope,
                 *extra,
-                "--repo",
-                str(ROOT),
-                "--limit",
-                "200",
             ],
         )
         openapi_base = self.base_ref or (
@@ -806,10 +810,12 @@ class LocalCI:
             )
 
     def reindex(self, *, force: bool) -> None:
-        argv = [*self.gitnexus, "analyze", str(ROOT), "--index-only"]
+        # `ingest` re-reads what changed and rebuilds the code graph; `init`
+        # would also rebuild the store, which is not what a reindex means.
+        argv = [*self.dai_memory, "ingest", "--quiet"]
         if force:
             argv.append("--force")
-        self.run("gitnexus-local-index", argv, timeout=900)
+        self.run("local-index", argv, timeout=900)
         if not self.dry_run:
             (ROOT / ".dainexus" / "cache" / "reindex-needed").unlink(missing_ok=True)
 
@@ -823,24 +829,14 @@ class LocalCI:
                 raise GateFailure("tsx is missing; run `npm run ci:bootstrap` first")
             self.run("sequence-docs", [tsx, str(sequence)])
         if generate:
-            provider = os.environ.get("DAINEXUS_WIKI_PROVIDER", "").strip()
-            model = os.environ.get("DAINEXUS_WIKI_MODEL", "").strip()
-            if not provider or not model:
-                raise GateFailure(
-                    "wiki generation requires DAINEXUS_WIKI_PROVIDER and DAINEXUS_WIKI_MODEL"
-                )
+            # No provider, no model, no network: the layer's wiki is derived
+            # from the graph, the recorded memory and the source, and every
+            # page says so. The old step called a language model and needed
+            # DAINEXUS_WIKI_PROVIDER and DAINEXUS_WIKI_MODEL; nothing here does.
             self.run(
-                "gitnexus-wiki-generate",
-                [
-                    *self.gitnexus,
-                    "wiki",
-                    str(ROOT),
-                    "--provider",
-                    provider,
-                    "--model",
-                    model,
-                ],
-                timeout=1800,
+                "wiki-generate",
+                [*self.dai_memory, "wiki"],
+                timeout=600,
             )
         self.run(
             "wiki-drift",
@@ -1127,7 +1123,7 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument(
         "--generate-wiki",
         action="store_true",
-        help="Generate local GitNexus wiki when mode=wiki",
+        help="Generate the local code wiki (dai-memory wiki) when mode=wiki",
     )
     return result
 

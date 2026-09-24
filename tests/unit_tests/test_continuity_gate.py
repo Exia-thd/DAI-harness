@@ -115,7 +115,7 @@ def _docs_contract(
                 "truthDocuments": ["docs/project-state.json"],
                 "facts": {
                     "git": {"commit": commit},
-                    "gitnexus": {"indexedCommit": None},
+                    "codeIndex": {"indexedCommit": None},
                 },
             },
             "documents": documents,
@@ -131,7 +131,7 @@ def _docs_contract(
             "documents": canonical_documents,
             "assets": [],
             "git": commit,
-            "gitnexus": None,
+            "codeIndex": None,
             "projectState": {"path": "docs/project-state.json", "hash": state_hash},
         }
         fingerprint = hashlib.sha256(
@@ -223,7 +223,7 @@ def _refresh_fixture_fingerprint(path: Path) -> None:
         "documents": documents,
         "assets": assets,
         "git": project["facts"]["git"]["commit"],
-        "gitnexus": project["facts"]["gitnexus"]["indexedCommit"],
+        "codeIndex": project["facts"]["codeIndex"]["indexedCommit"],
         "projectState": {
             "path": project["statePath"],
             "hash": project["stateHash"],

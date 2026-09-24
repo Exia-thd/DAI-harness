@@ -71,12 +71,12 @@ DAI Nexus stores its own project state locally by default:
 
 For an on-device-only workflow, configure a local model, local tools, and inspect each integration's network behavior. DAI Nexus does not override a provider's retention, billing, or telemetry policy.
 
-### 5. MCP & GitNexus Integration
+### 5. MCP & DAI memory Integration
 
 DAI Nexus exposes its capabilities through the **Model Context Protocol (MCP)**, giving your IDE direct access to:
 
 - **DAI Nexus MCP server** — Pipeline management, skill invocation, memory operations
-- **GitNexus MCP server** — Code intelligence with 19K+ symbols, impact analysis, blast radius, safe rename
+- **DAI memory MCP server** — Code intelligence (impact analysis, blast radius, safe rename, taint) and project memory
 
 For design and game work, the creative handoff is explicit: UX/research →
 Concept Artist → Art Director → UI/technical/engine handoff. The corresponding
@@ -127,17 +127,17 @@ Copy `AGENTS.md` and `CLAUDE.md` into your project root. Open your IDE and start
 
 ### Level 2 — Lite (Code Intelligence)
 
-Add GitNexus for deep code understanding. The AI can now answer "What uses this function?" and "What breaks if I change X?" with graph-backed evidence.
+Add the DAI memory code graph for deep code understanding. The AI can now answer "What uses this function?" and "What breaks if I change X?" with graph-backed evidence.
 
-- **Requirements:** Node.js 18+, `npm install -g gitnexus`
+- **Requirements:** Node.js 22+, `python3 scripts/lite/dai_memory.py install`
 - **What you get:** Symbol search, impact analysis, blast radius, safe rename
 
-### Level 3 — Memory (GraphRAG)
+### Level 3 — Memory
 
 Enable persistent memory so the AI remembers decisions, conventions, and lessons across sessions. Ideal for long-running projects.
 
-- **Requirements:** Python 3.8+ (for `scripts/lite/memory.py`)
-- **What you get:** Cross-session memory, ASIP learning, convention indexing, procedural circuits
+- **Requirements:** the same DAI memory install as Level 2
+- **What you get:** Cross-session memory of decisions, incidents and procedures, convention indexing
 
 ### Level 4 — Full (MCP Integration)
 
@@ -198,8 +198,9 @@ cp CLAUDE.md /path/to/your/project/
 # 3. Open in IDE and start talking
 cursor /path/to/your/project/
 
-# 4. (Optional) Add GitNexus for code intelligence
-npm install -g gitnexus && gitnexus setup && gitnexus analyze
+# 4. (Optional) Add the code graph (DAI memory)
+python3 dai-nexus/scripts/lite/dai_memory.py install
+node "$(python3 dai-nexus/scripts/lite/dai_memory.py where)/bin/dai-memory.mjs" init
 
 # 5. (Optional) Add MCP for full power
 bash scripts/dainexus-mcp-setup.sh

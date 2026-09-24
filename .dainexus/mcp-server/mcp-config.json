@@ -1,70 +1,125 @@
 {
   "$schema": "https://dai-nexus.dev/schemas/mcp-config.json",
   "project": "dai-nexus",
-  "generated_at": "2026-05-18T06:43:16Z",
-  "generated_by": "dai-nexus/mcp-generator",
+  "generated_at": "2026-09-21T09:44:29+07:00",
+  "generated_by": "M10 switch-over: the code intelligence is the vendored DAI memory layer",
   "dai_nexus_version": "7.0.0",
   "transport": "stdio",
   "tools": {
-    "query": {
+    "dai_memory_query": {
       "enabled": true,
-      "source": "gitnexus",
-      "description": "Query the code knowledge graph by concept — returns ranked symbols with execution flows"
+      "source": "dai-memory",
+      "description": "Ask the code graph in words; answers grouped by the execution flow each match runs in"
     },
-    "context": {
+    "dai_memory_context": {
       "enabled": true,
-      "source": "gitnexus",
-      "description": "360° view of a symbol — callers, callees, refs, process participation"
+      "source": "dai-memory",
+      "description": "One declaration from every side: container, members, callers, callees, types, imports, memory"
     },
-    "impact": {
+    "dai_memory_impact": {
       "enabled": true,
-      "source": "gitnexus",
-      "description": "Blast radius analysis — d=1 WILL BREAK, d=2 LIKELY AFFECTED, d=3 MAY NEED TESTING"
+      "source": "dai-memory",
+      "description": "What breaks if a declaration changes: dependents by distance, with confidence and a risk level"
     },
-    "detect_changes": {
+    "dai_memory_trace": {
       "enabled": true,
-      "source": "gitnexus",
-      "description": "Pre-commit risk assessment — maps git diff to affected symbols and execution flows"
+      "source": "dai-memory",
+      "description": "The shortest call path between two declarations, or where the chain breaks"
     },
-    "rename": {
+    "dai_memory_processes": {
       "enabled": true,
-      "source": "gitnexus",
-      "description": "Safe multi-file rename using call-graph analysis"
+      "source": "dai-memory",
+      "description": "Every execution flow: an entry point and what it reaches"
     },
-    "cypher": {
+    "dai_memory_process": {
       "enabled": true,
-      "source": "gitnexus",
-      "description": "Custom Cypher-style graph queries for complex structural searches"
+      "source": "dai-memory",
+      "description": "One execution flow, step by step"
     },
-    "route_map": {
+    "dai_memory_detect_changes": {
       "enabled": true,
-      "source": "gitnexus",
-      "description": "API route → handler mappings with middleware chains"
+      "source": "dai-memory",
+      "description": "What the current diff changes, in declarations rather than lines"
     },
-    "tool_map": {
+    "dai_memory_review": {
       "enabled": true,
-      "source": "gitnexus",
-      "description": "MCP/RPC tool definitions and their implementations"
+      "source": "dai-memory",
+      "description": "A branch as a reviewer wants it: what can break other files, which modules, who worked there"
     },
-    "shape_check": {
+    "dai_memory_rename": {
       "enabled": true,
-      "source": "gitnexus",
-      "description": "Check API response shapes against consumer property accesses"
+      "source": "dai-memory",
+      "description": "Rename through the call graph; nothing is written without apply"
     },
-    "api_impact": {
+    "dai_memory_check": {
       "enabled": true,
-      "source": "gitnexus",
-      "description": "Pre-change impact for API route handlers — consumers, middleware, risk"
+      "source": "dai-memory",
+      "description": "Invariants over the code graph, with what each rule examined"
     },
-    "pr_review": {
+    "dai_memory_code_clusters": {
       "enabled": true,
-      "source": "gitnexus",
-      "description": "PR blast-radius analysis — breaking changes, affected modules, reviewer recommendations"
+      "source": "dai-memory",
+      "description": "Communities in the call graph, named after where they live"
     },
-    "list_repos": {
+    "dai_memory_cypher": {
       "enabled": true,
-      "source": "gitnexus",
-      "description": "List all indexed repositories with symbol/edge stats"
+      "source": "dai-memory",
+      "description": "One read-only query against the store"
+    },
+    "dai_memory_status": {
+      "enabled": true,
+      "source": "dai-memory",
+      "description": "What is indexed, from which commit, and whether that is current"
+    },
+    "dai_memory_routes": {
+      "enabled": true,
+      "source": "dai-memory",
+      "description": "The HTTP routes this repository declares, per framework"
+    },
+    "dai_memory_shape_check": {
+      "enabled": true,
+      "source": "dai-memory",
+      "description": "Duplicate routes, unbound path parameters, routes with no handler"
+    },
+    "dai_memory_api_impact": {
+      "enabled": true,
+      "source": "dai-memory",
+      "description": "Which endpoints answer through a declaration"
+    },
+    "dai_memory_tool_map": {
+      "enabled": true,
+      "source": "dai-memory",
+      "description": "The MCP tools this repository declares"
+    },
+    "dai_memory_taint": {
+      "enabled": true,
+      "source": "dai-memory",
+      "description": "Where untrusted input could reach something dangerous, through the call graph"
+    },
+    "dai_memory_explain": {
+      "enabled": true,
+      "source": "dai-memory",
+      "description": "What that says about one declaration or file"
+    },
+    "dai_memory_pdg": {
+      "enabled": true,
+      "source": "dai-memory",
+      "description": "Inside one declaration: names, where each is set and read, what is conditional"
+    },
+    "dai_memory_groups": {
+      "enabled": true,
+      "source": "dai-memory",
+      "description": "Groups of repositories that make up one system"
+    },
+    "dai_memory_contracts": {
+      "enabled": true,
+      "source": "dai-memory",
+      "description": "Which repository answers which HTTP call in a group"
+    },
+    "dai_memory_wiki": {
+      "enabled": true,
+      "source": "dai-memory",
+      "description": "Documentation built from the graph, the memory and the source; no model is called"
     }
   },
   "resources": {

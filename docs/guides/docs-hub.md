@@ -191,7 +191,7 @@ initialization always includes the contract.
   "truth": ["README.md"],
   "adapters": {
     "git": true,
-    "gitnexus": true,
+    "dai_memory": true,
     "evidence_summary": false
   },
   "privacy": {
@@ -260,7 +260,9 @@ The portal includes:
 - offline project-aware search;
 - Mermaid flowcharts derived from canonical project-state steps, rendered as
   accessible static SVG with Mermaid source and ordered-step fallback;
-- Git and GitNexus availability/staleness state;
+- Git and code index (DAI memory, `.memory/meta.json`) availability/staleness state;
+  manifests written before the switch may still say `gitnexus`, which is
+  honoured when `dai_memory` is absent;
 - diagnostics, print styles, light/dark tokens, keyboard focus, and reduced
   motion support.
 

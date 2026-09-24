@@ -66,7 +66,7 @@ At every gate:
 4. On approval, append one line to `.dainexus/decisions-log.md`:
    `<ISO date> | Gate N approved | <top 3 decisions>`
 5. Persist the decision to long-term memory:
-   `python scripts/lite/memory.py add "Gate N approved: <top decisions>" --category decisions --importance 8`
+   `python scripts/lite/dai_memory.py add "Gate N approved: <top decisions>" --category decisions --importance 8`
 6. If running under MCP (IDE dashboard connected): mirror the gate via `dn_request_gate_approval` / `dn_approve_gate` so the dashboard tracks state.
 
 ## Evidence Discipline

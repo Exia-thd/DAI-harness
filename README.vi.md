@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/modes-24-blueviolet.svg" alt="Modes" />
   <img src="https://img.shields.io/badge/protocols-29-00CED1.svg" alt="Protocols" />
   <img src="https://img.shields.io/badge/Game_Dev-Unity·Unreal·Godot·Roblox-FF4500.svg" alt="Game Dev" />
-  <img src="https://img.shields.io/badge/Code_Intelligence-DAI Nexus Node·GitNexus-4B0082.svg" alt="Code Intelligence" />
+  <img src="https://img.shields.io/badge/Code_Intelligence-DAI%20memory-4B0082.svg" alt="Code Intelligence" />
   <img src="https://img.shields.io/badge/Memory-Persistent%20(memory)-00CED1.svg" alt="Memory" />
   <img src="https://img.shields.io/badge/MCP-12%20Tools-orange.svg" alt="MCP" />
 </p>
@@ -81,9 +81,9 @@ DAI Nexus đóng vai trò là một Harness phân phối phần mềm chuẩn pr
 
 *   **Middleware Chain (14 giai đoạn)**: Bọc ngoài mỗi lượt thực thi skill bằng các công cụ kiểm soát an toàn, môi trường sandbox cô lập, nén ngữ cảnh và cổng kiểm định chất lượng (Quality Gates).
 *   **Vòng lặp ASIP tự sửa đổi**: Tự động phát hiện lỗi lên plan/thực thi code, kích hoạt nghiên cứu tài liệu chuyên sâu và tự cập nhật quy trình làm việc (SOPs).
-*   **Đồ thị nhận thức SQLite (FluxMem)**: Đảm bảo cô lập ngữ cảnh cho từng dự án riêng biệt và bộ nhớ đệm phục hồi quy trình dưới một giây (Procedural Circuits).
+*   **Bộ nhớ dự án DAI memory**: Mỗi dự án một kho riêng (`.memory/`), vừa là code graph vừa là bộ nhớ quyết định/sự cố/quy trình; truy hồi bằng BM25 + vector + đồ thị hợp nhất qua RRF.
 *   **Hệ thống phòng vệ chủ động**: Tự động quét lỗ hổng bảo mật, tích hợp kiểm thử CI/CD và bảo vệ các thư mục nhạy cảm, ngăn các ảo giác của AI đưa lỗ hổng bảo mật vào dự án.
-*   **Quy trình kiểm thử Hybrid BDD-First**: Tự động phân loại độ phức tạp của tác vụ dựa trên số liệu của GitNexus. Bắt buộc thực hiện theo luồng BDD/TDD-first (`BA (BDD) -> QA (Stubs) -> Build -> Test`) cho các tác vụ phức tạp, và cho phép kiểm thử sau (test-after) đối với các hotfix rủi ro thấp.
+*   **Quy trình kiểm thử Hybrid BDD-First**: Tự động phân loại độ phức tạp của tác vụ dựa trên số liệu của code graph (DAI memory). Bắt buộc thực hiện theo luồng BDD/TDD-first (`BA (BDD) -> QA (Stubs) -> Build -> Test`) cho các tác vụ phức tạp, và cho phép kiểm thử sau (test-after) đối với các hotfix rủi ro thấp.
 *   **Tối ưu hóa Gemini 3.x Native**: Hỗ trợ tối ưu hoàn toàn cho Gemini 3.5 Flash (cho các luồng điều phối nhanh với `thinking_level: MINIMAL` và strict grounding) và Gemini 3.1 Pro (cho lập luận phức tạp với `thinking_level: HIGH` và temperature 1.0). Tránh việc ép buộc Temperature 1.0 đồng loạt để giữ ổn định cho các tác vụ deterministic của Claude/GPT, đồng thời bảo toàn Thought Signatures (tránh lỗi API 400) và tự động kích hoạt Context Caching cho ngữ cảnh lớn hơn 4,096 tokens.
 *   **⚡ DAI Nexus Lite — Nhân Điều Hướng Evidence-Gated (Nâng cấp v3)**: Thiết kế đặc biệt cho các mô hình nhỏ và nhanh (ví dụ: Gemini Flash), loại bỏ các câu từ rườm rà để tập trung vào nhân lập luận gọn nhẹ kết hợp với kiểm chứng lớp script, giúp tăng đáng kể độ chính xác lập trình trên cùng một mô hình.
     *   **Evidence-Gated Turn Checks**: Việc hoàn thành lượt (turn) được kiểm soát thông qua xác thực lớp script đối với các file bằng chứng (`.dainexus/verify/<turn>.json`), loại bỏ ảo giác và thiên kiến tự chứng thực (self-attested).
@@ -618,100 +618,68 @@ flowchart TD
     style TAG fill:#1e8449,stroke:#2ecc71,color:#fff
 ```
 
-### GitNexus Analyze Pipeline (phân tích code)
+### DAI memory — Ingest Pipeline (phân tích code)
+
+Code intelligence và bộ nhớ dự án là plugin DAI memory, gắn vào `vendor/dai-memory` dưới dạng git submodule (ghim một commit của repo plugin). Mỗi dự án có kho riêng ở `.memory/`.
 
 ```mermaid
 flowchart LR
-    ANAME["gitnexus analyze"]
+    ING["dai-memory ingest"]
 
-    subgraph SCAN["① Scanner"]
-        S1["glob file discovery"]
-        S2["language detection"]
-        S3[".gitignore filter"]
+    subgraph SCAN["① Quét"]
+        S1["file git theo dõi<br/>+ .memoryignore"]
+        S2["che secret<br/>trước khi lưu"]
+        S3["bỏ qua file không đổi<br/>(hash trong meta.json)"]
     end
 
-    subgraph PARSE["② Parse — tree-sitter AST"]
-        P1["Worker Pool<br/>cpus-1 threads<br/>20MB budget/worker"]
-        P2["Graceful fallback<br/>sequential if <15 files"]
-        P3["17 Edge Types extracted"]
+    subgraph PARSE["② Parse — tree-sitter (wasm)"]
+        P1["khai báo, lời gọi, import"]
+        P2["grammar vendor khi<br/>bản upstream hỏng"]
     end
 
-    subgraph RESOLVE["③ Resolve"]
-        R1["Suffix Trie O(1)<br/>import path resolution"]
-        R2["Fast-path<br/>skip if <3% gaps"]
+    subgraph GRAPH["③ Đồ thị"]
+        G1["luồng thực thi<br/>(entry point → những gì nó chạm tới)"]
+        G2["cộng đồng trong call graph"]
+        G3["route HTTP, MCP tools,<br/>taint, PDG"]
     end
 
-    subgraph PROP["④ Propagate"]
-        PP1["Kahn topological sort"]
-        PP2["Cross-file binding"]
+    subgraph MEM["④ Bộ nhớ"]
+        M1["quyết định, sự cố,<br/>ràng buộc, quy trình"]
+        M2["BM25 + vector + đồ thị<br/>hợp nhất bằng RRF"]
     end
 
-    subgraph COMMUNITY["⑤ Community — Leiden Algorithm"]
-        C1["3-phase:<br/>move → refine → aggregate"]
-        C2["60s timeout · large-graph mode"]
-    end
+    DB[(<b>LadybugDB<br/>.memory/store.lbug</b>)]
 
-    subgraph PROCESS["⑥ Process — BFS Entry-Point Tracing"]
-        PR1["Call chain extraction"]
-        PR2["Auto-detect framework:<br/>Next.js · FastAPI · NestJS<br/>Express · Django · Rails<br/>Gin · Spring · etc."]
-    end
+    ING --> SCAN --> PARSE --> GRAPH --> DB
+    MEM --> DB
 
-    subgraph FTS_EMB["⑦ FTS + Embeddings"]
-        F1["Incremental FTS5<br/>only changed nodes"]
-        E1["Cache-first embedding<br/>5 providers"]
-    end
-
-    subgraph META["⑧ Meta"]
-        M1["Commit tracking"]
-        M2["Early exit<br/>if git unchanged"]
-    end
-
-    DB[(<b>KuzuDB Graph<br/>Nodes + Rels + FTS<br/>Vector Embeddings</b>)]
-
-    ANAME --> SCAN --> PARSE --> RESOLVE --> PROP --> COMMUNITY --> PROCESS --> FTS_EMB --> META
-    FTS_EMB --> DB
-    PARSE --> DB
-    PROP --> DB
-
-    style ANAME fill:#0f3460,stroke:#e94560,color:#fff
+    style ING fill:#0f3460,stroke:#e94560,color:#fff
     style DB fill:#16213e,stroke:#4B0082,color:#fff
     style SCAN fill:#1a5276,stroke:#3498db
     style PARSE fill:#1a5276,stroke:#3498db
-    style RESOLVE fill:#6c3483,stroke:#9b59b6
-    style PROP fill:#6c3483,stroke:#9b59b6
-    style COMMUNITY fill:#1e8449,stroke:#2ecc71
-    style PROCESS fill:#1e8449,stroke:#2ecc71
-    style FTS_EMB fill:#d35400,stroke:#e67e22
-    style META fill:#2c3e50,stroke:#7f8c8d
+    style GRAPH fill:#1e8449,stroke:#2ecc71
+    style MEM fill:#d35400,stroke:#e67e22
 ```
 
 ### Multi-Repo Group Management (quản lý nhóm multi-repo)
 
 ```mermaid
 flowchart TD
-    CLI["gitnexus group CLI"]
-    MCP["MCP Tools<br/>8 group tools"]
-    GROUPS[("Groups<br/>data/groups.ts")]
-    REGISTRY[("Registry DB<br/>KuzuDB")]
-    CONTRACTS[("Contracts<br/>Cross-repo API<br/>signatures")]
-    REPOS[("Indexed Repos<br/>via gitnexus analyze")]
+    CLI["dai-memory group CLI"]
+    MCP["MCP Tools<br/>dai_memory_groups · contracts"]
+    GROUPS[("Groups<br/>danh sách repo trên máy")]
+    CONTRACTS[("Contracts<br/>lời gọi xuyên repo")]
+    REPOS[("Repo đã index<br/>mỗi repo một .memory/")]
 
-    CLI --> |"group create"| GROUPS
-    CLI --> |"group list"| GROUPS
-    CLI --> |"group add<br/>group remove"| GROUPS
-    MCP --> |"group_sync"| GROUPS
-    MCP --> |"group_contracts"| GROUPS
-    MCP --> |"group_query<br/>group_status"| CONTRACTS
-
-    GROUPS --> |"sync<br/>extract"| CONTRACTS
-    CONTRACTS --> REGISTRY
-    REPOS --> |"analyze"| REGISTRY
-    REGISTRY --> |"link contracts<br/>cross-repo edges"| CONTRACTS
+    CLI --> |"group create / add / remove"| GROUPS
+    CLI --> |"contracts"| CONTRACTS
+    MCP --> CONTRACTS
+    GROUPS --> |"nối qua route và client"| CONTRACTS
+    REPOS --> |"dai-memory ingest"| CONTRACTS
 
     style CLI fill:#0f3460,stroke:#e94560,color:#fff
     style MCP fill:#0f3460,stroke:#e94560,color:#fff
     style GROUPS fill:#16213e,stroke:#4B0082,color:#fff
-    style REGISTRY fill:#16213e,stroke:#4B0082,color:#fff
     style CONTRACTS fill:#1e8449,stroke:#2ecc71,color:#fff
     style REPOS fill:#1a5276,stroke:#3498db,color:#fff
 ```
@@ -729,7 +697,7 @@ flowchart LR
 
     SCHEDULE["OS Scheduler"] --> REINDEX["Local Reindex"]
     SCHEDULE --> DEPS["Dependency/Security Check"]
-    REINDEX --> LOCALINDEX["Local GitNexus Index"]
+    REINDEX --> LOCALINDEX["Local code graph<br/>(.memory/)"]
     DEPS --> RECEIPT
 
     style CHANGE fill:#0f3460,stroke:#e94560,color:#fff
@@ -743,7 +711,7 @@ flowchart LR
 | Lệnh | Mô tả |
 |-------|--------|
 | `node scripts/ci/local-ci.mjs review` | Phân tích blast radius + contract check |
-| `node scripts/ci/local-ci.mjs reindex` | Cập nhật GitNexus index local |
+| `node scripts/ci/local-ci.mjs reindex` | Cập nhật code graph local (`dai-memory ingest`) |
 | `node scripts/ci/local-ci.mjs wiki` | Reindex + kiểm tra tài liệu local |
 | `node scripts/ci/local-ci.mjs security` | Audit dependency + automation policy |
 | `node scripts/ci/local-ci.mjs compat` | Test matrix runtime được hỗ trợ |
@@ -779,8 +747,8 @@ flowchart TD
 
     subgraph POST_HOOK["post-tool-use.ts"]
         G1{"git commit<br/>detected?"}
-        G2["Find gitnexus root<br/>detect last commit"]
-        G3["Spawn incremental<br/>gitnexus analyze"]
+        G2["Find .memory/<br/>detect last commit"]
+        G3["Spawn incremental<br/>dai-memory ingest"]
         G4["Success → log<br/>Failure → warn"]
     end
 
@@ -1006,7 +974,7 @@ node --version
 Sau đó:
 
 ```bash
-npm install -g gitnexus && gitnexus analyze "$(pwd)"
+python3 scripts/lite/dai_memory.py install && node "$(python3 scripts/lite/dai_memory.py where)/bin/dai-memory.mjs" init
 ```
 
 Đợi 1-2 phút (lần đầu). Xong!
@@ -1053,25 +1021,25 @@ Lệnh này giúp DAI Nexus:
 echo "=== Kiểm tra ==="
 echo "Skills: $(ls dai-nexus/skills/ -1 2>/dev/null | wc -l | tr -d ' ')"
 echo "MCP: $([ -d dai-nexus/.dainexus/mcp-server ] || [ -d ~/.dainexus/mcp-server ] && echo 'OK' || echo 'MISSING')"
-echo "Memory: $([ -f .dainexus/memory.db ] || [ -f .dainexus/memory.jsonl ] && echo 'OK' || echo 'MISSING')"
+echo "Memory: $([ -f .memory/meta.json ] && echo 'OK' || echo 'MISSING (dai-memory init)')"
 ```
 
 ---
 
 ## Tính năng bổ sung
 
-### Bộ nhớ GraphRAG V4 — FluxMem (SQLite Brain)
+### Bộ nhớ dự án — DAI memory
 
-> **Mới trong v8.7.0** — Thay thế bộ nhớ lưu bằng file JSON bằng cấu trúc đồ thị nhận thức lớp 2 (Layer 2 Cognitive Graph) chạy trên SQLite (`flux_nodes` & `flux_edges`).
+> Thay cho FluxMem (SQLite) và các kho memory cũ: dữ liệu cũ đã được di trú bằng `scripts/lite/migrate-memory.py`.
 
-Vấn đề lớn nhất của các phiên chat AI dài là **context bloat (phình to ngữ cảnh)** — AI sẽ quên mất phần đầu của cuộc trò chuyện do file memory quá lớn, dẫn tới việc lặp lại các lỗi cũ.
+Vấn đề lớn nhất của các phiên chat AI dài là **context bloat (phình to ngữ cảnh)** — AI sẽ quên mất phần đầu của cuộc trò chuyện, dẫn tới việc lặp lại các lỗi cũ.
 
-**FluxMem (Memory V4)** giải quyết vấn đề này bằng mô hình bộ nhớ lai Đồ thị - Vector (Hybrid Graph-Vector):
+**DAI memory** (plugin riêng, gắn vào `vendor/dai-memory` dưới dạng git submodule) giữ phần cần nhớ ngoài ngữ cảnh và trả lại đúng lúc:
 
-1. **Đồ thị nhận thức SQLite (`flux_nodes` & `flux_edges`)**: Toàn bộ các mốc sự kiện (episodic checkpoints), quyết định (semantic decisions), và kỹ năng (procedural skills) được lưu dưới dạng các Node/Edge trong SQLite database. Giúp tăng tốc truy vấn qua các liên kết (SQL JOINs), chống hỏng dữ liệu và xử lý ghi/đọc đồng thời.
-2. **Procedural Circuits (Mạch quy trình)**: Lưu trữ các luồng thực thi thành công của agent (completed session tasks) vào bảng `procedural_circuits` đi kèm điểm số PES (Performance Evaluation Score), cho phép tái sử dụng quy trình chạy chỉ trong mili-giây (sub-second recovery).
-3. **Cơ chế Edge Decay (Giảm liên kết) của ASIP**: Khi điểm số của plan dưới 9.0 hoặc gặp lỗi thực thi (execution blocker), ASIP tự động giảm trọng số liên kết của các node liên quan đi **0.5**, giúp AI học cách tránh đi vào các vết xe đổ.
-4. **Cơ chế Edge Reinforcement & Lesson Ingestion (Tăng cường & Tiếp thu bài học)**: Khi chạy thành công, trọng số liên kết được tăng thêm hệ số **1.2**. Đồng thời, các bài học học được từ NotebookLM sẽ tự động lưu dưới dạng Node ngữ nghĩa (`semantic`) và kết nối trực tiếp đến kỹ năng tương ứng (`edge_type: improves`, trọng số `1.5`).
+1. **Ba lớp ký ức**: `semantic` (quyết định, ràng buộc, quy ước — đúng tới khi bị thay thế), `episodic` (sự cố, phiên làm việc, checkpoint), `procedural` (quy trình, cách làm).
+2. **Code graph chung kho**: khai báo, lời gọi, import, luồng thực thi và cộng đồng của code nằm cùng kho, nên một ký ức gắn được vào đúng hàm/file nó nói tới (`dai-memory why <file|symbol>`).
+3. **Quy trình đã thành công**: khi phiên kết thúc với điểm PES đạt ngưỡng, session tracker ghi lại chuỗi bước thành một ký ức `procedure`; bài học từ NotebookLM được ghi thành ký ức gắn với kỹ năng tương ứng.
+4. **Sự cố không lặp lại**: plan thất bại hoặc blocker được ghi thành `incident`, để phiên sau tìm thấy trước khi đi lại vết cũ.
 5. **Passive Idle Trigger (Tự động lưu checkpoint khi treo máy)**: Tự động tạo checkpoint sau **10 phút** không có phản hồi nếu phiên chat đang có tin nhắn chưa lưu, tránh mất dữ liệu khi IDE mất kết nối đột ngột.
 
 ---
@@ -1101,14 +1069,11 @@ Hai script mới được thêm vào để quản lý và vận hành hệ thố
     # In sơ đồ Mermaid thể hiện luồng chạy công cụ của session
     python3 scripts/memory-trace.py trace-canvas <session_id>
     ```
-*   **Hợp nhất bộ nhớ (`scripts/memory-consolidate.py`)**: Hợp nhất các quan sát ghi nhận trong SQLite, log hoàn thành phiên làm việc và các sự kiện offload thành các lớp thông tin có cấu trúc của memory bank:
+*   **Bộ nhớ dự án (DAI memory)**: Quyết định, sự cố, ràng buộc và quy trình được ghi vào `.memory/` qua `scripts/lite/dai_memory.py` (hoặc MCP tools `dai_memory_write` / `dai_memory_search`); checkpoint và bài học của phiên cũng đi vào cùng kho đó:
     ```bash
-    # Chạy hợp nhất bộ nhớ cục bộ
-    python3 scripts/memory-consolidate.py
+    python3 scripts/lite/dai_memory.py add "Quyết định: dùng JWT cho API" --category decision
+    python3 scripts/lite/dai_memory.py search "JWT" --limit 5
     ```
-    Kết quả đầu ra:
-    - `.dainexus/memory-bank/persona.md`: Lưu trữ các cài đặt mặc định và sở thích ổn định của lập trình viên.
-    - `.dainexus/memory-bank/scenarios/<scenario_id>.md`: Ghi nhận các mẫu giải quyết vấn đề và quy trình thành công từ các phiên làm việc đã hoàn thành.
 
 ---
 
@@ -1224,10 +1189,10 @@ DAI Nexus hỗ trợ hạ tầng kiểm thử mã nguồn mở hoàn toàn miễ
 
 ## 🖼️ Tự động vẽ sơ đồ Sequence Flow Chart Client-Server (NEW v8.8.0)
 
-DAI Nexus tích hợp tính năng **Tự động vẽ và cập nhật Sequence Flow Chart** liên thông hoàn hảo giữa Client và Server sử dụng dữ liệu đồ thị tĩnh từ GitNexus và định tuyến Heuristics.
+DAI Nexus tích hợp tính năng **Tự động vẽ và cập nhật Sequence Flow Chart** liên thông hoàn hảo giữa Client và Server sử dụng dữ liệu đồ thị tĩnh từ DAI memory và định tuyến Heuristics.
 
 *   **Không tốn phí & Không cần chạy App**: Tự động khớp nối các lượt gọi API ở Client (`fetch`/`axios` trong file React/Next.js) sang API handler tương ứng ở Server (`route.ts`) mà không cần khởi chạy ứng dụng hay kết nối cơ sở dữ liệu.
-*   **Truy vết sâu đồ thị cuộc gọi (Call Graph)**: Tự động chạy truy vấn đệ quy qua đồ thị GitNexus để vẽ chi tiết luồng gọi (`Route -> Service -> Database/Prisma`).
+*   **Truy vết sâu đồ thị cuộc gọi (Call Graph)**: Tự động chạy truy vấn đệ quy qua call graph của DAI memory (`dai-memory context`) để vẽ chi tiết luồng gọi (`Route -> Service -> Database/Prisma`).
 *   **Sinh sơ đồ Mermaid chuyên nghiệp**: Xuất kết quả sơ đồ trình tự chuẩn Mermaid.js và cập nhật tự động vào thư mục [docs/architecture/flows/](docs/architecture/flows/).
 *   **Lọc nhiễu thông minh & Tách tham số**: Tự động loại bỏ các hàm hệ thống/logs nhiễu (`console.log`, `execSync`, `NextResponse.json`...) để giữ sơ đồ sạch, đồng thời tách các Query Parameters truyền lên ở client và vẽ ghi chú (Mermaid Note) chi tiết.
 
@@ -1241,14 +1206,14 @@ Tại thư mục root của dự án đó, chạy lệnh sau để kéo mã ngu�
 git submodule update --remote --merge
 ```
 
-#### Bước 2: Đảm bảo GitNexus đã được lập chỉ mục (Indexing)
-Sequence Generator yêu cầu dữ liệu đồ thị từ GitNexus. Nếu chưa có hoặc index cũ, hãy chạy:
+#### Bước 2: Đảm bảo dự án đã được lập chỉ mục (Indexing)
+Sequence Generator yêu cầu call graph từ DAI memory. Nếu chưa có hoặc index cũ, hãy chạy:
 ```bash
-# 1. Cài đặt toàn cục (nếu chưa cài)
-npm install -g gitnexus && gitnexus setup
+# 1. Cài engine (một lần, cài ra ngoài repo)
+python3 dai-nexus/scripts/lite/dai_memory.py install
 
-# 2. Tạo chỉ mục đồ thị cho repo mới
-gitnexus analyze
+# 2. Tạo chỉ mục đồ thị cho repo
+node "$(python3 dai-nexus/scripts/lite/dai_memory.py where)/bin/dai-memory.mjs" init
 ```
 
 #### Bước 3: Khởi chạy vẽ sơ đồ trình tự
@@ -1257,7 +1222,7 @@ Chạy script sinh sơ đồ thông qua các tham số cấu hình đường d�
 npx tsx dai-nexus/scripts/generate-sequence.ts \
   --client <thư-mục-chứa-frontend> \
   --api <thư-mục-chứa-routes-api> \
-  --repo <tên-repo-trong-gitnexus> \
+  --repo <tên-repo (chỉ để hiển thị)> \
   --output <thư-mục-lưu-sơ-đồ>
 ```
 
@@ -1276,12 +1241,12 @@ npx tsx dai-nexus/scripts/generate-sequence.ts \
 
 #### 🚀 Cách ép quy luật tự động hóa (Automation)
 
-1.  **Tự động cập nhật khi commit**: DAI Nexus tích hợp sẵn pre-commit hook (`.husky/pre-commit`). Khi phát hiện có thay đổi ở các file logic core (`.ts`, `.py`, `.js` trong `src/`, `mcp/` hoặc `scripts/` ngoại trừ test), hook này sẽ tự động chạy phân tích GitNexus và sinh lại sơ đồ Sequence Flow:
+1.  **Tự động cập nhật khi commit**: DAI Nexus tích hợp sẵn pre-commit hook (`.husky/pre-commit`). Khi phát hiện có thay đổi ở các file logic core (`.ts`, `.py`, `.js` trong `src/`, `mcp/` hoặc `scripts/` ngoại trừ test), hook này sẽ tự động cập nhật code graph và sinh lại sơ đồ Sequence Flow:
     ```bash
-    gitnexus analyze
+    dai-memory ingest
     npx tsx scripts/generate-sequence.ts
     ```
-2.  **Ràng buộc Agent AI**: Dự án bắt buộc tự động cập nhật GitNexus & Sơ đồ Sequence thông qua các quy tắc (Rules) thiết lập trong file `CLAUDE.md` và `AGENTS.md`.
+2.  **Ràng buộc Agent AI**: Dự án bắt buộc tự động cập nhật code graph & Sơ đồ Sequence thông qua các quy tắc (Rules) thiết lập trong file `CLAUDE.md` và `AGENTS.md`.
 3.  **Tự động kiểm tra và cập nhật Submodule DAI Nexus**: Đối với dự án dùng DAI Nexus dưới dạng submodule, cài `post-merge` và `post-checkout` idempotent vào repository cha bằng:
     ```bash
     bash dai-nexus/scripts/lite/install-submodule-update-hooks.sh "$PWD"
@@ -1295,10 +1260,10 @@ npx tsx dai-nexus/scripts/generate-sequence.ts \
 
 | Vấn đề | Cách xử lý |
 |---------|------------|
-| `gitnexus: command not found` | Chạy `npm install -g gitnexus && gitnexus setup` |
+| `dai-memory` chưa cài | Chạy `python3 scripts/lite/dai_memory.py install` |
 | `npm install` bị lỗi trong submodule | Kiểm tra `node --version` (MCP cần 20+) |
 | Không thấy MCP tools | Khởi động lại Cursor/VS Code sau khi đổi config |
-| Index cũ | Chạy `gitnexus analyze "$(pwd)"` để cập nhật |
+| Index cũ | Chạy `dai-memory ingest` để cập nhật |
 | Submodule chưa khởi tạo | `git submodule update --init --recursive` |
 | `realpath` không tìm thấy (macOS) | `brew install coreutils` |
 | `python3` không tìm thấy | Cài Python 3.8+ cho tính năng memory |

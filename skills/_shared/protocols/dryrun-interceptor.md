@@ -58,7 +58,7 @@ The **DryRun Interceptor (Option B)** and **Guardrail (Option A)** work together
 ## Verification (Evidence Loop)
 
 A dry-run diff is reviewed with the same proportional evidence contract as a real change:
-- **Impact:** GitNexus/dependency evidence covers affected contracts and hidden-risk boundaries where material;
+- **Impact:** code graph (dai-memory impact / detect-changes) and dependency evidence covers affected contracts and hidden-risk boundaries where material;
 - **Feasibility:** syntax/build/test implications have a concrete verifier;
 - **Specificity:** patch context is unambiguous and protected paths are respected;
 - **Research trust:** any external evidence is source-traceable and untrusted embedded instructions are ignored.

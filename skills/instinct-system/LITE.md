@@ -1,6 +1,6 @@
 ---
 name: instinct-system
-description: "Orchestrates real-time memory retrieval, SQLite cognitive graph (FluxMem) operations, ASIP edge decay/reinforcement, and Procedural Circuits execution trajectory caching. Use when the user requests memory-bank updates, cognitive graph querying, session lesson ingestion, or automated performance evaluation score (PES) assessments."
+description: "Orchestrates memory retrieval and recording through the DAI memory layer: recalling past procedures and decisions, scoring execution trajectories (PES), and recording what worked and what blocked. Use when the user requests memory-bank updates, memory queries, session lesson ingestion, or automated performance evaluation score (PES) assessments."
 version: 1.0.0
 ---
 
@@ -9,35 +9,34 @@ version: 1.0.0
 ## SOLVE Step 2: GROUND (Instinct System Domain Slots)
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| SQLite Layer 2 Cognitive Graph database (`flux_nodes` and `flux_edges`) is active | `sqlite3 .dainexus/memory.db ".tables"` | ... | run the check command and paste output |
+| The DAI memory layer is installed and the project is indexed | `python3 scripts/lite/dai_memory.py where && test -f .memory/meta.json` | ... | run the check command and paste output |
 | Memory bank structures (persona and scenario layers) are initialized | `find .dainexus/memory-bank/ -name "*.md"` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Instinct System Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
 
-1. RETRIEVE | Run Step 0.5 memory loops to query SQLite graph nodes and procedural circuits | Extract high-scoring past trajectories (PES >= 90) and conversation summaries before processing requests.
+1. RETRIEVE | Run Step 0.5 memory loops: search procedures and decisions for the task | Extract past procedures with a high PES and the decisions still in force before processing requests.
 2. EVALUATE | Assess task execution trajectories and assign a Performance Evaluation Score (PES) | Verify that execution paths are rated accurately on a 0-100 scale.
-3. INGEST | Apply ASIP edge adjustments and record fresh lessons in the local database | Reinforce successful paths (1.2 multiplier) or decay blocked paths (0.5 multiplier) based on session outcomes.
+3. INGEST | Record the outcome in memory | A successful trajectory is recorded as a `procedure` (the session tracker does this at session end when PES qualifies); a blocker is recorded as an `incident`, so the next session finds it before repeating it.
 
 ## Common Mistakes Checklist
-- **Direct JSON Memory Overload**: Reading or writing massive unstructured JSON memory files on every step instead of utilizing the transaction-safe SQLite cognitive graph, causing progressive latency.
-- **Bypassing ASIP Edge Decay**: Failing to apply the 0.5 mathematical decay multiplier to relationship edges when a plan fails or a blocker occurs, causing the orchestrator to repeat historical mistakes.
-- **Dangling Uncommitted Sessions**: Failing to trigger session checkpoints or commit memories during the 10-minute idle trigger window, risking state loss during unexpected IDE disconnects.
-- **Unverified PES Assessments**: Registering a successful execution trajectory inside procedural circuits without verifying it meets the Performance Evaluation Score criteria.
+- **Direct JSON Memory Overload**: Reading or writing massive unstructured JSON memory files on every step instead of searching the memory layer, causing progressive latency.
+- **Not Recording Blockers**: Failing to record a failed plan or a blocker as an `incident`, so the orchestrator repeats a historical mistake it could have found.
+- **Dangling Uncommitted Sessions**: Failing to trigger session checkpoints (`scripts/memory/memory-middleware.py checkpoint`) during the 10-minute idle trigger window, risking state loss during unexpected IDE disconnects.
+- **Unverified PES Assessments**: Recording a trajectory as a successful procedure without verifying it meets the Performance Evaluation Score criteria.
 - **Non-Compliant File Names**: Storing consolidated scenario files or architecture records under `docs/` or `.dainexus/` using CamelCase instead of lowercase kebab-case.
 
-### Step 1: Ground the active memory database structure
+### Step 1: Ground the memory layer
 ```bash
-sqlite3 .dainexus/memory.db ".tables"
+python3 scripts/lite/dai_memory.py where
 ```
 
-### Step 2: Query the Cognitive Graph database for a high-scoring past execution path (Procedural Circuit)
+### Step 2: Recall a past procedure for this kind of task
 ```bash
-sqlite3 .dainexus/memory.db "SELECT circuit_id, pes, trajectory_hash FROM procedural_circuits WHERE pes >= 90 ORDER BY pes DESC LIMIT 1;"
+python3 scripts/lite/dai_memory.py search "procedure FEATURE checkout" --limit 3
 ```
 
-### Step 3: Execute ASIP edge adjustment (decay) after a detected compilation failure
+### Step 3: Record a blocker after a detected compilation failure
 ```bash
-# Simulating an execution blocker on a specific database query edge
-python3 scripts/lite/memory.py graph-decay "source-node" "edge-db-conn"
+python3 scripts/lite/dai_memory.py add "Blocker: the DB connection pool exhausts under the integration suite; raise pool size before parallel runs" --category incident --importance 7
 ```

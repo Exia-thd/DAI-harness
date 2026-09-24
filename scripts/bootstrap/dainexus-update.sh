@@ -5,7 +5,7 @@
 # WHAT THIS DOES:
 #   1. Pull latest changes from GitHub
 #   2. Update submodules
-#   3. Re-index codebases with GitNexus
+#   3. Re-index codebases with the memory layer
 #
 # USAGE:
 #   bash dainexus-update.sh              # Update DAI Nexus
@@ -179,8 +179,23 @@ reindex_project() {
 
     cd "${DAINEXUS_DIR}"
 
-    # Force re-index with gitnexus
-    gitnexus analyze --force "$project_root" 2>&1 | tail -20
+    # The memory layer, installed outside the repository. `ingest --force`
+    # re-reads every file; `init` would also rebuild the store, which is not
+    # what re-indexing means.
+    local engine=""
+    for candidate in py python3 python; do
+        if command -v "$candidate" &> /dev/null; then
+            local prefix=""
+            [[ "$candidate" == "py" ]] && prefix="-3"
+            engine="$("$candidate" $prefix "${project_root}/scripts/lite/dai_memory.py" where 2>/dev/null)" || engine=""
+            [[ -n "$engine" ]] && break
+        fi
+    done
+    if [[ -z "$engine" ]]; then
+        warn "The memory layer is not installed for ${project_root}; nothing was re-indexed."
+        return
+    fi
+    (cd "$project_root" && node "${engine}/bin/dai-memory.mjs" ingest --force --quiet) 2>&1 | tail -20
 
     success "Re-index complete"
 

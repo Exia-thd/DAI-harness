@@ -8,7 +8,7 @@
 
 1. Check that `CLAUDE.md` or `AGENTS.md` exists in project root
 2. Verify MCP server is running: `bash scripts/dainexus-mcp-setup.sh --check`
-3. Check session health: `python3 scripts/memory-middleware.py status`
+3. Check session health: `dai-memory status`
 
 ### Wrong mode selected
 
@@ -24,18 +24,18 @@ Add more context to your request. See [Mode Reference](mode-reference.md) for mo
 
 Run memory middleware:
 ```bash
-python3 scripts/memory-middleware.py status
-python3 scripts/memory-middleware.py checkpoint
+dai-memory status
+dai-memory ingest
 ```
 
 ### Plan quality score low
 
 See [Research Gate](../skills/_shared/protocols/research-gate.md) for improving plan scores.
 
-### GitNexus index stale
+### Code graph index stale
 
 ```bash
-npx gitnexus analyze
+dai-memory ingest
 ```
 
 ## Getting Help

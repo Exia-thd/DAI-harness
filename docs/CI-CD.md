@@ -23,8 +23,8 @@ The launcher selects Python locally and the control plane resolves a supported N
 | `full` | Complete repository gates and skill contracts without requiring a clean working tree before the run |
 | `security` | Root + standalone MCP production dependency audit and local-automation policy |
 | `compat` | Node 22/24 MCP + CLI compatibility matrix |
-| `review` | GitNexus blast radius, OpenAPI breaking-change detection, commit/security policy |
-| `reindex` / `wiki` | Local GitNexus index and documentation checks; AI wiki generation is explicit opt-in |
+| `review` | Code graph (`dai-memory detect-changes`) blast radius, OpenAPI breaking-change detection, commit/security policy |
+| `reindex` / `wiki` | Local code graph (`dai-memory ingest`) and documentation checks; `dai-memory wiki` builds pages without an LLM |
 | `deps` | Local dependency audit/update report; `--fix` applies package-manager security lock fixes |
 
 Every run writes a receipt under `.dainexus/reports/local-ci/`; this is local evidence and is ignored by Git.

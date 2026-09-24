@@ -67,12 +67,11 @@ function catalog(root: string): DocsCatalog {
       truthDocuments: [doc.sourcePath],
       facts: {
         git: { available: false, branch: null, commit: null, dirty: null },
-        gitnexus: {
+        codeIndex: {
           status: "disabled",
           indexedCommit: null,
           indexedAt: null,
-          processes: null,
-          symbols: null,
+          files: null,
         },
         profile: {},
       },

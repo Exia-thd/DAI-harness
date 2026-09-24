@@ -195,7 +195,7 @@ When the user's request references prior work, decisions, or session history —
 1. `.dainexus/session-log.json` — recent decisions
 2. `.dainexus/project-profile.json` — architecture/stack
 3. `.dainexus/code-conventions.md` — coding patterns
-4. `scripts/lite/memory.py search` — cross-session memory
+4. `dn_memory_search` — cross-session memory
 
 ## Output Location
 

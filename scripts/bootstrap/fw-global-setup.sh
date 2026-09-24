@@ -299,7 +299,7 @@ DAINEXUS_REGISTRY="${GLOBAL_REGISTRY}"
 DAINEXUS_AUTO_WORKSPACE="1"
 
 # Code navigation tool priority
-DAINEXUS_CODE_NAV="gitnexus"
+DAINEXUS_CODE_NAV="dai-memory"
 
 # Memory enabled
 DAINEXUS_MEMORY_ENABLED="true"

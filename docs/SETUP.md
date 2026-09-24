@@ -43,7 +43,7 @@ Expected output:
   ➜ Project: /path/to/project
   ✓ Manifest: ✓
   ✓ DAI Nexus Launcher: ✓
-  ✓ GitNexus: ✓ (16K nodes indexed)
+  ✓ DAI memory: ✓ (code graph indexed at HEAD)
 ```
 
 ---
@@ -97,13 +97,12 @@ This automatically:
 }
 ```
 
-**Note:** GitNexus MCP is configured separately via `gitnexus setup`.
-
-2. Setup GitNexus separately:
+2. The setup script also registers the code-graph server, `dai-memory`, and
+installs its engine if it is missing (`python3 scripts/lite/dai_memory.py install`).
+Index the project once:
 
 ```bash
-npm install -g gitnexus
-gitnexus setup
+dai-memory init
 ```
 
 3. Restart Cursor
@@ -152,11 +151,12 @@ bash dai-nexus/scripts/dainexus-mcp-setup.sh setup
 }
 ```
 
-3. Setup GitNexus separately:
+3. The setup script also registers the code-graph server, `dai-memory`, and
+installs its engine if it is missing (`python3 scripts/lite/dai_memory.py install`).
+Index the project once:
 
 ```bash
-npm install -g gitnexus
-gitnexus setup
+dai-memory init
 ```
 
 4. Restart Claude Desktop
@@ -228,11 +228,11 @@ Expected output:
 
   ✓ Cursor: ~/.cursor/mcp.json
     dai-nexus: CONFIGURED
-    gitnexus: CONFIGURED
+    dai-memory: CONFIGURED
 
   ✓ Claude Code: ~/.claude/settings.json
     dai-nexus: CONFIGURED
-    gitnexus: CONFIGURED
+    dai-memory: CONFIGURED
 
   ➜ Antigravity:
     ✓ Server: ~/.cursor/projects/<hash>/mcps/user-dai-nexus/
@@ -313,11 +313,11 @@ command = "~/.dainexus/mcp-server/node_modules/.bin/tsx"
 args = ["~/.dainexus/mcp-server/src/index.ts"]
 env = { DAINEXUS_WORKSPACE = "$PROJECT_ROOT" }
 
-[mcp_servers.gitnexus]
+[mcp_servers.dai-memory]
 enabled = true
 transport = { type = "stdio" }
-command = "gitnexus"
-args = ["mcp"]
+command = "/usr/local/bin/node"
+args = ["~/.cache/dai-harness/dai-memory/<commit>/bin/dai-memory.mjs", "serve"]
 ```
 
 **Lưu ý:** Codex CLI chỉ hỗ trợ **STDIO transport** cho local servers. Remote MCP servers (HTTP/SSE) chưa được hỗ trợ.
@@ -334,12 +334,12 @@ If you use multiple AI IDEs with the same project, here's how it works:
 Project/
 ├── .antigravity/mcp-manifest.json    # Antigravity reads this
 ├── .dainexus/                    # Shared DAI Nexus state
-└── .gitnexus/                       # GitNexus code graph (index)
+└── .memory/                         # DAI memory: code graph + project memory
 
 ~/.cursor/mcp.json                   # Cursor MCP config
 ~/.claude/settings.json             # Claude Code MCP config
 ~/.codex/config.toml                 # OpenAI Codex CLI MCP config
-~/.gitnexus/                         # GitNexus registry
+~/.cache/dai-harness/dai-memory/     # DAI memory engine, one directory per pinned commit
 ~/.dainexus/mcp-server/           # CANONICAL MCP server (shared by all)
 ```
 
@@ -355,7 +355,7 @@ bash dai-nexus/scripts/dainexus-mcp-setup.sh setup
 This creates the shared files:
 - `.antigravity/mcp-manifest.json`
 - `.dainexus/fw-mcp-launcher.sh`
-- `.gitnexus/` (GitNexus code graph index)
+- `.memory/` (after `dai-memory init`: code graph + project memory)
 
 #### Step 2: Restart All IDEs
 
@@ -407,7 +407,7 @@ Each IDE will automatically detect the workspace and load the correct context.
 
 | Feature | Benefit |
 |---------|---------|
-| **Shared code graph** | `.gitnexus/` index works across all IDEs |
+| **Shared code graph** | `.memory/` index works across all IDEs |
 | **Shared manifest** | Antigravity auto-detects project |
 | **Same launchers** | No duplicate configs to maintain |
 | **Consistent context** | All IDEs see same project state |
@@ -462,27 +462,29 @@ bash dai-nexus/scripts/dainexus-mcp-setup.sh --uninstall
 bash dai-nexus/scripts/dainexus-mcp-setup.sh --help
 ```
 
-### GitNexus CLI
+### DAI memory CLI
 
 ```bash
-# Install
-npm install -g gitnexus
+# Install the engine (outside the repository, one directory per pinned commit)
+python3 scripts/lite/dai_memory.py install
 
-# Setup for all editors
-gitnexus setup
+# Index the project
+dai-memory init
 
-# Analyze project
-gitnexus analyze
+# Refresh after changes (the post-commit hook does this too)
+dai-memory ingest
 
-# Check status
-gitnexus status
+# Check status: indexed commit, whether it is current
+dai-memory status
 
-# Clean index
-gitnexus clean
+# Remove this project's store
+dai-memory clean --yes
 
-# List indexed repos
-gitnexus list
+# Repositories grouped as one system
+dai-memory group list
 ```
+
+`dai-memory` is `node "$(python3 scripts/lite/dai_memory.py where)/bin/dai-memory.mjs"`.
 
 ### Environment Variables
 
@@ -531,9 +533,9 @@ bash dainexus-mcp-setup.sh --diagnose
 
 On Windows, path structures and command execution differ from macOS. If you encounter errors like `ERR_MODULE_NOT_FOUND` or executables not found:
 
-1. **GitNexus Path (Global)**: 
-   - **macOS**: Typically `/opt/homebrew/bin/gitnexus` or `~/.local/bin/gitnexus`.
-   - **Windows**: Use `"gitnexus"` (if in PATH) or absolute node path like `"C:/Users/<YourUsername>/AppData/Roaming/npm/node_modules/gitnexus/dist/cli/index.js"` with `"command": "node"`.
+1. **DAI memory engine path**:
+   - `python3 scripts/lite/dai_memory.py where` prints it; the server is `bin/dai-memory.mjs serve` under that directory.
+   - **Windows**: it lives under `C:/Users/<YourUsername>/AppData/Local/dai-harness/dai-memory/<commit>/`; use `"command": "node"` with that file as the first argument.
 
 2. **TypeScript Execution (tsx)**:
    - Avoid using bash-style paths `/c/Users/...` directly as the executable `command` on Windows.
@@ -557,11 +559,11 @@ On Windows, path structures and command execution differ from macOS. If you enco
      command = "npx"
      args = ["tsx", "C:/Users/<YourUsername>/.dainexus/mcp-server/src/index.ts"]
 
-     [mcp_servers.gitnexus]
+     [mcp_servers.dai-memory]
      enabled = true
      transport = { type = "stdio" }
      command = "node"
-     args = ["C:/Users/<YourUsername>/AppData/Roaming/npm/node_modules/gitnexus/dist/cli/index.js", "mcp"]
+     args = ["C:/Users/<YourUsername>/AppData/Local/dai-harness/dai-memory/<commit>/bin/dai-memory.mjs", "serve"]
      ```
 
 5. **Antigravity CLI & App (`mcp_config.json` on Windows)**:
@@ -574,11 +576,11 @@ On Windows, path structures and command execution differ from macOS. If you enco
          "C:/Users/<YourUsername>/.dainexus/mcp-server/src/index.ts"
        ]
      },
-     "gitnexus": {
+     "dai-memory": {
        "command": "node",
        "args": [
-         "C:/Users/<YourUsername>/AppData/Roaming/npm/node_modules/gitnexus/dist/cli/index.js",
-         "mcp"
+         "C:/Users/<YourUsername>/AppData/Local/dai-harness/dai-memory/<commit>/bin/dai-memory.mjs",
+         "serve"
        ]
      }
      ```
@@ -601,14 +603,14 @@ On Windows, path structures and command execution differ from macOS. If you enco
    bash dainexus-mcp-setup.sh --check
    ```
 
-### GitNexus Index Stale
+### Code Graph Index Stale
 
 **Symptoms:** Query returns old/outdated results
 
 **Solution:**
 ```bash
-# Re-analyze with GitNexus
-gitnexus analyze --force
+# Re-index with the DAI memory layer
+dai-memory ingest --force
 ```
 
 ### Launcher Script Not Found
@@ -645,21 +647,17 @@ bash dainexus-mcp-setup.sh setup --force
 
 ## FAQ
 
-### Q: What's the difference between DAI Nexus and GitNexus?
+### Q: What's the difference between DAI Nexus and DAI memory?
 
 **A:**
 - **DAI Nexus** provides project intelligence, skills, and orchestration
-- **GitNexus** provides code graph, context analysis, and impact detection
+- **DAI memory** (`vendor/dai-memory`, a submodule of the plugin's own repository) provides the code graph, context and impact analysis, and the project's recorded memory
 
-Both work together. You typically need both.
+The harness installs and registers DAI memory for you.
 
-### Q: Can I use just GitNexus without DAI Nexus?
+### Q: Can I use just DAI memory without DAI Nexus?
 
-**A:** Yes. Run:
-```bash
-npm install -g gitnexus
-gitnexus setup
-```
+**A:** Yes. It is a Claude Code plugin in its own right; install it from its repository and it registers its own `dai-memory` MCP server.
 
 ### Q: How do I update DAI Nexus MCP?
 
@@ -697,7 +695,7 @@ bash dai-nexus/scripts/dainexus-mcp-setup.sh setup
 # They all share the same:
 #   - .antigravity/mcp-manifest.json
 #   - .dainexus/ (state)
-#   - .gitnexus/ (code graph)
+#   - .memory/ (code graph + project memory)
 ```
 
 See [Multi-IDE Setup](#multi-ide-setup-cursor--claude--antigravity) section above for details.
@@ -706,8 +704,8 @@ See [Multi-IDE Setup](#multi-ide-setup-cursor--claude--antigravity) section abov
 
 **A:**
 - **Manifest**: `.antigravity/mcp-manifest.json`
-- **GitNexus Index**: `.gitnexus/` (in project directory)
-- **GitNexus Registry**: `~/.gitnexus/registry.json`
+- **Code graph + memory**: `.memory/` (in project directory, gitignored)
+- **Memory engine**: outside the repository, `python3 scripts/lite/dai_memory.py where`
 - **Settings**: `.dainexus/settings.env`
 
 All are in your project directory and can be committed to git.
@@ -725,4 +723,4 @@ All are in your project directory and can be committed to git.
 
 - [Quick Start Guide](SETUP-QUICK.md) - Fast 1-minute setup
 - [Technical Reference](SETUP-REFERENCE.md) - Detailed technical docs
-- [GitNexus Setup](SETUP-GITNEXUS.md) - Code intelligence setup guide
+- [DAI memory guide](guides/dai-memory.md) - Code intelligence and memory

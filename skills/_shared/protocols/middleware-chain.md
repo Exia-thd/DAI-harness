@@ -63,7 +63,7 @@ Result / Next Skill
 | # | Middleware | Source Protocol | Hook | Purpose |
 |---|-----------|----------------|------|---------|
 | ① | **SessionData** | session-lifecycle.md §Steps 1-3 | `before_skill()` | Load project-profile.json, session-log.json, detect manual changes |
-| ② | **ContextLoader** | session-lifecycle.md §Step 4 + memory-manager | `before_skill()` | Search local_memory with task keywords, load code-conventions.md |
+| ② | **ContextLoader** | session-lifecycle.md §Step 4 + memory-manager | `before_skill()` | Search the memory layer with task keywords (`dn_memory_search`), load code-conventions.md |
 | ②b| **OperatingPreflight** | pipeline-operating-contract.md | `before_skill()` | Build/refresh `PIPELINE_CONTEXT`: outcome/safe scope, cross-domain risk owners, research evidence, visual basis when applicable |
 | ③b| **DryRunContext** | dryrun-interceptor.md | `before_skill()` | Inject global system prompt instructing AI it is in test mode (Option B) |
 | ③ | **SkillRegistry** | skills-config.json | `before_skill()` | Filter available skills by classified mode (progressive loading) |

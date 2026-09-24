@@ -90,11 +90,11 @@ Expected output:
 
   ✓ Cursor: ~/.cursor/mcp.json
     dai-nexus: CONFIGURED
-    gitnexus: CONFIGURED
+    dai-memory: CONFIGURED
 
   ✓ Claude Code: ~/.claude/settings.json
     dai-nexus: CONFIGURED
-    gitnexus: CONFIGURED
+    dai-memory: CONFIGURED
 
   ➜ Antigravity:
     ✓ Server: ~/.cursor/projects/<hash>/mcps/user-dai-nexus/
@@ -104,7 +104,7 @@ Expected output:
 
   ✓ Codex CLI: ~/.codex/config.toml
     dai-nexus: CONFIGURED
-    gitnexus: CONFIGURED
+    dai-memory: CONFIGURED
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
@@ -141,11 +141,11 @@ bash dai-nexus/scripts/dainexus-mcp-setup.sh --check
 bash dai-nexus/scripts/dainexus-mcp-setup.sh --force
 ```
 
-### Just GitNexus
+### Just the code graph (DAI memory)
 
 ```bash
-npm install -g gitnexus
-gitnexus setup
+python3 scripts/lite/dai_memory.py install
+node "$(python3 scripts/lite/dai_memory.py where)/bin/dai-memory.mjs" init
 ```
 
 ---

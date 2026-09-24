@@ -98,28 +98,12 @@ do_checkpoint() {
     local summary
     summary=$(generate_checkpoint_summary "${reason}")
 
-    # Save to memory (Legacy Token-Savior / memory)
-    if command -v python3 &>/dev/null; then
-        python3 "${SCRIPT_DIR}/../lite/memory.py" add \
-            "CHECKPOINT: [${checkpoint_id}] msg:${message_count} | ${summary}" \
-            --category session 2>/dev/null || true
-            
-        # [GraphRAG V3] Save to Conversational Graph
-        local graph_src="${SCRIPT_DIR}/../../antigravity/src/memory"
-        if [[ -f "${graph_src}/graph_ingest.py" ]]; then
-            # We assume virtual environment or global has networkx installed
-            PYTHONPATH="${SCRIPT_DIR}/../../antigravity" python3 "${graph_src}/graph_ingest.py" \
-                --node-id "${checkpoint_id}" \
-                --type "Decision" \
-                --content "${summary}" \
-                --weight 5.0 2>/dev/null || true
-                
-            # [GraphRAG V3] Run cognitive decay and prune graph
-            PYTHONPATH="${SCRIPT_DIR}/../../antigravity" python3 "${graph_src}/graph_gc.py" \
-                --decay-rate 0.8 \
-                --threshold 1.0 2>/dev/null || true
-        fi
-    fi
+    # Save to memory: the DAI memory layer, the store every harness tool uses.
+    # The checkpoint's id is its source, so a later search leads back to it.
+    python3 "${SCRIPT_DIR}/../lite/dai_memory.py" add \
+        "CHECKPOINT: [${checkpoint_id}] msg:${message_count} | ${summary}" \
+        --category session --source "harness:checkpoint:${checkpoint_id}" >/dev/null 2>&1 || \
+        warn "checkpoint not recorded in memory (python3 scripts/lite/dai_memory.py install)"
 
     # Update session
     local updated_json
@@ -244,7 +228,7 @@ cmd_resume() {
     if command -v python3 &>/dev/null; then
         echo ""
         log "Recent memories:"
-        python3 "${SCRIPT_DIR}/../lite/memory.py" list --category session --limit 5 2>/dev/null || true
+        python3 "${SCRIPT_DIR}/../lite/dai_memory.py" search "session checkpoint" --limit 5 2>/dev/null || true
     fi
 }
 

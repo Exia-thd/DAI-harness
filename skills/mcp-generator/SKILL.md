@@ -2,7 +2,7 @@
 name: MCP Generator
 description: >
   Auto-generates a project-specific MCP server that exposes codebase intelligence
-  (GitNexus graph, project profile, conventions) as MCP Tools, Resources, and Prompts
+  (DAI memory code graph, project profile, conventions) as MCP Tools, Resources, and Prompts
   — enabling any MCP-compatible AI client to understand the project.
 version: 2.0.0
 ---
@@ -14,7 +14,7 @@ version: 2.0.0
 You are the **MCP Generator Specialist** — an expert at creating project-specific MCP (Model Context Protocol) servers that expose codebase intelligence as tools, resources, and prompts. You enable AI clients like Claude Desktop, Cursor, and Antigravity to understand and work with any project codebase through a standardized interface.
 
 **Core responsibilities:**
-- Generate MCP servers from project context (GitNexus index, project profile)
+- Generate MCP servers from project context (DAI memory code graph, project profile)
 - Configure tools, resources, and prompts based on project needs
 - Set up workspace isolation for multi-project environments
 - Implement security guardrails (path validation, allowlists)
@@ -119,12 +119,12 @@ const ALLOWED_SCRIPTS = [
 
 echo "=== MCP Generator Prerequisites ==="
 
-# Check GitNexus
-if [ -d ".gitnexus" ]; then
+# Check the code graph (DAI memory)
+if [ -f ".memory/meta.json" ]; then
     echo "✅ Code intelligence index found"
 else
     echo "❌ Code intelligence required"
-    echo "   Run: npm install -g gitnexus && gitnexus analyze"
+    echo "   Run: python3 scripts/lite/dai_memory.py install && dai-memory init"
 fi
 
 # Check project profile
@@ -261,7 +261,7 @@ import { z } from 'zod';
 const tools = [
   {
     name: 'project_query',
-    description: 'Search codebase by concept via GitNexus',
+    description: 'Search codebase by concept via the DAI memory code graph',
     inputSchema: z.object({
       query: z.string().describe('Search query'),
     }),
@@ -318,7 +318,7 @@ const resources = [
   {
     uri: 'project://architecture',
     name: 'Architecture',
-    description: 'Architecture overview from GitNexus clusters',
+    description: 'Architecture overview from code graph clusters (dai-memory code-clusters)',
     mimeType: 'text/markdown',
   },
   {
@@ -464,22 +464,23 @@ class DaiNexusMCPServer {
 
   // Tool handlers
   private async handleQuery(query: string) {
-    // Implementation uses GitNexus
-    const results = await gitnexus_query({ query });
+    // Implementation calls the DAI memory CLI (see templates/server.ts.hbs:
+    // execFileSync with an argument list, never a shell string)
+    const results = runMemory(['query', query]);
     return {
       content: [{ type: 'text', text: JSON.stringify(results, null, 2) }],
     };
   }
 
   private async handleContext(name: string) {
-    const context = await gitnexus_context({ name });
+    const context = runMemory(['context', name]);
     return {
       content: [{ type: 'text', text: JSON.stringify(context, null, 2) }],
     };
   }
 
   private async handleImpact(target: string, direction: 'upstream' | 'downstream') {
-    const impact = await gitnexus_impact({ target, direction });
+    const impact = runMemory(['impact', target, '--direction', direction]);
     return {
       content: [{ type: 'text', text: JSON.stringify(impact, null, 2) }],
     };
@@ -609,10 +610,10 @@ cat > "$PROJECT_ROOT/.antigravity/mcp-manifest.json" << EOF
       "description": "DAI Nexus project intelligence"
     },
     {
-      "name": "gitnexus",
-      "type": "gitnexus",
+      "name": "dai-memory",
+      "type": "dai-memory",
       "enabled": true,
-      "description": "Code intelligence graph"
+      "description": "Code intelligence graph and project memory"
     }
   ]
 }
@@ -799,7 +800,7 @@ fi
 ## Graceful Degradation
 
 ```typescript
-// Handle GitNexus unavailability
+// Handle the memory engine being unavailable
 async function withFallback<T>(
   primary: () => Promise<T>,
   fallback: T
@@ -814,8 +815,8 @@ async function withFallback<T>(
 
 // Usage
 const queryResults = await withFallback(
-  () => gitnexus_query({ query }),
-  { results: [], error: 'GitNexus unavailable' }
+  async () => runMemory(['query', query]),
+  { results: [], error: 'DAI memory unavailable' }
 );
 ```
 
@@ -869,7 +870,7 @@ echo "Regeneration complete. Restart AI client to apply."
 
 ## Execution Checklist
 
-- [ ] Prerequisites validated (GitNexus, profile, Node.js)
+- [ ] Prerequisites validated (DAI memory code graph, profile, Node.js)
 - [ ] Server scaffold created
 - [ ] Server implementation complete
 - [ ] Dependencies installed

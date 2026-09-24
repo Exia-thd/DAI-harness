@@ -1,197 +1,87 @@
-"""The vendored memory layer stays a copy.
+"""The memory layer is the plugin's own repository, pinned as a submodule.
 
-vendor/dai-memory is the memory layer at one commit of its own repository, with
-every file hashed. These tests keep it that way: the committed copy matches its
-record, a sync takes exactly the runtime files and nothing else, and a source
-carrying a name this repository forbids is refused before anything is written.
+vendor/dai-memory used to be a hashed copy, refreshed by a sync script, so
+every change to the layer was made twice. It is now a git submodule of the
+plugin's repository: the harness records one commit, and changes land in the
+plugin first. These tests hold the parts of that arrangement the harness owns:
+where the submodule points, that the checkout is the recorded commit, and that
+the install directory is named after that commit, so two pins never share one.
 
-Every sync here targets a scratch directory through DAI_MEMORY_VENDOR_DIR. A
-test that synced over the real copy would, the one time it went wrong, destroy
-what it was checking.
+The upstream-name guard the sync script ran before copying is the smoke suite's
+tree scan, which walks the submodule's checkout like any other directory.
 """
 
 from __future__ import annotations
 
-import hashlib
-import json
-import os
-import shutil
+import configparser
+import importlib.util
 import subprocess
 from pathlib import Path
 
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPT = ROOT / "scripts" / "vendor" / "sync-dai-memory.mjs"
-NODE = shutil.which("node")
-
-pytestmark = pytest.mark.skipif(
-    NODE is None, reason="node is required to run the sync script"
-)
+SUBMODULE = "vendor/dai-memory"
+PLUGIN_URL = "https://github.com/Exia-thd/DAI-memory-layer-plugin.git"
 
 
-def _run(*args: str, target: Path | None = None) -> subprocess.CompletedProcess[str]:
-    env = dict(os.environ)
-    if target is not None:
-        env["DAI_MEMORY_VENDOR_DIR"] = str(target)
+def _git(*args: str, cwd: Path = ROOT) -> str:
     return subprocess.run(
-        [NODE, str(SCRIPT), *args],
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        env=env,
-        cwd=ROOT,
-        timeout=120,
-    )
-
-
-def _git(repo: Path, *args: str) -> str:
-    return subprocess.run(
-        ["git", "-C", str(repo), *args],
-        capture_output=True,
-        text=True,
-        check=True,
-        env={**os.environ, "GIT_CONFIG_NOSYSTEM": "1"},
+        ["git", *args], cwd=cwd, capture_output=True, text=True, check=True
     ).stdout.strip()
 
 
-def _source(tmp_path: Path, files: dict[str, str]) -> Path:
-    """A throwaway memory-layer repository with exactly these files committed."""
-    repo = tmp_path / "source"
-    repo.mkdir()
-    _git(repo, "init", "-q")
-    _git(repo, "config", "user.email", "test@example.invalid")
-    _git(repo, "config", "user.name", "vendor test")
-    _git(repo, "config", "core.autocrlf", "false")
-    for name, content in files.items():
-        path = repo / name
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(content.encode("utf-8"))
-    _git(repo, "add", "-A")
-    _git(repo, "commit", "-qm", "fixture")
-    return repo
-
-
-RUNTIME = {
-    "LICENSE": "MIT License\n",
-    "package.json": '{"name": "memory"}\n',
-    "bin/dai-memory.mjs": "// launcher\n",
-    "packages/core/src/index.ts": "export const x = 1;\n",
-    "packages/core/grammars/README.md": "grammars\n",
-    "packages/cli/package.json": '{"name": "cli"}\n',
-}
-NOT_RUNTIME = {
-    "tests/store.test.js": "// test\n",
-    "eval/run.mjs": "// eval\n",
-    "docs/usage.md": "# usage\n",
-    "hooks/hooks.json": "{}\n",
-    ".claude-plugin/plugin.json": "{}\n",
-}
-
-
-def test_the_committed_copy_matches_its_record() -> None:
-    result = _run("--check")
-    assert result.returncode == 0, result.stderr
-    provenance = json.loads(
-        (ROOT / "vendor" / "dai-memory" / "PROVENANCE.json").read_text(encoding="utf-8")
+def _load_dai_memory():
+    spec = importlib.util.spec_from_file_location(
+        "dai_memory_under_test", ROOT / "scripts" / "lite" / "dai_memory.py"
     )
-    assert provenance["source"] == "https://github.com/Exia-thd/DAI-memory-layer-plugin"
-    assert len(provenance["commit"]) == 40
-    assert "LICENSE" in provenance["files"], (
-        "the MIT notice has to travel with the copy"
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_the_submodule_points_at_the_plugin_repository():
+    config = configparser.ConfigParser()
+    config.read(ROOT / ".gitmodules", encoding="utf-8")
+    section = f'submodule "{SUBMODULE}"'
+    assert config[section]["path"] == SUBMODULE
+    assert config[section]["url"] == PLUGIN_URL
+
+
+def test_the_harness_records_a_commit_not_a_copy():
+    # A gitlink (mode 160000) in the tree: a pointer, with no files beneath it.
+    entry = _git("ls-files", "--stage", "--", SUBMODULE)
+    assert entry.startswith("160000 "), entry
+    assert _git("ls-files", "--", f"{SUBMODULE}/package.json") == ""
+
+
+def test_the_checkout_is_the_recorded_commit():
+    if not (ROOT / SUBMODULE / "bin" / "dai-memory.mjs").is_file():
+        pytest.skip("submodule not initialised in this checkout")
+    recorded = _git("ls-files", "--stage", "--", SUBMODULE).split()[1]
+    checked_out = _git("rev-parse", "HEAD", cwd=ROOT / SUBMODULE)
+    assert checked_out == recorded, (
+        f"{SUBMODULE} is at {checked_out[:12]} but the harness records {recorded[:12]}; "
+        "commit the new pointer or run `git submodule update`"
     )
 
 
-def test_a_sync_takes_the_runtime_files_and_nothing_else(tmp_path: Path) -> None:
-    source = _source(tmp_path, {**RUNTIME, **NOT_RUNTIME})
-    target = tmp_path / "vendor"
-    result = _run("--source", str(source), target=target)
-    assert result.returncode == 0, result.stderr
-
-    provenance = json.loads((target / "PROVENANCE.json").read_text(encoding="utf-8"))
-    assert provenance["commit"] == _git(source, "rev-parse", "HEAD")
-    assert sorted(provenance["files"]) == sorted(RUNTIME)
-    for name, content in RUNTIME.items():
-        expected = hashlib.sha256(content.encode("utf-8")).hexdigest()
-        assert provenance["files"][name] == expected, name
-    for name in NOT_RUNTIME:
-        assert not (target / name).exists(), f"{name} was copied, and it does not run"
-
-    assert _run("--check", target=target).returncode == 0
+def test_the_install_directory_is_named_after_the_pinned_commit(monkeypatch):
+    dai_memory = _load_dai_memory()
+    monkeypatch.delenv("DAI_MEMORY_ENGINE", raising=False)
+    monkeypatch.setattr(dai_memory, "pinned_commit", lambda: "a" * 40)
+    first = dai_memory.engine_dir()
+    monkeypatch.setattr(dai_memory, "pinned_commit", lambda: "b" * 40)
+    second = dai_memory.engine_dir()
+    assert first.name == "a" * 16
+    assert second.name == "b" * 16
 
 
-def test_the_copy_is_read_from_the_commit_not_the_working_tree(tmp_path: Path) -> None:
-    # An uncommitted edit in the source must not ride along into a copy that
-    # claims to be that commit.
-    source = _source(tmp_path, RUNTIME)
-    (source / "packages" / "core" / "src" / "index.ts").write_text(
-        "export const x = 2;\n", encoding="utf-8"
-    )
-    target = tmp_path / "vendor"
-    assert _run("--source", str(source), target=target).returncode == 0
-    copied = (target / "packages" / "core" / "src" / "index.ts").read_text(
-        encoding="utf-8"
-    )
-    assert copied == RUNTIME["packages/core/src/index.ts"]
-
-
-def test_a_re_sync_removes_what_the_source_dropped_and_leaves_build_output(
-    tmp_path: Path,
-) -> None:
-    source = _source(tmp_path, RUNTIME)
-    target = tmp_path / "vendor"
-    assert _run("--source", str(source), target=target).returncode == 0
-
-    installed = target / "node_modules" / "dep" / "index.js"
-    installed.parent.mkdir(parents=True)
-    installed.write_text("// installed\n", encoding="utf-8")
-    (target / "packages" / "core" / "tsconfig.tsbuildinfo").write_text(
-        "{}", encoding="utf-8"
-    )
-
-    (source / "packages" / "core" / "grammars" / "README.md").unlink()
-    _git(source, "add", "-A")
-    _git(source, "commit", "-qm", "drop")
-    assert _run("--source", str(source), target=target).returncode == 0
-
-    assert not (target / "packages" / "core" / "grammars").exists(), (
-        "a dropped file stayed behind"
-    )
-    assert installed.exists(), "a sync reached into node_modules"
-    assert _run("--check", target=target).returncode == 0, (
-        "build output was counted as part of the copy"
-    )
-
-
-def test_an_edit_in_place_is_reported(tmp_path: Path) -> None:
-    source = _source(tmp_path, RUNTIME)
-    target = tmp_path / "vendor"
-    assert _run("--source", str(source), target=target).returncode == 0
-
-    (target / "packages" / "core" / "src" / "index.ts").write_text(
-        "// fixed here\n", encoding="utf-8"
-    )
-    (target / "packages" / "core" / "src" / "extra.ts").write_text(
-        "\n", encoding="utf-8"
-    )
-    (target / "LICENSE").unlink()
-
-    result = _run("--check", target=target)
-    assert result.returncode == 1
-    assert "modified  packages/core/src/index.ts" in result.stderr
-    assert "added     packages/core/src/extra.ts" in result.stderr
-    assert "missing   LICENSE" in result.stderr
-    assert "Make the change in the memory layer" in result.stderr
-
-
-def test_a_forbidden_name_is_refused_before_anything_is_written(tmp_path: Path) -> None:
-    token = "forge" + "wr" + "ight"
-    source = _source(
-        tmp_path, {**RUNTIME, "packages/core/src/borrowed.ts": f"// from {token}\n"}
-    )
-    target = tmp_path / "vendor"
-
-    result = _run("--source", str(source), target=target)
-    assert result.returncode == 1
-    assert "packages/core/src/borrowed.ts" in result.stderr
-    assert not target.exists(), "files were written before the source was refused"
+def test_an_uninitialised_submodule_reads_as_not_installed(monkeypatch):
+    # installed() is how the gate and the tests decide whether memory is
+    # available; before `git submodule update --init` it must say no, not raise.
+    dai_memory = _load_dai_memory()
+    monkeypatch.delenv("DAI_MEMORY_ENGINE", raising=False)
+    monkeypatch.setattr(dai_memory, "pinned_commit", lambda: None)
+    assert dai_memory.installed() is False
+    assert dai_memory.engine_dir().name == "submodule-not-initialized"

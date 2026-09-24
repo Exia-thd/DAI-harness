@@ -190,7 +190,7 @@ Please ensure the following dependencies are installed and available in your sys
 
 - **Node.js**: v22.x or higher for supported DAI Nexus runtime and CLI usage; CI validates Node.js 24 LTS with a Node.js 22 compatibility lane.
 - **Git**: v2.30+ (required for repository management and history tracking).
-- **Python**: v3.8+ (required for the FluxMem SQLite GraphRAG memory layer).
+- **Python**: v3.8+ (harness scripts and gates; memory itself is the DAI memory layer on Node.js).
 
 > Windows không có alias `python`? Thay `python` bằng `py -3` trong mọi lệnh dưới (hook trong `.claude/settings.json` đã dùng `py -3` sẵn).
 - **Supported IDE**: Cursor, Claude Desktop, or Codex CLI.
@@ -205,21 +205,28 @@ Integrating DAI Nexus directly into your target repository allows it to maintain
 
 ```bash
 cd /path/to/your-project
-git submodule add -b main https://github.com/buiphucminhtam/dai-nexus.git dai-nexus
+git submodule add -b main https://github.com/Exia-thd/DAI-harness.git dai-nexus
 git submodule update --init --recursive
 ```
 
-#### Step 2: Install and Configure GitNexus
+#### Step 2: Install the Memory layer
 
-GitNexus powers DAI Nexus's static code intelligence and impact analysis. It allows the AI to understand the relationships between different modules in your codebase without needing to read every file into its context window.
+The memory layer is DAI Nexus's code intelligence and its project memory: it
+records why decisions were made, and indexes what each file declares and what
+those declarations do to each other, so the agent can answer questions about a
+codebase without reading all of it into context.
+
+It is installed outside the repository — installed it is about 500 MB, and this
+project's verifiers copy and fingerprint the whole worktree.
 
 ```bash
-npm install -g gitnexus
-gitnexus setup
-gitnexus analyze
+python scripts/lite/dai_memory.py install    # dependencies, build, embedding model
+dai-memory init                              # build the store and the code graph
 ```
 
-The `analyze` step builds the initial structural graph of your project. You should re-run `gitnexus analyze` whenever you introduce significant architectural changes.
+`init` scans the repository and builds the graph. After a commit or a merge,
+`dai-memory ingest` re-reads what changed; `dai-memory status` says which commit
+the index was built at and whether the working tree has moved past it.
 
 #### Step 3: Run the MCP Setup Script
 
@@ -297,7 +304,7 @@ DAI Nexus adapts to the scale of your project, offering different tiers of auton
 | Level | Features | Setup Required | Best For |
 | --- | --- | --- | --- |
 | **Level 1**<br/>Zero Setup | Basic chat, 84 auto-activated skills | Just run your AI chat | Quick questions, single-file scripts |
-| **Level 2**<br/>Code Intelligence | `gitnexus_impact`, `gitnexus_query`, `gitnexus_rename` | `gitnexus setup` | Refactoring, code reviews, debugging |
+| **Level 2**<br/>Code Intelligence | `dai_memory_impact`, `dai_memory_query`, `dai_memory_rename` | `python scripts/lite/dai_memory.py install` | Refactoring, code reviews, debugging |
 | **Level 3**<br/>Continuity + GraphRAG | Event-driven bounded checkpoints plus optional local retrieval context | Python 3.8+ | Long-running projects, complex domains |
 | **Level 4**<br/>Full Power | Parallel dispatch, multi-repo support, full pipeline orchestration | MCP Setup script | Team projects, end-to-end autonomous dev |
 
@@ -309,7 +316,7 @@ By default, executing DAI Nexus places you in Level 1. The agent will rely prima
 
 #### Level 2: Code Intelligence
 
-To utilize Level 2 Code Intelligence, ensure `gitnexus` is installed globally and your project is indexed. Whenever you ask the agent to refactor code, it will autonomously invoke the code intelligence layer (`gitnexus_impact`) before making changes.
+To utilize Level 2 Code Intelligence, install the memory layer and index the project (`dai-memory init`). Whenever you ask the agent to refactor code, it invokes `dai_memory_impact` before making changes — and `dai_memory_rename` rather than a find-and-replace, because that walks the call graph instead of the text.
 
 #### Level 3: GraphRAG Memory
 
@@ -328,20 +335,20 @@ Level 4 unlocks the Parallel Dispatch workflows and the complete multi-agent pip
 
 DAI Nexus bundles advanced software engineering workflows into focused, accessible tools that run directly inside your local environment.
 
-### 1. Code Intelligence (GitNexus)
+### 1. Code Intelligence (memory layer)
 
-DAI Nexus can use GitNexus to construct a structural graph of a supported codebase. The documented kernel requires impact analysis before symbol edits when GitNexus is available; compatibility paths and user overrides are not universally enforced. Graph queries supplement rather than eliminate text search, and incomplete or stale indexes remain an explicit evidence boundary.
-**[Read the GitNexus Guide ➔](docs/guides/gitnexus.md)**
+DAI Nexus builds a structural graph of a supported codebase with the memory layer, and records the reasoning behind it in the same store. The kernel requires impact analysis before symbol edits; compatibility paths and user overrides are not universally enforced. Graph queries supplement rather than replace text search, every answer states what it could not see, and an index older than the working tree says so rather than answering from stale positions.
+**[Read the Memory layer Guide ➔](docs/guides/dai-memory.md)**
 
 ### 2. Autonomous Testing Stack
 
 Automated shifting-left test logic can integrate Property-Based Testing (PBT), mutation testing, and Appium/Maestro where configured. Behavioral test oracles are requirement-locked: a red suite or the current implementation is not authority to rewrite assertions, expected outputs, snapshots/goldens, eval labels, skips, or scenarios. When expected behavior is missing or contradictory, DAI Nexus must ask the user/product owner; behavioral tests change only after an explicit current requirement/acceptance change. Test-runner and setup/teardown plumbing may be repaired independently only when the behavioral oracle and coverage remain unchanged. The checks that run are recorded as evidence; this repository does not claim that every runtime writes tests first or blocks every coverage decrease.
 **[Read the Testing Stack Guide ➔](docs/guides/testing-stack.md)**
 
-### 3. Persistent Cognitive Memory (FluxMem)
+### 3. Persistent Cognitive Memory (memory layer)
 
-Memory-enabled configurations can retain project context across sessions using local SQLite-backed storage. Retrieval and staleness targets are documented in the [active roadmap](docs/active-roadmap.md); no universal recall or latency guarantee is claimed.
-**[Read the FluxMem Guide ➔](docs/guides/fluxmem.md)**
+Decisions, incidents and constraints are recorded with the reason behind them and retrieved when an agent meets unfamiliar code. Retrieval fuses keyword, semantic and recency ranking and reports which branch found what; a branch that returns nothing says so rather than quietly narrowing the answer. No universal recall or latency guarantee is claimed.
+**[Read the Memory layer Guide ➔](docs/guides/dai-memory.md)**
 
 ### 4. Parallel Skill Dispatch
 
@@ -412,7 +419,7 @@ TẦNG 3 — RUNTIME (Python thuần, zero-dependency, Windows/macOS/Linux)
   scripts/lite/sync-kernel.py       → sinh CLAUDE.md / AGENTS.md / GEMINI.md từ kernel
   scripts/lite/run_check.py         → ghi evidence JSON (machine-written, atomic, redacted)
   scripts/lite/verify_gate.py       → Stop-hook gate: chặn turn nếu thiếu/giả/hết hạn evidence
-  scripts/lite/memory.py            → memory SQLite+FTS5: BM25 + RRF fusion, auto-tag, GC
+  scripts/lite/dai_memory.py        → memory: the DAI memory layer (submodule vendor/dai-memory)
   scripts/lite/escalate.py          → HARD-step escalation qua expert CLI, budget-enforced
   scripts/lite/worktree_manager.py  → parallel dispatch: contract → validate → merge arbiter
   scripts/lite/policy_check.py      → execution policy gate (deny patterns, fail-closed)
@@ -567,17 +574,17 @@ python -m http.server 8000 --directory docs
 - Run `bash scripts/dainexus-mcp-setup.sh --force` to regenerate configuration files.
 - Verify Node v22+ is installed via `node -v` and accessible in your default path.
 
-### The GitNexus index is stale / Impact analysis fails
+### The index is stale / Impact analysis fails
 
-- Run `gitnexus analyze` manually in your terminal to refresh the static index, then retry the command in your IDE.
+- Run `dai-memory ingest` in your terminal to re-read what changed, then retry the command in your IDE. `dai-memory status` says which commit the index was built at.
 
 ### How do I disable automatic memory persistence?
 
 - Message/tool counts do not create automatic checkpoints. Avoid the explicit
   `memory-middleware.py checkpoint` command to keep continuity disabled for a
-  session. Optional SQLite retrieval data can be managed with
-  `scripts/memory/memory-hygiene.sh`; do not delete project state without first
-  reviewing the exact target.
+  session. Recorded memory lives in `.memory/` and is managed with
+  `dai-memory` (`dai-memory clean --yes` removes the project's store); do not
+  delete project state without first reviewing the exact target.
 
 ### The Orchestrator is stuck in a loop trying to fix a bug
 
@@ -625,7 +632,7 @@ smoke suite kiểm tra điều này mỗi lần chạy.
 - **Gate chặn tuyên bố không bằng chứng, không chặn được mọi bug.** Verify gate bắt buộc
   evidence quan sát được từ workspace hiện tại; nó không bảo đảm không còn lỗi thoát ra production.
 - **Impact analysis không được cưỡng chế toàn diện.** Kernel yêu cầu chạy impact analysis trước
-  khi sửa symbol khi GitNexus khả dụng; các đường tương thích và override của người dùng không
+  khi sửa symbol; các đường tương thích và override của người dùng không
   được cưỡng chế ở mọi nhánh.
 - **Index có thể cũ hoặc không đầy đủ.** Truy vấn đồ thị bổ sung chứ không thay thế tìm kiếm
   văn bản; index lỗi thời là một ranh giới bằng chứng được nêu rõ.

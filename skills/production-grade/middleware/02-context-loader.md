@@ -8,9 +8,9 @@
 
 ```
 1. Search memory
-   python3 scripts/lite/memory.py search "<project-name> <user-request-keywords>" --limit 5 --format compact
+   python3 scripts/lite/dai_memory.py search "<project-name> <user-request-keywords>" --limit 5
    
-   → If store empty or no results: run scripts/lite/memory.py refresh once, then search again
+   → If store empty or no results: run `dai-memory ingest` once (or `python3 scripts/lite/dai_memory.py install` if the engine is missing), then search again
    
 2. Load .dainexus/code-conventions.md
    → If exists: inject into context for all skills

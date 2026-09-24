@@ -6,21 +6,25 @@ echo "   DAI Nexus Environment Status"
 echo "=========================================="
 echo ""
 
-# 1. GitNexus Status
-echo "🔮 GitNexus (Code Intelligence)"
+# 1. Code intelligence: the DAI memory layer
+echo "🔮 DAI memory (code graph + memory)"
 echo "-----------------------------------"
-if pgrep -f "gitnexus" > /dev/null 2>&1; then
-    echo "  Status: ✅ Running (MCP)"
-    pgrep -fl "gitnexus" | head -1
+engine=""
+for python_cmd in "py -3" python3 python; do
+    engine="$(${python_cmd} scripts/lite/dai_memory.py where 2>/dev/null)" && break
+    engine=""
+done
+if [ -n "$engine" ] && [ -f "$engine/bin/dai-memory.mjs" ]; then
+    echo "  Engine: ✅ Installed ($engine)"
+    node "$engine/bin/dai-memory.mjs" status 2>/dev/null | sed 's/^/  /' | head -6
 else
-    echo "  Status: ❌ Not running in background"
+    echo "  Engine: ❌ Not installed (python scripts/lite/dai_memory.py install)"
 fi
 
-# Check gitnexus index
-if [ -d ".gitnexus" ]; then
-    echo "  Index: ✅ Present (.gitnexus/)"
+if [ -f ".memory/meta.json" ]; then
+    echo "  Index: ✅ Present (.memory/)"
 else
-    echo "  Index: ❌ Missing (.gitnexus/)"
+    echo "  Index: ❌ Missing (.memory/) — run: dai-memory init"
 fi
 echo ""
 

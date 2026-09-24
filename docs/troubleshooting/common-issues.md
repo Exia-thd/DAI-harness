@@ -25,7 +25,7 @@
 
 ### "MCP tools not working"
 
-**Symptoms:** `gitnexus_*` tools unavailable
+**Symptoms:** `dai_memory_*` tools unavailable
 
 **Solution:**
 1. Check MCP config:
@@ -165,12 +165,12 @@ planQuality:
 **Solution:**
 1. Check memory is enabled:
    ```bash
-   python3 scripts/memory-middleware.py status
+   dai-memory status
    ```
 
 2. Run checkpoint:
    ```bash
-   python3 scripts/memory-middleware.py checkpoint
+   dai-memory ingest
    ```
 
 3. Check session log:

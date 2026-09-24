@@ -27,7 +27,7 @@ test('static policy rejects mutable actions, curl pipes, and unpinned tools', ()
   const root = mkdtempSync(join(tmpdir(), 'supply-policy-'));
   const file = join(root, 'workflow.yml');
   try {
-    writeFileSync(file, 'steps:\n  - uses: actions/checkout@v4\n  - run: curl https://x | bash\n  - run: npx gitnexus\n  - run: pip install pytest\n');
+    writeFileSync(file, 'steps:\n  - uses: actions/checkout@v4\n  - run: curl https://x | bash\n  - run: npx some-tool\n  - run: pip install pytest\n');
     const errors = supplyChainPolicyErrors([file], root);
     assert.equal(errors.length, 4);
     assert.match(errors.join('\n'), /not pinned/);

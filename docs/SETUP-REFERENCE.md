@@ -71,8 +71,9 @@ project/
 ├── .dainexus/
 │   ├── settings.env            # DAI Nexus settings
 │   └── mcp-server/            # Generated MCP server
-└── .gitnexus/                    # Code graph index
-    └── codebase.db
+└── .memory/                      # DAI memory: code graph + project memory
+    ├── meta.json
+    └── store.lbug
 ```
 
 ### Script Location
@@ -110,7 +111,8 @@ Main launcher that routes to DAI Nexus MCP server.
 
 Earlier revisions documented a second launcher for a bundled code-intelligence
 server. That module is not part of this repository: code intelligence is
-provided by GitNexus, which installs and launches itself. `.cursor/` still
+provided by the DAI memory layer (`vendor/dai-memory`), which the setup script
+registers as its own `dai-memory` server. `.cursor/` still
 carries a dead entry point for the removed module — see the audit notes in
 `.dainexus/plan-lessons.md`.
 
@@ -260,11 +262,11 @@ command = "~/.dainexus/mcp-server/node_modules/.bin/tsx"
 args = ["~/.dainexus/mcp-server/src/index.ts"]
 env = { DAINEXUS_WORKSPACE = "$PROJECT_ROOT" }
 
-[mcp_servers.gitnexus]
+[mcp_servers.dai-memory]
 enabled = true
 transport = { type = "stdio" }
-command = "gitnexus"
-args = ["mcp"]
+command = "/usr/local/bin/node"
+args = ["~/.cache/dai-harness/dai-memory/<commit>/bin/dai-memory.mjs", "serve"]
 ```
 
 **Note:** Codex CLI only supports **STDIO transport** for local MCP servers. Remote HTTP/SSE servers are not yet supported.
@@ -443,4 +445,4 @@ DAINEXUS_DEBUG=1 bash scripts/dainexus-mcp-launcher.sh
 
 - [Setup Guide](SETUP.md) - User documentation
 - [Quick Start](SETUP-QUICK.md) - Fast setup
-- Code intelligence is provided by GitNexus — see `.claude/skills/gitnexus/gitnexus-guide/SKILL.md`
+- Code intelligence is provided by the DAI memory layer — see `.claude/skills/dai-memory/dai-memory-guide/SKILL.md` and [the guide](guides/dai-memory.md)

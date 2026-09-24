@@ -5470,7 +5470,9 @@ function extractDiagrams(content, lineOffset) {
 }
 function extractCodeRefs(content) {
   const refs = /* @__PURE__ */ new Set();
-  for (const match of content.matchAll(/gitnexus:\/\/[^\s)>\]]+/g)) {
+  for (const match of content.matchAll(
+    /(?:dai-memory|gitnexus):\/\/[^\s)>\]]+/g
+  )) {
     refs.add(match[0]);
   }
   for (const match of content.matchAll(
@@ -5584,33 +5586,36 @@ function readCuratedProfile(projectRoot) {
     return {};
   }
 }
+function codeIndexAdapterEnabled(manifest) {
+  const adapters = manifest.adapters;
+  if (adapters?.dai_memory !== void 0) return adapters.dai_memory === true;
+  return adapters?.gitnexus === true;
+}
 function collectProjectFacts(projectRoot, manifest) {
   const gitEnabled = manifest.adapters?.git !== false;
   const commit = gitEnabled ? runGit(projectRoot, ["rev-parse", "HEAD"]) : null;
   const branch = gitEnabled ? runGit(projectRoot, ["branch", "--show-current"]) : null;
   const dirtyOutput = gitEnabled ? runGit(projectRoot, ["status", "--porcelain", "--untracked-files=no"]) : null;
-  const gitnexusEnabled = manifest.adapters?.gitnexus === true;
-  const gitnexusPath = join(projectRoot, ".gitnexus", "meta.json");
-  let gitnexus = {
-    status: gitnexusEnabled ? "unavailable" : "disabled",
+  const codeIndexEnabled = codeIndexAdapterEnabled(manifest);
+  const metaPath = join(projectRoot, ".memory", "meta.json");
+  let codeIndex = {
+    status: codeIndexEnabled ? "unavailable" : "disabled",
     indexedCommit: null,
     indexedAt: null,
-    processes: null,
-    symbols: null
+    files: null
   };
-  if (gitnexusEnabled && existsSync(gitnexusPath)) {
+  if (codeIndexEnabled && existsSync(metaPath)) {
     try {
-      const meta = JSON.parse(readFileSync(gitnexusPath, "utf8"));
+      const meta = JSON.parse(readFileSync(metaPath, "utf8"));
       const indexedCommit = typeof meta.lastCommit === "string" ? meta.lastCommit : null;
-      gitnexus = {
+      codeIndex = {
         status: commit && indexedCommit && (commit !== indexedCommit || Boolean(dirtyOutput)) ? "stale" : "available",
         indexedCommit,
         indexedAt: typeof meta.indexedAt === "string" ? meta.indexedAt : null,
-        processes: typeof meta.stats?.processes === "number" ? meta.stats.processes : null,
-        symbols: typeof meta.stats?.nodes === "number" ? meta.stats.nodes : null
+        files: meta.fileHashes && typeof meta.fileHashes === "object" ? Object.keys(meta.fileHashes).length : null
       };
     } catch {
-      gitnexus.status = "unavailable";
+      codeIndex.status = "unavailable";
     }
   }
   return {
@@ -5620,7 +5625,7 @@ function collectProjectFacts(projectRoot, manifest) {
       commit,
       dirty: commit === null ? null : Boolean(dirtyOutput)
     },
-    gitnexus,
+    codeIndex,
     profile: readCuratedProfile(projectRoot)
   };
 }
@@ -6105,6 +6110,7 @@ var docsManifestSchema = z.object({
   truth: z.array(relativePathSchema).optional(),
   adapters: z.object({
     git: z.boolean().optional(),
+    dai_memory: z.boolean().optional(),
     gitnexus: z.boolean().optional(),
     evidence_summary: z.boolean().optional()
   }).strict().optional(),
@@ -6206,7 +6212,7 @@ function createDefaultManifest(projectRootInput) {
     ],
     adapters: {
       git: true,
-      gitnexus: existsSync(join(projectRoot, ".gitnexus", "meta.json")),
+      dai_memory: existsSync(join(projectRoot, ".memory", "meta.json")),
       evidence_summary: false
     },
     privacy: {
@@ -6457,7 +6463,7 @@ function resolveCatalogLinks(catalogs) {
           to: codeRef,
           type: "code-ref",
           source: document.sourcePath,
-          confidence: codeRef.startsWith("gitnexus://") ? 1 : 0.75
+          confidence: /^(?:dai-memory|gitnexus):\/\//.test(codeRef) ? 1 : 0.75
         });
       }
       if (document.sourceOfTruth) {
@@ -6889,22 +6895,22 @@ function addCatalogDiagnostics(catalog) {
       }
     }
   }
-  const gitnexusStatus = catalog.project.facts.gitnexus.status;
-  if (gitnexusStatus === "stale") {
+  const codeIndexStatus = catalog.project.facts.codeIndex.status;
+  if (codeIndexStatus === "stale") {
     catalog.diagnostics.push({
       severity: "warning",
-      code: "GITNEXUS_STALE",
+      code: "CODE_INDEX_STALE",
       projectId: catalog.project.id,
-      message: "GitNexus metadata is stale relative to the current Git commit.",
-      suggestion: "Run `node .gitnexus/run.cjs analyze` before publishing traceability."
+      message: "The code index is stale relative to the current Git commit.",
+      suggestion: "Run `dai-memory ingest` before publishing traceability."
     });
-  } else if (gitnexusStatus === "unavailable") {
+  } else if (codeIndexStatus === "unavailable") {
     catalog.diagnostics.push({
       severity: "warning",
-      code: "GITNEXUS_UNAVAILABLE",
+      code: "CODE_INDEX_UNAVAILABLE",
       projectId: catalog.project.id,
-      message: "GitNexus was enabled but no readable index metadata is available.",
-      suggestion: "Index the project or disable the adapter in the docs manifest."
+      message: "The code index was enabled but .memory/meta.json is missing or unreadable.",
+      suggestion: "Run `dai-memory init` or disable the adapter in the docs manifest."
     });
   }
 }
@@ -6935,7 +6941,7 @@ function refreshCatalogSummary(catalog) {
         asset.contentHash
       ]),
       git: catalog.project.facts.git.commit,
-      gitnexus: catalog.project.facts.gitnexus.indexedCommit,
+      codeIndex: catalog.project.facts.codeIndex.indexedCommit,
       projectState: {
         path: catalog.project.statePath,
         hash: catalog.project.stateHash
@@ -7790,7 +7796,7 @@ function projectSectionLink(title, description, count, projectRoute, file) {
 }
 function renderHealthSection(catalog, projectRoute) {
   const facts = catalog.project.facts;
-  return `<section id="docs-health" class="card section-card"><h2>Documentation health</h2><div class="card-grid"><section class="card"><h3>Documentation</h3><p><span class="metric">${catalog.documents.length}</span> documents</p><p class="meta">${catalog.assets.length} assets \xB7 ${catalog.project.truthDocuments.length} truth documents</p></section><section class="card"><h3>Git</h3><p>${facts.git.available ? escape(facts.git.branch ?? "detached") : "Unavailable"}</p><p class="meta">${facts.git.commit ? escape(facts.git.commit.slice(0, 12)) : "No commit"}${facts.git.dirty ? " \xB7 dirty" : ""}</p></section><section class="card"><h3>GitNexus</h3><p>${escape(facts.gitnexus.status)}</p><p class="meta">${facts.gitnexus.symbols ?? 0} symbols \xB7 ${facts.gitnexus.processes ?? 0} processes</p></section></div><h3>Project state source</h3>${fieldList(
+  return `<section id="docs-health" class="card section-card"><h2>Documentation health</h2><div class="card-grid"><section class="card"><h3>Documentation</h3><p><span class="metric">${catalog.documents.length}</span> documents</p><p class="meta">${catalog.assets.length} assets \xB7 ${catalog.project.truthDocuments.length} truth documents</p></section><section class="card"><h3>Git</h3><p>${facts.git.available ? escape(facts.git.branch ?? "detached") : "Unavailable"}</p><p class="meta">${facts.git.commit ? escape(facts.git.commit.slice(0, 12)) : "No commit"}${facts.git.dirty ? " \xB7 dirty" : ""}</p></section><section class="card"><h3>Code index</h3><p>${escape(facts.codeIndex.status)}</p><p class="meta">${facts.codeIndex.files ?? 0} files indexed</p></section></div><h3>Project state source</h3>${fieldList(
     [
       ["Source path", `<code>${escape(stateSource(catalog))}</code>`],
       [

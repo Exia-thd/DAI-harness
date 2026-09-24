@@ -215,7 +215,7 @@ def test_explicit_positive_turn_cap_remains_an_emergency_guard(
 
 def test_qualified_tool_names_are_bounded_stable_and_namespaced() -> None:
     first = orchestrator.qualified_tool_name("filesystem", "read.file")
-    second = orchestrator.qualified_tool_name("gitnexus", "read.file")
+    second = orchestrator.qualified_tool_name("dai-memory", "read.file")
     assert first == orchestrator.qualified_tool_name("filesystem", "read.file")
     assert first != second
     assert len(first) <= 64
@@ -338,3 +338,26 @@ def test_mcp_contexts_enter_without_spawning_timeout_tasks() -> None:
         not in source
     )
     assert '"name": "dai-nexus",\n                    "optional": True' in source
+
+
+def test_the_code_graph_server_is_the_memory_layer_started_in_the_project(
+    monkeypatch, tmp_path
+) -> None:
+    # It replaced `gitnexus mcp`. The layer serves the project it starts in,
+    # so the working directory is the project, not wherever the agent runs.
+    cli = tmp_path / "engine" / "bin" / "dai-memory.mjs"
+    monkeypatch.setattr(orchestrator.dai_memory, "installed", lambda: True)
+    monkeypatch.setattr(orchestrator.dai_memory, "memory_cli", lambda: cli)
+    params = orchestrator.dai_memory_server_parameters(
+        str(tmp_path / "project"), {"A": "1"}
+    )
+    assert params.command == "node"
+    assert params.args == [str(cli), "serve"]
+    assert Path(params.cwd) == tmp_path / "project"
+
+
+def test_no_code_graph_server_without_an_installed_engine(
+    monkeypatch, tmp_path
+) -> None:
+    monkeypatch.setattr(orchestrator.dai_memory, "installed", lambda: False)
+    assert orchestrator.dai_memory_server_parameters(str(tmp_path), {}) is None

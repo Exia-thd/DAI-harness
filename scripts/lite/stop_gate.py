@@ -74,7 +74,7 @@ MAX_ATTEMPTS_PER_SCOPE = 2
 VALID_PLATFORMS = {"CLAUDE", "GEMINI", "CURSOR", "CODEX", ""}
 SKIP_SUFFIXES = {".md", ".txt"}
 SKIP_NAMES = {".gitignore", ".gitattributes", ".memignore", ".cursorignore"}
-SKIP_PREFIXES = (".dainexus/", ".gitnexus/", ".dainexus-node/")
+SKIP_PREFIXES = (".dainexus/", ".gitnexus/", ".memory/", ".dainexus-node/")
 DOCS_SOURCE_EXTENSIONS = {
     ".md",
     ".markdown",

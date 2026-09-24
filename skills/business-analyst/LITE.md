@@ -18,7 +18,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 1. ELICIT | Product features and specifications via user requirements | Verify requirements map precisely to business goals and do not introduce out-of-scope bloat.
 2. FORMAT | Create or update specification files under `docs/01-product/` following `TEMPLATE-FEATURE-SPEC.md` | Ensure file names strictly use lowercase letters and kebab-case with no spaces (e.g., `api-specification.md`).
-3. SEQUENCE | Classify task complexity using GitNexus metrics to enforce BDD-first sequence | Verify that high-complexity features trigger the sequence: `BA (BDD) -> QA (Stubs) -> Build -> Test`.
+3. SEQUENCE | Classify task complexity using code graph metrics (dai-memory) to enforce BDD-first sequence | Verify that high-complexity features trigger the sequence: `BA (BDD) -> QA (Stubs) -> Build -> Test`.
 
 ## Common Mistakes Checklist
 - **Non-compliant naming conventions**: Saving specification files under `docs/` that use uppercase letters, camelCase, or spaces instead of strictly lowercase kebab-case (e.g., `api-specification.md`).

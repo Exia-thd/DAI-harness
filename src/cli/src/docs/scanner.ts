@@ -355,25 +355,24 @@ function addCatalogDiagnostics(catalog: DocsCatalog): void {
     }
   }
 
-  const gitnexusStatus = catalog.project.facts.gitnexus.status;
-  if (gitnexusStatus === "stale") {
+  const codeIndexStatus = catalog.project.facts.codeIndex.status;
+  if (codeIndexStatus === "stale") {
     catalog.diagnostics.push({
       severity: "warning",
-      code: "GITNEXUS_STALE",
+      code: "CODE_INDEX_STALE",
       projectId: catalog.project.id,
-      message: "GitNexus metadata is stale relative to the current Git commit.",
-      suggestion:
-        "Run `node .gitnexus/run.cjs analyze` before publishing traceability.",
+      message: "The code index is stale relative to the current Git commit.",
+      suggestion: "Run `dai-memory ingest` before publishing traceability.",
     });
-  } else if (gitnexusStatus === "unavailable") {
+  } else if (codeIndexStatus === "unavailable") {
     catalog.diagnostics.push({
       severity: "warning",
-      code: "GITNEXUS_UNAVAILABLE",
+      code: "CODE_INDEX_UNAVAILABLE",
       projectId: catalog.project.id,
       message:
-        "GitNexus was enabled but no readable index metadata is available.",
+        "The code index was enabled but .memory/meta.json is missing or unreadable.",
       suggestion:
-        "Index the project or disable the adapter in the docs manifest.",
+        "Run `dai-memory init` or disable the adapter in the docs manifest.",
     });
   }
 }
@@ -410,7 +409,7 @@ export function refreshCatalogSummary(catalog: DocsCatalog): DocsCatalog {
         asset.contentHash,
       ]),
       git: catalog.project.facts.git.commit,
-      gitnexus: catalog.project.facts.gitnexus.indexedCommit,
+      codeIndex: catalog.project.facts.codeIndex.indexedCommit,
       projectState: {
         path: catalog.project.statePath,
         hash: catalog.project.stateHash,

@@ -10,7 +10,7 @@
 <body>
 <nav class="nav"><div class="nav-inner">
   <a href="./index.html" class="nav-brand"><span class="dot"></span> DAI Nexus <small>docs</small></a>
-  <div class="nav-links"><a href="./index.html">Tổng quan</a><a href="./kernel.html">Kernel</a><a href="./skills.html">Skills</a><a href="./evidence.html" class=current>Bằng chứng</a><a href="./runtime.html">Runtime</a><a href="./memory.html">Memory</a><a href="./memory-guide.html">Bóc tách Memory</a><a href="./patterns.html">Tinh túy</a></div>
+  <div class="nav-links"><a href="./index.html">Tổng quan</a><a href="./kernel.html">Kernel</a><a href="./skills.html">Skills</a><a href="./evidence.html" class=current>Bằng chứng</a><a href="./runtime.html">Runtime</a><a href="./memory.html">Memory</a><a href="./patterns.html">Tinh túy</a></div>
 </div></nav>
 <main>
 
@@ -143,7 +143,7 @@ khi chạy từ git hook.</p>
 <div class="callout warn"><div class="title">Nguyên tắc</div>Một kỳ vọng <em>không kiểm chứng được</em> phải là FAIL, không phải pass im lặng. Mọi cơ chế trong trang này đều theo hướng đó.</div>
 
 <h2><span class="num">06</span> Tự kiểm tra</h2>
-<p><code>tests/smoke.py</code> — 69 phép kiểm tra, 950 dòng, không gọi model,
+<p><code>tests/smoke.py</code> — 59 phép kiểm tra, 872 dòng, không gọi model,
 không cần dịch vụ ngoài. Trong đó có cả các test <em>meta</em>: gate có thật sự chặn evidence giả không,
 adapter im lặng có fail không, mọi đường dẫn skill trong routing có tồn tại không.</p>
 <div class="code-block"><div class="code-head"><span class="file">chạy</span></div><pre><code>python scripts/lite/run_check.py -- python tests/smoke.py</code></pre></div>

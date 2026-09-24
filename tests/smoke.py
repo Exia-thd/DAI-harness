@@ -9,6 +9,7 @@ Exit: 0 = all pass, 1 = failures (listed on stderr)
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -47,42 +48,77 @@ def test_verify_gate_selftest() -> None:
 
 
 def test_memory() -> None:
+    """The harness reaches memory through one module, and it says what it cannot do.
+
+    The SQLite module this used to exercise was retired on 2026-09-21. What is
+    checked now is the seam every memory call in the harness goes through: it
+    resolves the installed engine, and when nothing is installed it says so
+    with the command to fix it rather than answering as if memory were empty.
+    """
     sys.path.insert(0, str(ROOT / "scripts" / "lite"))
     import importlib
 
-    memory = importlib.import_module("memory")
-    with tempfile.TemporaryDirectory() as tmp:
-        db = memory.MemoryDB(str(Path(tmp) / "m.db"))
-        r1 = db.add(
-            "jwt auth decision with token=abcdefgh12345678 rotation",
-            category="decisions",
-            importance=9,
-        )
-        check("memory add", not r1["duplicate"] and "auth" in r1["tags"])
-        r2 = db.add(
-            "jwt auth decision with token=abcdefgh12345678 rotation",
-            category="decisions",
-        )
-        check("memory dedup", r2["duplicate"] is True)
-        got = db.memory_get(r1["id"])
-        check("memory redaction", "[REDACTED]" in got["content"], got["content"][:80])
-        hits = db.memory_search("jwt auth", limit=3)
-        check("memory FTS+RRF search", len(hits) >= 1 and hits[0]["id"] == r1["id"])
-        for i in range(6):
-            db.add(f"filler {i}", category="ingested")
-        removed = db.gc(max_obs=3)
-        kept_types = {m["type"] for m in db.list_all(limit=10)}
-        check(
-            "memory value-weighted GC",
-            removed >= 1 and "decisions" in kept_types,
-            f"removed={removed} kept={kept_types}",
-        )
-    fused = memory.rrf_merge(
-        [{"id": 1}, {"id": 2}],
-        [{"id": 2}, {"id": 3}],
-        k=60,
+    dai_memory = importlib.import_module("dai_memory")
+
+    check(
+        "memory categories map onto the layer's layers",
+        dai_memory.layer_for("decisions") == "semantic"
+        and dai_memory.layer_for("errors") == "episodic"
+        and dai_memory.layer_for("procedure") == "procedural"
+        and dai_memory.layer_for("something else") == "semantic",
     )
-    check("rrf_merge favors overlap", fused[0]["id"] == 2, str(fused))
+    check(
+        "an empty write is refused rather than recorded",
+        "error"
+        in dai_memory.write(
+            "   ", cwd=ROOT, category=None, importance=5, source_ref="smoke"
+        ),
+    )
+    check(
+        "an empty search is refused rather than answered",
+        "error" in dai_memory.search("  ", cwd=ROOT, limit=3),
+    )
+
+    installed = dai_memory.installed()
+    if not installed:
+        # Not a failure: a checkout without the engine is a normal state. It has
+        # to be visible, though -- an absent engine that reads as "no memories"
+        # is the failure mode this whole layer exists to prevent.
+        check(
+            "an uninstalled engine is an error, not an empty answer",
+            "error" in dai_memory.run("doctor", cwd=ROOT)
+            and dai_memory.INSTALL_HINT in dai_memory.run("doctor", cwd=ROOT)["error"],
+        )
+        return
+
+    with tempfile.TemporaryDirectory() as tmp:
+        project = Path(tmp)
+        subprocess.run(
+            ["git", "-C", str(project), "init", "-q"], check=True, capture_output=True
+        )
+        (project / "notes.md").write_text(
+            "# Notes\n\nNothing much.\n", encoding="utf-8"
+        )
+        env = dict(
+            os.environ,
+            MEMORY_LAYER_HOME=str(project / "home"),
+            MEMORY_LAYER_EMBEDDINGS="hash",
+            MEMORY_LAYER_TEST="1",
+            MEMORY_LAYER_LOG_LEVEL="error",
+        )
+        started = subprocess.run(
+            ["node", str(dai_memory.memory_cli()), "init", "--quiet"],
+            cwd=str(project),
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=600,
+        )
+        check(
+            "memory store can be created",
+            started.returncode == 0,
+            started.stderr[-300:],
+        )
 
 
 def test_escalate_dry_run() -> None:
@@ -357,7 +393,7 @@ def test_skill_overlays_clean() -> None:
     )
     skip_parts = {
         ".git",
-        ".gitnexus",
+        ".memory",
         ".dainexus",
         # Hypothesis caches string constants harvested from the tree, so it
         # echoes back whatever the sources said. Gitignored tool cache, not repo
@@ -398,6 +434,21 @@ def test_skill_overlays_clean() -> None:
             continue
         if any(part in skip_parts for part in p.parts) or p.name == "smoke.py":
             continue
+        # The frozen reference graph is a verbatim record of what the retired
+        # GitNexus index held on the day it was taken, old paths included. It is
+        # a fixture the code-graph comparator reads, not prose anybody wrote:
+        # scrubbing names out of it would falsify the record it exists to keep.
+        if (
+            p.relative_to(ROOT)
+            .as_posix()
+            .startswith("src/codegraph/reference/snapshot/")
+        ):
+            continue
+        # vendor/dai-memory is a submodule: another repository, with its own
+        # history, licence and guards. This scan is about what *this* tree
+        # carries; the plugin's own words are the plugin's to keep.
+        if p.relative_to(ROOT).as_posix().startswith("vendor/dai-memory/"):
+            continue
         try:
             text = p.read_text(encoding="utf-8")
         except (UnicodeDecodeError, OSError):
@@ -412,118 +463,13 @@ def test_skill_overlays_clean() -> None:
     for path in ROOT.rglob("*"):
         if any(part in skip_parts for part in path.parts):
             continue
+        if path.relative_to(ROOT).as_posix().startswith("vendor/dai-memory/"):
+            continue
         lower_name = path.name.lower()
         for bad in bad_tokens:
             if bad.lower() in lower_name:
                 stale.append(f"{path.relative_to(ROOT)}: {bad} (in filename)")
     check("repo free of upstream-origin references", not stale, str(stale[:10]))
-
-
-def test_standalone_page_is_orphaned() -> None:
-    """docs/memory-standalone.html must survive being handed over on its own.
-
-    It is deliberately unreachable from the site: no nav, no outbound links, no
-    page pointing at it, and the stylesheet inlined. Any of those creeping back
-    silently breaks the one property it exists for.
-    """
-    import re
-
-    page = ROOT / "docs" / "memory-standalone.html"
-    check("standalone page exists", page.is_file())
-    if not page.is_file():
-        return
-    text = page.read_text(encoding="utf-8")
-
-    refs = (
-        re.findall(r'(?:src|href)="([^"]+)"', text)
-        + re.findall(r"@import[^;]+;", text)
-        + re.findall(r"url\((?!data:)([^)]+)\)", text)
-    )
-    check("standalone page references no external file", not refs, str(refs[:5]))
-    check("standalone page has no navigation", 'class="nav"' not in text)
-    check(
-        "standalone page inlines the stylesheet",
-        "<style>" in text and "--accent" in text,
-    )
-
-    inbound = [
-        p.name
-        for p in (ROOT / "docs").glob("*.html")
-        if p.name != page.name and "memory-standalone" in p.read_text(encoding="utf-8")
-    ]
-    check("no sibling page links to the standalone page", not inbound, str(inbound))
-
-    # It is a clone of the guide: the section headings must match, so the two do
-    # not silently drift into different documents.
-    def heads(html_text: str) -> list[str]:
-        return [
-            re.sub(r"<[^>]+>", "", h).strip()
-            for h in re.findall(r"<h2[^>]*>(.*?)</h2>", html_text, re.DOTALL)
-        ]
-
-    guide = (ROOT / "docs" / "memory-guide.html").read_text(encoding="utf-8")
-    check(
-        "standalone content matches the guide",
-        heads(text) == heads(guide),
-        f"standalone={heads(text)[:3]} guide={heads(guide)[:3]}",
-    )
-
-
-def test_memory_is_portable() -> None:
-    """docs/memory-guide.html promises one file, stdlib only, works standalone.
-
-    If someone adds a third-party import or splits the module, that promise turns
-    into a lie for every reader who followed the guide — so it is a test, not a
-    comment.
-    """
-    import ast
-
-    src = (ROOT / "scripts" / "lite" / "memory.py").read_text(encoding="utf-8")
-    mods: set[str] = set()
-    for node in ast.walk(ast.parse(src)):
-        if isinstance(node, ast.Import):
-            mods |= {a.name.split(".")[0] for a in node.names}
-        elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
-            mods.add(node.module.split(".")[0])
-    third_party = sorted(m for m in mods if m not in sys.stdlib_module_names)
-    check(
-        "memory.py imports stdlib only", not third_party, f"third-party: {third_party}"
-    )
-    check(
-        "memory.py has no local imports (single-file promise)",
-        not any(
-            isinstance(n, ast.ImportFrom) and n.level > 0
-            for n in ast.walk(ast.parse(src))
-        ),
-    )
-
-    # The guide's own verification snippet, run against a copy in a bare directory.
-    with tempfile.TemporaryDirectory() as tmp:
-        d = Path(tmp)
-        (d / "memory.py").write_text(src, encoding="utf-8")
-        snippet = (
-            "import sys; sys.path.insert(0, %r)\n"
-            "from memory import MemoryDB\n"
-            "db = MemoryDB(%r)\n"
-            "a = db.add('use jwt with token=abcdefgh12345678 rotation',"
-            " category='decisions', importance=9)\n"
-            "assert not a['duplicate'] and a['tags']\n"
-            "assert db.add('use jwt with token=abcdefgh12345678 rotation')['duplicate']\n"
-            "assert '[REDACTED]' in db.memory_get(a['id'])['content']\n"
-            "assert db.memory_search('jwt')[0]['id'] == a['id']\n"
-            "[db.add('filler %%d' %% i, category='ingested') for i in range(6)]\n"
-            "db.gc(max_obs=3)\n"
-            "assert 'decisions' in {m['type'] for m in db.list_all(limit=10)}\n"
-            "print('memory OK')\n"
-        ) % (str(d), str(d / "t.db"))
-        r = subprocess.run(
-            PY + ["-c", snippet], capture_output=True, text=True, cwd=str(d), timeout=60
-        )
-        check(
-            "guide's verification snippet passes on a bare copy",
-            r.returncode == 0 and "memory OK" in r.stdout,
-            ((r.stdout or "") + (r.stderr or ""))[-250:],
-        )
 
 
 def test_claim_correlation() -> None:
@@ -918,8 +864,6 @@ def main() -> None:
         test_docs_fresh,
         test_evidence_schema_v2,
         test_claim_correlation,
-        test_memory_is_portable,
-        test_standalone_page_is_orphaned,
         test_stub_check_precision,
         test_utf8_cli_output,
         test_escalate_timeout_and_lease,

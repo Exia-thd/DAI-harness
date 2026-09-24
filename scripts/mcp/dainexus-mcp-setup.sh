@@ -318,6 +318,23 @@ detect_platforms() {
     fi
 }
 
+# The dai-memory server every client is given needs its engine installed.
+ensure_memory_engine() {
+    # An engine named by DAI_MEMORY_ENGINE is the operator's choice: installing
+    # the pinned one elsewhere would not satisfy it, so that one only reports.
+    if resolve_memory_cli >/dev/null; then
+        log_ok "DAI memory engine: $(resolve_memory_cli)"
+    elif [[ -n "${DAI_MEMORY_ENGINE:-}" ]]; then
+        log_error "DAI_MEMORY_ENGINE does not hold an engine: $DAI_MEMORY_ENGINE"
+        return 1
+    elif python3 "$DAINEXUS_DIR/scripts/lite/dai_memory.py" install && resolve_memory_cli >/dev/null; then
+        log_ok "DAI memory engine installed: $(resolve_memory_cli)"
+    else
+        log_error "Could not install the DAI memory engine (python3 scripts/lite/dai_memory.py install)"
+        return 1
+    fi
+}
+
 # ─── Step 1: Generate MCP Server ───────────────────────────────────────────────
 
 setup_mcp_server() {
@@ -498,14 +515,36 @@ canonical_candidate_ready() {
         [[ -x "$CANONICAL_STAGE_DIR/node_modules/.bin/tsx" ]]
 }
 
-resolve_gitnexus_executable() {
+# Code intelligence comes from the vendored DAI memory layer, registered as its
+# own `dai-memory` server: `node <engine>/bin/dai-memory.mjs serve`, which
+# serves the project it is started in. It replaced the `gitnexus` entry this
+# script used to write; entries that script wrote are removed on the next run,
+# and a `gitnexus` entry somebody added by hand is left alone.
+#
+# The engine lives outside the repository, one directory per pinned version,
+# so the path is asked of scripts/lite/dai_memory.py rather than computed.
+# DAI_MEMORY_ENGINE overrides it, as it does for the harness's other launchers.
+resolve_memory_node() {
     local resolved
-    resolved="$(command -v gitnexus 2>/dev/null || true)"
-    if [[ -n "$resolved" ]] && [[ -x "$resolved" ]]; then
-        printf '%s\n' "$resolved"
-    else
-        printf '%s\n' "gitnexus"
+    resolved="$(command -v node 2>/dev/null || true)"
+    printf '%s\n' "${resolved:-node}"
+}
+
+resolve_memory_cli() {
+    local engine="${DAI_MEMORY_ENGINE:-}"
+    if [[ -z "$engine" ]]; then
+        engine="$(python3 "$DAINEXUS_DIR/scripts/lite/dai_memory.py" where 2>/dev/null)" || engine=""
     fi
+    [[ -n "$engine" ]] && [[ -f "$engine/bin/dai-memory.mjs" ]] || return 1
+    printf '%s\n' "$engine/bin/dai-memory.mjs"
+}
+
+# The server's argument list, joined with the unit separator so it survives
+# being passed as one positional argument to the verifiers below.
+memory_server_args() {
+    local cli
+    cli="$(resolve_memory_cli)" || return 1
+    printf '%s\037serve\n' "$cli"
 }
 
 jsonc_parser_module() {
@@ -649,7 +688,9 @@ if (operation === 'verify') {
   if (!servers || Array.isArray(servers) || typeof servers !== 'object') process.exit(1);
   const entry = servers[name];
   const disabled = new Set([...(Array.isArray(config.disabledMcpServers) ? config.disabledMcpServers : []), ...(Array.isArray(config.disabled_mcp_servers) ? config.disabled_mcp_servers : [])]);
-  const exact = schema === 'opencode' ? entry?.type === 'local' && JSON.stringify(entry.command) === JSON.stringify([expectedCommand, expectedArg]) : entry?.command === expectedCommand && JSON.stringify(entry?.args) === JSON.stringify([expectedArg]);
+  // Several arguments arrive joined by the unit separator (see memory_server_args).
+  const expectedArgs = expectedArg.split('\x1f');
+  const exact = schema === 'opencode' ? entry?.type === 'local' && JSON.stringify(entry.command) === JSON.stringify([expectedCommand, ...expectedArgs]) : entry?.command === expectedCommand && JSON.stringify(entry?.args) === JSON.stringify(expectedArgs);
   process.exit(exact && entry.enabled !== false && entry.disabled !== true && !disabled.has(name) ? 0 : 1);
 }
 
@@ -657,7 +698,7 @@ if (operation !== 'remove') throw new Error(`unknown JSONC operation: ${operatio
 if (!parse(raw).props) throw new Error('MCP config root must be an object');
 const rootKeys = schema === 'zed' ? ['context_servers'] : schema === 'opencode' ? ['mcp'] : ['mcpServers', 'mcp_servers'];
 for (const rootKey of rootKeys) {
-  for (const managed of ['dai-nexus', 'gitnexus']) {
+  for (const managed of ['dai-nexus', 'dai-memory', 'gitnexus']) {
     const root = parse(raw);
     const container = property(root, rootKey);
     if (!container) continue;
@@ -703,7 +744,7 @@ const finalConfig = parse(raw).value;
 for (const rootKey of rootKeys) {
   const servers = finalConfig[rootKey];
   if (servers !== undefined && (!servers || Array.isArray(servers) || typeof servers !== 'object')) throw new Error(`${rootKey} must be an object`);
-  if (servers?.dainexus !== undefined || servers?.gitnexus !== undefined) console.warn('Note: unowned managed JSONC entries remain');
+  if (['dai-nexus', 'dai-memory', 'gitnexus'].some((name) => servers?.[name] !== undefined)) console.warn('Note: unowned managed JSONC entries remain');
 }
 fs.writeFileSync(outputPath, `${bom}${raw}`, { mode: fs.statSync(inputPath).mode & 0o777 });
 NODE
@@ -2389,6 +2430,18 @@ allowed_roots = {
     os.path.realpath(os.environ.get("HOME", "")),
     os.path.realpath(os.environ.get("XDG_CONFIG_HOME", os.path.join(os.environ.get("HOME", ""), ".config"))),
 }
+
+# Containment by the platform's own path rules. A literal `root + "/"` prefix
+# only ever matched POSIX paths, so on Windows -- where the writers record
+# C:\... -- every record failed and the second run of setup refused its own
+# ledger. commonpath with normcase is the same test on POSIX.
+def inside(path, root):
+    path, root = os.path.normcase(path), os.path.normcase(root)
+    try:
+        return path != root and os.path.commonpath([path, root]) == root
+    except ValueError:
+        return False
+
 for key, record in data["records"].items():
     if not isinstance(record, dict) or set(record.keys()) != {"canonical_path", "schema", "managed_name", "created", "owned", "normalized_value_sha256"}:
         print(f"CRITICAL: Ledger record {key} schema mismatch", file=sys.stderr)
@@ -2397,8 +2450,8 @@ for key, record in data["records"].items():
         print(f"CRITICAL: Ledger record {key} has non-deterministic key", file=sys.stderr)
         sys.exit(1)
     cpath = record.get("canonical_path", "")
-    if (os.path.realpath(cpath) != cpath or ".." in cpath or
-            not any(cpath.startswith(root + "/") for root in allowed_roots if root)):
+    if (os.path.normcase(os.path.realpath(cpath)) != os.path.normcase(cpath) or ".." in cpath or
+            not any(inside(cpath, root) for root in allowed_roots if root)):
         print(f"CRITICAL: Ledger record {key} has unsafe canonical_path", file=sys.stderr)
         sys.exit(1)
     if record.get("schema") not in [
@@ -2407,7 +2460,7 @@ for key, record in data["records"].items():
     ]:
         print(f"CRITICAL: Ledger record {key} has unsupported schema", file=sys.stderr)
         sys.exit(1)
-    if record.get("managed_name") not in ["dai-nexus", "gitnexus"]:
+    if record.get("managed_name") not in ["dai-nexus", "dai-memory", "gitnexus"]:
         print(f"CRITICAL: Ledger record {key} has invalid managed_name", file=sys.stderr)
         sys.exit(1)
     expected_key = __import__("hashlib").sha256(
@@ -2463,7 +2516,7 @@ commit_ledger() {
 write_json_mcp_config() {
     local target_config="$1" platform="$2" workspace="${3:-}"
     local patch_key="${4:-}" patch_value="${5:-}"
-    local target_dir target_tmp gitnexus_path parser_module source_state lock_dir="" owner_token="" release_after="false"
+    local target_dir target_tmp memory_node memory_args parser_module source_state lock_dir="" owner_token="" release_after="false"
     validate_sensitive_path "$target_config" file || return 1
     export_runtime_token || return 1
     if [[ "$TRANSACTION_ACTIVE" != "true" ]]; then
@@ -2510,8 +2563,16 @@ write_json_mcp_config() {
             return 1
         fi
     fi
+    if ! memory_args="$(memory_server_args)"; then
+        if [[ "$release_after" == "true" ]]; then
+            release_owned_lock "$(config_lock_path "$DAINEXUS_LEDGER_PATH")" "$DAINEXUS_RUNTIME_TOKEN" || true
+            release_owned_lock "$lock_dir" "$owner_token" || true
+        fi
+        log_error "The DAI memory engine is not installed; run: python3 scripts/lite/dai_memory.py install"
+        return 1
+    fi
+    memory_node="$(resolve_memory_node)"
     target_tmp="$(mktemp "$target_dir/.mcp-config.XXXXXX")"
-    gitnexus_path="$(resolve_gitnexus_executable)"
     local ledger_tmp
     ledger_tmp="$(mktemp "$target_dir/.ledger.XXXXXX")"
     export DAINEXUS_LEDGER_TMP="$ledger_tmp"
@@ -2525,11 +2586,12 @@ write_json_mcp_config() {
         return 1
     fi
     if ! node - "$target_config" "$target_tmp" "$platform" "$CANONICAL_TSX" \
-        "$CANONICAL_SERVER_TS" "$gitnexus_path" "$workspace" "$patch_key" "$patch_value" \
+        "$CANONICAL_SERVER_TS" "$memory_node" "$memory_args" "$workspace" "$patch_key" "$patch_value" \
         "$parser_module" <<'NODE'
 const fs = require('fs');
 const path = require('path');
-const [inputPath, outputPath, platform, tsx, server, gitnexus, workspace, patchKey, patchValue, parserModule] = process.argv.slice(2);
+const [inputPath, outputPath, platform, tsx, server, memoryNode, memoryArgsJoined, workspace, patchKey, patchValue, parserModule] = process.argv.slice(2);
+const memoryArgs = memoryArgsJoined.split('\x1f');
 const ledgerInputPath = fs.existsSync(inputPath) ? fs.realpathSync(inputPath) :
   path.join(fs.realpathSync(path.dirname(inputPath)), path.basename(inputPath));
 const { applyEdits, modify, parse, parseTree, printParseErrorCode } = require(parserModule);
@@ -2580,12 +2642,25 @@ const getFingerprint = (obj) => crypto.createHash('sha256').update(JSON.stringif
 const fwDesired = platform === 'opencode' ? { type: 'local', command: [tsx, server], enabled: true } : { command: tsx, args: [server] };
 if (platform === 'cursor') fwDesired.env = { DAINEXUS_WORKSPACE: '${workspaceFolder}', AGENTS_WORKSPACE: '${workspaceFolder}' };
 else if (workspace && platform !== 'opencode') fwDesired.env = { DAINEXUS_WORKSPACE: workspace, AGENTS_WORKSPACE: workspace };
-const gnDesired = platform === 'opencode' ? { type: 'local', command: [gitnexus, 'mcp'], enabled: true } : { command: gitnexus, args: ['mcp'] };
+const memDesired = platform === 'opencode' ? { type: 'local', command: [memoryNode, ...memoryArgs], enabled: true } : { command: memoryNode, args: memoryArgs };
 
-for (const managed of ['dai-nexus', 'gitnexus']) {
+// A `gitnexus` entry this script wrote before the switch to the memory layer
+// is removed; one it did not write belongs to somebody else and stays.
+let removeLegacy = false;
+if (Object.prototype.hasOwnProperty.call(serversObj, 'gitnexus')) {
+  const legacyKey = crypto.createHash('sha256').update(`${ledgerInputPath}:${platform}:gitnexus`).digest('hex');
+  const legacyRecord = ledger.records[legacyKey];
+  if (legacyRecord && legacyRecord.normalized_value_sha256 === getFingerprint(serversObj.gitnexus)) {
+    delete ledger.records[legacyKey];
+    ledgerChanged = true;
+    removeLegacy = true;
+  }
+}
+
+for (const managed of ['dai-nexus', 'dai-memory']) {
   const entry = serversObj[managed];
   const entryExists = Object.prototype.hasOwnProperty.call(serversObj, managed);
-  const desired = managed === 'dai-nexus' ? fwDesired : gnDesired;
+  const desired = managed === 'dai-nexus' ? fwDesired : memDesired;
   const desiredFp = getFingerprint(desired);
   const recordHashKey = crypto.createHash('sha256').update(`${ledgerInputPath}:${platform}:${managed}`).digest('hex');
   if (entryExists) {
@@ -2605,7 +2680,7 @@ const daiNexus = {};
 if (platform === 'opencode') {
   Object.assign(daiNexus, { type: 'local', command: [tsx, server], enabled: true });
   setValue([rootKey, 'dai-nexus'], daiNexus);
-  setValue([rootKey, 'gitnexus'], { type: 'local', command: [gitnexus, 'mcp'], enabled: true });
+  setValue([rootKey, 'dai-memory'], memDesired);
 } else {
   Object.assign(daiNexus, { command: tsx, args: [server] });
   if (platform === 'cursor') {
@@ -2614,8 +2689,9 @@ if (platform === 'opencode') {
     daiNexus.env = { DAINEXUS_WORKSPACE: workspace, AGENTS_WORKSPACE: workspace };
   }
   setValue([rootKey, 'dai-nexus'], daiNexus);
-  setValue([rootKey, 'gitnexus'], { command: gitnexus, args: ['mcp'] });
+  setValue([rootKey, 'dai-memory'], memDesired);
 }
+if (removeLegacy) setValue([rootKey, 'gitnexus'], undefined);
 if (platform !== 'zed' && platform !== 'opencode') {
   config = parseConfig(raw);
   for (const key of ['disabledMcpServers', 'disabled_mcp_servers']) {
@@ -2627,7 +2703,7 @@ if (platform !== 'zed' && platform !== 'opencode') {
         const edits = [];
         for (let i = 0; i < node.children.length; i++) {
           const child = node.children[i];
-          if (child.value === 'dai-nexus' || child.value === 'gitnexus') {
+          if (child.value === 'dai-nexus' || child.value === 'dai-memory') {
             let start = child.offset;
             let end = child.offset + child.length;
             const before = raw.slice(0, start);
@@ -2665,13 +2741,13 @@ if (platform !== 'zed' && platform !== 'opencode') {
 if (patchKey) setValue([patchKey], patchValue);
 config = parseConfig(raw);
 const servers = config[rootKey];
-const fw = servers?.dainexus;
-const gn = servers?.gitnexus;
+const fw = servers?.['dai-nexus'];
+const mem = servers?.['dai-memory'];
 const valid = platform === 'opencode' ?
   fw?.type === 'local' && fw.enabled === true && JSON.stringify(fw.command) === JSON.stringify([tsx, server]) &&
-    gn?.type === 'local' && gn.enabled === true && JSON.stringify(gn.command) === JSON.stringify([gitnexus, 'mcp']) :
+    mem?.type === 'local' && mem.enabled === true && JSON.stringify(mem.command) === JSON.stringify([memoryNode, ...memoryArgs]) :
   fw?.command === tsx && JSON.stringify(fw.args) === JSON.stringify([server]) &&
-    gn?.command === gitnexus && JSON.stringify(gn.args) === JSON.stringify(['mcp']);
+    mem?.command === memoryNode && JSON.stringify(mem.args) === JSON.stringify(memoryArgs);
 if (!valid) throw new Error('generated MCP JSONC entry failed structural verification');
 fs.writeFileSync(outputPath, `${bom}${raw}`, { mode: 0o600 });
 NODE
@@ -2798,7 +2874,7 @@ let ledgerChanged = false;
 
 const crypto = require('crypto');
 const enabledFingerprint = crypto.createHash('sha256').update('enabled').digest('hex');
-for (const managed of ['dai-nexus', 'gitnexus']) {
+for (const managed of ['dai-nexus', 'dai-memory']) {
   const matches = Object.keys(config).filter((key) => key.toLowerCase().trim() === managed);
   if (matches.length > 1) throw new Error(`duplicate ${managed} enablement entries`);
   const recordKey = crypto.createHash('sha256').update(`${ledgerInputPath}:enablement:${managed}`).digest('hex');
@@ -2869,7 +2945,7 @@ const fs = require('fs');
 const config = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 if (!config || Array.isArray(config) || typeof config !== 'object') process.exit(1);
 const managed = Object.keys(config).filter((key) =>
-  ['dai-nexus', 'gitnexus'].includes(key.toLowerCase().trim()));
+  ['dai-nexus', 'dai-memory'].includes(key.toLowerCase().trim()));
 process.exit(managed.length === 0 ? 0 : 1);
 NODE
 }
@@ -2914,7 +2990,7 @@ if not isinstance(orig_servers, dict):
     raise SystemExit("mcp_servers must be a table")
 owned_managed = set()
 ledger_changed = False
-for managed in ("dai-nexus", "gitnexus"):
+for managed in ("dai-nexus", "dai-memory", "gitnexus"):
     if managed not in orig_servers:
         continue
     record_key = hashlib.sha256(f"{source}:codex:{managed}".encode()).hexdigest()
@@ -3114,7 +3190,7 @@ parsed = tomllib.loads(result)
 servers = parsed.get('mcp_servers', {})
 if not isinstance(servers, dict):
     raise SystemExit("mcp_servers must be a table")
-if any(name in servers for name in ('dai-nexus', 'gitnexus')):
+if any(name in servers for name in ('dai-nexus', 'dai-memory', 'gitnexus')):
     print("Note: unowned managed TOML entries remain", file=sys.stderr)
 
 if ledger_changed and ledger_tmp:
@@ -3127,7 +3203,7 @@ PY
 }
 
 write_toml_mcp_config() {
-    local target_config="$1" target_dir target_tmp clean_tmp gitnexus_path source_state
+    local target_config="$1" target_dir target_tmp clean_tmp memory_node memory_args source_state
     local lock_dir="" owner_token="" release_after="false"
     validate_sensitive_path "$target_config" file || return 1
     export_runtime_token || return 1
@@ -3184,15 +3260,25 @@ write_toml_mcp_config() {
     else
         : > "$clean_tmp"
     fi
-    gitnexus_path="$(resolve_gitnexus_executable)"
+    if ! memory_args="$(memory_server_args)"; then
+        rm -f -- "$clean_tmp" "$target_tmp" "$ledger_tmp"
+        if [[ "$release_after" == "true" ]]; then
+            release_owned_lock "$(config_lock_path "$DAINEXUS_LEDGER_PATH")" "$DAINEXUS_RUNTIME_TOKEN" || true
+            release_owned_lock "$lock_dir" "$owner_token" || true
+        fi
+        log_error "The DAI memory engine is not installed; run: python3 scripts/lite/dai_memory.py install"
+        return 1
+    fi
+    memory_node="$(resolve_memory_node)"
     if ! python3 - "$clean_tmp" "$target_tmp" "$CANONICAL_TSX" \
-        "$CANONICAL_SERVER_TS" "$gitnexus_path" "$target_config" <<'PY'
+        "$CANONICAL_SERVER_TS" "$memory_node" "$memory_args" "$target_config" <<'PY'
 import json
 import sys
 import tomllib
 import os
 
-source, output, tsx, server, gitnexus, target_config = sys.argv[1:]
+source, output, tsx, server, memory_node, memory_args_joined, target_config = sys.argv[1:]
+memory_args = memory_args_joined.split(chr(31))
 target_config = os.path.realpath(target_config)
 ledger_path = os.environ.get("DAINEXUS_LEDGER_PATH")
 ledger_tmp = os.environ.get("DAINEXUS_LEDGER_TMP")
@@ -3222,17 +3308,17 @@ transport = {{ type = "stdio" }}
 command = {quoted(tsx)}
 args = [{quoted(server)}]
 ''',
-    "gitnexus": f'''[mcp_servers.gitnexus]
+    "dai-memory": f'''[mcp_servers.dai-memory]
 enabled = true
 transport = {{ type = "stdio" }}
-command = {quoted(gitnexus)}
-args = ["mcp"]
+command = {quoted(memory_node)}
+args = [{", ".join(quoted(arg) for arg in memory_args)}]
 ''',
 }
 
 import hashlib
 fw_desired = {"enabled": True, "transport": {"type": "stdio"}, "command": tsx, "args": [server]}
-gn_desired = {"enabled": True, "transport": {"type": "stdio"}, "command": gitnexus, "args": ["mcp"]}
+mem_desired = {"enabled": True, "transport": {"type": "stdio"}, "command": memory_node, "args": memory_args}
 ledger_changed = False
 def fingerprint(obj): return hashlib.sha256(json.dumps(obj, sort_keys=True).encode()).hexdigest()
 
@@ -3240,7 +3326,7 @@ existing_servers = parsed_prefix.get("mcp_servers", {})
 if not isinstance(existing_servers, dict):
     raise SystemExit("mcp_servers must be a table")
 created = []
-for managed, desired in [("dai-nexus", fw_desired), ("gitnexus", gn_desired)]:
+for managed, desired in [("dai-nexus", fw_desired), ("dai-memory", mem_desired)]:
     if managed in existing_servers:
         if existing_servers[managed] != desired:
             raise SystemExit(f"unowned {managed} entry conflicts with the desired configuration")
@@ -3261,11 +3347,11 @@ if ledger_changed and ledger_tmp:
 parsed = tomllib.loads(result)
 servers = parsed.get("mcp_servers", {})
 fw = servers.get("dai-nexus", {})
-gn = servers.get("gitnexus", {})
+mem = servers.get("dai-memory", {})
 if not (fw.get("enabled") is True and fw.get("command") == tsx and fw.get("args") == [server]):
     raise SystemExit("generated DAI Nexus TOML entry failed verification")
-if not (gn.get("enabled") is True and gn.get("command") == gitnexus and gn.get("args") == ["mcp"]):
-    raise SystemExit("generated GitNexus TOML entry failed verification")
+if not (mem.get("enabled") is True and mem.get("command") == memory_node and mem.get("args") == memory_args):
+    raise SystemExit("generated DAI memory TOML entry failed verification")
 with open(output, "w", encoding="utf-8") as handle:
     handle.write(result)
 PY
@@ -3654,7 +3740,7 @@ publish_manifest() {
     local zed_path="${7:-}" opencode_path="${8:-}"
     local qwen_path="${9:-}"
     local manifest="${PROJECT_ROOT}/.antigravity/mcp-manifest.json"
-    local manifest_dir manifest_tmp existing_manifest generated_at fw_version gitnexus_path source_state
+    local manifest_dir manifest_tmp existing_manifest generated_at fw_version memory_node memory_args source_state
 
     validate_sensitive_path "$manifest" file || return 1
     transaction_snapshot_file "$manifest" || return 1
@@ -3674,16 +3760,21 @@ publish_manifest() {
     [[ -f "$manifest" ]] && existing_manifest="$manifest"
     generated_at="${DAINEXUS_MANIFEST_GENERATED_AT:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}"
     fw_version="$(cat "${DAINEXUS_DIR}/VERSION" 2>/dev/null || echo "8.0.0")"
-    gitnexus_path="$(resolve_gitnexus_executable)"
+    memory_node="$(resolve_memory_node)"
+    memory_args="$(memory_server_args)" || {
+        log_error "The DAI memory engine is not installed; run: python3 scripts/lite/dai_memory.py install"
+        rm -f -- "$manifest_tmp"
+        return 1
+    }
 
     if ! node - "$manifest_tmp" "$existing_manifest" "$PROJECT_ROOT" "$fw_version" \
-        "$HOME/.dainexus" "$CANONICAL_SERVER_TS" "$gitnexus_path" "$generated_at" \
+        "$HOME/.dainexus" "$CANONICAL_SERVER_TS" "$memory_node" "$memory_args" "$generated_at" \
         "$cursor_path" "$claude_path" "$claude_desktop_path" "$antigravity_path" \
         "$codex_path" "$gemini_path" "$zed_path" "$opencode_path" "$qwen_path" <<'NODE'
 const fs = require('fs');
 const [
   outputPath, existingPath, workspace, version, canonical, serverPath,
-  gitnexusCommand, generatedAt, cursor, claudeCode, claudeDesktop,
+  memoryNode, memoryArgsJoined, generatedAt, cursor, claudeCode, claudeDesktop,
   antigravity, codex, gemini, zed, opencode, qwen,
 ] = process.argv.slice(2);
 const platforms = {};
@@ -3699,7 +3790,7 @@ const manifest = {
   'dai-nexus': { version, canonical, server: serverPath },
   servers: [
     { name: 'dai-nexus', type: 'dai-nexus-mcp-server', path: serverPath, enabled: true, auto_start: true },
-    { name: 'gitnexus', type: 'gitnexus', command: gitnexusCommand, args: ['mcp'], enabled: true, auto_start: true },
+    { name: 'dai-memory', type: 'dai-memory', command: memoryNode, args: memoryArgsJoined.split(String.fromCharCode(31)), enabled: true, auto_start: true },
   ],
   settings: { mcp_compatibility: 'loose', workspace_detection: 'git-root' },
   platforms,
@@ -3757,7 +3848,7 @@ setup_cursor() {
     write_json_mcp_config "$CURSOR_CONFIG" cursor || return 1
     CONFIGURED_CURSOR="$CURSOR_CONFIG"
     log_info "  dai-nexus → canonical tsx (~/.dainexus/mcp-server/)"
-    log_info "  gitnexus    → $(resolve_gitnexus_executable)"
+    log_info "  dai-memory  → $(resolve_memory_cli)"
 }
 
 # ─── Platform: Claude Code ─────────────────────────────────────────────────────
@@ -3776,7 +3867,7 @@ setup_claude_code() {
     write_json_mcp_config "$CLAUDE_CODE_CONFIG" claude || return 1
     CONFIGURED_CLAUDE_CODE="$CLAUDE_CODE_CONFIG"
     log_info "  dai-nexus → canonical tsx (~/.dainexus/mcp-server/)"
-    log_info "  gitnexus    → $(resolve_gitnexus_executable)"
+    log_info "  dai-memory  → $(resolve_memory_cli)"
 }
 
 setup_claude_desktop() {
@@ -3787,7 +3878,7 @@ setup_claude_desktop() {
     write_json_mcp_config "$claude_desktop_config" claude-desktop || return 1
     CONFIGURED_CLAUDE_DESKTOP="$claude_desktop_config"
     log_info "  dai-nexus → canonical tsx (~/.dainexus/mcp-server/)"
-    log_info "  gitnexus    → $(resolve_gitnexus_executable)"
+    log_info "  dai-memory  → $(resolve_memory_cli)"
 }
 
 # ─── Platform: Antigravity ─────────────────────────────────────────────────────
@@ -3912,10 +4003,10 @@ setup_codex() {
 
     write_toml_mcp_config "$CODEX_CONFIG" || return 1
     has_canonical_mcp_config "$CODEX_CONFIG" || return 1
-    mcp_config_has_enabled_entry "$CODEX_CONFIG" gitnexus "$(resolve_gitnexus_executable)" mcp || return 1
+    mcp_config_has_enabled_entry "$CODEX_CONFIG" dai-memory "$(resolve_memory_node)" "$(memory_server_args)" || return 1
     CONFIGURED_CODEX="$CODEX_CONFIG"
     log_info "  dai-nexus → canonical tsx ~/.dainexus/mcp-server/"
-    log_info "  gitnexus    → $(resolve_gitnexus_executable)"
+    log_info "  dai-memory  → $(resolve_memory_cli)"
 }
 
 # ─── Platform: Google Gemini CLI ───────────────────────────────────────────
@@ -3937,12 +4028,12 @@ setup_gemini() {
     write_gemini_enablement_config "$GEMINI_ENABLEMENT_CONFIG" || return 1
 
     has_canonical_mcp_config "$GEMINI_CONFIG" || return 1
-    mcp_config_has_enabled_entry "$GEMINI_CONFIG" gitnexus "$(resolve_gitnexus_executable)" mcp || return 1
+    mcp_config_has_enabled_entry "$GEMINI_CONFIG" dai-memory "$(resolve_memory_node)" "$(memory_server_args)" || return 1
     gemini_managed_servers_enabled "$GEMINI_ENABLEMENT_CONFIG" || return 1
     CONFIGURED_GEMINI="$GEMINI_CONFIG"
 
     log_info "  dai-nexus → canonical tsx ~/.dainexus/mcp-server/"
-    log_info "  gitnexus    → $(resolve_gitnexus_executable)"
+    log_info "  dai-memory  → $(resolve_memory_cli)"
 }
 
 # ─── Platform: Zed AI ─────────────────────────────────────────────────────
@@ -3980,10 +4071,10 @@ setup_zed() {
 
     write_json_mcp_config "$ZED_CONFIG" zed || return 1
     has_canonical_mcp_config "$ZED_CONFIG" zed || return 1
-    mcp_config_has_enabled_entry "$ZED_CONFIG" gitnexus "$(resolve_gitnexus_executable)" mcp zed || return 1
+    mcp_config_has_enabled_entry "$ZED_CONFIG" dai-memory "$(resolve_memory_node)" "$(memory_server_args)" zed || return 1
     CONFIGURED_ZED="$ZED_CONFIG"
     log_info "  dai-nexus → canonical tsx ~/.dainexus/mcp-server/"
-    log_info "  gitnexus    → $(resolve_gitnexus_executable)"
+    log_info "  dai-memory  → $(resolve_memory_cli)"
 }
 
 # ─── Platform: OpenCode ────────────────────────────────────────────────────
@@ -4008,15 +4099,12 @@ setup_opencode() {
         return 1
     fi
 
-    local gitnexus_path
-    gitnexus_path="$(resolve_gitnexus_executable)"
-
     write_json_mcp_config "$OPENCODE_CONFIG" opencode || return 1
     has_canonical_mcp_config "$OPENCODE_CONFIG" opencode || return 1
-    mcp_config_has_enabled_entry "$OPENCODE_CONFIG" gitnexus "$gitnexus_path" mcp opencode || return 1
+    mcp_config_has_enabled_entry "$OPENCODE_CONFIG" dai-memory "$(resolve_memory_node)" "$(memory_server_args)" opencode || return 1
     CONFIGURED_OPENCODE="$OPENCODE_CONFIG"
     log_info "  dai-nexus → canonical tsx ~/.dainexus/mcp-server/"
-    log_info "  gitnexus    → $gitnexus_path"
+    log_info "  dai-memory  → $(resolve_memory_cli)"
 }
 
 # ─── Platform: Qwen Code ────────────────────────────────────────────────────────────
@@ -4041,11 +4129,11 @@ setup_qwen() {
     write_json_mcp_config "$QWEN_CONFIG" qwen "$PROJECT_ROOT" || return 1
 
     has_canonical_mcp_config "$QWEN_CONFIG" || return 1
-    mcp_config_has_enabled_entry "$QWEN_CONFIG" gitnexus "$(resolve_gitnexus_executable)" mcp || return 1
+    mcp_config_has_enabled_entry "$QWEN_CONFIG" dai-memory "$(resolve_memory_node)" "$(memory_server_args)" || return 1
     CONFIGURED_QWEN="$QWEN_CONFIG"
 
     log_info "  dai-nexus → canonical tsx ~/.dainexus/mcp-server/"
-    log_info "  gitnexus    → $(resolve_gitnexus_executable)"
+    log_info "  dai-memory  → $(resolve_memory_cli)"
 }
 
 # ─── Verify Manifest ────────────────────────────────────────────────────────────
@@ -4121,7 +4209,7 @@ with open(target, "w", encoding="utf-8") as f:
     f.write("if command -v token-savior &> /dev/null; then\n")
     f.write("    export DAINEXUS_CODE_NAV='token-savior'\n")
     f.write("else\n")
-    f.write("    export DAINEXUS_CODE_NAV='gitnexus'\n")
+    f.write("    export DAINEXUS_CODE_NAV='dai-memory'\n")
     f.write("fi\n")
 PY
     chmod 644 "$target_tmp"
@@ -4160,7 +4248,7 @@ shape_ok = isinstance(command, str) and bool(command) and isinstance(args, list)
 )
 enabled = shape_ok and entry.get("enabled", True) is not False and entry.get("disabled") is not True
 command_ok = not expected_command or command == expected_command
-arg_ok = not expected_arg or args == [expected_arg]
+arg_ok = not expected_arg or args == expected_arg.split(chr(31))
 raise SystemExit(0 if enabled and command_ok and arg_ok else 1)
 PY
         return
@@ -4197,10 +4285,10 @@ report_managed_config_status() {
     else
         log_warn "  dai-nexus: NOT configured with canonical server"
     fi
-    if mcp_config_has_enabled_entry "$config_path" gitnexus "$(resolve_gitnexus_executable)" mcp "$schema"; then
-        log_ok "  gitnexus: CONFIGURED"
+    if mcp_config_has_enabled_entry "$config_path" dai-memory "$(resolve_memory_node)" "$(memory_server_args)" "$schema"; then
+        log_ok "  dai-memory: CONFIGURED"
     else
-        log_warn "  gitnexus: NOT configured"
+        log_warn "  dai-memory: NOT configured"
     fi
     if [[ -n "$enablement_path" ]]; then
         if gemini_managed_servers_enabled "$enablement_path"; then
@@ -4307,10 +4395,10 @@ cmd_check() {
         else
             log_warn "  dai-nexus: NOT configured with canonical server"
         fi
-        if mcp_config_has_enabled_entry "$CURSOR_CONFIG" gitnexus "$(resolve_gitnexus_executable)" mcp; then
-            log_ok "  gitnexus: CONFIGURED"
+        if mcp_config_has_enabled_entry "$CURSOR_CONFIG" dai-memory "$(resolve_memory_node)" "$(memory_server_args)"; then
+            log_ok "  dai-memory: CONFIGURED"
         else
-            log_warn "  gitnexus: NOT configured"
+            log_warn "  dai-memory: NOT configured"
         fi
     else
         log_error "Cursor: NOT FOUND"
@@ -4325,10 +4413,10 @@ cmd_check() {
         else
             log_warn "  dai-nexus: NOT configured with canonical server"
         fi
-        if mcp_config_has_enabled_entry "$CLAUDE_CODE_CONFIG" gitnexus "$(resolve_gitnexus_executable)" mcp; then
-            log_ok "  gitnexus: CONFIGURED"
+        if mcp_config_has_enabled_entry "$CLAUDE_CODE_CONFIG" dai-memory "$(resolve_memory_node)" "$(memory_server_args)"; then
+            log_ok "  dai-memory: CONFIGURED"
         else
-            log_warn "  gitnexus: NOT configured"
+            log_warn "  dai-memory: NOT configured"
         fi
     else
         log_error "Claude Code: NOT FOUND"
@@ -4350,7 +4438,7 @@ cmd_check() {
             grep -Fq "$CANONICAL_TSX" "${ANTIGRAVITY_CONFIG}/launcher.sh" && \
             grep -Fq "$CANONICAL_SERVER_TS" "${ANTIGRAVITY_CONFIG}/launcher.sh" && \
             has_canonical_mcp_config "$ag_config" && \
-            mcp_config_has_enabled_entry "$ag_config" gitnexus "$(resolve_gitnexus_executable)" mcp; then
+            mcp_config_has_enabled_entry "$ag_config" dai-memory "$(resolve_memory_node)" "$(memory_server_args)"; then
             log_ok "  dai-nexus: CONFIGURED"
         else
             log_warn "  dai-nexus: NOT configured with canonical server and launcher"
@@ -4379,10 +4467,10 @@ cmd_check() {
         else
             log_warn "  dai-nexus: NOT configured with canonical server"
         fi
-        if mcp_config_has_enabled_entry "$CODEX_CONFIG" gitnexus "$(resolve_gitnexus_executable)" mcp; then
-            log_ok "  gitnexus: CONFIGURED"
+        if mcp_config_has_enabled_entry "$CODEX_CONFIG" dai-memory "$(resolve_memory_node)" "$(memory_server_args)"; then
+            log_ok "  dai-memory: CONFIGURED"
         else
-            log_warn "  gitnexus: NOT configured"
+            log_warn "  dai-memory: NOT configured"
         fi
     else
         log_warn "Codex CLI: NOT FOUND (~/.codex/config.toml)"
@@ -4398,10 +4486,10 @@ cmd_check() {
         else
             log_warn "  dai-nexus: NOT configured with canonical server"
         fi
-        if mcp_config_has_enabled_entry "$GEMINI_CONFIG" gitnexus "$(resolve_gitnexus_executable)" mcp; then
-            log_ok "  gitnexus: CONFIGURED"
+        if mcp_config_has_enabled_entry "$GEMINI_CONFIG" dai-memory "$(resolve_memory_node)" "$(memory_server_args)"; then
+            log_ok "  dai-memory: CONFIGURED"
         else
-            log_warn "  gitnexus: NOT configured"
+            log_warn "  dai-memory: NOT configured"
         fi
         if gemini_managed_servers_enabled "$HOME/.gemini/mcp-server-enablement.json"; then
             log_ok "  persistent enablement: ENABLED"
@@ -4421,10 +4509,10 @@ cmd_check() {
         else
             log_warn "  dai-nexus: NOT configured with canonical server"
         fi
-        if mcp_config_has_enabled_entry "$ag_config" gitnexus "$(resolve_gitnexus_executable)" mcp; then
-            log_ok "  gitnexus: CONFIGURED"
+        if mcp_config_has_enabled_entry "$ag_config" dai-memory "$(resolve_memory_node)" "$(memory_server_args)"; then
+            log_ok "  dai-memory: CONFIGURED"
         else
-            log_warn "  gitnexus: NOT configured"
+            log_warn "  dai-memory: NOT configured"
         fi
     else
         log_warn "Antigravity CLI: NOT FOUND (~/.gemini/config/mcp_config.json)"
@@ -4446,10 +4534,10 @@ cmd_check() {
         else
             log_warn "  dai-nexus: NOT configured with canonical server"
         fi
-        if mcp_config_has_enabled_entry "$ZED_CONFIG" gitnexus "$(resolve_gitnexus_executable)" mcp zed; then
-            log_ok "  gitnexus: CONFIGURED"
+        if mcp_config_has_enabled_entry "$ZED_CONFIG" dai-memory "$(resolve_memory_node)" "$(memory_server_args)" zed; then
+            log_ok "  dai-memory: CONFIGURED"
         else
-            log_warn "  gitnexus: NOT configured"
+            log_warn "  dai-memory: NOT configured"
         fi
     else
         log_warn "Zed AI: NOT FOUND (${zed_settings_dir}/settings.json)"
@@ -4465,10 +4553,10 @@ cmd_check() {
         else
             log_warn "  dai-nexus: NOT configured with canonical server"
         fi
-        if mcp_config_has_enabled_entry "$OPENCODE_CONFIG" gitnexus "$(resolve_gitnexus_executable)" mcp opencode; then
-            log_ok "  gitnexus: CONFIGURED"
+        if mcp_config_has_enabled_entry "$OPENCODE_CONFIG" dai-memory "$(resolve_memory_node)" "$(memory_server_args)" opencode; then
+            log_ok "  dai-memory: CONFIGURED"
         else
-            log_warn "  gitnexus: NOT configured"
+            log_warn "  dai-memory: NOT configured"
         fi
     else
         log_warn "OpenCode: NOT FOUND ($OPENCODE_CONFIG)"
@@ -4484,10 +4572,10 @@ cmd_check() {
         else
             log_warn "  dai-nexus: NOT configured with canonical server"
         fi
-        if mcp_config_has_enabled_entry "$QWEN_CONFIG" gitnexus "$(resolve_gitnexus_executable)" mcp; then
-            log_ok "  gitnexus: CONFIGURED"
+        if mcp_config_has_enabled_entry "$QWEN_CONFIG" dai-memory "$(resolve_memory_node)" "$(memory_server_args)"; then
+            log_ok "  dai-memory: CONFIGURED"
         else
-            log_warn "  gitnexus: NOT configured"
+            log_warn "  dai-memory: NOT configured"
         fi
     else
         log_warn "Qwen Code: NOT FOUND (~/.qwen/settings.json)"
@@ -4631,7 +4719,7 @@ for (const key of rootKeys) {
   if (!config[key] || Array.isArray(config[key]) || typeof config[key] !== 'object') {
     throw new Error(`${key} must be an object`);
   }
-  for (const name of ['dai-nexus', 'gitnexus']) {
+  for (const name of ['dai-nexus', 'dai-memory', 'gitnexus']) {
     if (config[key][name] !== undefined) {
       raw = applyEdits(raw, modify(raw, [key, name], undefined, { formattingOptions }));
       config = parseConfig(raw);
@@ -4640,7 +4728,7 @@ for (const key of rootKeys) {
 }
 config = parseConfig(raw);
 for (const key of rootKeys) {
-  if (config[key]?.dainexus !== undefined || config[key]?.gitnexus !== undefined) {
+  if (['dai-nexus', 'dai-memory', 'gitnexus'].some((name) => config[key]?.[name] !== undefined)) {
     throw new Error('managed JSONC entries remain after uninstall');
   }
 }
@@ -4803,7 +4891,7 @@ def assignment_key(line):
     return None
 
 def is_managed(path):
-    return len(path) >= 2 and path[0] == 'mcp_servers' and path[1] in {'dai-nexus', 'gitnexus'}
+    return len(path) >= 2 and path[0] == 'mcp_servers' and path[1] in {'dai-nexus', 'dai-memory', 'gitnexus'}
 
 lines = raw.splitlines(keepends=True)
 kept = []
@@ -4847,7 +4935,7 @@ while index < len(lines):
 result = "".join(kept)
 parsed = tomllib.loads(result)
 servers = parsed.get("mcp_servers", {})
-if not isinstance(servers, dict) or any(name in servers for name in ("dai-nexus", "gitnexus")):
+if not isinstance(servers, dict) or any(name in servers for name in ("dai-nexus", "dai-memory", "gitnexus")):
     raise SystemExit("managed TOML entries remain after uninstall")
 with open(output, "w", encoding="utf-8") as handle:
     handle.write(result)
@@ -4918,7 +5006,7 @@ let ledgerChanged = false;
 
 const crypto = require('crypto');
 const enabledFingerprint = crypto.createHash('sha256').update('enabled').digest('hex');
-for (const managed of ['dai-nexus', 'gitnexus']) {
+for (const managed of ['dai-nexus', 'dai-memory', 'gitnexus']) {
   const matches = Object.keys(config).filter((key) => key.toLowerCase().trim() === managed);
   if (matches.length > 1) throw new Error(`duplicate ${managed} enablement entries`);
   const recordKey = crypto.createHash('sha256').update(`${ledgerInput}:enablement:${managed}`).digest('hex');
@@ -5278,6 +5366,8 @@ main() {
                 sync_canonical_server || return 1
                 echo ""
             fi
+
+            ensure_memory_engine || return 1
 
             # Setup platforms
             if [[ "$do_cursor" == "true" ]]; then

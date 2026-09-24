@@ -10,14 +10,14 @@
 <body>
 <nav class="nav"><div class="nav-inner">
   <a href="./index.html" class="nav-brand"><span class="dot"></span> DAI Nexus <small>docs</small></a>
-  <div class="nav-links"><a href="./index.html">Tổng quan</a><a href="./kernel.html" class=current>Kernel</a><a href="./skills.html">Skills</a><a href="./evidence.html">Bằng chứng</a><a href="./runtime.html">Runtime</a><a href="./memory.html">Memory</a><a href="./memory-guide.html">Bóc tách Memory</a><a href="./patterns.html">Tinh túy</a></div>
+  <div class="nav-links"><a href="./index.html">Tổng quan</a><a href="./kernel.html" class=current>Kernel</a><a href="./skills.html">Skills</a><a href="./evidence.html">Bằng chứng</a><a href="./runtime.html">Runtime</a><a href="./memory.html">Memory</a><a href="./patterns.html">Tinh túy</a></div>
 </div></nav>
 <main>
 
 <section class="hero compact">
   <span class="tag">TẦNG 1</span>
   <h1>Kernel — <span class="accent">bộ luật bất biến</span></h1>
-  <p class="lead">8 file markdown, tổng ~6823 token, được
+  <p class="lead">8 file markdown, tổng ~6914 token, được
   <code>sync-kernel.py</code> gộp thành <code>CLAUDE.md</code> / <code>AGENTS.md</code> / <code>GEMINI.md</code>
   và nạp tự động ở mọi phiên. Budget cứng 7k token — vượt là build fail.</p>
 </section>
@@ -32,7 +32,7 @@
 <div class="code-block"><div class="code-head"><span class="file">kernel/ENTRY.md:19</span></div><pre><code>## Boot Sequence
 1. Resolve only **material ambiguity**. Inspect the workspace first when it can answer the question. If a reversible default preserves acceptance, record it and proceed; ask only when the unknown materially changes outcome, cost, risk, or a public contract. See [CLARIFY.md](CLARIFY.md).
 2. Classify the task: `DEBUG` | `FEATURE` | `REVIEW` | `TEST` | `SHIP` | `OTHER`, then choose `QUICK` | `STANDARD` | `DEEP` from [SOLVE.md](SOLVE.md).
-3. Before specialist dispatch, apply the pipeline-owned operating preflight from `skills/_shared/protocols/pipeline-operating-contract.md`: for substantive work establish the compact `PIPELINE_CONTEXT` (outcome/acceptance, constraints/non-goals, safe scope, owned risk signals, material research, and visual basis when applicable). `QUICK` work keeps this implicit/minimal.
+3. Before specialist dispatch, apply `skills/_shared/protocols/pipeline-operating-contract.md`. Substantive work records compact `PIPELINE_CONTEXT` (outcome/acceptance, scope, constraints, risk, runtime/provider and token-cost basis, research, visual basis). `QUICK` keeps this implicit/minimal.
 4. Select a skill overlay using the compact routing table below. **Do NOT load INDEX.md at boot** — load the full index only when the compact table has no adequate match and specialization is actually needed. The skill consumes `PIPELINE_CONTEXT`; it does not recreate generic pipeline policy.
 5. Follow only the SOLVE capabilities required by the effort class. Do not create artifacts, workers, research, memory operations, or phases merely to satisfy the pipeline.
 
@@ -43,7 +43,7 @@ có trần token cho từng nguồn, và quy tắc cắt bớt rõ ràng thay v�
 <div class="code-block"><div class="code-head"><span class="file">kernel/ENTRY.md:40</span></div><pre><code>## Boot Step 5.5 — Memory Load
 Load persistent memory before processing the request; total injection ≤ 500 tokens.
 1. Read `.dainexus/memory-bank/activeContext.md` if present (≤150 tokens; truncate beyond that).
-2. Run `python scripts/lite/memory.py search "&lt;keywords from the request&gt;" --limit 3` and inject the top results (≤200 tokens). No results → skip silently.
+2. Call `dn_memory_search` with the keywords from the request (limit 3) and inject the top results (≤200 tokens). No results → skip silently.
 3. Log `✓ Memory loaded: [N] sources injected`.
 
 **Truncation rule**: if a source exceeds its cap, take the first N characters (cap × 4) and append `...[truncated]`. Never exceed 500 tokens across all sources.
@@ -97,15 +97,14 @@ và mọi process dài hạn phải được thu hồi:</p>
 <h2><span class="num">06</span> Ngân sách token</h2>
 <p><code>sync-kernel.py</code> ước lượng tất định (4 ký tự ≈ 1 token) và <strong>thoát với mã lỗi</strong>
 nếu file sinh ra vượt 7k — kernel không thể phình dần trong im lặng:</p>
-<div class="code-block"><div class="code-head"><span class="file">scripts/lite/sync-kernel.py:82</span></div><pre><code>status = "OK" if target_tokens &lt; TOKEN_BUDGET else "EXCEEDED LIMIT"
-print(f"Generated: {target_name} ({target_tokens} est. tokens) -&gt; [{status}]")
-
-if target_tokens &gt;= TOKEN_BUDGET:
-    print(
-        f"Error: {target_name} exceeds the {TOKEN_BUDGET} deterministic token budget limit!",
-        file=sys.stderr,
-    )</code></pre></div>
-<div class="callout tip"><div class="title">Hiện tại</div>Boot file ~6823 token / 7000 — còn khoảng 177 token dư cho luật mới.</div>
+<div class="code-block"><div class="code-head"><span class="file">scripts/lite/sync-kernel.py:163</span></div><pre><code>status = "OK" if target_tokens &lt; TOKEN_BUDGET else "EXCEEDED LIMIT"
+preserved_note = (
+    " (preserved post-kernel sections)" if preserved_sections else ""
+)
+print(
+    f"Generated: {target_name} ({target_tokens} est. tokens) -&gt; [{status}]{preserved_note}"
+)</code></pre></div>
+<div class="callout tip"><div class="title">Hiện tại</div>Boot file ~6914 token / 7000 — còn khoảng 86 token dư cho luật mới.</div>
 
 </main>
 <footer>

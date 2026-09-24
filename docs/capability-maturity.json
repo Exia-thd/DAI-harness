@@ -9,11 +9,11 @@
   "capabilities": [
     {
       "id": "code-intelligence",
-      "readme_heading": "Code Intelligence (GitNexus)",
+      "readme_heading": "Code Intelligence (memory layer)",
       "maturity": "docs-only",
       "placement": "core",
       "evidence": [
-        "docs/guides/gitnexus.md",
+        "docs/guides/dai-memory.md",
         "AGENTS.md"
       ]
     },
@@ -30,12 +30,13 @@
     },
     {
       "id": "persistent-memory",
-      "readme_heading": "Persistent Cognitive Memory (FluxMem)",
+      "readme_heading": "Persistent Cognitive Memory (memory layer)",
       "maturity": "experimental",
       "placement": "core",
       "evidence": [
-        "scripts/lite/memory.py",
-        "tests/unit_tests/test_memory_consolidate.py"
+        "docs/guides/dai-memory.md",
+        "scripts/lite/dai_memory.py",
+        "tests/unit_tests/test_mcp_memory_bridge.py"
       ]
     },
     {

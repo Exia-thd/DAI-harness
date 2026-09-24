@@ -10,7 +10,6 @@ project has no store.
 from __future__ import annotations
 
 import hashlib
-import importlib
 import json
 import os
 import shutil
@@ -50,52 +49,88 @@ def _env(home: Path) -> dict[str, str]:
     return env
 
 
+# The legacy schema, as the retired scripts/lite/memory.py wrote it. Copied
+# here on purpose: this test is about reading a store that no longer has code
+# to create it, so the shape being migrated has to be pinned by the test rather
+# than borrowed from a module that is gone.
+LEGACY_SCHEMA = """
+CREATE TABLE observations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_root TEXT NOT NULL,
+    type TEXT NOT NULL DEFAULT 'general',
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    tags TEXT DEFAULT '[]',
+    importance INTEGER DEFAULT 5,
+    access_count INTEGER DEFAULT 0,
+    content_hash TEXT NOT NULL,
+    source TEXT DEFAULT 'manual',
+    pinned INTEGER DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    created_at_epoch INTEGER NOT NULL DEFAULT (unixepoch()),
+    last_accessed_epoch INTEGER,
+    archived INTEGER DEFAULT 0,
+    archived_at TEXT,
+    UNIQUE(content_hash, project_root)
+);
+"""
+
+
 def _legacy(project: Path) -> Path:
-    """A legacy store with one of each case, written by the harness's own MemoryDB."""
-    sys.path.insert(0, str(ROOT / "scripts" / "lite"))
-    memory = importlib.import_module("memory")
+    """A legacy store with one of each case the migration has to tell apart."""
     db_path = project / ".dainexus" / "memory.db"
-    db = memory.MemoryDB(str(db_path))
-    db.add(
-        "Refunds settle within five business days",
-        category="decisions",
-        importance=9,
-        source="manual",
-    )
-    db.add(
-        "Checkout crashed when the basket was empty",
-        category="errors",
-        importance=6,
-        source="manual",
-    )
-    db.add(
-        "Release: tag, build, then publish",
-        category="procedure",
-        importance=4,
-        source="manual",
-    )
-    retired = db.add(
-        "An old rule nobody follows",
-        category="decisions",
-        importance=5,
-        source="manual",
-    )
-    db.add(
-        "# README heading copied from a file",
-        category="ingested",
-        importance=5,
-        source="manual",
-    )
-    # Retired the way the store retires rows, by flag. MemoryDB has no public
-    # call for it outside its own garbage collection.
-    raw = sqlite3.connect(str(db_path))
+    rows = [
+        # title, content, type, importance, archived
+        (
+            "Refunds settle within five business days",
+            "Refunds settle within five business days",
+            "decisions",
+            9,
+            0,
+        ),
+        (
+            "Checkout crashed when the basket was empty",
+            "Checkout crashed when the basket was empty",
+            "errors",
+            6,
+            0,
+        ),
+        (
+            "Release: tag, build, then publish",
+            "Release: tag, build, then publish",
+            "procedure",
+            4,
+            0,
+        ),
+        ("An old rule nobody follows", "An old rule nobody follows", "decisions", 5, 1),
+        (
+            "# README heading copied from a file",
+            "# README heading copied from a file",
+            "ingested",
+            5,
+            0,
+        ),
+    ]
+    connection = sqlite3.connect(str(db_path))
     try:
-        raw.execute(
-            "UPDATE observations SET archived = 1 WHERE id = ?", (retired["id"],)
-        )
-        raw.commit()
+        connection.executescript(LEGACY_SCHEMA)
+        for title, content, kind, importance, archived in rows:
+            connection.execute(
+                "INSERT INTO observations (project_root, type, title, content, importance,"
+                " content_hash, source, archived) VALUES (?, ?, ?, ?, ?, ?, 'manual', ?)",
+                (
+                    str(project),
+                    kind,
+                    title,
+                    content,
+                    importance,
+                    hashlib.sha256(content.encode("utf-8")).hexdigest(),
+                    archived,
+                ),
+            )
+        connection.commit()
     finally:
-        raw.close()
+        connection.close()
     return db_path
 
 

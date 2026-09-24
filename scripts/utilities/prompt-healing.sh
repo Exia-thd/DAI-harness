@@ -63,7 +63,7 @@ except Exception as e:
 echo "=== Step 3: Running DSPy Prompt Optimizer ==="
 # Trigger prompt-optimizer python script with the failed cases as dataset
 # (Passing optimizer input path to python optimizer CLI)
-if [ -f "scripts/lite/memory.py" ]; then
+if [ -f "scripts/lite/dai_memory.py" ]; then
     echo "Running DAI Nexus Prompt Optimizer..."
     # Note: In production this would run: python3 scripts/optimize_skill.py --traces $OPTIMIZER_INPUT
     # Here we mock execution or print instructions for simulation

@@ -120,7 +120,7 @@ After all HARDEN tasks complete:
 6. Medium/Low → documented according to project risk policy; unresolved blocking pipeline risk signals still block regardless of aggregate score
 7. **Run aggregate quality scoring** — compute HARDEN phase quality score
 8. **Call session lifecycle hook** — `PHASE_COMPLETE("HARDEN", summary)`
-   - **Memory save:** `python3 scripts/lite/memory.py add "HARDEN complete: [N] tests, [M] security findings ([X] auto-fixed). Quality: [score]/100" --category tasks`
+   - **Memory save:** `python3 scripts/lite/dai_memory.py add "HARDEN complete: [N] tests, [M] security findings ([X] auto-fixed). Quality: [score]/100" --category tasks`
 9. **Update quality metrics** — write to `.dainexus/quality-metrics.json`
 10. Print HARDEN summary:
 ```

@@ -30,7 +30,6 @@ Environment Variables:
 """
 
 import argparse
-import hashlib
 import json
 import os
 import re
@@ -639,6 +638,20 @@ def _detect_ide() -> str:
     return "unknown"
 
 
+# The harness's one route to memory: the DAI memory layer, through its CLI.
+# It replaced scripts/lite/memory.py and the memory-v2 graph store, and takes
+# the same `add <text> --category C --importance N` line they did.
+MEMORY_SCRIPT = Path(__file__).resolve().parent.parent / "lite" / "dai_memory.py"
+
+# What each extracted fact is, as a category the memory layer files by layer.
+FACT_CATEGORIES = {
+    "preference": "convention",
+    "sop": "procedure",
+    "decision": "decision",
+    "config": "architecture",
+    "reference": "architecture",
+}
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Memory Operations
 # ─────────────────────────────────────────────────────────────────────────────
@@ -651,8 +664,7 @@ def auto_ingest_session_decisions(session: dict) -> int:
     """
     ingested = 0
     try:
-        script_dir = Path(__file__).parent
-        mem0_script = script_dir.parent / "lite" / "memory.py"
+        mem0_script = MEMORY_SCRIPT
         if not mem0_script.exists():
             return 0
 
@@ -722,175 +734,16 @@ def auto_ingest_session_decisions(session: dict) -> int:
         return 0
 
 
-def save_graph_nodes_edges(summary: str, checkpoint_id: str):
-    """Save episodic/semantic nodes and links in Layer 2 graph memory."""
-    try:
-        script_dir = Path(__file__).parent
-        mem0_script = script_dir / "memory-v2.py"
-        extract_script = script_dir / "checkpoint-extract.sh"
-        if not mem0_script.exists():
-            return
-
-        # 1. Create Episodic Node for this checkpoint
-        cmd = [
-            sys.executable,
-            str(mem0_script),
-            "graph-add-node",
-            checkpoint_id,
-            "episodic",
-            f"Checkpoint {checkpoint_id}",
-            f"Summary: {summary}",
-        ]
-        subprocess.run(cmd, capture_output=True, text=True, timeout=5)
-
-        # 2. Get current session context
-        session = get_current_session()
-        if session:
-            session_id = session.get("session_id")
-            session_title = f"Session {session_id}"
-            session_content = f"Request: {session.get('request', '')} | Mode: {session.get('mode', '')}"
-            cmd = [
-                sys.executable,
-                str(mem0_script),
-                "graph-add-node",
-                session_id,
-                "episodic",
-                session_title,
-                session_content,
-            ]
-            subprocess.run(cmd, capture_output=True, text=True, timeout=5)
-
-            # Link checkpoint -> session
-            cmd = [
-                sys.executable,
-                str(mem0_script),
-                "graph-link",
-                checkpoint_id,
-                session_id,
-                "--weight",
-                "1.0",
-                "--type",
-                "part_of",
-            ]
-            subprocess.run(cmd, capture_output=True, text=True, timeout=5)
-
-            # Save request as a Semantic Node and link to session
-            request_text = session.get("request", "")
-            if request_text:
-                req_node_id = f"req_{session_id}"
-                cmd = [
-                    sys.executable,
-                    str(mem0_script),
-                    "graph-add-node",
-                    req_node_id,
-                    "semantic",
-                    "Session Request",
-                    request_text,
-                ]
-                subprocess.run(cmd, capture_output=True, text=True, timeout=5)
-
-                cmd = [
-                    sys.executable,
-                    str(mem0_script),
-                    "graph-link",
-                    session_id,
-                    req_node_id,
-                    "--weight",
-                    "1.0",
-                    "--type",
-                    "targets",
-                ]
-                subprocess.run(cmd, capture_output=True, text=True, timeout=5)
-
-        # 3. Extract changed files / skills / configs from checkpoint-extract.sh
-        if extract_script.exists():
-            try:
-                res = subprocess.run(
-                    ["bash", str(extract_script)],
-                    capture_output=True,
-                    text=True,
-                    timeout=5,
-                )
-                if res.returncode == 0 and res.stdout.strip():
-                    data = json.loads(res.stdout)
-                    changed_files = data.get("files", [])
-                    for filepath in changed_files:
-                        if not filepath or not filepath.strip():
-                            continue
-
-                        node_layer = "semantic"
-                        edge_type = "modifies"
-                        node_title = ""
-
-                        if filepath.startswith("skills/"):
-                            skill_parts = filepath.split("/")
-                            if len(skill_parts) > 1:
-                                skill_name = skill_parts[1]
-                                node_layer = "procedural"
-                                node_title = f"Skill: {skill_name}"
-                                node_id = f"skill_{skill_name}"
-                                edge_type = "updates_skill"
-                            else:
-                                continue
-                        elif filepath.startswith("scripts/"):
-                            script_name = Path(filepath).name
-                            node_layer = "procedural"
-                            node_title = f"Script: {script_name}"
-                            node_id = f"script_{script_name}"
-                            edge_type = "updates_script"
-                        elif any(
-                            filepath.endswith(ext)
-                            for ext in [".json", ".yaml", ".yml", ".env"]
-                        ):
-                            config_name = Path(filepath).name
-                            node_layer = "semantic"
-                            node_title = f"Config: {config_name}"
-                            node_id = f"config_{config_name.replace('.', '_')}"
-                            edge_type = "modifies_config"
-                        else:
-                            file_name = Path(filepath).name
-                            node_layer = "semantic"
-                            node_title = f"File: {file_name}"
-                            node_id = f"file_{file_name.replace('.', '_')}"
-                            edge_type = "modifies_file"
-
-                        # Add node to graph
-                        cmd = [
-                            sys.executable,
-                            str(mem0_script),
-                            "graph-add-node",
-                            node_id,
-                            node_layer,
-                            node_title,
-                            f"File path: {filepath}",
-                        ]
-                        subprocess.run(cmd, capture_output=True, text=True, timeout=5)
-
-                        # Link checkpoint -> modified node
-                        cmd = [
-                            sys.executable,
-                            str(mem0_script),
-                            "graph-link",
-                            checkpoint_id,
-                            node_id,
-                            "--weight",
-                            "1.0",
-                            "--type",
-                            edge_type,
-                        ]
-                        subprocess.run(cmd, capture_output=True, text=True, timeout=5)
-            except Exception as ex:
-                warn(f"Could not extract files for graph linking: {ex}")
-
-    except Exception as e:
-        warn(f"Could not update graph nodes/edges: {e}")
-
-
 def extract_semantic_facts(summary: str, checkpoint_id: str):
-    """Scan summary/intent details and recent git commit messages for semantic facts."""
+    """Scan summary/intent details and recent git commit messages for semantic facts.
+
+    Each fact is recorded in the DAI memory layer under the category it matched,
+    with the checkpoint as its source. The retired memory-v2 store kept these as
+    graph nodes linked to the checkpoint; the source reference carries that link
+    now, and files, skills and scripts are in the layer's own code graph.
+    """
     try:
-        script_dir = Path(__file__).parent
-        mem0_script = script_dir / "memory-v2.py"
+        mem0_script = MEMORY_SCRIPT
         if not mem0_script.exists():
             return
 
@@ -953,41 +806,28 @@ def extract_semantic_facts(summary: str, checkpoint_id: str):
                     continue
                 for pat, category in KEEP_PATTERNS:
                     if re.search(pat, line, re.IGNORECASE):
-                        fact_id = f"fact_{hashlib.md5(line.encode()).hexdigest()[:12]}"
-                        title = f"Extracted {category.capitalize()}"
                         cmd = [
                             sys.executable,
                             str(mem0_script),
-                            "graph-add-node",
-                            fact_id,
-                            "semantic",
-                            title,
+                            "add",
                             line,
+                            "--category",
+                            FACT_CATEGORIES[category],
+                            "--importance",
+                            "5",
+                            "--source",
+                            f"harness:checkpoint:{checkpoint_id}",
                         ]
-                        subprocess.run(cmd, capture_output=True, text=True, timeout=5)
-
-                        cmd = [
-                            sys.executable,
-                            str(mem0_script),
-                            "graph-link",
-                            checkpoint_id,
-                            fact_id,
-                            "--weight",
-                            "1.0",
-                            "--type",
-                            f"has_{category}",
-                        ]
-                        subprocess.run(cmd, capture_output=True, text=True, timeout=5)
+                        subprocess.run(cmd, capture_output=True, text=True, timeout=30)
                         break
     except Exception as e:
         warn(f"Could not extract semantic facts: {e}")
 
 
 def save_to_mem0(summary: str, checkpoint_id: str) -> bool:
-    """Save checkpoint to memory-v2. Returns True on success, False on failure."""
+    """Save checkpoint to the DAI memory layer. Returns True on success, False on failure."""
     try:
-        script_dir = Path(__file__).parent
-        mem0_script = script_dir.parent / "lite" / "memory.py"
+        mem0_script = MEMORY_SCRIPT
         if not mem0_script.exists():
             warn(f"memory engine not found at {mem0_script}, skipping memory save")
             return False
@@ -998,14 +838,14 @@ def save_to_mem0(summary: str, checkpoint_id: str) -> bool:
             f"CHECKPOINT: [{checkpoint_id}] | {summary}",
             "--category",
             "session",
+            "--source",
+            f"harness:checkpoint:{checkpoint_id}",
         ]
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         if result.returncode != 0:
-            error(f"memory save failed: {result.stderr[:200]}")
+            error(f"memory save failed: {(result.stdout or result.stderr)[:200]}")
             return False
 
-        # Save L2 graph structures and extract semantic context
-        save_graph_nodes_edges(summary, checkpoint_id)
         extract_semantic_facts(summary, checkpoint_id)
         return True
     except subprocess.TimeoutExpired:
@@ -1378,13 +1218,12 @@ def cmd_status(args=None):
             )
 
     # Show memory stats
-    print("\n=== memory Memory Stats ===")
+    print("\n=== Memory Engine ===")
     try:
-        script_dir = Path(__file__).parent
-        mem0_script = script_dir.parent / "lite" / "memory.py"
+        mem0_script = MEMORY_SCRIPT
         if mem0_script.exists():
             result = subprocess.run(
-                [sys.executable, str(mem0_script), "stats"],
+                [sys.executable, str(mem0_script), "where"],
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -1451,16 +1290,14 @@ def cmd_resume(args=None):
 
     # Search memory for recent
     try:
-        script_dir = Path(__file__).parent
-        mem0_script = script_dir.parent / "lite" / "memory.py"
+        mem0_script = MEMORY_SCRIPT
         if mem0_script.exists():
             result = subprocess.run(
                 [
                     sys.executable,
                     str(mem0_script),
-                    "list",
-                    "--category",
-                    "session",
+                    "search",
+                    "session checkpoint",
                     "--limit",
                     "5",
                 ],
@@ -1472,7 +1309,7 @@ def cmd_resume(args=None):
                 print("\n=== Recent Memories ===")
                 print(result.stdout)
         else:
-            print("\n(scripts/lite/memory.py not found, skipping memory list)")
+            print("\n(scripts/lite/dai_memory.py not found, skipping memory list)")
     except Exception as e:
         warn(f"Could not load memory memories: {e}")
 

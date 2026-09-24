@@ -65,9 +65,16 @@
           "type": "boolean",
           "default": true
         },
+        "dai_memory": {
+          "type": "boolean",
+          "default": false,
+          "description": "Report the freshness of the DAI memory layer's code index (.memory/meta.json)."
+        },
         "gitnexus": {
           "type": "boolean",
-          "default": false
+          "default": false,
+          "deprecated": true,
+          "description": "Former name of dai_memory, honoured when dai_memory is absent."
         },
         "evidence_summary": {
           "type": "boolean",

@@ -13,58 +13,60 @@ superseded_by: null
 ---
 # Code Intelligence Protocol
 
-**Gives skills deep codebase awareness via knowledge graph analysis. Powered by [GitNexus](https://github.com/gitnexus/GitNexus) — indexes AST relationships, call chains, and functional communities.**
+**Gives skills deep codebase awareness via a code graph. Powered by the DAI memory layer (`vendor/dai-memory`, a submodule of the plugin's own repository) — indexes declarations, calls, imports, execution flows and communities, alongside the project's recorded decisions.**
 
 ## When Available
 
 Code Intelligence is available when ALL of these are true:
-- `gitnexus` CLI is installed (`command -v gitnexus`)
-- Project has been indexed (`.gitnexus/` directory exists)
+- The memory engine is installed (`python scripts/lite/dai_memory.py where` exits 0; install with `python scripts/lite/dai_memory.py install`)
+- Project has been indexed (`.memory/meta.json` exists — `dai-memory init`)
 - `project-profile.json` has `code_intelligence.indexed == true`
 
 **If NOT available:** All skills MUST fall back to traditional analysis (grep, find, view_file_outline). Code Intelligence is an **enhancement**, never a hard dependency.
 
 ## Available MCP Tools
 
-When Code Intelligence is active, 7 tools are available via the `gitnexus` MCP server:
+When Code Intelligence is active, the `dai-memory` MCP server offers these (the full list is in `dai_memory_*` tools; the guide skill `.claude/skills/dai-memory/dai-memory-guide/SKILL.md` describes each):
 
 | Tool | Purpose | When to Use |
 |------|---------|-------------|
-| `query({query})` | Search codebase by concept, grouped by execution processes | Understanding a feature area, finding related code |
-| `context({name})` | 360° view of a symbol — callers, callees, processes | Before modifying any function/class, during code review |
-| `impact({target, direction})` | Blast radius analysis with confidence scores | Before architecture changes, before refactoring |
-| `detect_changes({scope})` | Pre-commit risk assessment — changed symbols, affected processes | Before committing, during code review |
-| `rename({symbol_name, new_name, dry_run})` | Safe multi-file rename with graph + text edits | Refactoring symbols across files |
-| `cypher({query})` | Custom graph queries (Cypher language) | Advanced analysis, custom reports |
-| `list_repos()` | List all indexed repositories | Multi-repo workflows |
+| `dai_memory_query` | Search code by concept, grouped by execution flow | Understanding a feature area, finding related code |
+| `dai_memory_context` | 360° view of a declaration — callers, callees, members, imports, flows, memory | Before modifying any function/class, during code review |
+| `dai_memory_impact` | Blast radius by distance, with a risk level | Before architecture changes, before refactoring |
+| `dai_memory_detect_changes` | What a diff changes: declarations, dependents, flows, risk | Before committing, during code review |
+| `dai_memory_rename` | Rename through the call graph; a plan first, `apply` to write | Refactoring symbols across files |
+| `dai_memory_cypher` | One read-only graph query | Advanced analysis, custom reports |
+| `dai_memory_groups` | Repositories grouped as one system | Multi-repo workflows |
+| `dai_memory_search` / `dai_memory_why` | Recorded decisions, incidents and constraints | Learning why code is the way it is |
+
+The same operations exist on the CLI: `dai-memory query|context|impact|detect-changes|rename|cypher`.
 
 ### Tool Parameters
 
-**impact():**
+**impact:**
 ```
-impact({
-  target: "UserService",     // symbol name
-  direction: "upstream",     // upstream (what depends on this) or downstream (what this depends on)
-  maxDepth: 3,               // traversal depth (default: 3)
-  minConfidence: 0.7,        // filter low-confidence relationships
-  relationTypes: ["CALLS", "IMPORTS", "EXTENDS"],  // optional filter
-  includeTests: false        // include test files in results
+dai_memory_impact({
+  target: "UserService",      // declaration name
+  direction: "upstream",      // upstream (what depends on this) or downstream (what this depends on)
+  maxDepth: 3,                // traversal depth, 1-5
+  minConfidence: 0.7,         // filter low-confidence relationships
+  includeTests: false         // include test files in results
 })
 ```
 
-**context():**
+**context:**
 ```
-context({
-  name: "validateUser"  // symbol name — returns incoming/outgoing relationships, processes
+dai_memory_context({
+  name: "validateUser"   // returns callers, callees, members, imports, flows, memory
 })
 ```
 
-**detect_changes():**
+**detect_changes:**
 ```
-detect_changes({
-  scope: "all"  // "all" = full diff, or specific path
+dai_memory_detect_changes({
+  scope: "working"   // "staged" (default), "working" (everything since the last commit), or "compare" with base
 })
-// Returns: changed_count, affected_count, risk_level, affected_processes
+// Returns: changed declarations, their dependents, affected flows, risk level
 ```
 
 ## Usage Rules for Skills
@@ -83,16 +85,16 @@ ELSE:
 
 | Skill | When | Tool | Why |
 |-------|------|------|-----|
-| **solution-architect** | Before proposing changes | `impact()` | Know blast radius before making ADRs |
-| **code-reviewer** | For each modified function | `context()` | 360° view catches missed dependencies |
-| **code-reviewer** | Before approving PR | `detect_changes()` | Risk assessment before merge |
-| **debugger** | During investigation (Phase 3) | `context()` | Trace call chains without manual search |
-| **debugger** | Finding related code | `query()` | Process-grouped search finds execution flows |
-| **software-engineer** | Before modifying function | `impact()` upstream | Check what will break |
-| **software-engineer** | After implementing changes | `detect_changes()` | Pre-commit safety check |
-| **parallel-dispatch** | Defining task boundaries | community clusters | Each community = potential worktree scope |
-| **qa-engineer** | Test planning | `impact()` | Identify test coverage gaps from dependency chains |
-| **security-engineer** | Data flow tracing | `query()` + `context()` | Trace PII flow through call chains |
+| **solution-architect** | Before proposing changes | `dai_memory_impact` | Know blast radius before making ADRs |
+| **code-reviewer** | For each modified function | `dai_memory_context` | 360° view catches missed dependencies |
+| **code-reviewer** | Before approving PR | `dai_memory_detect_changes` | Risk assessment before merge |
+| **debugger** | During investigation (Phase 3) | `dai_memory_context` | Trace call chains without manual search |
+| **debugger** | Finding related code | `dai_memory_query` | Flow-grouped search finds execution flows |
+| **software-engineer** | Before modifying function | `dai_memory_impact` upstream | Check what will break |
+| **software-engineer** | After implementing changes | `dai_memory_detect_changes` | Pre-commit safety check |
+| **parallel-dispatch** | Defining task boundaries | `dai_memory_code_clusters` | Each community = potential worktree scope |
+| **qa-engineer** | Test planning | `dai_memory_impact` | Identify test coverage gaps from dependency chains |
+| **security-engineer** | Data flow tracing | `dai_memory_taint` + `dai_memory_context` | Trace untrusted input through call chains |
 
 ### 3. Graceful Degradation
 
@@ -103,32 +105,32 @@ IF MCP tool call fails:
     3. Note reduced analysis depth in output
     4. Continue pipeline — NEVER block on CI failure
 
-IF index is stale (>24h old):
-    1. Suggest re-indexing: "gitnexus analyze"
+IF index is stale (dai_memory_status says the indexed commit is not HEAD):
+    1. Suggest re-indexing: "dai-memory ingest"
     2. Use existing index anyway (stale > nothing)
     3. Flag in output: "⚠ Code Intelligence index may be stale"
 ```
 
 ### 4. Performance Budget
 
-- `query()` and `context()` — fast (<1s), use freely
-- `impact()` — moderate (~2-5s for deep traversal), use when needed
-- `detect_changes()` — moderate (~3s), use once before commit
-- `cypher()` — variable, use sparingly
-- `rename()` — slow (writes files), always use `dry_run: true` first
+- `query` and `context` — fast (<1s), use freely
+- `impact` — moderate (~2-5s for deep traversal), use when needed
+- `detect_changes` — moderate (~3s), use once before commit
+- `cypher` — variable, use sparingly
+- `rename` — writes files only with `apply`; always read the plan first
 
 ## Auto-Reindex (Session Lifecycle Integration)
 
-DAI Nexus Node auto-reindexes at three lifecycle points — **no user action required:**
+The harness re-indexes at three lifecycle points — **no user action required:**
 
 ### At Session Start (Step 3.5)
 
 ```
-IF .gitnexus/ exists:
-  commits_since_last_index = git rev-list --count HEAD ^<last_indexed_commit>
-  
-  IF commits_since > 0 OR index_age > 1 hour:
-    Run: gitnexus analyze 2>/dev/null
+IF .memory/meta.json exists:
+  commits_since_last_index = git rev-list --count HEAD ^<meta.json lastCommit>
+
+  IF commits_since > 0:
+    Run: dai-memory ingest --quiet
     Log result (success or fallback to stale)
   ELSE:
     Use existing fresh index
@@ -137,17 +139,17 @@ IF .gitnexus/ exists:
 ### At Session End (Step 5)
 
 ```
-IF .gitnexus/ exists:
-  Run: gitnexus analyze 2>/dev/null
+IF .memory/meta.json exists:
+  Run: dai-memory ingest --quiet
   This ensures NEXT session starts with fresh index
 ```
 
-### Immediately Post-Commit / Post-Push (Background Hook)
+### Immediately Post-Commit (Background Hook)
 
 ```
-IF git commit or git push has successfully run:
-  Run: npx gitnexus analyze (as a background task)
-  This ensures real-time symbol updates without blocking the agent or waiting for session end
+IF git commit has successfully run:
+  The post-commit hook runs: dai-memory ingest (as a background task)
+  This keeps the graph current without blocking the agent or waiting for session end
 ```
 
 ### Why these hooks?
@@ -156,11 +158,11 @@ IF git commit or git push has successfully run:
 |------|----------|
 | Session Start | Catches manual changes user made between sessions (hotfixes, other tools) |
 | Session End | Catches all changes made BY this session (new files, refactors) |
-| Post-Commit/Push | Immediate updates after code mutations, keeping the graph hot and fresh in real-time |
+| Post-Commit | Immediate updates after code mutations, keeping the graph current |
 
 ### Fail-Safe
 
-If `gitnexus analyze` fails at any point:
+If `dai-memory ingest` fails at any point:
 1. Log warning — do NOT block pipeline
 2. Use stale index (stale > nothing)
 3. Add `⚠ stale` badge to any Code Intelligence output
@@ -171,48 +173,19 @@ If `gitnexus analyze` fails at any point:
 ## Manual Re-indexing
 
 In addition to auto-reindex, manual re-indexing may be needed:
-- **After major refactoring** — run `gitnexus analyze --force`
-- **After adding new files/services** — run `gitnexus analyze` (incremental)
-- **Stale index warning** — run `gitnexus analyze`
-- **Auto-reindex (IDE)** — PostToolUse hooks reindex after commits
+- **After major refactoring** — run `dai-memory ingest --force`
+- **After adding new files/services** — run `dai-memory ingest` (incremental)
+- **Stale index warning** — run `dai-memory ingest`
+- **Auto-reindex (IDE)** — the post-commit hook reindexes after commits
 
-## LLM Configuration (Optional)
+## No LLM Required
 
-GitNexus core features (analyze, impact, context, query, detect_changes) work **without any LLM**. The LLM-dependent command:
-- `gitnexus wiki` (auto-generate documentation) is **deprecated** in favor of manual file edits (Documentation as Code) synced to Obsidian-based `llm_wiki`.
-
-### Supported Providers
-
-GitNexus uses OpenAI-compatible API format. Configure via environment variables:
-
-**MiniMax (Recommended — cost-effective):**
-```bash
-export GITNEXUS_LLM_PROVIDER=openai-compatible
-export GITNEXUS_LLM_BASE_URL=https://api.minimaxi.chat/v1
-export GITNEXUS_LLM_API_KEY=your-minimax-api-key
-export GITNEXUS_LLM_MODEL=MiniMax-Text-01
-```
-
-**Google Gemini:**
-```bash
-export GITNEXUS_LLM_PROVIDER=openai-compatible
-export GITNEXUS_LLM_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
-export GITNEXUS_LLM_API_KEY=your-google-ai-studio-key
-export GITNEXUS_LLM_MODEL=gemini-2.0-flash
-```
-
-**OpenAI:**
-```bash
-export GITNEXUS_LLM_API_KEY=your-openai-key
-export GITNEXUS_LLM_MODEL=gpt-4o-mini
-```
-
-> **Tip:** Add these exports to your `~/.zshrc` (macOS) or `~/.bashrc` (Linux) to persist across sessions. The LLM config is **entirely optional** — if not set, only `wiki` features will be unavailable. All MCP tools work without LLM.
+Every code graph operation (ingest, impact, context, query, detect-changes, wiki) runs **without any LLM** and without network access. `dai-memory wiki` builds its pages only from what the graph and the recorded memory already know.
 
 ## Integration with Existing Protocols
 
 - **session-lifecycle.md:** Step 3.5 (Session Start) checks freshness + auto-reindex; Step 5 (Session End) re-indexes after changes
 - **project-onboarding.md:** Phase 1.5 creates the initial index
-- **quality-gate.md:** Quality gate can use `detect_changes()` as additional validation signal
+- **quality-gate.md:** Quality gate can use `dai_memory_detect_changes` as additional validation signal
 - **graceful-failure.md:** All CI tool failures follow graceful failure protocol
-- **brownfield-safety.md:** `impact()` analysis feeds into brownfield risk assessment
+- **brownfield-safety.md:** `dai_memory_impact` analysis feeds into brownfield risk assessment

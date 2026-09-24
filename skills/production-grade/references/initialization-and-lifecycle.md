@@ -6,7 +6,7 @@
 
 Run silently BEFORE any execution (all modes) to ensure project intelligence is fully configured.
 
-**Step 0.1 — GitNexus + MCP Check:**
+**Step 0.1 — Code Graph + MCP Check:**
 
 1. Check if `.antigravity/mcp-manifest.json` exists and is current in the project root.
 2. **If missing or stale**, run ONE command to set up everything:
@@ -25,16 +25,15 @@ Run silently BEFORE any execution (all modes) to ensure project intelligence is 
    ```
 
    This single command:
-   - Analyzes the project (GitNexus index via `gitnexus analyze`)
+   - Installs the DAI memory engine if missing (`python scripts/lite/dai_memory.py install`)
    - Generates the MCP server
    - Creates the workspace manifest
    - Updates global config (Cursor/Claude)
    - Verifies installation
 
-3. **GitNexus Setup** (if not already done):
+3. **Code graph** (if not already done), in the project:
    ```bash
-   npm install -g gitnexus
-   gitnexus setup  # Auto-configures all editors
+   dai-memory init   # builds .memory/: the code graph and the project's memory
    ```
 
 4. After setup, yield a brief message:
@@ -44,7 +43,7 @@ Run silently BEFORE any execution (all modes) to ensure project intelligence is 
 
 **Step 0.2 — System Requirements + Power Level Check (required):**
 
-DAI Nexus requires **Node.js 22+** (GitNexus/MCP runtime) and **Python 3** (local memory). Power level determines which tools are needed.
+DAI Nexus requires **Node.js 22+** (DAI memory layer, MCP runtime) and **Python 3** (harness scripts). Power level determines which tools are needed.
 
 **Step 0.2.1 — System Requirements Check:**
 
@@ -62,7 +61,7 @@ settings_check: [ -f .dainexus/settings.md ] && echo "exists" || echo "missing"
 | node | python | memory | Action |
 |------|--------|--------|--------|
 | ≥18 | ≥3.8 | ready | ✅ Full Persistent — continue to Step 0.3 |
-| ≥18 | ≥3.8 | setup | ⧖ Memory setup needed — run memory-local.sh |
+| ≥18 | ≥3.8 | setup | ⧖ Memory setup needed — run `python3 scripts/lite/dai_memory.py install` |
 | ≥18 | missing | — | ⚠️ Python missing — stop, tell user install Python 3 |
 | <22 | — | — | ⚠️ Node.js <22 — stop, tell user upgrade Node.js |
 | missing | — | — | ⚠️ Node.js missing — stop, tell user install Node.js 22+ |
@@ -72,8 +71,8 @@ settings_check: [ -f .dainexus/settings.md ] && echo "exists" || echo "missing"
 notify_user:
   "⚠️ Missing required tools for DAI Nexus:
 
-   Node.js 22+ required for: GitNexus code intelligence, MCP server
-   Python 3.8+ required for: Local memory (ChromaDB + sentence-transformers)
+   Node.js 22+ required for: DAI memory (code graph + project memory), MCP server
+   Python 3.8+ required for: harness scripts and gates
 
    How to install:
    macOS:  brew install node python3
@@ -89,7 +88,7 @@ notify_user:
 **If memory needs setup (non-blocking):**
 ```
 # Run silently
-bash <path-to-dai-nexus>/scripts/memory-local.sh "$(pwd)" 2>/dev/null
+python3 <path-to-dai-nexus>/scripts/lite/dai_memory.py install 2>/dev/null
 
 # If failed (no python3)
 Log: "⚠️ Memory init failed — install Python 3 first. Forcing: DAINEXUS_SKIP_MEMORY=1"
@@ -122,8 +121,8 @@ notify_user:
   "DAI Nexus has 5 power levels. Choose based on how much capability you need:
 
   ⚡ Basic       — manifest-driven skill registry + proportional pipeline (Node.js only)
-  ⚡⚡ Smart     — + GitNexus blast-radius analysis (Node.js only)
-  ⚡⚡⚡ Persistent — + Local memory with ChromaDB (Node.js + Python 3)
+  ⚡⚡ Smart     — + code graph blast-radius analysis (DAI memory, Node.js only)
+  ⚡⚡⚡ Persistent — + project memory across sessions (DAI memory, Node.js + Python 3)
   ⚡⚡⚡⚡ Research  — + NotebookLM grounded research (optional)
   ⚡⚡⚡⚡⚡ Full Power — All of the above + crawl4ai, Midscene, Paperclip
 
@@ -198,7 +197,7 @@ IF Persistent:
   Log: "✓ Power level: Persistent — Local memory ready"
 
 IF Smart:
-  Log: "✓ Power level: Smart — GitNexus ready"
+  Log: "✓ Power level: Smart — code graph ready"
 
 IF Basic:
   Log: "✓ Power level: Basic"
@@ -290,8 +289,7 @@ Run AFTER update check, BEFORE mode classification. Follows `skills/_shared/prot
    - If first session → continue normally
 
 3. **Load memory context (required for Persistent power level — Step 0.2):**
-   - Run `bash <path-to-dai-nexus>/scripts/memory-retrieve.sh "<user-request>"` OR
-   - Run `python3 <path-to-dai-nexus>scripts/lite/memory.py search "<project-name> <user-request-keywords>" --limit 5`
+   - Run `python3 <path-to-dai-nexus>/scripts/lite/dai_memory.py search "<project-name> <user-request-keywords>" --limit 5`
    - Also load:
      - `.dainexus/subagent-context/CONVERSATION_SUMMARY.md`
      - `.dainexus/memory-bank/activeContext.md`

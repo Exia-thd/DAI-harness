@@ -1,7 +1,7 @@
 ---
 name: memory-manager
-description: "Orchestrates persistent project-specific memory, episodic checkpointing, hybrid GraphRAG/vector indexing (FluxMem), context offloading, and memory consolidation. Use when the user requests memory retrieval, session state recovery, database memory consolidation, context optimization, or session checkpoint audits."
-version: 1.0.0
+description: "Records why decisions were made and retrieves them when an agent meets unfamiliar code, through the DAI memory layer. Use when the user asks for memory retrieval, session recovery, or what a project already decided."
+version: 2.0.0
 ---
 
 # Memory Manager (LITE)
@@ -9,37 +9,37 @@ version: 1.0.0
 ## SOLVE Step 2: GROUND (Memory Manager Domain Slots)
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Relational SQLite cognitive graph database exists and contains active tables | `sqlite3 .dainexus/memory.db ".tables"` | ... | run the check command and paste output |
-| Core project-specific memory files and directories are present | `find .dainexus/ -maxdepth 2 -name "lessons.md" -o -name "architecture.md" -o -name "memory-bank"` | ... | run the check command and paste output |
-| Twin-middleware execution properties and context thresholds are configured | `cat .production-grade.yaml` | ... | run the check command and paste output |
+| The memory layer is installed and the project is indexed | `python scripts/lite/dai_memory.py where` then `dai-memory status` | ... | run the check command and paste output |
+| The index was built from the current commit | `dai-memory status` — it names the commit and says when the working tree has moved past it | ... | paste the `indexed at` line |
+| Memory files the project keeps by hand are present | `find .dainexus/ -maxdepth 2 -name "lessons.md" -o -name "memory-bank"` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Memory Manager Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
 
-1. RETRIEVE | Execute the Step 0.5 retrieval loop to load recent session summaries and active memories | Verify recent conversational context is injected before processing user requests.
-2. OFFLOAD | Divert heavy tool execution outputs exceeding 1200 tokens to isolated disk files | Ensure a compact trace handle (e.g., `refs/n-X-tool-hash.md`) is written to model context.
-3. CONSOLIDATE | Run consolidator scripts to compile SQLite database observations into permanent memory layers | Verify insights are migrated under `.dainexus/memory-bank/persona.md` and `.dainexus/memory-bank/scenarios/`.
+1. RETRIEVE | `dn_memory_search` with the request's keywords before starting work | Recent decisions and incidents are in context before the first edit.
+2. ANCHOR | `dai_memory_why` on each file about to change | The reasoning behind unfamiliar code is read rather than re-derived.
+3. RECORD | `dn_memory_add` once the work is done, with the reason, not the diff | The decision is retrievable next session; `dai_memory_changes --scope staged` shows it against the files being committed.
 
 ## Common Mistakes Checklist
-- **Bypassing Step 0.5 Memory Loading**: Starting an agent session without running the Step 0.5 memory retrieval loop, causing the orchestrator to repeat past mistakes.
-- **Suppressing Middleware ④d Context Offload**: Permitting raw tool outputs over 1200 tokens to flood the active model context window, accelerating token exhaustions.
-- **Skipping ASIP Edge Decay on Failures**: Failing to decay graph relation weights by a factor of 0.5 when a plan score falls below 9.0 or an execution blocker occurs, breaking self-healing logic.
-- **Non-Compliant Memory File Naming**: Creating scenario memory records or persona logs under `.dainexus/memory-bank/` using spaces or CamelCase instead of lowercase kebab-case.
+- **Starting without asking**: editing code whose reason is already recorded, then re-deriving it badly.
+- **Recording the change instead of the reason**: "changed retry logic" is a commit message; "capped retries at two because the processor counts attempts" is memory.
+- **Reading an empty answer as "nothing to know"**: the layer distinguishes *nothing found* from *could not look*. An error means the engine is not installed or the store is missing — fix that rather than proceeding.
+- **Trusting a stale index**: `status` says when the graph is older than the working tree. Anything that depends on line numbers says so too.
 
-### Step 1: Ground the active memory SQLite database and configurations
+### Step 1: Ground the memory layer
 ```bash
-sqlite3 .dainexus/memory.db "SELECT count(*) FROM flux_nodes;"
-find .dainexus/ -maxdepth 2 -name "lessons.md"
+python scripts/lite/dai_memory.py where
+dai-memory status
 ```
 
-### Step 2: Retrieve and trace offloaded tool execution context
+### Step 2: Retrieve what is already known
 ```bash
-# Query large outputs archived under local session directories
-python3 scripts/memory-trace.py --query "auth validation"
+dai-memory search "<the words of the problem>" --limit 5
+dai-memory why <file or symbol>
 ```
 
-### Step 3: Execute memory consolidation to update the local project memory bank
+### Step 3: Record the reasoning, and check it against the change
 ```bash
-# Consolidate SQLite observations and session logs into structured Markdown files
-python3 scripts/memory-consolidate.py
+dai-memory write --layer semantic --title "<the decision>" --body "<why>" --source-ref <file>#L1-L20
+dai-memory changes --scope staged
 ```

@@ -31,7 +31,7 @@
       ]
     },
     {
-      "path": "docs/guides/gitnexus.md",
+      "path": "docs/guides/dai-memory.md",
       "classification": "public-guide",
       "requiredMarker": "unsupported or dynamic patterns may not resolve",
       "forbiddenPatterns": [

@@ -61,8 +61,6 @@ fi
 echo ""
 echo "T5: Full run stores conventions"
 TESTS=$((TESTS+1))
-# Check stats before
-before=$(python3 "$SCRIPT_DIR/../../scripts/lite/memory.py" stats 2>/dev/null | grep "decisions:" | grep -oE "[0-9]+" || echo "0")
 output=$(bash "$INDEXER_SCRIPT" 2>&1)
 if echo "$output" | grep -q "Stored: [0-9]*/[0-9]*"; then
     stored=$(echo "$output" | grep -oE "Stored: [0-9]+" | grep -oE "[0-9]+")

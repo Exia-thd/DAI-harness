@@ -10,7 +10,7 @@
 <body>
 <nav class="nav"><div class="nav-inner">
   <a href="./index.html" class="nav-brand"><span class="dot"></span> DAI Nexus <small>docs</small></a>
-  <div class="nav-links"><a href="./index.html">Tổng quan</a><a href="./kernel.html">Kernel</a><a href="./skills.html" class=current>Skills</a><a href="./evidence.html">Bằng chứng</a><a href="./runtime.html">Runtime</a><a href="./memory.html">Memory</a><a href="./memory-guide.html">Bóc tách Memory</a><a href="./patterns.html">Tinh túy</a></div>
+  <div class="nav-links"><a href="./index.html">Tổng quan</a><a href="./kernel.html">Kernel</a><a href="./skills.html" class=current>Skills</a><a href="./evidence.html">Bằng chứng</a><a href="./runtime.html">Runtime</a><a href="./memory.html">Memory</a><a href="./patterns.html">Tinh túy</a></div>
 </div></nav>
 <main>
 
@@ -72,7 +72,7 @@ security-engineer, frontend-engineer) · <strong>domain</strong> (game engine, d
 per-language, growth…).</p>
 
 <h2><span class="num">06</span> Protocol dùng chung</h2>
-<p>58 protocol trong <code>skills/_shared/protocols/</code>. Hai cái quan trọng nhất:</p>
+<p>59 protocol trong <code>skills/_shared/protocols/</code>. Hai cái quan trọng nhất:</p>
 <table><thead><tr><th>Protocol</th><th>Vai trò</th></tr></thead><tbody><tr><td><code>guardrail.md</code></td><td>Kill switch: 13 nhóm luật (destructive, secrets, RCE, publishing, path traversal, resource exhaustion…) + cổng cơ học <code>policy_check.py</code></td></tr><tr><td><code>parallel-dispatch.md</code></td><td>Worker chạy song song trên git worktree, mỗi worker bị ràng bởi task contract; merge arbiter từ chối mọi thay đổi ngoài phạm vi</td></tr></tbody></table>
 
 </main>

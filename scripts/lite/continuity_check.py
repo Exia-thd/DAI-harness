@@ -54,6 +54,7 @@ _GENERATED_PREFIXES = (
     ".dainexus/cache/",
     ".git/",
     ".gitnexus/",
+    ".memory/",
 )
 _MATERIAL_PREFIXES = (
     "docs/",
@@ -902,24 +903,32 @@ def _cache_state(
         return "invalid", ""
     if isinstance(adapters, dict) and any(
         key in adapters and not isinstance(adapters[key], bool)
-        for key in ("git", "gitnexus", "evidence_summary")
+        for key in ("git", "dai_memory", "gitnexus", "evidence_summary")
     ):
         return "invalid", ""
     git_enabled = not isinstance(adapters, dict) or adapters.get("git") is not False
-    gitnexus_enabled = isinstance(adapters, dict) and adapters.get("gitnexus") is True
+    # The code index is the DAI memory layer's; `gitnexus` is the adapter's
+    # name from before, which older manifests still carry. Same rule as the
+    # scanner's codeIndexAdapterEnabled.
+    if isinstance(adapters, dict) and "dai_memory" in adapters:
+        code_index_enabled = adapters["dai_memory"] is True
+    else:
+        code_index_enabled = (
+            isinstance(adapters, dict) and adapters.get("gitnexus") is True
+        )
     if git_enabled and cached_commit is None:
         return "stale", source_fingerprint
     if not git_enabled and cached_commit is not None:
         return "stale", source_fingerprint
     if cached_commit is not None and not isinstance(cached_commit, str):
         return "invalid", ""
-    gitnexus = facts.get("gitnexus") if isinstance(facts, dict) else None
+    code_index = facts.get("codeIndex") if isinstance(facts, dict) else None
     cached_indexed_commit = (
-        gitnexus.get("indexedCommit") if isinstance(gitnexus, dict) else None
+        code_index.get("indexedCommit") if isinstance(code_index, dict) else None
     )
     if cached_indexed_commit is not None and not isinstance(cached_indexed_commit, str):
         return "invalid", ""
-    if not gitnexus_enabled and cached_indexed_commit is not None:
+    if not code_index_enabled and cached_indexed_commit is not None:
         return "stale", source_fingerprint
     if cached_commit is not None:
         try:
@@ -977,11 +986,7 @@ def _cache_state(
         ],
         "assets": [[relative, asset_hashes[relative]] for relative in ordered_assets],
         "git": cached_commit,
-        "gitnexus": (
-            facts.get("gitnexus", {}).get("indexedCommit")
-            if isinstance(facts, dict) and isinstance(facts.get("gitnexus"), dict)
-            else None
-        ),
+        "codeIndex": cached_indexed_commit,
         "projectState": {"path": state_path, "hash": state_hash},
     }
     if _sha256(_json_compact(canonical)) != source_fingerprint:

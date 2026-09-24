@@ -59,7 +59,7 @@ DAI Nexus is organized into **5 distinct layers**, from the user-facing interact
         <div class="layer-badge">5</div>
         <div class="layer-content">
           <h3>LAYER 5: RUNTIME</h3>
-          <p>MCP Servers &middot; GitNexus &middot; Project-owned scripts &middot; State (.dainexus/)</p>
+          <p>MCP Servers &middot; DAI memory &middot; Project-owned scripts &middot; State (.dainexus/)</p>
         </div>
       </article>
     </li>
@@ -78,7 +78,7 @@ When an AI-powered IDE starts a session, it reads one or more rule files from th
 
 | File | IDE | Purpose |
 |------|-----|---------|
-| `AGENTS.md` | Cursor, Antigravity, Codex | Primary rule file with kernel + GitNexus config |
+| `AGENTS.md` | Cursor, Antigravity, Codex | Primary rule file with kernel + code-graph (DAI memory) guidance |
 | `CLAUDE.md` | Claude Code | Identical kernel + Claude-specific hooks |
 | `GEMINI.md` | Gemini CLI/IDE | Identical kernel + Gemini optimizations |
 
@@ -367,7 +367,7 @@ DAI Nexus exposes two MCP servers for IDE integration:
 | Server | Transport | Tools | Purpose |
 |--------|-----------|-------|---------|
 | `dai-nexus` | stdio (npx tsx) | Pipeline mgmt, skill invocation, memory ops | Orchestration |
-| `gitnexus` | stdio | 16 tools: query, context, impact, detect_changes, rename, cypher, etc. | Code Intelligence |
+| `dai-memory` | stdio (node) | `dai_memory_*` tools: query, context, impact, detect_changes, rename, cypher, search, write, etc. | Code Intelligence + Memory |
 
 The canonical DAI Nexus MCP process acquires an external
 `dainexus-mcp-lifecycle-lease/v1` record before connecting the stdio
@@ -410,27 +410,28 @@ Configuration via `~/.cursor/mcp.json` (Cursor) or equivalent:
 }
 ```
 
-### GitNexus Code Intelligence
+### DAI memory — Code Intelligence
 
-GitNexus maintains a workspace-indexed graph of code symbols, relationships,
-and execution flows. Counts are runtime/index state and are intentionally not
+The DAI memory layer (`vendor/dai-memory`, a git submodule of the plugin's own
+repository) maintains a per-project graph of code declarations, relationships,
+and execution flows in `.memory/`, alongside the project's recorded memory. Counts are runtime/index state and are intentionally not
 frozen in this architecture document.
 
 | Tool | Purpose |
 |------|---------|
-| `query` | Semantic code search by concept |
-| `context` | 360° symbol view (callers, callees, execution flows) |
-| `impact` | Blast radius analysis before editing |
-| `detect_changes` | Pre-commit scope verification |
-| `rename` | Call-graph-aware multi-file rename |
-| `explain` | Taint analysis (source → sink flows) |
+| `dai_memory_query` | Code search by concept, grouped by execution flow |
+| `dai_memory_context` | 360° declaration view (callers, callees, execution flows, memory) |
+| `dai_memory_impact` | Blast radius analysis before editing |
+| `dai_memory_detect_changes` | Pre-commit scope verification |
+| `dai_memory_rename` | Call-graph-aware multi-file rename |
+| `dai_memory_explain` / `dai_memory_taint` | Taint analysis (source → sink flows) |
 
 ### Project-Owned Runtime Scripts
 
 | Category | Key Scripts |
 |----------|-------------|
 | **Setup** | `dainexus-mcp-setup.sh`, `setup-project.sh`, `setup.sh` |
-| **Memory** | `scripts/lite/memory.py`, `memory-trace.py`, `memory-consolidate.py`, `memory-hygiene.sh` |
+| **Memory** | `scripts/lite/dai_memory.py`, `memory/memory-middleware.py`, `memory-trace.py`, `memory/memory-session.sh` |
 | **Quality** | `dai-validate.sh`, `dainexus-session-tracker.sh` |
 | **CI/CD** | `test-cli.sh`, `dainexus-submodule-check.sh` |
 | **Kernel** | `lite/sync-kernel.py`, `lite/escalate.sh` |
@@ -582,7 +583,7 @@ and Stop-loop bounds remain machine-enforced on the canonical hook path.
 2. **Layer 2 (Kernel):** CLARIFY identifies auth → asks MCQ 4 (auth mechanism)
 3. **Layer 2 (Kernel):** After user selects JWT → UNDERSTAND/GROUND/DECOMPOSE
 4. **Layer 3 (Capabilities):** Mode = Feature → Skills: PM, Architect, Backend, QA
-5. **Layer 5 (Runtime):** GitNexus `impact()` on auth-related symbols
+5. **Layer 5 (Runtime):** `dai_memory_impact` on auth-related symbols
 6. **Layer 3 (Capabilities):** Software Engineer executes code changes
 7. **Layer 4 (Controls):** Quality Gate scores output, Guardrail checks for hardcoded secrets
 8. **Layer 2 (Kernel):** Schema-v2 evidence binds exact tests/tree → AUDIT covers requirements

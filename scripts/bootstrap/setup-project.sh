@@ -11,15 +11,15 @@
 #
 # What it does:
 #   1. Creates .dainexus/ directory in the target project
-#   2. Initializes memory (.dainexus/memory.jsonl) via scripts/lite/memory.py
+#   2. Seeds the project policy (.dainexus/)
 #   3. Detects tech stack and generates project-profile.json
-#   4. Runs GitNexus analyze to index the project
+#   4. Installs the memory layer and indexes the project
 #   5. Prints the Cursor MCP config snippet (add to ~/.cursor/mcp.json)
 #
 # Requirements:
 #   - Global DAI Nexus repo must exist at DAINEXUS_PATH (see below)
-#   - Node.js >= 18 (for GitNexus)
-#   - Git repository (for GitNexus)
+#   - Node.js >= 20.11 (for the memory layer)
+#   - Git repository (memory is scoped to one)
 # ============================================================================
 
 set -euo pipefail
@@ -87,7 +87,7 @@ check_prerequisites() {
 
     # Check git repo
     if ! git -C "$TARGET_PROJECT" rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-        log_warn "Not a git repository. GitNexus indexing will be limited."
+        log_warn "Not a git repository. Indexing needs one."
         log_info "Run 'git init' first if you want full code intelligence."
     else
         log_ok "Git repository detected"
@@ -97,7 +97,7 @@ check_prerequisites() {
     if command -v node &> /dev/null; then
         log_ok "Node.js: $(node --version)"
     else
-        log_warn "Node.js not found. GitNexus will not work."
+        log_warn "Node.js not found. The memory layer will not run."
         log_info "Install Node.js >= 18 for code intelligence."
     fi
 
@@ -218,24 +218,55 @@ ensure_project_policy() {
     esac
 }
 
-# ─── Index with GitNexus ───────────────────────────────────────────────────
+# ─── Index with the memory layer ───────────────────────────────────────────
 
-run_gitnexus_analyze() {
+run_memory_index() {
     if ! command -v node &> /dev/null; then
-        log_warn "Node.js not found — skipping GitNexus analysis."
+        log_warn "Node.js not found — skipping indexing."
         return
     fi
 
     if ! git -C "$TARGET_PROJECT" rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-        log_warn "Not a git repo — skipping GitNexus."
+        log_warn "Not a git repo — skipping indexing."
         return
     fi
 
-    log_info "Running GitNexus analysis..."
-    if npx --yes gitnexus analyze "$TARGET_PROJECT" > /dev/null 2>&1; then
-        log_ok "GitNexus analysis complete"
+    # The engine is installed outside the repository, one directory per pinned
+    # version, so the resolver is asked rather than a path guessed.
+    local resolver="${DAINEXUS_PATH}/scripts/lite/dai_memory.py"
+    if [[ ! -f "$resolver" ]]; then
+        log_warn "No scripts/lite/dai_memory.py in ${DAINEXUS_PATH} — skipping indexing."
+        return
+    fi
+
+    local python_bin=""
+    for candidate in py python3 python; do
+        if command -v "$candidate" &> /dev/null; then python_bin="$candidate"; break; fi
+    done
+    if [[ -z "$python_bin" ]]; then
+        log_warn "No Python found — skipping indexing."
+        return
+    fi
+    [[ "$python_bin" == "py" ]] && python_bin="py -3"
+
+    log_info "Installing the memory layer (dependencies, build, embedding model)..."
+    if ! $python_bin "$resolver" install > /dev/null 2>&1; then
+        log_warn "The memory layer did not install. Run: $python_bin scripts/lite/dai_memory.py install"
+        return
+    fi
+
+    local engine
+    engine="$($python_bin "$resolver" where 2>/dev/null)" || engine=""
+    if [[ -z "$engine" ]]; then
+        log_warn "The memory layer reported no install directory — skipping indexing."
+        return
+    fi
+
+    log_info "Indexing the project..."
+    if (cd "$TARGET_PROJECT" && node "${engine}/bin/dai-memory.mjs" init > /dev/null 2>&1); then
+        log_ok "Indexed"
     else
-        log_warn "GitNexus analysis failed. Install with: npm install -g gitnexus"
+        log_warn "Indexing failed. Run: node \"${engine}/bin/dai-memory.mjs\" init"
     fi
 }
 
@@ -256,24 +287,6 @@ print_cursor_config() {
 }
 
 # ─── Main ───────────────────────────────────────────────────────────────
-
-run_mem0_ensure() {
-    if [ "${DAINEXUS_SKIP_MEM0:-}" = "1" ] || [ "${DAINEXUS_SKIP_MEM0:-}" = "true" ]; then
-        log_warn "Compliance Policy: Overriding DAINEXUS_SKIP_MEM0. Force-enabling memory."
-        export DAINEXUS_SKIP_MEM0=0
-    fi
-    if ! command -v python3 &> /dev/null; then
-        log_error "Python 3 is required but was not found. Memory initialization aborted."
-        exit 1
-    fi
-    log_info "Ensuring DAI Nexus memory (memory)..."
-    if bash "${DAINEXUS_PATH}/scripts/ensure-memory.sh" "$TARGET_PROJECT"; then
-        log_ok "memory ready (.dainexus/memory.db)"
-    else
-        log_error "Memory initialization failed. Setup aborted."
-        exit 1
-    fi
-}
 
 update_gitignore() {
     local gitignore_file="${TARGET_PROJECT}/.gitignore"
@@ -297,13 +310,13 @@ update_gitignore() {
         log_ok "Added DAI Nexus local state and memory files to target project's .gitignore"
     fi
 
-    # Append GitNexus if not present
-    if ! grep -q "gitnexus/" "$gitignore_file" 2>/dev/null; then
+    # The memory layer's store. It holds the index and what people recorded;
+    # it is machine-specific and rebuilt by `init`, so it is never committed.
+    if ! grep -q "^\.memory/" "$gitignore_file" 2>/dev/null; then
         echo "" >> "$gitignore_file"
-        echo "# GitNexus local index databases and code intelligence" >> "$gitignore_file"
-        echo ".gitnexus/" >> "$gitignore_file"
-        echo ".dainexus-node/" >> "$gitignore_file"
-        log_ok "Added GitNexus local state and database files to target project's .gitignore"
+        echo "# Memory layer store (index, recorded memory, viewer)" >> "$gitignore_file"
+        echo ".memory/" >> "$gitignore_file"
+        log_ok "Added the memory store to the target project's .gitignore"
     fi
 }
 
@@ -334,10 +347,15 @@ if git diff-tree --no-commit-id --name-only -r HEAD | grep -q -E '^(docs/|README
   fi
 fi
 
-# Kiểm tra thay đổi logic files để chạy gitnexus analyze và cập nhật sequence flow
+# Code changed: re-read it into the memory layer, then refresh the sequence flow.
 if git diff-tree --no-commit-id --name-only -r HEAD | grep -E '^(src/|mcp/|scripts/).*\.(ts|py|js|cs|gd|go|rs)$' | grep -v -E '(test|spec)' > /dev/null; then
-  echo "🔍 [DAI Nexus] Phát hiện thay đổi logic files. Đang chạy gitnexus analyze và cập nhật sequence flow..."
-  npx gitnexus analyze
+  echo "🔍 [DAI Nexus] Code changed. Re-indexing with the memory layer..."
+  ENGINE="$(py -3 ./scripts/lite/dai_memory.py where 2>/dev/null || python3 ./scripts/lite/dai_memory.py where 2>/dev/null || true)"
+  if [ -n "$ENGINE" ]; then
+    node "$ENGINE/bin/dai-memory.mjs" ingest --quiet
+  else
+    echo "   the memory layer is not installed: python scripts/lite/dai_memory.py install"
+  fi
   if [ -f "./scripts/generate-sequence.ts" ]; then
     npx tsx ./scripts/generate-sequence.ts
   fi
@@ -360,10 +378,15 @@ if git diff-tree --no-commit-id --name-only -r HEAD | grep -q -E '^(docs/|README
   fi
 fi
 
-# Kiểm tra thay đổi logic files để chạy gitnexus analyze và cập nhật sequence flow
+# Code changed: re-read it into the memory layer, then refresh the sequence flow.
 if git diff-tree --no-commit-id --name-only -r HEAD | grep -E '^(src/|mcp/|scripts/).*\.(ts|py|js|cs|gd|go|rs)$' | grep -v -E '(test|spec)' > /dev/null; then
-  echo "🔍 [DAI Nexus] Phát hiện thay đổi logic files. Đang chạy gitnexus analyze và cập nhật sequence flow..."
-  npx gitnexus analyze
+  echo "🔍 [DAI Nexus] Code changed. Re-indexing with the memory layer..."
+  ENGINE="$(py -3 ./scripts/lite/dai_memory.py where 2>/dev/null || python3 ./scripts/lite/dai_memory.py where 2>/dev/null || true)"
+  if [ -n "$ENGINE" ]; then
+    node "$ENGINE/bin/dai-memory.mjs" ingest --quiet
+  else
+    echo "   the memory layer is not installed: python scripts/lite/dai_memory.py install"
+  fi
   if [ -f "./scripts/generate-sequence.ts" ]; then
     npx tsx ./scripts/generate-sequence.ts
   fi
@@ -394,11 +417,10 @@ main() {
     check_prerequisites
     create_dai_nexus_dir
     ensure_project_policy
-    run_mem0_ensure
     update_gitignore
     setup_llm_wiki_integration
     setup_submodule_auto_update
-    run_gitnexus_analyze
+    run_memory_index
     print_cursor_config
 
     echo ""
@@ -409,8 +431,8 @@ main() {
     echo -e "  2. Type '${CYAN}/dai-nexus${NC}' in Cursor chat to activate the skill"
     echo -e "  3. Say '${CYAN}Build a production-grade SaaS for [your idea]${NC}'"
     echo ""
-    echo -e "  ${BOLD}For GitNexus code intelligence:${NC}"
-    echo -e "  Run ${CYAN}gitnexus analyze${NC} in this project anytime."
+    echo -e "  ${BOLD}For code intelligence (DAI memory):${NC}"
+    echo -e "  Run ${CYAN}dai-memory ingest${NC} in this project anytime."
     echo ""
 }
 

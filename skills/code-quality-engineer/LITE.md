@@ -11,25 +11,25 @@ version: 1.0.0
 |---|---|---|---|
 | Project tech stack and language profile are established | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
 | Active linters and code formatting packages are configured | `cat package.json \| jq '.devDependencies \| keys' \| grep -E \"(eslint\|prettier\|biome)\"` | ... | run the check command and paste output |
-| GitNexus symbol index and call graphs are present and initialized | `gitnexus analyze --status \|\| find . -name \"*.gitnexus\"` | ... | run the check command and paste output |
+| The DAI memory code graph is present and initialized | `dai-memory status` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Code Quality Engineer Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
 
-1. IMPACT | Execute symbol blast-radius and impact evaluations via GitNexus | Warn the user if the impact analysis returns a HIGH or CRITICAL risk level.
+1. IMPACT | Execute symbol blast-radius and impact evaluations via the DAI memory code graph | Warn the user if the impact analysis returns a HIGH or CRITICAL risk level.
 2. AUDIT | Run static linters, format checkers, and security vulnerability scans | Verify zero critical linting errors or formatting warnings exist in the modified file set.
 3. SCORE | Assess code quality, complexity levels, and compliance against the Quality Gate | Ensure the generated or updated module matches a Production Ready Grade A status (Score 90-100).
 
 ## Common Mistakes Checklist
-- **Ignoring GitNexus Impact Warnings**: Modifying high-touch symbols without running `gitnexus_impact` first, or neglecting HIGH/CRITICAL risk alerts on shared interfaces.
+- **Ignoring Code Graph Impact Warnings**: Modifying high-touch symbols without running `dai-memory impact` first, or neglecting HIGH/CRITICAL risk alerts on shared interfaces.
 - **Bypassing Static Code Audits**: Committing code that fails linting or formatting checks, bypassing Git hook validations (e.g., Husky + lint-staged).
-- **Formatting with Find-and-Replace**: Renaming functions, variables, or symbols across multiple files using string replacement instead of calling `gitnexus_rename`.
+- **Formatting with Find-and-Replace**: Renaming functions, variables, or symbols across multiple files using string replacement instead of calling `dai-memory rename`.
 - **Non-Compliant Report Naming**: Saving code quality, linter profiles, or security audits under `docs/` using CamelCase, spaces, or absolute paths instead of lowercase kebab-case (e.g., `CodeQualityReport.md` instead of `code-quality-report.md`).
 - **Context Bloat with Large Logs**: Dumping massive, raw linter outputs or verbose compiler stack traces directly into the active prompt instead of summarizing or offloading.
 
-### Step 1: Execute GitNexus impact analysis before refactoring a core validation symbol
+### Step 1: Execute dai-memory impact analysis before refactoring a core validation symbol
 ```bash
-gitnexus impact --target "validateUser" --direction "upstream"
+dai-memory impact validateUser --direction upstream
 ```
 
 ### Step 2: Run linter and formatting checks on modified files
@@ -41,5 +41,5 @@ npm run lint -- --file src/utils/user-validator.ts
 ```bash
 # Correcting typescript types to resolve the any warning...
 npm run lint -- --file src/utils/user-validator.ts
-gitnexus_detect_changes --scope staged
+dai-memory detect-changes --scope staged
 ```

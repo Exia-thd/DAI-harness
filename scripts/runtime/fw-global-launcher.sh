@@ -338,27 +338,18 @@ find_mcp_server() {
     echo "$server_path"
 }
 
-# ─── Step 4: Check GitNexus ──────────────────────────────────────────────────
+# --- Step 4: Check the code graph --------------------------------------------
 
-check_gitnexus() {
+# The DAI memory layer keeps each workspace's graph in its own .memory/.
+check_code_graph() {
     local workspace="$1"
-    
-    # Check if gitnexus is available
-    if ! command -v gitnexus &> /dev/null; then
-        log_debug "GitNexus not installed"
-        return 1
-    fi
-    
-    # Check if workspace is indexed
-    local workspace_name
-    workspace_name="$(basename "$workspace")"
-    
-    if gitnexus list 2>/dev/null | grep -qi "$workspace_name"; then
-        log_debug "GitNexus: workspace is indexed"
+
+    if [[ -f "$workspace/.memory/meta.json" ]]; then
+        log_debug "Code graph: workspace is indexed (.memory/)"
         return 0
     fi
-    
-    log_debug "GitNexus: workspace not indexed"
+
+    log_debug "Code graph: workspace not indexed (run: dai-memory init)"
     return 1
 }
 
@@ -535,9 +526,9 @@ main() {
         exit 1
     }
     
-    # Step 4: Check GitNexus (optional)
-    if check_gitnexus "$workspace"; then
-        log_debug "GitNexus is available for this workspace"
+    # Step 4: Check the code graph (optional)
+    if check_code_graph "$workspace"; then
+        log_debug "Code graph is available for this workspace"
     fi
     
     # Step 5: Load settings

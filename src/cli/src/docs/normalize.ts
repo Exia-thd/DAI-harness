@@ -167,7 +167,11 @@ function extractDiagrams(content: string, lineOffset: number): DocsDiagram[] {
 
 function extractCodeRefs(content: string): string[] {
   const refs = new Set<string>();
-  for (const match of content.matchAll(/gitnexus:\/\/[^\s)>\]]+/g)) {
+  // dai-memory:// is the memory layer's resource scheme; gitnexus:// is what
+  // documents written before it still carry.
+  for (const match of content.matchAll(
+    /(?:dai-memory|gitnexus):\/\/[^\s)>\]]+/g,
+  )) {
     refs.add(match[0]);
   }
   for (const match of content.matchAll(
@@ -347,6 +351,16 @@ function readCuratedProfile(projectRoot: string): Record<string, unknown> {
   }
 }
 
+/**
+ * Whether the code-index adapter is on. `gitnexus` is the name it had before
+ * the memory layer replaced GitNexus; manifests written then still say it.
+ */
+export function codeIndexAdapterEnabled(manifest: DocsManifest): boolean {
+  const adapters = manifest.adapters;
+  if (adapters?.dai_memory !== undefined) return adapters.dai_memory === true;
+  return adapters?.gitnexus === true;
+}
+
 export function collectProjectFacts(
   projectRoot: string,
   manifest: DocsManifest,
@@ -360,25 +374,26 @@ export function collectProjectFacts(
     ? runGit(projectRoot, ["status", "--porcelain", "--untracked-files=no"])
     : null;
 
-  const gitnexusEnabled = manifest.adapters?.gitnexus === true;
-  const gitnexusPath = join(projectRoot, ".gitnexus", "meta.json");
-  let gitnexus: ProjectFacts["gitnexus"] = {
-    status: gitnexusEnabled ? "unavailable" : "disabled",
+  // The code index is the DAI memory layer's store. Its meta.json records the
+  // commit the graph was built from, which is all freshness needs.
+  const codeIndexEnabled = codeIndexAdapterEnabled(manifest);
+  const metaPath = join(projectRoot, ".memory", "meta.json");
+  let codeIndex: ProjectFacts["codeIndex"] = {
+    status: codeIndexEnabled ? "unavailable" : "disabled",
     indexedCommit: null,
     indexedAt: null,
-    processes: null,
-    symbols: null,
+    files: null,
   };
-  if (gitnexusEnabled && existsSync(gitnexusPath)) {
+  if (codeIndexEnabled && existsSync(metaPath)) {
     try {
-      const meta = JSON.parse(readFileSync(gitnexusPath, "utf8")) as {
+      const meta = JSON.parse(readFileSync(metaPath, "utf8")) as {
         lastCommit?: unknown;
         indexedAt?: unknown;
-        stats?: { processes?: unknown; nodes?: unknown };
+        fileHashes?: unknown;
       };
       const indexedCommit =
         typeof meta.lastCommit === "string" ? meta.lastCommit : null;
-      gitnexus = {
+      codeIndex = {
         status:
           commit &&
           indexedCommit &&
@@ -387,15 +402,13 @@ export function collectProjectFacts(
             : "available",
         indexedCommit,
         indexedAt: typeof meta.indexedAt === "string" ? meta.indexedAt : null,
-        processes:
-          typeof meta.stats?.processes === "number"
-            ? meta.stats.processes
+        files:
+          meta.fileHashes && typeof meta.fileHashes === "object"
+            ? Object.keys(meta.fileHashes).length
             : null,
-        symbols:
-          typeof meta.stats?.nodes === "number" ? meta.stats.nodes : null,
       };
     } catch {
-      gitnexus.status = "unavailable";
+      codeIndex.status = "unavailable";
     }
   }
 
@@ -406,7 +419,7 @@ export function collectProjectFacts(
       commit,
       dirty: commit === null ? null : Boolean(dirtyOutput),
     },
-    gitnexus,
+    codeIndex,
     profile: readCuratedProfile(projectRoot),
   };
 }

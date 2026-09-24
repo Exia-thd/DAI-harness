@@ -995,8 +995,8 @@
     "lifecycle": "active",
     "health": "on_track",
     "phase": "SUSTAIN",
-    "summary": "Memory and code intelligence run on the vendored DAI memory plugin (vendor/dai-memory, pinned by PROVENANCE.json, installed outside the repository by scripts/lite/dai_memory.py install). The plugin now covers every capability the harness uses GitNexus for: impact, context, trace, execution flows and query, change analysis, rename, invariants, code clusters, read-only Cypher, status and clean, the HTTP surface, taint and the intra-function view, multi-repository groups, and a wiki generated from the graph and the memory with no model involved. What remains is the switch-over: the commit gate, MCP configuration, skills, installers and docs move to this layer, GitNexus is removed, and the harness's older memory stores are retired.",
-    "updated_at": "2026-09-20T03:02:21+07:00",
+    "summary": "GitNexus is gone: memory and code intelligence run on the DAI memory plugin, now a git submodule (vendor/dai-memory, pinned to one commit of Exia-thd/DAI-memory-layer-plugin; changes land in the plugin first) installed outside the repository by scripts/lite/dai_memory.py install, one directory per commit. The MCP setup registers a dai-memory server in every client and removes gitnexus entries it wrote before; the guard, orchestrator, sequence generator, docs hub (adapters.dai_memory reading .memory/meta.json), skills and docs use the layer. The retired memory stores are migrated and removed; the session machinery they shared (memory-session, memory-middleware, continuity, memory-trace) is kept and records into the layer.",
+    "updated_at": "2026-09-22T16:24:32+07:00",
     "blockers": [],
     "risks": [],
     "next_actions": [

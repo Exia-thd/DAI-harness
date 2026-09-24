@@ -6,22 +6,13 @@ import re
 import sys
 from pathlib import Path
 
+# The retrieve, suggest, hygiene, diagnostic and memory-v2 suites went with
+# the stores they tested; memory is the DAI memory layer, tested in its own
+# repository and through scripts/lite/dai_memory.py here.
 tests = [
-    ("memory-retrieve", "bash", ["tests/memory-system/test-memory-retrieve.sh"]),
     ("checkpoint-extract", "bash", ["tests/memory-system/test-checkpoint-extract.sh"]),
-    ("memory-suggest", "bash", ["tests/memory-system/test-memory-suggest.sh"]),
     ("convention-indexer", "bash", ["tests/memory-system/test-convention-indexer.sh"]),
-    ("memory-hygiene", "bash", ["tests/memory-system/test-memory-hygiene.sh"]),
     ("memory-middleware", "bash", ["tests/memory-system/test-memory-middleware.sh"]),
-    (
-        "memory-diagnostic",
-        "bash",
-        ["tests/memory-system/test-export-memory-diagnostic.sh"],
-    ),
-    # sys.executable, not the literal "python3": on Windows that name is often
-    # the Store alias stub, which produced no output and reported this suite as
-    # 0/0 even while the file itself ran its full set.
-    ("memory-v2 (Python)", sys.executable, ["tests/memory-system/test_memory_v2.py"]),
 ]
 
 total = 0

@@ -23,7 +23,7 @@ Format: `n. ACTION | TARGET | CHECK`
 ## Common Mistakes Checklist
 - **Hardcoded Workspace Paths**: Specifying absolute, machine-specific paths inside `mcp.json` instead of using the workspace-agnostic `${workspaceFolder}` token, breaking configurations across teammate machines.
 - **Dangling Editor Ports**: Neglecting to tear down previous TCP loopback processes on server restart, producing `EADDRINUSE` port collision errors on subsequent connections.
-- **Stale Assembly Graphs**: Exposing C# properties without updating the underlying GitNexus symbol indexes, leading to AI agents generating code targeting nonexistent classes.
+- **Stale Assembly Graphs**: Exposing C# properties without updating the underlying code graph (dai-memory ingest), leading to AI agents generating code targeting nonexistent classes.
 - **Unbounded Class Metadata Bloat**: Dumping raw, unparsed reflection assemblies directly into active chat streams instead of implementing the 1200-token offloading constraint.
 - **Non-Compliant Resource Directories**: Saving MCP architectures or API documentation under `docs/` using CamelCase instead of lowercase kebab-case naming rules.
 

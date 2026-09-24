@@ -1353,6 +1353,27 @@ class TestDirtyBaseline:
         assert after_runtime_updates == before
         assert after_project_config != after_runtime_updates
 
+    def test_memory_layer_store_is_excluded_but_the_source_it_indexes_is_not(self):
+        # The post-commit ingest and every memory write rewrite .memory; if it
+        # were hashed, looking something up would invalidate the evidence.
+        (self.tmp / ".gitignore").write_text(".memory/\n", encoding="utf-8")
+        store = self.tmp / ".memory"
+        store.mkdir()
+        (store / "meta.json").write_text('{"writeSeq": 1}\n', encoding="utf-8")
+        (store / "store.lbug").write_bytes(b"\x00" * 64)
+        source = self.tmp / "indexed.py"
+        source.write_text("VALUE = 1\n", encoding="utf-8")
+
+        before = worktree_fingerprint(self.tmp)
+        (store / "meta.json").write_text('{"writeSeq": 2}\n', encoding="utf-8")
+        (store / "store.lbug").write_bytes(b"\x01" * 128)
+        after_ingest = worktree_fingerprint(self.tmp)
+        source.write_text("VALUE = 2\n", encoding="utf-8")
+        after_source = worktree_fingerprint(self.tmp)
+
+        assert after_ingest == before
+        assert after_source != after_ingest
+
 
 class TestEvidenceV2BypassRegressions:
     def setup_method(self):
@@ -1930,17 +1951,31 @@ class TestGuardSh:
         assert r.returncode in (0, 1, 2), f"Crashed on spaced filename: {r.returncode}"
 
     # ── D7. No hardcoded repo name ────────────────────────────────────────────
-    def test_guard_does_not_hardcode_repo_name(self):
-        """guard.sh must not contain hardcoded 'dai-nexus' as repo name."""
-        content = GUARD_SH.read_text()
-        # The repo name should be derived dynamically via $(basename ...), not hardcoded
-        assert 'REPO_NAME="dai-nexus"' not in content, (
-            "guard.sh hardcodes repo name 'dai-nexus' — use $(basename ${PROJECT_ROOT}) instead"
+    def test_guard_names_no_repository_for_the_code_graph(self):
+        """guard.sh must not name a repository at all.
+
+        GitNexus kept one index for many repositories and took `-r <name>`, so
+        the guard derived that name with basename and a hardcoded one would ask
+        about the wrong project. The memory layer keeps each project's graph in
+        its own .memory/ and answers for the directory it runs in, so there is
+        no name to pass -- and any name here would be a guess.
+        """
+        content = GUARD_SH.read_text(encoding="utf-8")
+        assert "REPO_NAME" not in content, (
+            "guard.sh still names a repository; the code graph is the one in .memory/"
         )
-        # Should use basename
-        assert "basename" in content, (
-            "guard.sh should use 'basename' to derive repo name"
-        )
+        # Only the lines that call the code graph: `read -r` and `rm -r` are
+        # elsewhere in this file and mean something else entirely.
+        graph_calls = [
+            line
+            for line in content.splitlines()
+            if "$MEMORY_CLI" in line and "node " in line
+        ]
+        assert graph_calls, "guard.sh no longer calls the code graph at all"
+        for line in graph_calls:
+            assert " -r " not in line and "--repo" not in line, (
+                f"guard.sh passes a repository to the code graph: {line.strip()}"
+            )
 
 
 # ══════════════════════════════════════════════════════════════════════════════

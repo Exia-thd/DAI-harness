@@ -15,7 +15,7 @@ version: 1.0.0
 ## SOLVE Step 3: DECOMPOSE (Data Engineer Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
 
-1. IMPACT | Run GitNexus symbol diagnostics to evaluate query and schema change impact levels | Warn the user if database modifications trigger HIGH or CRITICAL downstream risks.
+1. IMPACT | Run code graph impact analysis (dai-memory) to evaluate query and schema change impact levels | Warn the user if database modifications trigger HIGH or CRITICAL downstream risks.
 2. CONSTRUCT | Author secure SQL schema definitions, indices, or data pipeline ETL scripts | Ensure that all DDL operations are wrapped inside transaction blocks to guarantee safe rollbacks.
 3. PROFILE | Analyze query execution plans, index scans, and database memory overheads | Confirm that index creation resolves full-table scans and stabilizes read latencies.
 
@@ -35,9 +35,9 @@ budget: 15.00
 currency: USD
 ```
 
-### Step 2: Execute GitNexus impact analysis prior to modifying table columns
+### Step 2: Execute dai-memory impact analysis prior to modifying table columns
 ```bash
-gitnexus impact --target "OrderTable" --direction "upstream"
+dai-memory impact OrderTable --direction upstream
 ```
 
 ### Step 3: Write an optimized PostgreSQL migration script wrapping operations safely in a transaction

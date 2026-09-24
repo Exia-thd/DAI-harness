@@ -301,28 +301,16 @@ migrate_entry() {
     # Mark as migrated
     mark_migrated "$type" "$entry_id" "$date"
 
-    # [Graph Layer] Save migrated NotebookLM lesson as Semantic Node (TSK-08)
+    # Record the migrated lesson in project memory (the DAI memory layer).
+    # The retired memory-v2 store kept it as a graph node linked to its skill;
+    # the text names the skill and the source names the entry, which is what
+    # that link recorded.
     if command -v python3 &>/dev/null; then
-        local skill_id="skill_$(basename "$(dirname "$target_skill")")"
-        local clean_problem="${problem:-}"
-        local clean_research="${research:-}"
-        local clean_lesson="${lesson:-}"
-        # Escape quotes for safety in terminal args
-        clean_problem="${clean_problem//\"/\\\"}"
-        clean_research="${clean_research//\"/\\\"}"
-        clean_lesson="${clean_lesson//\"/\\\"}"
-        
-        # 1. Ensure the procedural skill node exists
-        python3 "$PROJECT_DIR/scripts/memory/memory-v2.py" graph-add-node "$skill_id" "procedural" "Skill: $(basename "$(dirname "$target_skill")")" "Procedural skill guidelines and SOPs for $(basename "$(dirname "$target_skill")")" &>/dev/null || true
-
-        # 2. Add the lesson node
-        python3 "$PROJECT_DIR/scripts/memory/memory-v2.py" graph-add-node "lesson_$entry_id" "semantic" "Lesson ($type): $(basename "$(dirname "$target_skill")")" "Problem: $clean_problem | Research: $clean_research | Lesson: $clean_lesson" &>/dev/null || true
-
-        # 3. Link lesson -> skill node
-        python3 "$PROJECT_DIR/scripts/memory/memory-v2.py" graph-link "lesson_$entry_id" "$skill_id" --weight 1.5 --type "improves" &>/dev/null || true
-
-        # 4. Link current-session -> lesson node
-        python3 "$PROJECT_DIR/scripts/memory/memory-v2.py" graph-link "current-session" "lesson_$entry_id" --weight 1.0 --type "learned" &>/dev/null || true
+        local skill_name
+        skill_name="$(basename "$(dirname "$target_skill")")"
+        python3 "$PROJECT_DIR/scripts/lite/dai_memory.py" add \
+            "Lesson ($type) for skill $skill_name. Problem: ${problem:-} | Research: ${research:-} | Lesson: ${lesson:-}" \
+            --category convention --importance 6 --source "harness:lesson:$entry_id" &>/dev/null || true
     fi
 
     # Cross-feedback (v8.3): execution lessons generate planning stubs

@@ -19,7 +19,7 @@ Format: `n. ACTION | TARGET | CHECK`
 1. INSPECT | Intake raw 3D assets/materials and check bounds/hierarchies | Verify polygon budgets, texture dimensions (power of two), and standard naming conventions match project rules.
 2. OPTIMIZE | Compile/minify shaders or strip unused mesh metadata and vertex attributes | Confirm vertex counts and draw calls are minimized to avoid performance bottlenecks.
 3. CONVERT | Export assets into engine-compliant formats (e.g., GLB, FBX, or engine prefabs) | Ensure materials match the active render pipeline (e.g., PBR metallic-roughness vs standard specular).
-4. VALIDATE | Automate E2E asset checks via GitNexus or local CI pipeline hooks | Verify that no broken references or missing textures exist prior to committing assets.
+4. VALIDATE | Automate E2E asset checks via the DAI memory code graph or local CI pipeline hooks | Verify that no broken references or missing textures exist prior to committing assets.
 
 ## Common Mistakes Checklist
 - **Non-power-of-two (NPOT) texture dimensions**: Deploying textures without resizing them to power-of-two dimensions (e.g., 1024x1024), causing mipmap generation failure or excessive GPU memory utilization.

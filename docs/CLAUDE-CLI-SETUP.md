@@ -180,14 +180,14 @@ python3 --version
 Khởi tạo bộ nhớ:
 
 ```bash
-# Từ thư mục project của bạn
-python3 scripts/lite/memory.py setup
+# Cài engine (một lần, cài ra ngoài repo)
+python3 dai-nexus/scripts/lite/dai_memory.py install
 
-# Hoặc dùng script helper:
-bash dai-nexus/scripts/ensure-memory.sh "$(pwd)"
+# Từ thư mục project của bạn: tạo kho + code graph
+node "$(python3 dai-nexus/scripts/lite/dai_memory.py where)/bin/dai-memory.mjs" init
 ```
 
-**Kết quả:** File `.dainexus/memory.jsonl` được tạo.
+**Kết quả:** Thư mục `.memory/` được tạo (code graph + bộ nhớ dự án).
 
 **Cách dùng:**
 - Mọi quyết định kiến trúc được ghi nhớ
@@ -276,15 +276,15 @@ echo "Memory:          $([ -f .dainexus/memory.jsonl ] && echo 'OK' || echo 'MIS
 
 | Vấn Đề | Giải Pháp |
 |--------|-----------|
-| `dainexus-node: command not found` | Dùng `gitnexus analyze` thay vì `dainexus-node` |
+| `dainexus-node: command not found` | Dùng `dai-memory ingest` thay vì `dainexus-node` |
 | `npm install` thất bại trong submodule | Kiểm tra `node --version` (cần 18+) |
 | Không thấy MCP tools | Khởi động lại Claude CLI sau khi đổi config |
-| Index cũ | Chạy `gitnexus analyze analyze "$(pwd)"` để cập nhật |
+| Index cũ | Chạy `dai-memory ingest` để cập nhật |
 | Submodule chưa khởi tạo | `git submodule update --init --recursive` |
 | `realpath` không tìm thấy (macOS) | `brew install coreutils` |
 | `python3` không tìm thấy | Cài Python 3.8+ cho tính năng memory |
 | Windows: `bash` không tìm thấy | Dùng lệnh PowerShell tương đương |
-| Windows: Lỗi đường dẫn GitNexus hoặc TSX (`ERR_MODULE_NOT_FOUND`) | **1. GitNexus**: Sử dụng `"command": "node"` và chỉ định file js chạy chính thay vì `/opt/homebrew/bin/gitnexus`. <br/> **2. TSX (dai-nexus)**: Tránh gọi trực tiếp `/c/Users/...`, hãy đổi cấu hình chạy sang `"command": "npx"` và `"args": ["tsx", "C:/Users/<Username>/.dainexus/mcp-server/src/index.ts"]`. |
+| Windows: Lỗi đường dẫn DAI memory hoặc TSX (`ERR_MODULE_NOT_FOUND`) | **1. DAI memory**: Sử dụng `"command": "node"` và file `bin/dai-memory.mjs` trong thư mục `python3 scripts/lite/dai_memory.py where` in ra, kèm `"serve"`. <br/> **2. TSX (dai-nexus)**: Tránh gọi trực tiếp `/c/Users/...`, hãy đổi cấu hình chạy sang `"command": "npx"` và `"args": ["tsx", "C:/Users/<Username>/.dainexus/mcp-server/src/index.ts"]`. |
 | Windows: Claude Code Hook không chạy | Thêm tiền tố `bash` trước đường dẫn script hook (Ví dụ: `"PostMessage": "bash D:/path/to/script.sh tick"`). |
 
 ---

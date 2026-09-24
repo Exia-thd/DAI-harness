@@ -5,7 +5,7 @@
  * Generated at: {{generatedAt}}
  *
  * This server exposes project intelligence as MCP primitives.
- * Powered by GitNexus code intelligence.
+ * Powered by the DAI memory layer's code graph.
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -14,8 +14,9 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { execSync } from "child_process";
-import { resolve, dirname } from "path";
+import { execFileSync } from "child_process";
+import { existsSync } from "fs";
+import { resolve, dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -40,7 +41,7 @@ const server = new Server(
 const tools = [
   {
     name: "project_query",
-    description: "Search codebase by concept via GitNexus",
+    description: "Search codebase by concept via the DAI memory code graph",
     inputSchema: {
       type: "object",
       properties: {
@@ -75,10 +76,40 @@ const tools = [
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools }));
 
-// Run GitNexus CLI commands and grab the console output
-function runGitnexus(command: string): string {
+// The DAI memory CLI. DAI_MEMORY_ENGINE names its install directory; otherwise
+// the harness resolver is asked, from the project or from a dai-nexus
+// submodule inside it.
+function memoryCli(): string | null {
+  const candidates: string[] = [];
+  if (process.env.DAI_MEMORY_ENGINE) candidates.push(process.env.DAI_MEMORY_ENGINE);
+  for (const base of [PROJECT_ROOT, join(PROJECT_ROOT, "dai-nexus")]) {
+    const resolver = join(base, "scripts", "lite", "dai_memory.py");
+    if (!existsSync(resolver)) continue;
+    for (const [command, ...prefix] of [["py", "-3"], ["python3"], ["python"]]) {
+      try {
+        candidates.push(
+          execFileSync(command, [...prefix, resolver, "where"], { encoding: "utf8" }).trim(),
+        );
+        break;
+      } catch {
+        // not this interpreter, or not installed: try the next
+      }
+    }
+  }
+  for (const engine of candidates) {
+    const cli = join(engine, "bin", "dai-memory.mjs");
+    if (existsSync(cli)) return cli;
+  }
+  return null;
+}
+
+// One CLI call. Arguments are passed as a list, never through a shell, so a
+// query containing quotes or `;` is a query and nothing else.
+function runMemory(args: string[]): string {
+  const cli = memoryCli();
+  if (!cli) return "Error: the DAI memory engine is not installed (python3 scripts/lite/dai_memory.py install)";
   try {
-    return execSync(`gitnexus ${command}`, { cwd: PROJECT_ROOT, encoding: "utf8" });
+    return execFileSync("node", [cli, ...args], { cwd: PROJECT_ROOT, encoding: "utf8" });
   } catch (error: any) {
     return `Error: ${error.message}\nStdout: ${error.stdout || ""}\nStderr: ${error.stderr || ""}`;
   }
@@ -88,15 +119,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
   
   if (name === "project_query") {
-    const res = runGitnexus(`query "${args?.query || ""}"`);
+    const res = runMemory(["query", String(args?.query ?? "")]);
     return { content: [{ type: "text", text: res }] };
   }
   if (name === "project_context") {
-    const res = runGitnexus(`context "${args?.name || ""}"`);
+    const res = runMemory(["context", String(args?.name ?? "")]);
     return { content: [{ type: "text", text: res }] };
   }
   if (name === "project_impact") {
-    const res = runGitnexus(`impact "${args?.target || ""}"`);
+    const res = runMemory(["impact", String(args?.target ?? "")]);
     return { content: [{ type: "text", text: res }] };
   }
   

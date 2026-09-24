@@ -22,6 +22,27 @@ if _SCRIPT_DIR not in sys.path:
 
 from skill_routing import route_skills  # noqa: E402 — sys.path must precede this repo-relative import.
 
+_LITE_DIR = str(Path(__file__).resolve().parents[1] / "lite")
+if _LITE_DIR not in sys.path:
+    sys.path.insert(0, _LITE_DIR)
+import dai_memory  # noqa: E402 — the harness's one route to the memory layer.
+
+
+def dai_memory_server_parameters(code_dir: str, env: Dict[str, str]):
+    """The memory layer's MCP server for one project, or None when not installed.
+
+    The server answers for the project it is started in, so cwd is the project.
+    """
+    if not dai_memory.installed():
+        return None
+    return StdioServerParameters(
+        command="node",
+        args=[str(dai_memory.memory_cli()), "serve"],
+        cwd=code_dir,
+        env=env,
+    )
+
+
 # Provider / model are read exclusively from env vars so that the harness
 # controls them without needing to hard-code any model name in this file.
 _PROVIDER = os.environ.get("DAINEXUS_PROVIDER", "runtime")
@@ -43,9 +64,7 @@ def resolve_model(environ: dict[str, str] | None = None) -> str:
 
 def resolve_api_key(environ: dict[str, str] | None = None) -> str:
     env = os.environ if environ is None else environ
-    return _first_nonempty(
-        env.get("DAINEXUS_API_KEY"), env.get("NINEROUTER_API_KEY")
-    )
+    return _first_nonempty(env.get("DAINEXUS_API_KEY"), env.get("NINEROUTER_API_KEY"))
 
 
 def resolve_api_url(environ: dict[str, str] | None = None) -> str:
@@ -142,9 +161,7 @@ class RuntimeLimits:
             max_tool_schema_bytes=_positive_int(
                 env, "DAINEXUS_MAX_TOOL_SCHEMA_BYTES", 500_000
             ),
-            mcp_timeout_seconds=_positive_int(
-                env, "DAINEXUS_MCP_TIMEOUT_SECONDS", 120
-            ),
+            mcp_timeout_seconds=_positive_int(env, "DAINEXUS_MCP_TIMEOUT_SECONDS", 120),
             runtime_timeout_seconds=_positive_int(
                 env, "DAINEXUS_RUNTIME_TIMEOUT_SECONDS", 3600
             ),
@@ -339,14 +356,11 @@ class DaiNexusAgent:
             except Exception as e:
                 print(f"[!] Warning: Auto-setup failed: {e}")
 
-        # Define isolated path for DB
-        gitnexus_db_path = os.path.normpath(
-            os.path.join(self.code_dir, "..", "gitnexus_db")
-        )
-
-        gitnexus_env = {**os.environ}
-        gitnexus_env["DAINEXUS_WORKSPACE"] = self.code_dir
-        gitnexus_env["GITNEXUS_DB"] = gitnexus_db_path
+        # The code graph is the DAI memory layer's, kept in the project's own
+        # .memory/ -- one store per project, so nothing is shared between them.
+        server_env = {**os.environ}
+        server_env["DAINEXUS_WORKSPACE"] = self.code_dir
+        memory_store = os.path.join(self.code_dir, ".memory")
 
         mcp_servers = [
             {
@@ -358,19 +372,18 @@ class DaiNexusAgent:
                         "@modelcontextprotocol/server-filesystem",
                         self.code_dir,
                     ],
-                    env=gitnexus_env,
-                ),
-            },
-            {
-                "name": "gitnexus",
-                "params": StdioServerParameters(
-                    command="gitnexus",
-                    args=["mcp"],
-                    cwd=self.code_dir,
-                    env=gitnexus_env,
+                    env=server_env,
                 ),
             },
         ]
+        memory_server = dai_memory_server_parameters(self.code_dir, server_env)
+        if memory_server is not None:
+            mcp_servers.append({"name": "dai-memory", "params": memory_server})
+        else:
+            print(
+                "[!] Warning: the DAI memory engine is not installed; code graph "
+                f"tools are unavailable. Run: {dai_memory.INSTALL_HINT}"
+            )
         if os.environ.get("DAINEXUS_ENABLE_NLM", "").lower() in {"1", "true", "yes"}:
             mcp_servers.append(
                 {
@@ -504,7 +517,7 @@ Nhiệm vụ từ Sếp: {task}
 Bạn là DAI Nexus Agent Executor.
 Dự án bạn đang làm việc: '{self.project_id}'
 Thư mục mã nguồn cục bộ: '{self.code_dir}'
-Thư mục Database GitNexus của dự án (Isolate Data): '{gitnexus_db_path}'
+Code graph + memory của dự án (DAI memory layer, dữ liệu riêng từng dự án): '{memory_store}'
 
 [NGỮ CẢNH DỰ ÁN TÓM TẮT]:
 {project_context}

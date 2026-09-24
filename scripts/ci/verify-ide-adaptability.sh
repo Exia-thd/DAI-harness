@@ -66,35 +66,34 @@ echo "  ✓ memory-middleware.py exists and is valid Python"
 PASS=$((PASS + 1))
 
 # ─────────────────────────────────────────────────────────────────────────────
-# STRICT CHECK 3: Verify scripts/lite/memory.py exists (required for memory operations)
+# STRICT CHECK 3: Verify scripts/lite/dai_memory.py exists (the route to memory)
 # ─────────────────────────────────────────────────────────────────────────────
-echo "[CHECK 3] Verifying scripts/lite/memory.py..."
-MEM0_SCRIPT="$SCRIPT_DIR/../../scripts/lite/memory.py"
+echo "[CHECK 3] Verifying scripts/lite/dai_memory.py..."
+MEM0_SCRIPT="$SCRIPT_DIR/../../scripts/lite/dai_memory.py"
 if [ ! -f "$MEM0_SCRIPT" ]; then
-    fail "FATAL: scripts/lite/memory.py not found at $MEM0_SCRIPT"
-    fail "scripts/lite/memory.py is REQUIRED for strict mode memory operations."
+    fail "FATAL: scripts/lite/dai_memory.py not found at $MEM0_SCRIPT"
+    fail "scripts/lite/dai_memory.py is REQUIRED for strict mode memory operations."
     exit 1
 fi
 if ! python3 -m py_compile "$MEM0_SCRIPT" 2>/dev/null; then
-    fail "FATAL: scripts/lite/memory.py has syntax errors"
+    fail "FATAL: scripts/lite/dai_memory.py has syntax errors"
     exit 1
 fi
-echo "  ✓ scripts/lite/memory.py exists and is valid Python"
+echo "  ✓ scripts/lite/dai_memory.py exists and is valid Python"
 PASS=$((PASS + 1))
 
 # ─────────────────────────────────────────────────────────────────────────────
-# STRICT CHECK 4: Test scripts/lite/memory.py availability (GraphRAG/memory integration)
+# STRICT CHECK 4: The DAI memory layer is installed (memory integration)
 # ─────────────────────────────────────────────────────────────────────────────
-echo "[CHECK 4] Testing scripts/lite/memory.py integration..."
+echo "[CHECK 4] Testing the DAI memory layer..."
 MEM0_AVAILABLE=false
-if python3 "$MEM0_SCRIPT" --version &> /dev/null || \
-   python3 "$MEM0_SCRIPT" list --category session --limit 1 &> /dev/null; then
-    echo "  ✓ scripts/lite/memory.py is functional"
+if python3 "$MEM0_SCRIPT" where &> /dev/null; then
+    echo "  ✓ the DAI memory layer is installed"
     MEM0_AVAILABLE=true
     PASS=$((PASS + 1))
 else
-    fail "STRICT MODE: scripts/lite/memory.py is not functional"
-    fail "GraphRAG/memory integration required for strict verification."
+    fail "STRICT MODE: the DAI memory layer is not installed (python3 scripts/lite/dai_memory.py install)"
+    fail "Memory integration required for strict verification."
     # In strict mode, memory unavailability is a failure
     FAIL=$((FAIL + 1))
 fi
@@ -341,7 +340,7 @@ if [ "$CI_MODE" == "1" ]; then
 fi
 
 # Strict mode exit criteria: Only critical checks (1-7) must pass
-# Critical checks: python3, memory-middleware.py, scripts/lite/memory.py, memory functional,
+# Critical checks: python3, memory-middleware.py, scripts/lite/dai_memory.py, memory installed,
 #                  token threshold functions, HANDOVER loading, handover protocol
 CRITICAL_FAILURES=0
 # Checks 1-7 are critical; if any failed, that's a critical failure
@@ -356,16 +355,15 @@ if [ $FAIL -gt 0 ]; then
     echo "Critical checks failed. Strict mode requires:"
     echo "  1. python3 must be installed"
     echo "  2. memory-middleware.py must exist and be valid"
-    echo "  3. scripts/lite/memory.py must exist and be functional"
-    echo "  4. GraphRAG/memory integration must be available"
+    echo "  3. scripts/lite/dai_memory.py must exist and be valid"
+    echo "  4. The DAI memory layer must be installed"
     echo "  5. Required functions must be present in memory-middleware.py"
     echo "  6. HANDOVER loading must be in memory-loader"
     echo "  7. Handover protocol must be in session-lifecycle.md"
     echo ""
     echo "Recommendations:"
     echo "  - Install python3 if missing"
-    echo "  - Verify scripts/lite/memory.py is correctly installed and configured"
-    echo "  - Ensure GraphRAG/memory is properly set up"
+    echo "  - Install the memory layer: python3 scripts/lite/dai_memory.py install"
     [[ "$CI_MODE" == "1" ]] && echo "exit_code=1"
     exit 1
 fi

@@ -75,7 +75,7 @@ Present Gate 1 using the orchestrator's gate pattern. On approval, unblock T1.5 
 
 **Memory save (Gate 1):**
 ```bash
-python3 scripts/lite/memory.py add "Gate 1 approved: BRD for [project]. Key decisions: [list top 3]" --category decisions
+python3 scripts/lite/dai_memory.py add "Gate 1 approved: BRD for [project]. Key decisions: [list top 3]" --category decisions
 ```
 
 If user selects "I have changes" → iterate on BRD, re-present Gate 1.

@@ -333,7 +333,7 @@ mkdir -p .dainexus/
 | `brownfield-safety.md` | Safety net for existing projects: git branching, baseline snapshots, protected paths, change manifest, regression checks, rollback |
 | `quality-dashboard.md` | Quality scoring & reporting: real-time tracking, final dashboard, machine-readable JSON reports, cross-session trending, early warning |
 | `graceful-failure.md` | Retry limits, stuck detection, graceful exit format, failure categories — prevents skills from looping on impossible tasks |
-| `code-intelligence.md` | GitNexus-powered knowledge graph: impact analysis, 360° context, process tracing, pre-commit risk — optional enhancement for deep code awareness |
+| `code-intelligence.md` | DAI memory code graph: impact analysis, 360° context, process tracing, pre-commit risk — optional enhancement for deep code awareness |
 | `prompt-templates.md` | 12 prompt templates auto-selected by task type: RTF, CO-STAR, RISEN, CRISPE, Chain of Thought, Few-Shot, File-Scope, ReAct+Stop, Visual Descriptor, Reference Image, ComfyUI, Prompt Decompiler |
 | `credit-killing-patterns.md` | 35 patterns that waste tokens: 7 task, 6 context, 6 format, 6 scope, 5 reasoning, 5 agentic |
 | `prompt-techniques.md` | 5 safe techniques: Role Assignment, Few-Shot, XML Tags, Grounding Anchors, Chain of Thought. Also lists forbidden techniques: ToT, GoT, USC, prompt chaining, MoE |
@@ -529,8 +529,8 @@ Write `.dainexus/scope-analysis.md` only for substantial multi-lane work where a
 When **Parallel** is selected, the BUILD and HARDEN phases use the parallel-dispatch skill (`skills/parallel-dispatch/SKILL.md`) to spawn git worktrees, distribute Task Contracts, and merge results. When **Sequential** is selected, the pipeline behaves as before.
 
 6. **Detect existing workspace & load memory** — if `.dainexus/` has prior state, use session-lifecycle resume protocol. If `.dainexus/session-log.json` has interrupted state, offer resume. Otherwise offer clean start via notify_user.
-   - **Memory load:** Run `python3 scripts/lite/memory.py search "<project-name> <user-request-keywords>" --limit 5` to retrieve relevant project context. Inject results into your context for this session.
-   - If no results or memory is empty, verify setup with `python3 scripts/lite/memory.py stats`.
+   - **Memory load:** Run `python3 scripts/lite/dai_memory.py search "<project-name> <user-request-keywords>" --limit 5` to retrieve relevant project context. Inject results into your context for this session.
+   - If no results or memory is empty, verify setup with `python3 scripts/lite/dai_memory.py where`.
 
 6.5. **Build the pipeline operating envelope before specialist routing:**
    - Read `skills/_shared/protocols/pipeline-operating-contract.md`.
@@ -576,7 +576,7 @@ When **Parallel** is selected, the BUILD and HARDEN phases use the parallel-disp
 Track only applicable work and dependencies. Canonical task IDs may remain for compatibility, but mark irrelevant lanes `SKIPPED` instead of inventing tasks so a fixed count is filled.
 
 10. **Begin Phase 1** — read `phases/define.md` and start immediately. Do NOT ask "should I proceed?"
-   - **Memory save (session start):** Run `python3 scripts/lite/memory.py add "Session started: [mode] mode for [brief request]. Engagement: [level]" --category session`
+   - **Memory save (session start):** Run `python3 scripts/lite/dai_memory.py add "Session started: [mode] mode for [brief request]. Engagement: [level]" --category session`
 
 **Key principle:** Ground, right-size, plan, execute, verify. Pause only at material approval gates defined by the user/project/safety contract. In Thorough/Meticulous mode, show additional phase summaries as requested; do not turn informational handoffs into mandatory approvals.
 
@@ -658,10 +658,10 @@ When context reaches 80% capacity or session needs to transfer:
 
 ### Memory Integration Best Practices
 
-**Persistent Memory (ChromaDB + sentence-transformers):**
-- Store architectural decisions: `scripts/lite/memory.py add "ARCH: [details]"`
-- Store project context: `scripts/lite/memory.py add "PROJECT: [name]"`
-- Store technical learnings: `scripts/lite/memory.py add "LESSON: [insight]"`
+**Persistent Memory (DAI memory layer, `scripts/lite/dai_memory.py`):**
+- Store architectural decisions: `scripts/lite/dai_memory.py add "ARCH: [details]"`
+- Store project context: `scripts/lite/dai_memory.py add "PROJECT: [name]"`
+- Store technical learnings: `scripts/lite/dai_memory.py add "LESSON: [insight]"`
 
 **Session Memory (localStorage):**
 - Current task progress
@@ -885,18 +885,18 @@ After Gate 2 is approved, automatically persist architecture decisions to memory
 
 2. Run memory persistence commands:
    # Main architecture
-   python3 scripts/lite/memory.py add "ARCH: [tech stack] | SERVICES: [service list] | REASON: [key rationale]" --category architecture
+   python3 scripts/lite/dai_memory.py add "ARCH: [tech stack] | SERVICES: [service list] | REASON: [key rationale]" --category architecture
    
    # Individual ADRs
-   python3 scripts/lite/memory.py add "DECISION: [ADR title] | ALTERNATIVE: [rejected options] | REASON: [why chosen]" --category decisions
+   python3 scripts/lite/dai_memory.py add "DECISION: [ADR title] | ALTERNATIVE: [rejected options] | REASON: [why chosen]" --category decisions
    
    # Project scope
-   python3 scripts/lite/memory.py add "PROJECT: [project name] | SCOPE: [feature list] | STATUS: active" --category project
+   python3 scripts/lite/dai_memory.py add "PROJECT: [project name] | SCOPE: [feature list] | STATUS: active" --category project
 
 3. Log: "✓ Architecture decisions persisted to memory — [N] decisions saved"
 ```
 
-**Why this matters:** Future sessions can search `scripts/lite/memory.py search "architecture"` to retrieve the approved stack without re-reading all architecture files.
+**Why this matters:** Future sessions can search `scripts/lite/dai_memory.py search "architecture"` to retrieve the approved stack without re-reading all architecture files.
 
 **Gate 3 — Production Readiness** (after T9):
 

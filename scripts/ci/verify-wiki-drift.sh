@@ -180,45 +180,43 @@ fi
 
 
 # ─── PHẦN 2: Kiểm tra trôi lệch giữa Tài liệu và Code (Doc-to-Code) ─────────
-echo -e "\n${BOLD}[2/3] Đang kiểm tra độ tươi mới của đồ thị GitNexus (Doc-to-Code)...${NC}"
+echo -e "\n${BOLD}[2/3] Đang kiểm tra độ tươi mới của code graph (Doc-to-Code)...${NC}"
 
-# Kiểm tra xem có thư mục .gitnexus hay không
-if [ -d ".gitnexus" ]; then
-    echo "  ✓ Thư mục chỉ mục GitNexus (.gitnexus) tồn tại."
+# Engine nằm ngoài repo, mỗi phiên bản một thư mục, nên hỏi resolver chứ không
+# đoán đường dẫn.
+MEMORY_ENGINE=""
+if [ -f "./scripts/lite/dai_memory.py" ]; then
+    for candidate in "py -3" python3 python; do
+        MEMORY_ENGINE="$($candidate ./scripts/lite/dai_memory.py where 2>/dev/null || true)"
+        [ -n "$MEMORY_ENGINE" ] && break
+    done
+fi
+
+if [ -d ".memory" ] && [ -n "$MEMORY_ENGINE" ]; then
+    echo "  ✓ Kho memory (.memory) tồn tại."
     CLAIMS_COUNT=$((CLAIMS_COUNT + 1))
-    
-    # Kiểm tra status của GitNexus
-    if command -v npx &>/dev/null; then
-        is_stale=false
-        if ! npx gitnexus status &>/dev/null; then
-            is_stale=true
-        elif npx gitnexus status 2>&1 | grep -q "stale"; then
-            is_stale=true
-        fi
 
-        if [ "$is_stale" = "true" ]; then
-            if $HEAL; then
-                echo -e "  ${YELLOW}🔧 Đang tự động vá (HEAL): Chạy 'npx gitnexus analyze' để cập nhật chỉ mục...${NC}"
-                npx gitnexus analyze
-                echo -e "  ${GREEN}✓ Đồ thị GitNexus đã được phân tích và cập nhật thành công!${NC}"
-            else
-                echo -e "  ${YELLOW}⚠ Chỉ mục GitNexus bị lệch hoặc chưa hoàn thiện.${NC}"
-                UNCONFIRMED_CLAIMS=$((UNCONFIRMED_CLAIMS + 1))
-            fi
+    # `status` nói rõ index được dựng ở commit nào, và cây làm việc đã đi xa chưa.
+    if node "${MEMORY_ENGINE}/bin/dai-memory.mjs" status 2>&1 | grep -q "the working tree has moved on"; then
+        if $HEAL; then
+            echo -e "  ${YELLOW}🔧 HEAL: chạy 'dai-memory ingest' để cập nhật code graph...${NC}"
+            node "${MEMORY_ENGINE}/bin/dai-memory.mjs" ingest --quiet
+            echo -e "  ${GREEN}✓ Code graph đã được cập nhật.${NC}"
         else
-            echo -e "  ${GREEN}✓ Đồ thị GitNexus hoạt động bình thường.${NC}"
+            echo -e "  ${YELLOW}⚠ Code graph cũ hơn cây làm việc.${NC}"
+            UNCONFIRMED_CLAIMS=$((UNCONFIRMED_CLAIMS + 1))
         fi
     else
-        echo "  ⚠ Không tìm thấy npx, bỏ qua chạy trực tiếp status."
+        echo -e "  ${GREEN}✓ Code graph khớp với commit hiện tại.${NC}"
     fi
 else
-    if $HEAL; then
-        echo -e "  ${YELLOW}🔧 Đang tự động vá (HEAL): Tạo mới chỉ mục GitNexus bằng 'npx gitnexus analyze'...${NC}"
-        npx gitnexus analyze
-        echo -e "  ${GREEN}✓ Tạo mới đồ thị GitNexus thành công!${NC}"
+    if $HEAL && [ -n "$MEMORY_ENGINE" ]; then
+        echo -e "  ${YELLOW}🔧 HEAL: tạo kho memory bằng 'dai-memory init'...${NC}"
+        node "${MEMORY_ENGINE}/bin/dai-memory.mjs" init --quiet
+        echo -e "  ${GREEN}✓ Đã tạo code graph.${NC}"
     else
-        echo -e "  ${RED}❌ Lỗi: Thư mục chỉ mục .gitnexus không tồn tại!${NC}"
-        echo "     Vui lòng chạy 'npx gitnexus analyze' trước để tạo đồ thị tri thức."
+        echo -e "  ${RED}❌ Lỗi: chưa có kho memory (.memory) hoặc engine chưa được cài.${NC}"
+        echo "     Chạy: python scripts/lite/dai_memory.py install && dai-memory init"
         UNCONFIRMED_CLAIMS=$((UNCONFIRMED_CLAIMS + 2))
         CLAIMS_COUNT=$((CLAIMS_COUNT + 2))
     fi
@@ -249,7 +247,7 @@ echo -e "\n${BOLD}📢 ĐÁNH GIÁ CẤP ĐỘ CẢNH BÁO:${NC}"
 if [ "$IS_ABOVE_THRESHOLD" -eq 1 ]; then
     echo -e "${RED}🛑 CRITICAL ALERT: Tỷ lệ lệch tài liệu (${DRIFT_PERCENT}%) đã vượt ngưỡng cho phép (${THRESHOLD}*100%).${NC}"
     echo -e "${RED}   Hệ thống khóa tiến trình viết code tự động của AI Agent.${NC}"
-    echo -e "${YELLOW}   👉 Khuyến nghị: Chạy 'npx gitnexus analyze' hoặc kiểm tra chéo các file tài liệu để sửa mâu thuẫn.${NC}"
+    echo -e "${YELLOW}   👉 Khuyến nghị: Chạy 'dai-memory ingest' hoặc kiểm tra chéo các file tài liệu để sửa mâu thuẫn.${NC}"
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     exit 1
 else

@@ -1,6 +1,7 @@
-"""The harness's one way of talking to its memory: the vendored DAI memory layer.
+"""The harness's one way of talking to its memory: the DAI memory layer.
 
-Memory is the layer in vendor/dai-memory, reached through its CLI rather than
+Memory is the layer in vendor/dai-memory -- a git submodule of the plugin's own
+repository, pinned to one commit -- reached through its CLI rather than
 reimplemented in Python. Everything in the harness that records or retrieves
 memory -- the MCP tools, the migration from the old SQLite store -- goes
 through this module, so the mapping from the harness's categories onto the
@@ -12,7 +13,6 @@ Standard library only: it runs from the zero-dependency MCP server.
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import shutil
@@ -22,8 +22,31 @@ from pathlib import Path
 
 HARNESS_ROOT = Path(__file__).resolve().parents[2]
 VENDOR = HARNESS_ROOT / "vendor" / "dai-memory"
-PROVENANCE = VENDOR / "PROVENANCE.json"
+SUBMODULE = "vendor/dai-memory"
 TIMEOUT_S = 120
+
+
+def _git(*args: str, cwd: Path) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["git", *args], cwd=str(cwd), capture_output=True, text=True, timeout=TIMEOUT_S
+    )
+
+
+def pinned_commit() -> str | None:
+    """The plugin commit the submodule has checked out, or None before `init`.
+
+    The harness records which commit it uses in the submodule pointer; the
+    checkout is that commit unless somebody moved it on purpose, and then the
+    install directory follows what they moved it to.
+    """
+    if not (VENDOR / "bin" / "dai-memory.mjs").is_file():
+        return None
+    try:
+        result = _git("rev-parse", "HEAD", cwd=VENDOR)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    commit = result.stdout.strip()
+    return commit if result.returncode == 0 and len(commit) == 40 else None
 
 
 def _cache_root() -> Path:
@@ -41,13 +64,15 @@ def engine_dir() -> Path:
     dependencies, and the harness's verifiers copy and fingerprint the whole
     worktree -- ignored files included -- so a build inside vendor/ doubled
     the cost of every one of them. vendor/ holds the pinned sources; each
-    pinned version gets its own install directory, named after its record.
+    pinned commit gets its own install directory, named after the commit.
+    Before the submodule is initialised there is no commit, and the directory
+    named here never exists -- so installed() answers False instead of raising.
     """
     override = os.environ.get("DAI_MEMORY_ENGINE")
     if override:
         return Path(override)
-    key = hashlib.sha256(PROVENANCE.read_bytes()).hexdigest()[:16]
-    return _cache_root() / key
+    commit = pinned_commit()
+    return _cache_root() / (commit[:16] if commit else "submodule-not-initialized")
 
 
 def memory_cli() -> Path:
@@ -64,6 +89,11 @@ INSTALL_HINT = "python scripts/lite/dai_memory.py install"
 def install() -> int:
     """Copy the pinned sources out of vendor/ and run the layer's own setup there.
 
+    A clone made without --recurse-submodules has an empty vendor/dai-memory;
+    that is initialised first rather than reported, since the fix is one
+    command this script can run. Only files the plugin's repository tracks are
+    copied -- never a node_modules or a build somebody left in the checkout.
+
     The copy is built beside its destination and moved into place only once it
     exists, so an interrupted copy never looks like an install. Setup itself is
     re-runnable and skips what is already done.
@@ -72,12 +102,27 @@ def install() -> int:
     if not node:
         print("memory needs Node.js on PATH, and none was found", file=sys.stderr)
         return 1
+    if pinned_commit() is None and not os.environ.get("DAI_MEMORY_ENGINE"):
+        init = _git("submodule", "update", "--init", SUBMODULE, cwd=HARNESS_ROOT)
+        if init.returncode != 0 or pinned_commit() is None:
+            print(
+                f"could not initialise {SUBMODULE}: {init.stderr.strip()}\n"
+                f"run: git submodule update --init {SUBMODULE}",
+                file=sys.stderr,
+            )
+            return 1
     target = engine_dir()
     if not target.is_dir():
-        files = json.loads(PROVENANCE.read_text(encoding="utf-8"))["files"]
+        listed = _git("ls-files", "-z", cwd=VENDOR)
+        if listed.returncode != 0:
+            print(
+                f"could not list {SUBMODULE}: {listed.stderr.strip()}", file=sys.stderr
+            )
+            return 1
+        files = [name for name in listed.stdout.split("\0") if name]
         partial = target.with_name(target.name + ".partial")
         shutil.rmtree(partial, ignore_errors=True)
-        for relative in [*files, "PROVENANCE.json"]:
+        for relative in files:
             destination = partial / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(VENDOR / relative, destination)
@@ -196,11 +241,56 @@ def search(query: str, *, cwd: Path, limit: int) -> dict:
     return run("search", query, "--limit", str(max(1, int(limit))), cwd=cwd)
 
 
-if __name__ == "__main__":
-    if sys.argv[1:] == ["install"]:
-        sys.exit(install())
-    if sys.argv[1:] == ["where"]:
+USAGE = (
+    "usage: dai_memory.py install | where\n"
+    "       dai_memory.py add <text> [--category C] [--importance 0-10] [--source S]\n"
+    "       dai_memory.py search <query> [--limit N]"
+)
+
+
+def _cli(argv: list[str]) -> int:
+    """The shell's way in: the scripts and hooks that record or recall memory.
+
+    They used to call scripts/lite/memory.py; this is its replacement, so they
+    keep one line each and land in the same store the MCP tools use. The
+    answer is JSON on stdout; a failure is JSON with "error" and exit 1, never
+    an empty success.
+    """
+    import argparse
+
+    parser = argparse.ArgumentParser(prog="dai_memory.py", usage=USAGE)
+    sub = parser.add_subparsers(dest="command", required=True)
+    sub.add_parser("install")
+    sub.add_parser("where")
+    add = sub.add_parser("add")
+    add.add_argument("text")
+    add.add_argument("--category", default=None)
+    add.add_argument("--importance", type=int, default=5)
+    add.add_argument("--source", default="harness:script")
+    find = sub.add_parser("search")
+    find.add_argument("query")
+    find.add_argument("--limit", type=int, default=5)
+    args = parser.parse_args(argv)
+
+    if args.command == "install":
+        return install()
+    if args.command == "where":
         print(engine_dir())
-        sys.exit(0 if installed() else 1)
-    print("usage: dai_memory.py install | where", file=sys.stderr)
-    sys.exit(2)
+        return 0 if installed() else 1
+    cwd = Path.cwd()
+    if args.command == "add":
+        result = write(
+            args.text,
+            cwd=cwd,
+            category=args.category,
+            importance=args.importance,
+            source_ref=args.source,
+        )
+    else:
+        result = search(args.query, cwd=cwd, limit=args.limit)
+    print(json.dumps(result, ensure_ascii=False))
+    return 1 if isinstance(result, dict) and "error" in result else 0
+
+
+if __name__ == "__main__":
+    sys.exit(_cli(sys.argv[1:]))

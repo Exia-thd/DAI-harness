@@ -16,6 +16,6 @@
     "workspace": "MCP server auto-detects workspace from cwd (no ${workspaceFolder} needed — Antigravity does not resolve it)",
     "restart": "Restart Antigravity after modifying this file",
     "multi_project": "One config works for ALL projects with Antigravity",
-    "code_intelligence": "Code intelligence is provided by GitNexus, which registers its own MCP server; it is not launched from here."
+    "code_intelligence": "Code intelligence is provided by the DAI memory layer, registered by scripts/mcp/dainexus-mcp-setup.sh as its own dai-memory MCP server; it is not launched from here."
   }
 }

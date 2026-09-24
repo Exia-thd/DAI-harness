@@ -18,5 +18,5 @@ fi
 
 if printf '%s\n' "$CHANGED" | grep -E '^(src/|mcp/|scripts/).*\.(ts|py|js|cs|gd|go|rs)' | grep -v -E '(test|spec)' >/dev/null; then
   : > "$CACHE_DIR/reindex-needed"
-  echo "[DAI Nexus] Logic changed; local GitNexus reindex is pending."
+  echo "[DAI Nexus] Logic changed; local code graph reindex is pending."
 fi

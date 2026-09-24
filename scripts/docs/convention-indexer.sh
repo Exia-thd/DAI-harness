@@ -7,7 +7,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MEM0_SCRIPT="$SCRIPT_DIR/../../scripts/lite/memory.py"
+MEM0_SCRIPT="$SCRIPT_DIR/../../scripts/lite/dai_memory.py"
 DRY_RUN=false
 
 for arg in "$@"; do
@@ -72,8 +72,9 @@ failed = 0
 for text, cat in unique:
     try:
         result = subprocess.run(
-            [sys.executable, MEM0_SCRIPT, "add", text, "--category", cat, "--importance", "7"],
-            capture_output=True, text=True, timeout=10
+            [sys.executable, MEM0_SCRIPT, "add", text, "--category", cat, "--importance", "7",
+             "--source", "harness:convention-indexer"],
+            capture_output=True, text=True, timeout=60
         )
         if result.returncode == 0:
             stored += 1

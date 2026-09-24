@@ -184,24 +184,8 @@ with open('$TRACK_FILE', 'w') as f:
     
     if [ "$passed" = "true" ]; then
         pass "Plan score: $score (PASSED)"
-        
-        # [Graph Layer] Reinforce the session -> plan-quality edge on a pass.
-        if command -v python3 &>/dev/null; then
-            python3 "$PROJECT_DIR/scripts/memory/memory-v2.py" graph-add-node "current-session" "episodic" "Current Session" "Dynamic episodic node tracking current session" 2>/dev/null || true
-            python3 "$PROJECT_DIR/scripts/memory/memory-v2.py" graph-add-node "plan-quality" "semantic" "Plan Quality Loop" "Static semantic concept of the plan quality metrics" 2>/dev/null || true
-            python3 "$PROJECT_DIR/scripts/memory/memory-v2.py" graph-link "current-session" "plan-quality" --weight 1.0 --type "relates_to" 2>/dev/null || true
-            python3 "$PROJECT_DIR/scripts/memory/memory-v2.py" graph-reinforce "current-session" "plan-quality" --factor 1.2 2>/dev/null || true
-        fi
     else
         warn "Plan score: $score (FAILED - below $threshold)"
-        
-        # [Graph Layer] Decay the session -> plan-quality edge on a failure.
-        if command -v python3 &>/dev/null; then
-            python3 "$PROJECT_DIR/scripts/memory/memory-v2.py" graph-add-node "current-session" "episodic" "Current Session" "Dynamic episodic node tracking current session" 2>/dev/null || true
-            python3 "$PROJECT_DIR/scripts/memory/memory-v2.py" graph-add-node "plan-quality" "semantic" "Plan Quality Loop" "Static semantic concept of the plan quality metrics" 2>/dev/null || true
-            python3 "$PROJECT_DIR/scripts/memory/memory-v2.py" graph-link "current-session" "plan-quality" --weight 1.0 --type "relates_to" 2>/dev/null || true
-            python3 "$PROJECT_DIR/scripts/memory/memory-v2.py" graph-decay "current-session" "plan-quality" --factor 0.5 2>/dev/null || true
-        fi
         
         # A failed plan score is telemetry, not permission to mutate shared skills.
         warn "Plan needs improvement. Research only if a material knowledge/evidence gap blocks the next decision."
@@ -257,23 +241,9 @@ if '$status' == 'completed':
                 session_id = current_session.get('id', 'session_unknown')
                 mode = current_session.get('mode', 'unknown')
                 summary = '$summary'
-                engine = '$PROJECT_DIR/scripts/memory/memory-v2.py'
+                engine = '$PROJECT_DIR/scripts/lite/dai_memory.py'
 
-                # Consolidate this trajectory as a procedural node.
-                subprocess.run([
-                    sys.executable, engine, 'graph-add-node',
-                    f'proc-{session_id}', 'procedural', f'Optimized procedural circuit for {mode}',
-                    f'Successful trajectory consolidated with PES={pes_score}. Summary: {summary}',
-                    '--pes', str(pes_score)
-                ], stderr=subprocess.DEVNULL)
-
-                # Link the procedural node to its semantic target.
-                subprocess.run([
-                    sys.executable, engine, 'graph-link',
-                    f'proc-{session_id}', 'plan-quality', '--weight', '3.0', '--type', 'solves'
-                ], stderr=subprocess.DEVNULL)
-
-                # Consolidate completed tasks into procedural_circuits.
+                # Consolidate completed tasks into the procedure's steps.
                 steps = []
                 try:
                     from pathlib import Path
@@ -292,12 +262,17 @@ if '$status' == 'completed':
                 except Exception:
                     pass
 
-                steps_json = json.dumps(steps)
+                # Record the trajectory as one procedural memory in the DAI memory
+                # layer. The retired memory-v2 store kept it as a graph node, an
+                # edge to plan-quality and a saved circuit; the steps now travel
+                # in the text, and the session is the source.
+                step_text = '; '.join('T' + str(s['id']) + ': ' + s['summary'] for s in steps if s.get('summary'))
                 subprocess.run([
-                    sys.executable, engine, 'graph-save-circuit',
-                    f'proc-{session_id}', f'Optimized procedural circuit for {mode}',
-                    steps_json, str(pes_score)
-                ], stderr=subprocess.DEVNULL)
+                    sys.executable, engine, 'add',
+                    f'Procedure for {mode} (PES={pes_score}). Summary: {summary}' + (f' Steps: {step_text}' if step_text else ''),
+                    '--category', 'procedure', '--importance', '6',
+                    '--source', f'harness:session:{session_id}',
+                ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except Exception as e:
         pass
 

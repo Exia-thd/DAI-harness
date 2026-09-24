@@ -158,12 +158,17 @@ check_mcp_manifest() {
 run_mem0_check() {
     log_info "Checking memory stats..."
     
-    MEM0_SCRIPT="$SCRIPT_DIR/../../scripts/lite/memory.py"
-    
+    MEM0_SCRIPT="$SCRIPT_DIR/../../scripts/lite/dai_memory.py"
+
     if [ -f "$MEM0_SCRIPT" ]; then
-        python3 "$MEM0_SCRIPT" stats 2>/dev/null || log_warn "Could not get memory stats"
+        local engine
+        if engine="$(python3 "$MEM0_SCRIPT" where 2>/dev/null)"; then
+            node "$engine/bin/dai-memory.mjs" status 2>/dev/null || log_warn "Could not get memory status"
+        else
+            log_warn "Memory engine not installed: python3 scripts/lite/dai_memory.py install"
+        fi
     else
-        log_info "scripts/lite/memory.py not found - skipping"
+        log_info "scripts/lite/dai_memory.py not found - skipping"
     fi
 }
 

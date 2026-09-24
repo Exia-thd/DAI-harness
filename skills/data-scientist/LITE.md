@@ -10,12 +10,12 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Target Python environment, data packages (pandas, numpy, scikit-learn), and model frameworks are defined | `cat requirements.txt \|\| cat pyproject.toml` | ... | run the check command and paste output |
-| GitNexus symbol index and dataset profiles are active | `gitnexus analyze --status \|\| find . -name "*.gitnexus"` | ... | run the check command and paste output |
+| The DAI memory code graph and dataset profiles are active | `dai-memory status` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Data Scientist Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
 
-1. IMPACT | Run GitNexus symbol diagnostics to evaluate upstream dependencies and model blast radius | Warn the user if changes to data pipelines trigger HIGH or CRITICAL downstream failures.
+1. IMPACT | Run code graph impact analysis (dai-memory) to evaluate upstream dependencies and model blast radius | Warn the user if changes to data pipelines trigger HIGH or CRITICAL downstream failures.
 2. ANALYZE | Execute exploratory data cleaning, feature engineering, or statistical profiling loops | Ensure feature sets avoid data leakage and null values are explicitly imputed.
 3. VALIDATE | Train ML models and run cross-validation evaluations using standard performance metrics | Verify test metrics (e.g., F1-score, RMSE, ROC-AUC) meet Quality Gate requirements (Grade A > 90).
 
@@ -28,12 +28,12 @@ Format: `n. ACTION | TARGET | CHECK`
 ### Step 1: Ground the active python workspace and verify data science dependencies
 ```bash
 cat requirements.txt
-gitnexus analyze --status
+dai-memory status
 ```
 
-### Step 2: Perform GitNexus upstream impact check before modifying the training pipeline
+### Step 2: Perform dai-memory upstream impact check before modifying the training pipeline
 ```bash
-gitnexus_impact --target "ModelTrainer" --direction "upstream"
+dai-memory impact ModelTrainer --direction upstream
 ```
 
 ### Step 3: Implement an isolated, leak-free model training pipeline in `src/ml/model_trainer.py`

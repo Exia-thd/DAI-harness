@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import subprocess
 import sys
@@ -27,6 +28,23 @@ if workspace_value:
 else:
     PROJECT_ROOT = EXECUTABLE_ROOT
 DEFAULT_CHAR_CAP = 2_000  # Approximation of the kernel's global 500-token cap.
+
+
+def _memory_lines(raw: str) -> str:
+    """A recall answer as lines a reader can scan: title, then snippet.
+
+    scripts/lite/dai_memory.py answers in JSON; anything else is shown as-is.
+    """
+    try:
+        results = json.loads(raw).get("results", [])
+    except (ValueError, AttributeError):
+        return raw.strip()
+    lines = []
+    for item in results:
+        title = str(item.get("title", "")).strip()
+        snippet = " ".join(str(item.get("snippet", "")).split())
+        lines.append(f"- {title}: {snippet}" if snippet else f"- {title}")
+    return "\n".join(lines) or "(no memories matched)"
 
 
 def _bounded_chunk(label: str, content: str, source_cap: int, remaining: int) -> str:
@@ -79,7 +97,7 @@ def load_context(
             used += len(chunk)
             loaded_sources += 1
 
-    mem0_path = EXECUTABLE_ROOT / "scripts/lite/memory.py"
+    mem0_path = EXECUTABLE_ROOT / "scripts/lite/dai_memory.py"
     if (
         keywords.strip()
         and os.environ.get("DAINEXUS_SKIP_MEM0") != "1"
@@ -102,7 +120,7 @@ def load_context(
         )
         if result.returncode == 0 and result.stdout.strip():
             chunk = _bounded_chunk(
-                "memory", result.stdout.strip(), 100 * 4, char_cap - used
+                "memory", _memory_lines(result.stdout), 100 * 4, char_cap - used
             )
             if chunk:
                 output.append(chunk)

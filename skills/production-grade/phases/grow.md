@@ -50,7 +50,7 @@ Update task.md: T5 status → completed
 Update task.md: T5b status → completed
 
 Memory save:
-python3 scripts/lite/memory.py add "GROW phase completed for [project]. Growth strategy: [summary], Conversion optimizations: [list]" --category decisions
+python3 scripts/lite/dai_memory.py add "GROW phase completed for [project]. Growth strategy: [summary], Conversion optimizations: [list]" --category decisions
 ```
 
 ## Growth Pipeline Modes

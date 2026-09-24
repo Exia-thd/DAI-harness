@@ -35,5 +35,5 @@ This directory stores DAI Nexus's project-level state, configuration, and runtim
 ## Notes
 
 - Run `npm install` inside `mcp-server/` to restore vendored dependencies after cloning.
-- The `memory.db` file is a SQLite database; use `scripts/lite/memory.py` to interact with it.
+- `memory.db` is the retired SQLite store, kept read-only until it is removed; `scripts/lite/migrate-memory.py` moved its rows into the memory layer, which is what records memory now.
 - See `skills/_shared/protocols/session-lifecycle.md` for session state management.

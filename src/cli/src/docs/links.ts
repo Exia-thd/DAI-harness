@@ -138,7 +138,7 @@ export function resolveCatalogLinks(catalogs: DocsCatalog[]): DocsCatalog[] {
           to: codeRef,
           type: "code-ref",
           source: document.sourcePath,
-          confidence: codeRef.startsWith("gitnexus://") ? 1 : 0.75,
+          confidence: /^(?:dai-memory|gitnexus):\/\//.test(codeRef) ? 1 : 0.75,
         });
       }
       if (document.sourceOfTruth) {

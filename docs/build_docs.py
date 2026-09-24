@@ -19,11 +19,11 @@ from __future__ import annotations
 
 import html
 import re
+import subprocess
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import _page_memory_guide  # noqa: E402  (prose module, same directory)
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
@@ -35,7 +35,6 @@ PAGES = [
     ("evidence.html", "Bằng chứng"),
     ("runtime.html", "Runtime"),
     ("memory.html", "Memory"),
-    ("memory-guide.html", "Bóc tách Memory"),
     ("patterns.html", "Tinh túy"),
 ]
 
@@ -136,9 +135,8 @@ def facts() -> dict:
         "hard_rules": hard_rules[:6],
         "policy_patterns": policy_patterns,
         "reject_reasons": reject_reasons,
-        "memory_loc": lines_of("scripts/lite/memory.py"),
+        "memory_engine": memory_engine_facts(),
         **_baseline_facts(),
-        **_memory_facts(),
     }
 
 
@@ -152,59 +150,6 @@ def _baseline_facts() -> dict:
         "baseline_files": len(files),
         "baseline_gate_loc": lines_of("scripts/ci/pytest_gate.py"),
     }
-
-
-def _memory_facts() -> dict:
-    """Read the memory module's real surface so the extraction guide cannot lie."""
-    src = read("scripts/lite/memory.py")
-    cls = src.split("class MemoryDB:")[1]
-    api = [
-        m
-        for m in re.findall(r"^    def (\w+)\(", cls, re.MULTILINE)
-        if not m.startswith("_")
-    ]
-    cli = re.findall(r'add_parser\("([a-z_]+)"\)', src)
-    for m in re.findall(
-        r"for name in \(([^)]+)\):", src
-    ):  # subcommands added in a loop
-        cli += [x.strip().strip("\"'") for x in m.split(",") if x.strip()]
-    env = sorted(set(re.findall(r'os\.environ\.get\("(\w+)"', src)))
-    tags = re.findall(
-        r',\s*"(\w+)"\),\s*$',
-        src.split("AUTO_TAG_PATTERNS")[1].split("\n]")[0],
-        re.MULTILINE,
-    )
-    if not tags:
-        raise SystemExit(
-            "[docs] AUTO_TAG_PATTERNS parse returned nothing — fix _memory_facts()"
-        )
-    weights = re.findall(
-        r'^\s+"([\w-]+)": (\d+),',
-        src.split("CATEGORY_WEIGHTS")[1].split("}")[0],
-        re.MULTILINE,
-    )
-    redact = re.findall(
-        r'^\s+r"', src.split("REDACT_PATTERNS")[1].split("\n]")[0], re.MULTILINE
-    )
-    triggers = re.findall(r"CREATE TRIGGER IF NOT EXISTS (\w+)", src)
-    indexes = re.findall(r"CREATE INDEX IF NOT EXISTS (\w+)", src)
-    rrf_k = re.search(r"^RRF_K = (\d+)", src, re.MULTILINE)
-    max_obs = re.search(r"^MAX_OBS_DEFAULT = (\d+)", src, re.MULTILINE)
-    return {
-        "mem_api": api,
-        "mem_cli": sorted(set(cli)),
-        "mem_env": env,
-        "mem_tags": tags,
-        "mem_weights": weights,
-        "mem_redact_count": len(redact),
-        "mem_triggers": triggers,
-        "mem_index_count": len(indexes),
-        "mem_rrf_k": rrf_k.group(1) if rrf_k else "?",
-        "mem_max_obs": max_obs.group(1) if max_obs else "?",
-    }
-
-
-# ── html helpers ──────────────────────────────────────────────────────────────
 
 
 def esc(text: str) -> str:
@@ -960,60 +905,116 @@ glob được phép sửa và glob cấm. Merge arbiter từ chối mọi thứ 
 """
 
 
+def memory_engine_facts() -> dict:
+    """Which memory layer the harness uses, read from what git records.
+
+    The site used to quote scripts/lite/memory.py, counting its lines and
+    excerpting its functions. That module was retired on 2026-09-21; the memory
+    is the DAI memory plugin now, a submodule pinned to one commit, and a page
+    that still described the old one would be the exact failure this project
+    keeps writing tests against. The pointer is read from the index, so the
+    page is right even in a clone whose submodule was never initialised.
+    """
+    import configparser
+
+    commit = "unknown"
+    try:
+        entry = subprocess.run(
+            ["git", "ls-files", "--stage", "--", "vendor/dai-memory"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        ).stdout.split()
+        if entry and entry[0] == "160000":
+            commit = entry[1][:12]
+    except (OSError, subprocess.SubprocessError):
+        pass
+    modules = configparser.ConfigParser()
+    modules.read(ROOT / ".gitmodules", encoding="utf-8")
+    source = modules.get('submodule "vendor/dai-memory"', "url", fallback="unknown")
+    return {"commit": commit, "source": source}
+
+
 def page_memory(f: dict) -> str:
+    engine = f["memory_engine"]
     return f"""
 <section class="hero compact">
   <span class="tag">PERSISTENCE</span>
-  <h1>Memory — <span class="accent">SQLite + FTS5 + RRF</span></h1>
-  <p class="lead">{
-        f["memory_loc"]
-    } dòng, chạy hoàn toàn local. Không dịch vụ ngoài, không API key,
-  không lock-in — và vì thế không rò rỉ nội dung dự án ra đâu cả.</p>
+  <h1>Memory — <span class="accent">lớp ký ức dùng chung</span></h1>
+  <p class="lead">Ghi lại <b>vì sao</b>: quyết định, sự cố, ràng buộc — rồi lấy ra khi agent
+  cần lý do đằng sau đoạn code nó không viết. Chạy local, không dịch vụ ngoài.</p>
 </section>
 
-<h2><span class="num">01</span> Vì sao không dùng vector DB</h2>
-<p>Với vài trăm quan sát dạng câu ngắn, BM25 của FTS5 đã đủ tốt, chạy in-process, không cần
-embedding model hay dịch vụ. Nhánh embedding vẫn để ngỏ trong roadmap — RRF fusion
-đã viết sẵn để nhận thêm nguồn xếp hạng thứ hai bất cứ lúc nào.</p>
+<h2><span class="num">01</span> Nó nằm ở đâu</h2>
+<p>Engine là plugin
+<code>{esc(engine["source"])}</code>, ghim ở commit <code>{
+        esc(engine["commit"])
+    }</code>,
+gắn vào <code>vendor/dai-memory</code> dưới dạng git submodule — harness chỉ ghi một con trỏ
+commit, mọi thay đổi của memory làm ở repo plugin trước. Bản cài đặt nằm <b>ngoài</b> repo,
+mỗi commit một thư mục — cài xong khoảng 500 MB, mà các verifier của dự án chép và băm toàn
+bộ cây làm việc:</p>
+{code("scripts/lite/dai_memory.py", r"^def engine_dir", 16)}
 
-<h2><span class="num">02</span> Ba lớp truy xuất</h2>
+<h2><span class="num">02</span> Ba lớp ký ức</h2>
 {
         table(
-            ["Lớp", "Trả về", "Chi phí"],
+            ["Lớp", "Chứa gì", "Ví dụ"],
             [
-                ["<code>index</code>", "Chỉ tiêu đề + điểm", "~15 token/kết quả"],
                 [
-                    "<code>search</code>",
-                    "Tóm tắt 200 ký tự, đã fuse xếp hạng",
-                    "~60 token/kết quả",
+                    "<code>semantic</code>",
+                    "Điều đúng cho tới khi bị thay thế",
+                    "quyết định, ràng buộc, quy ước",
                 ],
-                ["<code>get</code>", "Toàn bộ quan sát", "~200 token/kết quả"],
+                [
+                    "<code>episodic</code>",
+                    "Điều đã xảy ra",
+                    "sự cố, lỗi, phiên làm việc",
+                ],
+                [
+                    "<code>procedural</code>",
+                    "Cách làm một việc",
+                    "quy trình, hướng dẫn",
+                ],
             ],
         )
     }
-<p>Nguyên tắc: nạp lớp rẻ trước, chỉ xuống lớp đắt khi thật cần — đây là cách giữ
-ngân sách boot 500 token mà vẫn có bối cảnh.</p>
+<p>Harness gọi qua một chỗ duy nhất, nên ánh xạ category sang lớp chỉ tồn tại một bản:</p>
+{code("scripts/lite/dai_memory.py", r"^CATEGORY_LAYERS", 14)}
 
-<h2><span class="num">03</span> RRF fusion</h2>
-<p>Hai bảng xếp hạng độc lập (BM25 theo liên quan văn bản, và điểm importance/recency)
-được hợp nhất bằng Reciprocal Rank Fusion — thứ gì xuất hiện cao ở cả hai sẽ thắng:</p>
-{code("scripts/lite/memory.py", r"^def rrf_merge", 14)}
+<h2><span class="num">03</span> Truy hồi ba nhánh</h2>
+<p>BM25 trên postings, tương đồng vector xếp hạng ngay trong database, và độ mới × tầm quan trọng
+— hợp nhất bằng Reciprocal Rank Fusion. Mỗi kết quả mang theo khối <code>fusion</code> nói rõ
+nhánh nào tìm ra cái gì, vì một nhánh trả rỗng mà im lặng sẽ biến hợp nhất thành
+"nhánh nào còn sống".</p>
 
-<h2><span class="num">04</span> FTS đồng bộ bằng trigger</h2>
-<p>Bảng FTS được cập nhật bằng trigger SQLite thay vì rebuild index mỗi lần tìm kiếm —
-một chi tiết nhỏ nhưng là khác biệt giữa tìm kiếm tức thì và tìm kiếm chậm dần theo dữ liệu:</p>
-{code("scripts/lite/memory.py", r"CREATE TRIGGER IF NOT EXISTS obs_ai", 14)}
+<h2><span class="num">04</span> Ký ức nối vào code</h2>
+<p>Lớp này đồng thời dựng code graph: mỗi file khai báo gì, và các khai báo tác động lên nhau
+ra sao. Đó là cách một quyết định ghi trên một hàm được tìm thấy từ đoạn code phụ thuộc vào nó —
+<code>dai_memory_context</code> trả về cả nơi gọi, nơi bị gọi, lẫn ký ức đã ghi về nó.</p>
 
-<h2><span class="num">05</span> Redaction và auto-tag</h2>
-<p>Mọi nội dung ghi vào memory đi qua bộ redact trước (API key, bearer token, password,
-connection string có mật khẩu), và được gắn tag domain tự động để lọc về sau.</p>
-{code("scripts/lite/memory.py", r"^REDACT_PATTERNS", 13)}
-
-<h2><span class="num">06</span> GC theo giá trị</h2>
-<p>Khi vượt ngưỡng, quan sát bị lưu trữ theo điểm = trọng số category (50%) + độ mới (50%).
-Một quyết định kiến trúc (weight 10) sống lâu hơn nhiều so với một ghi chú vặt (weight 2);
-mục <code>pinned</code> không bao giờ bị dọn.</p>
-{code("scripts/lite/memory.py", r"^    def gc", 12)}
+<h2><span class="num">05</span> Cái gì đã nghỉ</h2>
+{
+        table(
+            ["Đã gỡ (2026-09-21)", "Thay bằng"],
+            [
+                [
+                    "<code>scripts/lite/memory.py</code> (SQLite + FTS5)",
+                    "kho của lớp ký ức; dữ liệu cũ được <code>scripts/lite/migrate-memory.py</code> chuyển sang",
+                ],
+                [
+                    "<code>scripts/memory/local_memory.py</code> (ChromaDB + torch)",
+                    "bộ nhúng của chính lớp này, một model 130 MB",
+                ],
+                [
+                    "<code>antigravity/src/memory/graph*.py</code> (GraphRAG)",
+                    "đồ thị ký ức và phân cụm sẵn có",
+                ],
+            ],
+        )
+    }
+<p>Di trú là idempotent: id suy ra từ hàng cũ, nên chạy hai lần không sinh bản trùng.</p>
 """
 
 
@@ -1156,28 +1157,15 @@ td code, li code, p code { font-family: var(--font-mono); font-size: 12.5px;
 """
 
 
-STANDALONE = "memory-standalone.html"
-
-
 def build(css: str = "") -> dict[str, str]:
     f = facts()
-    guide = _page_memory_guide.render(f, code, table, callout, esc, stat_grid)
     return {
-        # Deliberately absent from PAGES: no nav entry, and no page links to it.
-        # It is built from the same source as memory-guide.html but travels alone.
-        STANDALONE: standalone_page("Memory — module bóc tách được", guide, f, css),
         "index.html": page(("index.html"), "Tổng quan", page_index(f), f),
         "kernel.html": page("kernel.html", "Kernel", page_kernel(f), f),
         "skills.html": page("skills.html", "Skills", page_skills(f), f),
         "evidence.html": page("evidence.html", "Chuỗi bằng chứng", page_evidence(f), f),
         "runtime.html": page("runtime.html", "Runtime", page_runtime(f), f),
         "memory.html": page("memory.html", "Memory", page_memory(f), f),
-        "memory-guide.html": page(
-            "memory-guide.html",
-            "Bóc tách Memory",
-            _page_memory_guide.render(f, code, table, callout, esc, stat_grid),
-            f,
-        ),
         "patterns.html": page("patterns.html", "Tinh túy", page_patterns(f), f),
     }
 

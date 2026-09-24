@@ -10,14 +10,14 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Active session logs, raw history files, or offload traces exist | `find .dainexus/offload/ -name \"*.md\" \|\| find ~/.dainexus/usage/ -name \"*.jsonl\"` | ... | run the check command and paste output |
-| Memory hygiene, garbage collection, or compression scripts exist | `find scripts/ -name \"*memory-hygiene*\" -o -name \"*compress*\"` | ... | run the check command and paste output |
+| The checkpoint middleware that summarises and offloads session state is present | `python3 scripts/memory/memory-middleware.py status` | ... | run the check command and paste output |
 | Twin-middleware execution properties and context offload thresholds are defined | `cat .production-grade.yaml` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Strategic Compaction Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
 
 1. AUDIT | Scan active context buffers, session messages, and offloaded reference lists | Ensure total token count does not exceed safety limits and identify stale history nodes for cleanup.
-2. COMPACT | Execute memory-hygiene scripts to compress session logs and prune duplicate token records | Verify that SHA-256 deduplication runs clean and successfully merges redundant query traces to save up to 90% space.
+2. COMPACT | Checkpoint the session so its summary is recorded and the live context can be dropped | Verify the checkpoint summary lands in `.dainexus/subagent-context/CONVERSATION_SUMMARY.md` and in memory (the memory layer deduplicates what it stores).
 3. OFFLOAD | Divert heavy output payloads exceeding 1200 tokens to isolated disk files | Confirm that the model context receives only a short trace handle and the visual canvas updates.
 
 ## Common Mistakes Checklist
@@ -35,10 +35,10 @@ find .dainexus/offload/ -type f | wc -l
 14
 ```
 
-### Step 2: Run the memory hygiene tool to compress stale history
+### Step 2: Checkpoint the session to compact its history
 ```bash
-# Execute local memory hygiene and duplicate token cleaning script
-./scripts/memory-hygiene.sh --prune-duplicate-queries --threshold 1200
+# Summarise the session, record the checkpoint in memory, and keep only the handle in context
+python3 scripts/memory/memory-middleware.py checkpoint --reason compaction
 ```
 
 ### Step 3: Offload a heavy shell output payload to isolated disk storage (Middleware ④d)

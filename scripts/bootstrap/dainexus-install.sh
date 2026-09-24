@@ -1192,7 +1192,6 @@ install_scripts() {
         "bootstrap/dainexus-update.sh"
         "mcp/dainexus-mcp-setup.sh"
         "memory/memory-middleware.py"
-        "scripts/lite/memory.py"
         "runtime/dainexus-session-tracker.sh"
         "skills/dainexus-lesson-migrator.sh"
     )

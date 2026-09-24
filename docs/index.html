@@ -10,7 +10,7 @@
 <body>
 <nav class="nav"><div class="nav-inner">
   <a href="./index.html" class="nav-brand"><span class="dot"></span> DAI Nexus <small>docs</small></a>
-  <div class="nav-links"><a href="./index.html" class=current>Tổng quan</a><a href="./kernel.html">Kernel</a><a href="./skills.html">Skills</a><a href="./evidence.html">Bằng chứng</a><a href="./runtime.html">Runtime</a><a href="./memory.html">Memory</a><a href="./memory-guide.html">Bóc tách Memory</a><a href="./patterns.html">Tinh túy</a></div>
+  <div class="nav-links"><a href="./index.html" class=current>Tổng quan</a><a href="./kernel.html">Kernel</a><a href="./skills.html">Skills</a><a href="./evidence.html">Bằng chứng</a><a href="./runtime.html">Runtime</a><a href="./memory.html">Memory</a><a href="./patterns.html">Tinh túy</a></div>
 </div></nav>
 <main>
 
@@ -26,10 +26,10 @@
   <div class="hero-meta">
     <span>Kernel <strong>8 file</strong></span>
     <span>Overlay <strong>87</strong></span>
-    <span>Protocol <strong>58</strong></span>
-    <span>Runtime <strong>18 script</strong></span>
+    <span>Protocol <strong>59</strong></span>
+    <span>Runtime <strong>22 script</strong></span>
     <span>MCP tool <strong>8</strong></span>
-    <span>Self-test <strong>69</strong></span>
+    <span>Self-test <strong>59</strong></span>
   </div>
 </section>
 
@@ -53,20 +53,20 @@
 
 <h2><span class="num">02</span> Ba tầng</h2>
 <div class="diagram">┌────────────────────────────────────────────────────────────────────────────┐
-│ TẦNG 1 — KERNEL (8 file, ~6823 token, luôn nạp)                            │
+│ TẦNG 1 — KERNEL (8 file, ~6914 token, luôn nạp)                            │
 │ kernel/{AUDIT, CLARIFY, ENTRY, ESCALATE, INDEX, POLICY, SOLVE, VERIFY}     │
 │ → 6 Hard Rules · SOLVE loop · VERIFY/AUDIT · Execution policy              │
 └────────────────────────────────────────────────────────────────────────────┘
                         ⇓ overlay khi cần
 ┌────────────────────────────────────────────────────────────────────────────┐
-│ TẦNG 2 — SKILLS (87 overlay + 58 protocol, load on-demand)                 │
+│ TẦNG 2 — SKILLS (87 overlay + 59 protocol, load on-demand)                 │
 │ skills/pipeline/          → orchestrator: DEFINE | BUILD | HARDEN | SHIP   │
 │ skills/&lt;role&gt;/LITE.md     → GROUND/DECOMPOSE slot theo domain              │
 │ skills/_shared/protocols/ → guardrail, parallel-dispatch, …                │
 └────────────────────────────────────────────────────────────────────────────┘
                         ⇓ được cưỡng bức bởi
 ┌────────────────────────────────────────────────────────────────────────────┐
-│ TẦNG 3 — RUNTIME (18 script, 6747 dòng Python thuần)                       │
+│ TẦNG 3 — RUNTIME (22 script, 9895 dòng Python thuần)                       │
 │ run_check · verify_gate · policy_check · runtime_lease                     │
 │ memory · escalate · worktree_manager · validate_overlays                   │
 │ mcp/server.py → 8 tool cho IDE                                             │
@@ -74,7 +74,7 @@
 
 <h2><span class="num">03</span> 6 Hard Rules</h2>
 <p class="muted small">Đọc thẳng từ <code>kernel/ENTRY.md</code> lúc build:</p>
-<ol class="rules"><li>Never claim verified success without **observed verification evidence** from the current workspace/runtime. `QUICK` work may cite a focused check concisely; `STANDARD`/`DEEP` work uses the verification contract in [VERIFY.md](VERIFY.md).</li><li>Before editing, verify the target and its **material impact proportional to risk**. A local, reversible `QUICK` edit needs only focused target/reference checks; do not manufacture repository-wide impact analysis.</li><li>Never invent paths, APIs, versions, project state, or capabilities — verify the current workspace/runtime or mark `UNVERIFIED`. Examples, templates, memory, and prior sessions are not current-state evidence.</li><li>If the same step fails twice, STOP and follow the Stuck rule in [SOLVE.md](SOLVE.md).</li><li>Stay inside scope; list extras under "Out of scope". Behavioral test oracles are requirement-locked: never weaken/change/delete them to make tests pass; if expected behavior is unclear, ask the user; change them only after a current requirement change.</li><li>Never bypass guardrail rules for destructive or security-sensitive operations — Middleware ④ (`skills/_shared/protocols/guardrail.md`).</li></ol>
+<ol class="rules"><li>Never claim verified success without **observed verification evidence** from the current workspace/runtime. `QUICK` work may cite a focused check concisely; `STANDARD`/`DEEP` work uses the verification contract in [VERIFY.md](VERIFY.md).</li><li>Before editing, verify the target and its **material impact proportional to risk**. A local, reversible `QUICK` edit needs only focused target/reference checks; do not manufacture repository-wide impact analysis.</li><li>Never invent paths, APIs, versions, project state, or capabilities — verify the current workspace/runtime or mark `UNVERIFIED`. Examples, templates, memory, and prior sessions are not current-state evidence.</li><li>If the same step fails twice, STOP and follow the Stuck rule in [SOLVE.md](SOLVE.md).</li><li>Stay in scope; flag extras. Docs follow `skills/_shared/protocols/documentation-governance.md`: update canonical; reject duplicate/transient/off-scope/stale truth; material work: Docs Hub baseline/checkpoint/gate/final build. Tests are requirement-locked; never weaken to pass; ask if unclear; change only after requirement change.</li><li>Never bypass guardrail rules for destructive or security-sensitive operations — Middleware ④ (`skills/_shared/protocols/guardrail.md`).</li></ol>
 
 <h2><span class="num">04</span> Đi sâu từng mảng</h2>
 <div class="grid cols-3">
@@ -85,7 +85,7 @@
   <a href="./evidence.html" class="nav-card"><div class="idx">03 · chống ảo giác</div>
     <h3>Chuỗi bằng chứng</h3><p>4 lớp: evidence writer → stop gate → policy fail-closed → runtime ledger.</p></a>
   <a href="./runtime.html" class="nav-card"><div class="idx">04 · scripts/ + mcp/</div>
-    <h3>Runtime</h3><p>18 công cụ Python zero-dependency + MCP server 8 tool.</p></a>
+    <h3>Runtime</h3><p>22 công cụ Python zero-dependency + MCP server 8 tool.</p></a>
   <a href="./memory.html" class="nav-card"><div class="idx">05 · memory.py</div>
     <h3>Memory</h3><p>SQLite+FTS5, BM25 fuse RRF, auto-tag, redaction, GC theo giá trị.</p></a>
   <a href="./patterns.html" class="nav-card"><div class="idx">06 · TINH TÚY</div>
@@ -115,7 +115,7 @@ Turn-close: VERIFY block · AUDIT coverage matrix · lưu memory · runtime ledg
 Stop hook: verify_gate.py — thiếu/giả/hết hạn evidence ⇒ CHẶN</div>
 
 <h2><span class="num">06</span> Số liệu (đọc từ repo)</h2>
-<div class="grid cols-4"><div class="stat"><div class="val">8</div><div class="lbl">kernel file</div></div><div class="stat"><div class="val">6823</div><div class="lbl">token boot</div></div><div class="stat"><div class="val">87</div><div class="lbl">skill overlay</div></div><div class="stat"><div class="val">58</div><div class="lbl">protocol</div></div><div class="stat"><div class="val">18</div><div class="lbl">runtime script</div></div><div class="stat"><div class="val">6747</div><div class="lbl">dòng runtime</div></div><div class="stat"><div class="val">8</div><div class="lbl">MCP tool</div></div><div class="stat"><div class="val">69</div><div class="lbl">self-test</div></div></div>
+<div class="grid cols-4"><div class="stat"><div class="val">8</div><div class="lbl">kernel file</div></div><div class="stat"><div class="val">6914</div><div class="lbl">token boot</div></div><div class="stat"><div class="val">87</div><div class="lbl">skill overlay</div></div><div class="stat"><div class="val">59</div><div class="lbl">protocol</div></div><div class="stat"><div class="val">22</div><div class="lbl">runtime script</div></div><div class="stat"><div class="val">9895</div><div class="lbl">dòng runtime</div></div><div class="stat"><div class="val">8</div><div class="lbl">MCP tool</div></div><div class="stat"><div class="val">59</div><div class="lbl">self-test</div></div></div>
 
 </main>
 <footer>

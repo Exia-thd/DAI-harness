@@ -122,6 +122,13 @@ def fchmod(fd: int, mode: int, path: Path | str | None = None) -> None:
 # .gitnexus is an index derived from tracked source. Both are covered already,
 # transitively, by the files that determine them.
 #
+# .memory is the DAI memory layer's store: the code graph derived from tracked
+# source, plus the notes agents record. It is rewritten by the post-commit
+# ingest and by every memory write, so hashing it would invalidate evidence the
+# moment anyone looked something up -- and it is ~400 MB. What it records is
+# not what the evidence proves; the source it was built from is, and that
+# stays covered. .gitnexus stays listed for checkouts that still carry one.
+#
 # Measured on this repository before excluding them: 25,911 ignored files
 # totalling 346 MB, and one fingerprint took ~40 seconds. The gate computes the
 # fingerprint up to five times per invocation, so a single verification ran for
@@ -130,7 +137,7 @@ def fchmod(fd: int, mode: int, path: Path | str | None = None) -> None:
 # verification failure. The reference carries the same design and never felt it:
 # that tree has no node_modules.
 _DERIVED_TREE_RE = re.compile(
-    r"(?:^|/)(?:node_modules|\.gitnexus|\.venv|venv|\.git)(?:/|$)"
+    r"(?:^|/)(?:node_modules|\.gitnexus|\.memory|\.venv|venv|\.git)(?:/|$)"
 )
 
 _DERIVED_CACHE_RE = re.compile(
