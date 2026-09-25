@@ -995,8 +995,8 @@
     "lifecycle": "active",
     "health": "on_track",
     "phase": "SUSTAIN",
-    "summary": "GitNexus is gone: memory and code intelligence run on the DAI memory plugin, now a git submodule (vendor/dai-memory, pinned to one commit of Exia-thd/DAI-memory-layer-plugin; changes land in the plugin first) installed outside the repository by scripts/lite/dai_memory.py install, one directory per commit. The MCP setup registers a dai-memory server in every client and removes gitnexus entries it wrote before; the guard, orchestrator, sequence generator, docs hub (adapters.dai_memory reading .memory/meta.json), skills and docs use the layer. The retired memory stores are migrated and removed; the session machinery they shared (memory-session, memory-middleware, continuity, memory-trace) is kept and records into the layer.",
-    "updated_at": "2026-09-22T16:24:32+07:00",
+    "summary": "GitNexus is gone: memory and code intelligence run on the DAI memory plugin, now a git submodule (vendor/dai-memory, pinned to one commit of Exia-thd/DAI-memory-layer-plugin; changes land in the plugin first) installed outside the repository by scripts/lite/dai_memory.py install, one directory per commit. The MCP setup registers a dai-memory server in every client and removes gitnexus entries it wrote before; the guard, orchestrator, sequence generator, docs hub (adapters.dai_memory reading .memory/meta.json), skills and docs use the layer. The retired memory stores are migrated and removed; the session machinery they shared (memory-session, memory-middleware, continuity, memory-trace) is kept and records into the layer. The pinned plugin commit is 13a3ef5: a full `dai-memory ingest` now records the commit it read, so `status` and the docs hub's code-index adapter stop calling a current index stale.",
+    "updated_at": "2026-09-25T10:54:32+07:00",
     "blockers": [],
     "risks": [],
     "next_actions": [
