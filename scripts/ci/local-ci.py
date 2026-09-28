@@ -1003,7 +1003,20 @@ class LocalCI:
                 "tests/lite_known_failures.txt",
             ],
             scrub_git_env=True,
-            timeout=1200,
+            # Same under-budget mistake this file already fixed one step below.
+            # Measured on a working machine, nothing else competing for it:
+            # **1444s**, exit 0, no new failures. The 1200s budget reported that
+            # as `timeout; process tree terminated` with no output at all,
+            # because `pytest -q` prints nothing until it ends -- so a suite that
+            # passes read as a suite that hangs.
+            #
+            # The cost is structural rather than incidental: every test in
+            # tests/lite spawns verify_gate.py, which fingerprints the real
+            # repository rather than the temp one the test hands it. That is 8.5s
+            # a fingerprint here, twice per test, across 91 tests. Fixing the
+            # fingerprint would be the better repair; until then the budget has
+            # to cover what the suite actually costs.
+            timeout=2700,
         )
         self.run(
             "python-unit-tests",
