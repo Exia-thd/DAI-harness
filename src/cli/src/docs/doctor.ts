@@ -31,7 +31,7 @@ export function doctorCatalog(
       severity: "warning",
       code: "STALE_DOCS_INDEX",
       projectId: catalog.project.id,
-      path: ".dainexus/cache/docs-index.json",
+      path: ".daiharness/cache/docs-index.json",
       message: "The stored normalized docs index is stale.",
       suggestion: "Run `dai docs scan` or `dai docs build`.",
     });

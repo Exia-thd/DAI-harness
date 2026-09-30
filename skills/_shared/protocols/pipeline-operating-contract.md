@@ -47,7 +47,7 @@ These invariants apply even when no domain skill is loaded. A skill therefore ca
 
 ## Pipeline Context Envelope
 
-Before a substantive specialist dispatch, the pipeline supplies a compact context envelope. It may remain in task state for one-step work; substantial multi-role work may persist it at `.dainexus/pipeline-context.md`.
+Before a substantive specialist dispatch, the pipeline supplies a compact context envelope. It may remain in task state for one-step work; substantial multi-role work may persist it at `.daiharness/pipeline-context.md`.
 
 ```text
 PIPELINE_CONTEXT
@@ -119,7 +119,7 @@ non-destructively initialized or migrated with `forge docs init [target]`
 before the first material edit; legacy readability is not permission to skip
 the HTML control center. From that boundary the project is continuous.
 “Persistent build” means `forge docs build [target]` writes the
-normal project output (normally `.dainexus/docs-hub/site/`) so the current
+normal project output (normally `.daiharness/docs-hub/site/`) so the current
 project view is inspectable by the user; it does not make generated output a
 source or authorize editing it.
 

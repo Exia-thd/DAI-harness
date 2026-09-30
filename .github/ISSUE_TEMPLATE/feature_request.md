@@ -27,6 +27,6 @@ Add any other context, mockups, or reference materials.
 
 ## Checklist
 
-- [ ] This feature aligns with the DAI Nexus pipeline philosophy
+- [ ] This feature aligns with the DAI Harness pipeline philosophy
 - [ ] I have considered backward compatibility
 - [ ] I can provide examples of how this feature would be used

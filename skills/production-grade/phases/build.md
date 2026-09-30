@@ -12,7 +12,7 @@ Read `.production-grade.yaml` to determine:
 - `project.architecture` → monolith vs microservices (affects containerization)
 - `paths.services`, `paths.frontend`, `paths.mobile`, `paths.shared_libs` → output locations
 
-Read `.dainexus/settings.md` to determine execution mode.
+Read `.daiharness/settings.md` to determine execution mode.
 
 ## Execution Mode Check
 
@@ -55,7 +55,7 @@ Context:
 - Consume `PIPELINE_CONTEXT` for accepted scope, constraints/non-goals, risk ownership and verified facts.
 - Read .production-grade.yaml for paths and preferences.
 - Write services to project root: services/, libs/shared/
-- Write workspace artifacts to: .dainexus/software-engineer/
+- Write workspace artifacts to: .daiharness/software-engineer/
 - TDD enforced: write test → watch fail → implement → watch pass → refactor.
 
 Update task.md: T3a status → completed
@@ -71,14 +71,14 @@ Update task.md: T3b status → in_progress
 Read skills/frontend-engineer/SKILL.md and follow its instructions.
 Context:
 - Read API contracts from: api/
-- Read BRD user stories from: .dainexus/product-manager/BRD/
-- Read design specs from: .dainexus/ui-designer/ (if T1.5 ran)
+- Read BRD user stories from: .daiharness/product-manager/BRD/
+- Read design specs from: .daiharness/ui-designer/ (if T1.5 ran)
 - Read design tokens from: docs/design/design-tokens.json (if T1.5 ran)
 - Consume `PIPELINE_CONTEXT`, especially `visual_basis`, constraints/non-goals and owned risk signals.
 - Frontend implements the approved UI contract; it does not invent or rerun the visual direction gate.
 - Read .production-grade.yaml for framework and styling preferences.
 - Write frontend to project root: frontend/
-- Write workspace artifacts to: .dainexus/frontend-engineer/
+- Write workspace artifacts to: .daiharness/frontend-engineer/
 
 Update task.md: T3b status → completed
 ```
@@ -98,13 +98,13 @@ Update task.md: T3c status → in_progress
 Read skills/mobile-engineer/SKILL.md and follow its instructions.
 Context:
 - Read API contracts from: api/
-- Read BRD user stories from: .dainexus/product-manager/BRD/
-- Read design specs from: .dainexus/ui-designer/ (if T1.5 ran)
+- Read BRD user stories from: .daiharness/product-manager/BRD/
+- Read design specs from: .daiharness/ui-designer/ (if T1.5 ran)
 - Read design tokens from: docs/design/design-tokens.json (if T1.5 ran)
 - Consume `PIPELINE_CONTEXT`, especially target platform, visual basis, constraints/non-goals and owned risk signals.
 - Read .production-grade.yaml for mobile framework and preferences.
 - Write mobile to project root: mobile/
-- Write workspace artifacts to: .dainexus/mobile-engineer/
+- Write workspace artifacts to: .daiharness/mobile-engineer/
 
 Update task.md: T3c status → completed
 ```
@@ -123,7 +123,7 @@ Context:
 - Consume `PIPELINE_CONTEXT` for release/operations constraints and assigned risk signals.
 - Read .production-grade.yaml for paths and preferences.
 - Write Dockerfiles per service, docker-compose.yml at project root.
-- Write workspace artifacts to: .dainexus/devops/containers/
+- Write workspace artifacts to: .daiharness/devops/containers/
 - Validate: docker build succeeds for each service, docker-compose up starts all.
 
 Update task.md: T4 status → completed
@@ -136,9 +136,9 @@ After EACH build task (T3a, T3b, T3c, T4), run domain verification then the pipe
 1. **Per-skill quality gate** — verify build, regression, standards, traceability
 2. **Brownfield regression check** — if brownfield project:
    - Run existing test suite
-   - Compare with baseline from `.dainexus/baseline-{session}.json`
+   - Compare with baseline from `.daiharness/baseline-{session}.json`
    - If any previously-passing test now fails → REGRESSION → skill must fix before proceeding
-3. **Change manifest update** — log all file operations to `.dainexus/change-manifest-{session}.json`
+3. **Change manifest update** — log all file operations to `.daiharness/change-manifest-{session}.json`
 4. **Session lifecycle hook** — call `TASK_COMPLETE(task_id, name, status, summary)`
 
 Display mini-scorecard after each task:

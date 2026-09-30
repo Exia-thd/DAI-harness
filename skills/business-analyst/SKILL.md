@@ -8,7 +8,7 @@ description: >
   handing off to Product Manager.
   Routed via the production-grade orchestrator.
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [business-analysis, requirements, elicitation, feasibility, stakeholder, critical-evaluation]
 ---
 
@@ -20,7 +20,7 @@ tags: [business-analysis, requirements, elicitation, feasibility, stakeholder, c
 !`cat skills/_shared/protocols/input-validation.md 2>/dev/null || true`
 !`cat skills/_shared/protocols/tool-efficiency.md 2>/dev/null || true`
 !`cat .production-grade.yaml 2>/dev/null || echo "No config — using defaults"`
-!`cat .dainexus/codebase-context.md 2>/dev/null || true`
+!`cat .daiharness/codebase-context.md 2>/dev/null || true`
 
 **Fallback:** Work continuously. Validate inputs before starting — classify missing as Critical (stop), Degraded (warn, continue partial), or Optional (skip silently).
 
@@ -111,9 +111,9 @@ Depth is driven by unresolved decisions, not a minimum number of questions or in
 Before starting elicitation, check for existing context:
 
 ```bash
-cat .dainexus/polymath/handoff/context-package.md 2>/dev/null
-cat .dainexus/product-manager/BRD/brd.md 2>/dev/null
-cat .dainexus/business-analyst/handoff/ba-package.md 2>/dev/null
+cat .daiharness/polymath/handoff/context-package.md 2>/dev/null
+cat .daiharness/product-manager/BRD/brd.md 2>/dev/null
+cat .daiharness/business-analyst/handoff/ba-package.md 2>/dev/null
 ```
 
 If context exists, reduce elicitation to cover ONLY uncovered gaps. Do not re-ask what's already established.
@@ -665,7 +665,7 @@ Options:
 ## Output Structure
 
 ```
-.dainexus/business-analyst/
+.daiharness/business-analyst/
 ├── stakeholder-analysis.md          # Power/Interest matrix, RACI
 ├── elicitation/
 │   ├── interview-notes-{date}.md   # Interview notes

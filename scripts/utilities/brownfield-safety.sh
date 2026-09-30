@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# DAI Nexus Brownfield Safety Net
+# DAI Harness Brownfield Safety Net
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 #
 # Usage:
@@ -14,27 +14,27 @@ set -euo pipefail
 #   brownfield-safety.sh help          — show this help
 #
 # Files:
-#   .dainexus/baseline-{session}.json
-#   .dainexus/change-manifest-{session}.json
+#   .daiharness/baseline-{session}.json
+#   .daiharness/change-manifest-{session}.json
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-DAINEXUS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+DAIHARNESS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-if [[ -d "$DAINEXUS_DIR/.dainexus" ]]; then
-  PROJECT_ROOT="$DAINEXUS_DIR"
-elif [[ -d "$DAINEXUS_DIR/../.dainexus" ]]; then
-  PROJECT_ROOT="$(cd "$DAINEXUS_DIR/.." && pwd)"
+if [[ -d "$DAIHARNESS_DIR/.daiharness" ]]; then
+  PROJECT_ROOT="$DAIHARNESS_DIR"
+elif [[ -d "$DAIHARNESS_DIR/../.daiharness" ]]; then
+  PROJECT_ROOT="$(cd "$DAIHARNESS_DIR/.." && pwd)"
 else
   PROJECT_ROOT="$(pwd)"
 fi
 
-WORKSPACE="$PROJECT_ROOT/.dainexus"
+WORKSPACE="$PROJECT_ROOT/.daiharness"
 PROFILE="$WORKSPACE/project-profile.json"
 SESSION_ID="session-$(date +%Y%m%d-%H%M)"
 BASELINE_FILE="$WORKSPACE/baseline-${SESSION_ID}.json"
 MANIFEST_FILE="$WORKSPACE/change-manifest-${SESSION_ID}.json"
-BRANCH_NAME="dai-nexus/$SESSION_ID"
+BRANCH_NAME="dai-harness/$SESSION_ID"
 
 mkdir -p "$WORKSPACE"
 
@@ -76,7 +76,7 @@ cmd_init() {
       read -p "Auto-stash and continue? [Y/n] " -n 1 -r
       echo ""
       if [[ ! $REPLY =~ ^[Nn]$ ]]; then
-        git -C "$PROJECT_ROOT" stash push -m "dai-nexus-safety-$SESSION_ID"
+        git -C "$PROJECT_ROOT" stash push -m "dai-harness-safety-$SESSION_ID"
         echo "✓ Changes stashed"
       fi
     fi
@@ -327,7 +327,7 @@ cmd_rollback() {
   local current_branch
   current_branch=$(git -C "$PROJECT_ROOT" branch --show-current)
   
-  if [[ "$current_branch" == dai-nexus/* ]]; then
+  if [[ "$current_branch" == dai-harness/* ]]; then
     local main_branch
     main_branch=$(git -C "$PROJECT_ROOT" symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
     
@@ -336,7 +336,7 @@ cmd_rollback() {
     echo "✓ Rolled back. Session branch preserved: $current_branch"
     echo "  To delete: git branch -D $current_branch"
   else
-    echo "⚠ Not on a dai-nexus session branch (current: $current_branch)"
+    echo "⚠ Not on a dai-harness session branch (current: $current_branch)"
     echo "  Manual rollback needed"
   fi
 }

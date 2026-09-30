@@ -1,21 +1,21 @@
 {
   "version": "2.0",
-  "name": "DAI Nexus MCP",
-  "description": "DAI Nexus MCP Configuration for Antigravity",
+  "name": "DAI Harness MCP",
+  "description": "DAI Harness MCP Configuration for Antigravity",
   "servers": {
-    "dai-nexus-workspace": {
+    "dai-harness-workspace": {
       "command": "bash",
       "args": [
-        "DAI-NEXUS/scripts/dainexus-mcp-launcher.sh"
+        "DAI-HARNESS/scripts/daiharness-mcp-launcher.sh"
       ],
-      "description": "DAI Nexus project intelligence with workspace isolation"
+      "description": "DAI Harness project intelligence with workspace isolation"
     }
   },
   "notes": {
-    "installation": "Run 'dainexus-mcp-setup.sh setup' from your project to auto-generate this config",
+    "installation": "Run 'daiharness-mcp-setup.sh setup' from your project to auto-generate this config",
     "workspace": "MCP server auto-detects workspace from cwd (no ${workspaceFolder} needed — Antigravity does not resolve it)",
     "restart": "Restart Antigravity after modifying this file",
     "multi_project": "One config works for ALL projects with Antigravity",
-    "code_intelligence": "Code intelligence is provided by the DAI memory layer, registered by scripts/mcp/dainexus-mcp-setup.sh as its own dai-memory MCP server; it is not launched from here."
+    "code_intelligence": "Code intelligence is provided by the DAI memory layer, registered by scripts/mcp/daiharness-mcp-setup.sh as its own dai-memory MCP server; it is not launched from here."
   }
 }

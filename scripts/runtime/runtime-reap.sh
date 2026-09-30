@@ -37,7 +37,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 REGISTRY_PY="${SCRIPT_DIR}/runtime_registry.py"
 LEASE_CLI="${SCRIPT_DIR}/runtime-lease.sh"
 
-SESSION=""; EXECUTE=0; FORCE=0; AS_JSON=0; GRACE="${DAINEXUS_RLG_GRACE:-5}"
+SESSION=""; EXECUTE=0; FORCE=0; AS_JSON=0; GRACE="${DAIHARNESS_RLG_GRACE:-5}"
 
 while [ $# -gt 0 ]; do
   case "$1" in

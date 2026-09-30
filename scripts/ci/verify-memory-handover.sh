@@ -52,7 +52,7 @@ export MEMORY_DB_DIR="$SESSION_DB"
 mkdir -p "$SESSION_DB" "$HANDOVER_DIR"
 
 # Create a mock summary file
-MOCK_SUMMARY="$PROJECT_ROOT/.dainexus/subagent-context/CONVERSATION_SUMMARY.md"
+MOCK_SUMMARY="$PROJECT_ROOT/.daiharness/subagent-context/CONVERSATION_SUMMARY.md"
 mkdir -p "$(dirname "$MOCK_SUMMARY")"
 cat > "$MOCK_SUMMARY" << 'EOF'
 # Conversation Summary
@@ -179,7 +179,7 @@ os.environ["MEMORY_DB_DIR"] = sys.argv[1]
 # resolve paths relative to the verifier process and would not exercise the
 # memory implementation under test.
 module_path = "scripts/memory/memory-middleware.py"
-spec = importlib.util.spec_from_file_location("dainexus_memory_middleware", module_path)
+spec = importlib.util.spec_from_file_location("daiharness_memory_middleware", module_path)
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 

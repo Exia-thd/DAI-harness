@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write one exact, machine-produced DAI Nexus evidence record.
+"""Write one exact, machine-produced DAI Harness evidence record.
 
 The command is deliberately metadata-first: missing v2 metadata and trivial
 commands are rejected before the requested command is started.
@@ -192,7 +192,9 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--change-kind", default=None)
     parser.add_argument("--phase", default=None)
     parser.add_argument("--risk", default=None)
-    parser.add_argument("--implementer-id", default=os.environ.get("DAINEXUS_ACTOR_ID"))
+    parser.add_argument(
+        "--implementer-id", default=os.environ.get("DAIHARNESS_ACTOR_ID")
+    )
     parser.add_argument("--reviewer", default=None, help="Reviewer JSON object")
     parser.add_argument("--reviewer-id", default=None)
     parser.add_argument("--reviewer-status", default=None)
@@ -295,7 +297,7 @@ def _metadata_errors(
     if not args.phase:
         errors.append("MISSING: --phase is required")
     if not args.implementer_id:
-        errors.append("MISSING: --implementer-id or DAINEXUS_ACTOR_ID is required")
+        errors.append("MISSING: --implementer-id or DAIHARNESS_ACTOR_ID is required")
     elif len(args.implementer_id.strip()) < 3:
         errors.append("FORGED: --implementer-id must be a nontrivial identifier")
     if args.reviewer is not None and not reviewer:
@@ -374,12 +376,12 @@ def main() -> None:
         print("[run-check] Command was not started.", file=sys.stderr)
         raise SystemExit(2)
 
-    out_dir = Path(args.out) if args.out else workspace / ".dainexus" / "verify"
+    out_dir = Path(args.out) if args.out else workspace / ".daiharness" / "verify"
     if not out_dir.is_absolute():
         out_dir = (Path.cwd() / out_dir).resolve()
     turn = (
         args.turn
-        or os.environ.get("DAINEXUS_TURN")
+        or os.environ.get("DAIHARNESS_TURN")
         or (datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + f"_{os.getpid()}")
     )
     if (
@@ -435,7 +437,7 @@ def main() -> None:
         "output_truncated": output_truncated,
         "timestamp_utc": timestamp_utc,
         "workspace": str(workspace),
-        # Compute only after the command; .dainexus/verify is excluded by the helper.
+        # Compute only after the command; .daiharness/verify is excluded by the helper.
         "tree_sha": _tree_sha(workspace),
         "reviewer": reviewer,
     }

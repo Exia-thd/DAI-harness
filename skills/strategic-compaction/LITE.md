@@ -9,7 +9,7 @@ version: 1.0.0
 ## SOLVE Step 2: GROUND (Strategic Compaction Domain Slots)
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Active session logs, raw history files, or offload traces exist | `find .dainexus/offload/ -name \"*.md\" \|\| find ~/.dainexus/usage/ -name \"*.jsonl\"` | ... | run the check command and paste output |
+| Active session logs, raw history files, or offload traces exist | `find .daiharness/offload/ -name \"*.md\" \|\| find ~/.daiharness/usage/ -name \"*.jsonl\"` | ... | run the check command and paste output |
 | The checkpoint middleware that summarises and offloads session state is present | `python3 scripts/memory/memory-middleware.py status` | ... | run the check command and paste output |
 | Twin-middleware execution properties and context offload thresholds are defined | `cat .production-grade.yaml` | ... | run the check command and paste output |
 
@@ -17,7 +17,7 @@ version: 1.0.0
 Format: `n. ACTION | TARGET | CHECK`
 
 1. AUDIT | Scan active context buffers, session messages, and offloaded reference lists | Ensure total token count does not exceed safety limits and identify stale history nodes for cleanup.
-2. COMPACT | Checkpoint the session so its summary is recorded and the live context can be dropped | Verify the checkpoint summary lands in `.dainexus/subagent-context/CONVERSATION_SUMMARY.md` and in memory (the memory layer deduplicates what it stores).
+2. COMPACT | Checkpoint the session so its summary is recorded and the live context can be dropped | Verify the checkpoint summary lands in `.daiharness/subagent-context/CONVERSATION_SUMMARY.md` and in memory (the memory layer deduplicates what it stores).
 3. OFFLOAD | Divert heavy output payloads exceeding 1200 tokens to isolated disk files | Confirm that the model context receives only a short trace handle and the visual canvas updates.
 
 ## Common Mistakes Checklist
@@ -28,8 +28,8 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground current context and active usage metrics
 ```bash
-cat .dainexus/budget.yaml
-find .dainexus/offload/ -type f | wc -l
+cat .daiharness/budget.yaml
+find .daiharness/offload/ -type f | wc -l
 ```
 ```
 14
@@ -53,7 +53,7 @@ node_id = 'n-5'
 session_id = 'session-001'
 
 # Write to isolated offload disk storage
-offload_dir = f'.dainexus/offload/{session_id}/refs'
+offload_dir = f'.daiharness/offload/{session_id}/refs'
 os.makedirs(offload_dir, exist_ok=True)
 file_hash = hashlib.sha256(output_data.encode()).hexdigest()[:8]
 ref_path = f'{offload_dir}/{node_id}-{file_hash}.md'

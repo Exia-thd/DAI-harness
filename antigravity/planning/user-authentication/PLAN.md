@@ -1,6 +1,6 @@
 # Feature Plan: User Authentication System
 
-> OAuth2 + JWT authentication cho DAI Nexus.
+> OAuth2 + JWT authentication cho DAI Harness.
 
 ## Metadata
 

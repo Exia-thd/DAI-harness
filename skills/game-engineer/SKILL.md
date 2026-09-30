@@ -5,7 +5,7 @@ description: >
   Routes to the appropriate game engine skill (Unity, Unreal, Godot, Roblox, Phaser 3, Three.js)
   based on project requirements. Provides unified game development workflow.
 version: 1.0.0
-author: dai-nexus
+author: dai-harness
 tags: [game-engine, unity, unreal, godot, roblox, phaser3, threejs, game-development]
 meta_skill: true
 sub_skills:

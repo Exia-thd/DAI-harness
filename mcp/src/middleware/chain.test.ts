@@ -121,7 +121,7 @@ describe('MiddlewareChain', () => {
   });
 
   it('sanitizes and compresses tool output before returning and caching it', async () => {
-    const auditDir = mkdtempSync(join(tmpdir(), 'dai-nexus-chain-audit-'));
+    const auditDir = mkdtempSync(join(tmpdir(), 'dai-harness-chain-audit-'));
     const chain = new MiddlewareChain({
       config: {
         session_deduplication: { enabled: true },
@@ -160,8 +160,8 @@ describe('MiddlewareChain', () => {
   });
 
   it('offloads raw tool output while returning only sandboxed content', async () => {
-    const auditDir = mkdtempSync(join(tmpdir(), 'dai-nexus-chain-audit-'));
-    const offloadDir = mkdtempSync(join(tmpdir(), 'dai-nexus-chain-offload-'));
+    const auditDir = mkdtempSync(join(tmpdir(), 'dai-harness-chain-audit-'));
+    const offloadDir = mkdtempSync(join(tmpdir(), 'dai-harness-chain-offload-'));
     const chain = new MiddlewareChain({
       config: {
         session_deduplication: { enabled: true },
@@ -191,7 +191,7 @@ describe('MiddlewareChain', () => {
   });
 
   it('flags prompt-injection-looking output while preserving execution flow', async () => {
-    const auditDir = mkdtempSync(join(tmpdir(), 'dai-nexus-chain-audit-'));
+    const auditDir = mkdtempSync(join(tmpdir(), 'dai-harness-chain-audit-'));
     const chain = new MiddlewareChain({
       config: {
         session_deduplication: { enabled: false },
@@ -217,7 +217,7 @@ describe('MiddlewareChain', () => {
   });
 
   it('blocks errored tool output through the quality gate', async () => {
-    const auditDir = mkdtempSync(join(tmpdir(), 'dai-nexus-chain-audit-'));
+    const auditDir = mkdtempSync(join(tmpdir(), 'dai-harness-chain-audit-'));
     const chain = new MiddlewareChain({
       config: {
         session_deduplication: { enabled: false },

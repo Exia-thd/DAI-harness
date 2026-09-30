@@ -152,7 +152,7 @@ function printSkillsHumanReadable(
   search?: string,
 ): void {
   console.log();
-  console.log(pc.bold(`  DAI Nexus Skills`));
+  console.log(pc.bold(`  DAI Harness Skills`));
   console.log(pc.dim("  " + "─".repeat(50)));
 
   if (category || search) {

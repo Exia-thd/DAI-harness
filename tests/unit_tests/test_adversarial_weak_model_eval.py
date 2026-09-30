@@ -161,12 +161,12 @@ def test_suite_fingerprint_includes_fixture_bytes():
 
 def test_auto_adapter_uses_agy_only_for_agy_provider(monkeypatch):
     module = _module()
-    monkeypatch.setenv("DAINEXUS_PROVIDER", "agy")
+    monkeypatch.setenv("DAIHARNESS_PROVIDER", "agy")
     monkeypatch.setattr(
         module.shutil, "which", lambda name: "/fake/agy" if name == "agy" else None
     )
     assert module._select_live_adapter("auto") == "agy"
-    monkeypatch.setenv("DAINEXUS_PROVIDER", "other")
+    monkeypatch.setenv("DAIHARNESS_PROVIDER", "other")
     assert module._select_live_adapter("auto") == "orchestrator"
 
 

@@ -17,7 +17,7 @@ variants:
 metadata:
   domain: ux-ui-design
   contributors:
-    - dai-nexus-maintainer
+    - dai-harness-maintainer
   source_prompts_count: 0
   created_at: "2026-06-02"
   description: "Senior UX/UI Designer prompt library for comprehensive user experience and interface design tasks"

@@ -9,7 +9,7 @@ version: 1.0.0
 ## SOLVE Step 2: GROUND (Business Analyst Domain Slots)
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Project stack and baseline profile are onboarded and defined | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project stack and baseline profile are onboarded and defined | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 | Existing product specifications or active requirements exist in the designated product folder | `find docs/01-product/ -name "*.md"` | ... | run the check command and paste output |
 | Standardized feature specifications template is present for formatting consistency | `cat docs/01-product/TEMPLATE-FEATURE-SPEC.md` | ... | run the check command and paste output |
 
@@ -28,7 +28,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Verify the project profile and check the feature spec template
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 cat docs/01-product/TEMPLATE-FEATURE-SPEC.md
 ```
 
@@ -42,7 +42,7 @@ Provide automated, cost-aware billing boundaries mapped to client-server metrics
 
 ## 2. User Personas
 - Developer: Reviews real-time API token usage reports.
-- Enterprise Admin: Manages budgets via `.dainexus/budget.yaml` [5, 6].
+- Enterprise Admin: Manages budgets via `.daiharness/budget.yaml` [5, 6].
 
 ## 3. Acceptance Criteria (BDD)
 Scenario: Automated threshold restriction

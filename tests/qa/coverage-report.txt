@@ -4,12 +4,12 @@
 
 | Package | Tests | Status | Notes |
 |---------|-------|--------|-------|
-| **dainexus-node** | 127 passed | ✅ PASS | 7 test files |
+| **daiharness-node** | 127 passed | ✅ PASS | 7 test files |
 | **mcp** | 61 passed | ✅ PASS | 4 test files |
 
 ---
 
-## DAI Nexus Node Test Files
+## DAI Harness Node Test Files
 
 | File | Tests | Status |
 |------|-------|--------|
@@ -41,7 +41,7 @@
 
 ## New Tests Added (v8.2)
 
-### DAI Nexus Node
+### DAI Harness Node
 - `src/agents/prompts.test.ts` — CITATION_PATTERN, extractCitations, buildVerificationPrompt, buildSynthesisPrompt, applyGuardrails, parseVerificationResponse, extractConfidenceScore
 - `src/agents/llm-client.test.ts` — MockLLMClient, GuardedLLMClient, createGuardedLLMClient, createMockGuardedLLMClient
 - `src/data/graph.test.ts` — detectCommunities, analyzeImpact, computeMRO, findOverrides, traceProcesses
@@ -58,7 +58,7 @@
 | Job | Threshold | Status |
 |-----|-----------|--------|
 | `test-coverage` (mcp) | 70% | ✅ |
-| `dainexus-node-coverage` | 70% | ⚠️ Reporter bug (data OK) |
+| `daiharness-node-coverage` | 70% | ⚠️ Reporter bug (data OK) |
 
 ---
 

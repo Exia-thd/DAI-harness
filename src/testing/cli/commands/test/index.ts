@@ -113,7 +113,7 @@ export function parseArgs(args: string[]): {
  */
 export function printHelp(): void {
   console.log(`
-DAI Nexus Testing CLI
+DAI Harness Testing CLI
 
 Usage:
   dai test <command> [options]
@@ -135,6 +135,6 @@ Examples:
   dai test agents --role healer
   dai test autonomous --monitor --red-team
 
-For more information, see: https://github.com/Exia-thd/DAI-nexus
+For more information, see: https://github.com/Exia-thd/DAI-harness
 `);
 }

@@ -6,7 +6,7 @@ description: >
   and art pipeline automation.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [unreal, niagara, materials, lumen, nanite, vfx, shaders, tech-art]
 ---
 
@@ -47,7 +47,7 @@ Visual effects are **communication, not decoration**. Every particle burst, mate
 
 ## Aesthetic Foundation
 
-Unreal's rendering power requires disciplined artistic direction. This skill references **DAI Nexus Game Visual Foundations** (`skills/_shared/game-visual-foundations.md`) for:
+Unreal's rendering power requires disciplined artistic direction. This skill references **DAI Harness Game Visual Foundations** (`skills/_shared/game-visual-foundations.md`) for:
 
 - **Lighting aesthetics** — Lumen as emotional tool, color temperature per genre, atmospheric depth
 - **Post-processing philosophy** — LUT-based color grading, when post-processing reinforces vs. masks poor lighting

@@ -324,7 +324,7 @@ export function validateProjectState(input: unknown): DocsProjectState {
   const parsed = docsProjectStateSchema.safeParse(input);
   if (!parsed.success) {
     throw new DocsProjectStateError(
-      "Invalid DAI Nexus project state.",
+      "Invalid DAI Harness project state.",
       parsed.error.issues.map(
         (issue) => `${issue.path.join(".") || "<root>"}: ${issue.message}`,
       ),
@@ -350,7 +350,7 @@ function inferredRoots(
     .filter(
       (entry) =>
         entry.isDirectory() &&
-        entry.name !== ".dainexus" &&
+        entry.name !== ".daiharness" &&
         !isSensitivePath(entry.name),
     )
     .map((entry) => entry.name)

@@ -1,6 +1,6 @@
 # Migration Guide: v8.x to v9.0
 
-> **Upgrading DAI Nexus from v8.x to v9.0**
+> **Upgrading DAI Harness from v8.x to v9.0**
 
 ## What's New in v9.0
 
@@ -135,7 +135,7 @@ git submodule update --init
 
 - **Documentation:** [docs/index.md](../index.md)
 - **Breaking Changes:** [breaking-changes.md](breaking-changes.md)
-- **GitHub Issues:** [Open an issue](https://github.com/Exia-thd/DAI-nexus/issues)
+- **GitHub Issues:** [Open an issue](https://github.com/Exia-thd/DAI-harness/issues)
 
 ---
 

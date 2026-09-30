@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-tests/smoke.py — DAI Nexus self-test suite (no external services, no model calls).
+tests/smoke.py — DAI Harness self-test suite (no external services, no model calls).
 
 Run:  python tests/smoke.py
 Exit: 0 = all pass, 1 = failures (listed on stderr)
@@ -146,7 +146,7 @@ def test_mcp_server() -> None:
     lines = [json.loads(line) for line in r.stdout.splitlines() if line.strip()]
     ok = (
         len(lines) == 2
-        and lines[0]["result"]["serverInfo"]["name"] == "dai-nexus"
+        and lines[0]["result"]["serverInfo"]["name"] == "dai-harness"
         and len(lines[1]["result"]["tools"]) == 8
     )
     check("mcp initialize + tools/list (8 tools)", ok, r.stdout[:200] + r.stderr[:200])
@@ -163,7 +163,7 @@ def test_mcp_gate_discipline() -> None:
                             "id": 1,
                             "method": "tools/call",
                             "params": {
-                                "name": "dn_start_pipeline",
+                                "name": "dh_start_pipeline",
                                 "arguments": {"goal": "g"},
                             },
                         }
@@ -173,7 +173,7 @@ def test_mcp_gate_discipline() -> None:
                             "jsonrpc": "2.0",
                             "id": 2,
                             "method": "tools/call",
-                            "params": {"name": "dn_advance_phase", "arguments": {}},
+                            "params": {"name": "dh_advance_phase", "arguments": {}},
                         }
                     ),
                     json.dumps(
@@ -181,7 +181,7 @@ def test_mcp_gate_discipline() -> None:
                             "jsonrpc": "2.0",
                             "id": 3,
                             "method": "tools/call",
-                            "params": {"name": "dn_advance_phase", "arguments": {}},
+                            "params": {"name": "dh_advance_phase", "arguments": {}},
                         }
                     ),
                 ]
@@ -195,7 +195,7 @@ def test_mcp_gate_discipline() -> None:
         # Windows is cp1252 and mangles any non-ASCII the server reports.
         env = dict(
             os.environ,
-            DAINEXUS_ROOT=tmp,
+            DAIHARNESS_ROOT=tmp,
             PYTHONUTF8="1",
             PYTHONIOENCODING="utf-8",
         )
@@ -279,7 +279,7 @@ def test_policy_check() -> None:
     check("policy denies force push", r.returncode == 1, f"exit={r.returncode}")
     import os
 
-    env = dict(os.environ, DAINEXUS_POLICY_FILE="nonexistent-policy.yaml")
+    env = dict(os.environ, DAIHARNESS_POLICY_FILE="nonexistent-policy.yaml")
     r = subprocess.run(
         PY + ["scripts/lite/policy_check.py", "check", "x", "y"],
         capture_output=True,
@@ -299,7 +299,7 @@ def test_policy_check() -> None:
 
 def test_runtime_lease() -> None:
     # A dead-PID lease must not count as leaked; a live non-keep lease must.
-    lease_file = ROOT / ".dainexus" / "leases.json"
+    lease_file = ROOT / ".daiharness" / "leases.json"
     backup = lease_file.read_text(encoding="utf-8") if lease_file.is_file() else None
     try:
         r = run(
@@ -394,7 +394,7 @@ def test_skill_overlays_clean() -> None:
     skip_parts = {
         ".git",
         ".memory",
-        ".dainexus",
+        ".daiharness",
         # Hypothesis caches string constants harvested from the tree, so it
         # echoes back whatever the sources said. Gitignored tool cache, not repo
         # content.
@@ -525,7 +525,7 @@ def test_claim_correlation() -> None:
         # Run the gate in a throwaway directory: asserting on this repo's own
         # working tree makes the result depend on whatever else is uncommitted.
         with tempfile.TemporaryDirectory() as sandbox:
-            env = dict(os.environ, DAINEXUS_TURN="__no_such_turn__")
+            env = dict(os.environ, DAIHARNESS_TURN="__no_such_turn__")
             r = subprocess.run(
                 PY + [str(ROOT / "scripts" / "lite" / "verify_gate.py"), "--hook"],
                 input=payload,
@@ -750,7 +750,7 @@ def test_escalate_timeout_and_lease() -> None:
         esc.provider_timeout_seconds({"providerTimeoutSeconds": "abc"}) == 120,
     )
 
-    lease_file = ROOT / ".dainexus" / "leases.json"
+    lease_file = ROOT / ".daiharness" / "leases.json"
     backup = lease_file.read_text(encoding="utf-8") if lease_file.is_file() else None
     import os
 
@@ -819,7 +819,7 @@ def test_skill_test_contracts() -> None:
 
 
 def test_rule_ledger() -> None:
-    ledger = ROOT / ".dainexus" / "rule-ledger.jsonl"
+    ledger = ROOT / ".daiharness" / "rule-ledger.jsonl"
     backup = ledger.read_text(encoding="utf-8") if ledger.is_file() else None
     try:
         r = run(
@@ -847,7 +847,7 @@ def test_rule_ledger() -> None:
 
 
 def main() -> None:
-    print("DAI Nexus smoke suite")
+    print("DAI Harness smoke suite")
     for fn in (
         test_compile,
         test_verify_gate_selftest,

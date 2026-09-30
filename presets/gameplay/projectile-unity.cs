@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace DaiNexus.Gameplay
+namespace DaiHarness.Gameplay
 {
     /// <summary>
     /// Professional, frame-rate independent custom projectile simulation for Unity.

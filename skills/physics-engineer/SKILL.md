@@ -5,7 +5,7 @@ description: >
   framerate-independent calculations, raycasting, collision matrices, and physics optimization.
   Ensures stable, realistic, and highly performant physics interactions across Unity, Unreal, and Godot.
 version: 1.0.0
-author: dai-nexus
+author: dai-harness
 tags: [physics, rigidbody, collider, raycast, collision-matrix, framerate-independence, optimization]
 ---
 
@@ -111,7 +111,7 @@ Never modify the `Transform.position` of active dynamic rigid bodies directly. D
 ## Output Structure
 
 ```
-.dainexus/physics-engineer/
+.daiharness/physics-engineer/
 ├── physics-matrix.md
 ├── physics-config.json
 ├── rigidbody-setup.md

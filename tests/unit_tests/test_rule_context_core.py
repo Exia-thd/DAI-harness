@@ -38,8 +38,8 @@ def run_hook(
     env = os.environ.copy()
     env.update(
         {
-            "DAINEXUS_WORKSPACE": str(tmp_path),
-            "DAINEXUS_RULE_HOOK_MODE": mode,
+            "DAIHARNESS_WORKSPACE": str(tmp_path),
+            "DAIHARNESS_RULE_HOOK_MODE": mode,
         }
     )
     return subprocess.run(
@@ -314,8 +314,8 @@ def test_invalid_explicit_workspace_fails_open_empty(tmp_path: Path) -> None:
     env = os.environ.copy()
     env.update(
         {
-            "DAINEXUS_WORKSPACE": str(invalid),
-            "DAINEXUS_RULE_HOOK_MODE": "observe",
+            "DAIHARNESS_WORKSPACE": str(invalid),
+            "DAIHARNESS_RULE_HOOK_MODE": "observe",
         }
     )
     result = subprocess.run(
@@ -338,7 +338,7 @@ def test_receipt_dir_symlink_is_rejected_before_write(tmp_path: Path) -> None:
     module = load_hook_module()
     outside = tmp_path.parent / f"{tmp_path.name}-receipt-outside"
     outside.mkdir()
-    (tmp_path / ".dainexus").symlink_to(outside, target_is_directory=True)
+    (tmp_path / ".daiharness").symlink_to(outside, target_is_directory=True)
     try:
         module.write_receipt(
             tmp_path,
@@ -371,8 +371,8 @@ def test_receipt_nested_symlink_is_rejected_without_writing_outside(
     module = load_hook_module()
     outside = tmp_path.parent / f"{tmp_path.name}-nested-receipt-outside"
     outside.mkdir()
-    (tmp_path / ".dainexus" / "runtime").mkdir(parents=True)
-    (tmp_path / ".dainexus" / "runtime" / "rule-context").symlink_to(
+    (tmp_path / ".daiharness" / "runtime").mkdir(parents=True)
+    (tmp_path / ".daiharness" / "runtime" / "rule-context").symlink_to(
         outside, target_is_directory=True
     )
     try:
@@ -404,9 +404,9 @@ def test_receipt_dir_race_after_mkdir_does_not_follow_symlink(
     def racing_mkdir(path, *args, **kwargs):
         nonlocal raced
         result = real_mkdir(path, *args, **kwargs)
-        if path == ".dainexus" and not raced:
+        if path == ".daiharness" and not raced:
             raced = True
-            component = tmp_path / ".dainexus"
+            component = tmp_path / ".daiharness"
             component.rmdir()
             component.symlink_to(outside, target_is_directory=True)
         return result
@@ -537,7 +537,7 @@ def test_context_hashes_are_deterministic_and_receipt_has_no_source_content(
     expected = hashlib.sha256(content.encode()).hexdigest()
     assert first["rules"][0]["sha256"] == expected
     receipt = module.write_receipt(tmp_path, "CODEX", "SessionStart", first)
-    assert receipt.is_relative_to(tmp_path / ".dainexus" / "runtime")
+    assert receipt.is_relative_to(tmp_path / ".daiharness" / "runtime")
     persisted = json.loads(receipt.read_text(encoding="utf-8"))
     assert content not in json.dumps(persisted)
     assert persisted["rules"][0]["sha256"] == expected

@@ -38,9 +38,11 @@ import sys
 from pathlib import Path
 
 REQUIRED_FIELDS = ("ACCEPTANCE", "CLAIM", "COMMAND", "OUTPUT", "EXIT CODE", "VERDICT")
-FIELD_RE = re.compile(r"^\s*(ACCEPTANCE|CLAIM|COMMAND|OUTPUT|EXIT CODE|VERDICT):\s*(.*?)\s*$")
+FIELD_RE = re.compile(
+    r"^\s*(ACCEPTANCE|CLAIM|COMMAND|OUTPUT|EXIT CODE|VERDICT):\s*(.*?)\s*$"
+)
 SLUG_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
-VERIFY_DIR = Path(".dainexus") / "verify"
+VERIFY_DIR = Path(".daiharness") / "verify"
 
 
 def _utf8_io() -> None:
@@ -74,21 +76,25 @@ def parse_blocks(response: str) -> tuple[list[dict[str, str]], list[str]]:
             errors.append(f"VERIFY block {n}: missing {', '.join(missing)}")
             continue
         if not fields["OUTPUT"].startswith("sha256:"):
-            errors.append(f"VERIFY block {n}: OUTPUT must be the evidence digest "
-                          f"as sha256:<hex>, not pasted text")
+            errors.append(
+                f"VERIFY block {n}: OUTPUT must be the evidence digest "
+                f"as sha256:<hex>, not pasted text"
+            )
         blocks.append(fields)
     return blocks, errors
 
 
 def load_evidence(turn: str | None) -> tuple[dict | None, str]:
     if not VERIFY_DIR.is_dir():
-        return None, "no .dainexus/verify directory"
+        return None, "no .daiharness/verify directory"
     if turn:
         path = VERIFY_DIR / f"{turn}.json"
         if not path.is_file():
             return None, f"no evidence for turn {turn!r}"
     else:
-        files = sorted(VERIFY_DIR.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+        files = sorted(
+            VERIFY_DIR.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True
+        )
         if not files:
             return None, "no evidence files"
         path = files[0]
@@ -101,18 +107,25 @@ def load_evidence(turn: str | None) -> tuple[dict | None, str]:
 def validate(response: str, evidence: dict | None) -> list[str]:
     blocks, errors = parse_blocks(response)
     if not blocks and not errors:
-        return []                      # no claim made; nothing to correlate
+        return []  # no claim made; nothing to correlate
     if errors:
         return errors
     if evidence is None:
-        return ["a VERIFY block was emitted but this turn has no machine-written "
-                "evidence to correlate it against"]
+        return [
+            "a VERIFY block was emitted but this turn has no machine-written "
+            "evidence to correlate it against"
+        ]
 
-    criteria = {c["id"]: c for c in evidence.get("acceptance_criteria", [])
-                if isinstance(c, dict) and "id" in c}
+    criteria = {
+        c["id"]: c
+        for c in evidence.get("acceptance_criteria", [])
+        if isinstance(c, dict) and "id" in c
+    }
     if not criteria:
-        return ["evidence records no acceptance_criteria; rerun run_check.py with "
-                "--acceptance-id/--claim so the claim can be correlated"]
+        return [
+            "evidence records no acceptance_criteria; rerun run_check.py with "
+            "--acceptance-id/--claim so the claim can be correlated"
+        ]
 
     exact_command = " ".join(evidence.get("command", []))
     exact_digest = f"sha256:{evidence.get('output_sha256', '')}"
@@ -121,26 +134,38 @@ def validate(response: str, evidence: dict | None) -> list[str]:
     for n, block in enumerate(blocks, 1):
         slug = block["ACCEPTANCE"]
         if not SLUG_RE.fullmatch(slug):
-            errors.append(f"VERIFY block {n}: ACCEPTANCE {slug!r} is not a lowercase slug")
+            errors.append(
+                f"VERIFY block {n}: ACCEPTANCE {slug!r} is not a lowercase slug"
+            )
             continue
         if slug in seen:
             errors.append(f"VERIFY block {n}: acceptance {slug!r} claimed twice")
         seen.add(slug)
         if slug not in criteria:
-            errors.append(f"VERIFY block {n}: acceptance {slug!r} is not in the evidence")
+            errors.append(
+                f"VERIFY block {n}: acceptance {slug!r} is not in the evidence"
+            )
             continue
         if block["CLAIM"] != criteria[slug]["claim"]:
-            errors.append(f"VERIFY block {n}: CLAIM does not match the recorded claim "
-                          f"for {slug!r}")
+            errors.append(
+                f"VERIFY block {n}: CLAIM does not match the recorded claim "
+                f"for {slug!r}"
+            )
         if block["COMMAND"] != exact_command:
-            errors.append(f"VERIFY block {n}: COMMAND does not match the evidence command")
+            errors.append(
+                f"VERIFY block {n}: COMMAND does not match the evidence command"
+            )
         if block["OUTPUT"] != exact_digest:
-            errors.append(f"VERIFY block {n}: OUTPUT digest does not match the evidence")
+            errors.append(
+                f"VERIFY block {n}: OUTPUT digest does not match the evidence"
+            )
 
     unclaimed = set(criteria) - seen
     if unclaimed:
-        errors.append(f"acceptance criteria recorded but never reported: "
-                      f"{', '.join(sorted(unclaimed))}")
+        errors.append(
+            f"acceptance criteria recorded but never reported: "
+            f"{', '.join(sorted(unclaimed))}"
+        )
     return errors
 
 
@@ -150,25 +175,52 @@ def _selftest() -> int:
         "output_sha256": "a" * 64,
         "acceptance_criteria": [{"id": "smoke-green", "claim": "the suite passes"}],
     }
-    good = ("ACCEPTANCE: smoke-green\nCLAIM: the suite passes\n"
-            "COMMAND: py -3 tests/smoke.py\nOUTPUT: sha256:" + "a" * 64 +
-            "\nEXIT CODE: 0\nVERDICT: PASS")
+    good = (
+        "ACCEPTANCE: smoke-green\nCLAIM: the suite passes\n"
+        "COMMAND: py -3 tests/smoke.py\nOUTPUT: sha256:"
+        + "a" * 64
+        + "\nEXIT CODE: 0\nVERDICT: PASS"
+    )
     cases = [
         ("well-formed block accepted", validate(good, ev), True),
         ("no block at all is fine", validate("just prose about the work", ev), True),
-        ("partial block rejected",
-         validate("ACCEPTANCE: smoke-green\nCLAIM: the suite passes", ev), False),
-        ("reworded claim rejected",
-         validate(good.replace("the suite passes", "everything works"), ev), False),
-        ("wrong command rejected",
-         validate(good.replace("py -3 tests/smoke.py", "py -3 other.py"), ev), False),
-        ("pasted output instead of digest rejected",
-         validate(good.replace("sha256:" + "a" * 64, "all tests passed"), ev), False),
-        ("unknown acceptance rejected",
-         validate(good.replace("smoke-green", "made-up-id"), ev), False),
-        ("unreported criterion rejected",
-         validate(good, dict(ev, acceptance_criteria=ev["acceptance_criteria"] +
-                             [{"id": "other", "claim": "x"}])), False),
+        (
+            "partial block rejected",
+            validate("ACCEPTANCE: smoke-green\nCLAIM: the suite passes", ev),
+            False,
+        ),
+        (
+            "reworded claim rejected",
+            validate(good.replace("the suite passes", "everything works"), ev),
+            False,
+        ),
+        (
+            "wrong command rejected",
+            validate(good.replace("py -3 tests/smoke.py", "py -3 other.py"), ev),
+            False,
+        ),
+        (
+            "pasted output instead of digest rejected",
+            validate(good.replace("sha256:" + "a" * 64, "all tests passed"), ev),
+            False,
+        ),
+        (
+            "unknown acceptance rejected",
+            validate(good.replace("smoke-green", "made-up-id"), ev),
+            False,
+        ),
+        (
+            "unreported criterion rejected",
+            validate(
+                good,
+                dict(
+                    ev,
+                    acceptance_criteria=ev["acceptance_criteria"]
+                    + [{"id": "other", "claim": "x"}],
+                ),
+            ),
+            False,
+        ),
         ("block without evidence rejected", validate(good, None), False),
     ]
     for name, errs, want_clean in cases:
@@ -176,8 +228,10 @@ def _selftest() -> int:
             print(f"[rule-validator] selftest FAILED — {name}: {errs}", file=sys.stderr)
             return 1
         if not want_clean and not errs:
-            print(f"[rule-validator] selftest FAILED — {name}: expected rejection",
-                  file=sys.stderr)
+            print(
+                f"[rule-validator] selftest FAILED — {name}: expected rejection",
+                file=sys.stderr,
+            )
             return 1
     print(f"[rule-validator] selftest PASSED ({len(cases)} cases)")
     return 0
@@ -185,7 +239,9 @@ def _selftest() -> int:
 
 def main() -> None:
     _utf8_io()
-    p = argparse.ArgumentParser(description="Correlate VERIFY blocks with turn evidence")
+    p = argparse.ArgumentParser(
+        description="Correlate VERIFY blocks with turn evidence"
+    )
     p.add_argument("--response-file")
     p.add_argument("--turn")
     p.add_argument("--selftest", action="store_true")
@@ -194,11 +250,16 @@ def main() -> None:
     if args.selftest:
         sys.exit(_selftest())
     if not args.response_file:
-        print("usage: rule_validator.py --response-file <file> [--turn ID]", file=sys.stderr)
+        print(
+            "usage: rule_validator.py --response-file <file> [--turn ID]",
+            file=sys.stderr,
+        )
         sys.exit(2)
 
     try:
-        response = Path(args.response_file).read_text(encoding="utf-8", errors="replace")
+        response = Path(args.response_file).read_text(
+            encoding="utf-8", errors="replace"
+        )
     except OSError as e:
         print(f"[rule-validator] cannot read response: {e}", file=sys.stderr)
         sys.exit(2)

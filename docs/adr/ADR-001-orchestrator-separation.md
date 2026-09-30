@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-DAI Nexus's production-grade orchestrator (`SKILL.md`) grew to 1700+ lines, mixing concerns: CEO routing logic, 19 mode execution flows, 10 middleware definitions, Full Build pipeline, task dependencies, gate patterns, and quality gates.
+DAI Harness's production-grade orchestrator (`SKILL.md`) grew to 1700+ lines, mixing concerns: CEO routing logic, 19 mode execution flows, 10 middleware definitions, Full Build pipeline, task dependencies, gate patterns, and quality gates.
 
 This made the file:
 - Hard to navigate (1700+ lines of markdown)

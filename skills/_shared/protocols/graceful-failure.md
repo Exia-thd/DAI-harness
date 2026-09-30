@@ -21,7 +21,7 @@ A clear, evidenced failure is better than a fabricated success or an agent loop 
 2. After the **same step fails twice**, stop repeated attempts and follow `kernel/SOLVE.md` Stuck/Escalation.
 3. Open `research-gate.md` only when a material knowledge/evidence gap blocks the next decision. Failure alone does not mandate browsing/research.
 4. Preserve useful partial results and verified findings.
-5. Never turn a local failure into a new framework rule automatically. Lessons stay project-local unless DAI Nexus itself is the explicit improvement scope.
+5. Never turn a local failure into a new framework rule automatically. Lessons stay project-local unless DAI Harness itself is the explicit improvement scope.
 6. A higher-tier model may provide an independent hypothesis/review, but its output still requires evidence.
 
 ## Evidence-Driven Recovery

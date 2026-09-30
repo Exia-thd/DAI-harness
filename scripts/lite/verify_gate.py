@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 scripts/lite/verify_gate.py
-Turn-completion gate for DAI Nexus. Cross-platform (no bash needed).
+Turn-completion gate for DAI Harness. Cross-platform (no bash needed).
 
 Modes:
     python scripts/lite/verify_gate.py --selftest     # smoke-test the validators
@@ -9,10 +9,10 @@ Modes:
     python scripts/lite/verify_gate.py                # CLI mode (CI, manual)
 
 Gate logic:
-  1. Detect changed files via `git status --porcelain` (excluding .dainexus/).
+  1. Detect changed files via `git status --porcelain` (excluding .daiharness/).
   2. If no *code* files changed (docs/config only) -> gate OPEN.
   3. Otherwise require a fresh, machine-written evidence file under
-     .dainexus/verify/ (written by run_check.py) that passes all checks:
+     .daiharness/verify/ (written by run_check.py) that passes all checks:
 
   Evidence contract (schema_version "1" or "2"):
     v1: schema_version, turn, command, exit_code, output, timestamp_utc,
@@ -66,7 +66,7 @@ from evidence_common import (  # noqa: E402
 )
 
 # ── configuration ─────────────────────────────────────────────────────────────
-STALENESS_SECS = int(os.environ.get("DAINEXUS_STALENESS_SECS", "3600"))  # 1 hour
+STALENESS_SECS = int(os.environ.get("DAIHARNESS_STALENESS_SECS", "3600"))  # 1 hour
 
 _FORGED_OUTPUT_PATTERNS = [
     re.compile(r"^\[REDACTED\]$", re.MULTILINE),
@@ -104,7 +104,7 @@ _BINARY_EXTS = {
     ".sqlite",
 }
 _DOC_EXTS = {".md", ".txt", ".json", ".yaml", ".yml", ".ini", ".cfg", ".toml", ".lock"}
-_SKIP_PREFIXES = ("scripts/lite/", ".dainexus/", ".claude/", ".git/")
+_SKIP_PREFIXES = ("scripts/lite/", ".daiharness/", ".claude/", ".git/")
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -213,7 +213,7 @@ def _code_files(files: list[str]) -> list[str]:
 # from days earlier — which is what blocked every turn of this session with
 # STALE and MISMATCH against a tree nobody was working in.
 def _find_evidence(project_root: Path, turn_env: str) -> Path | None:
-    verify_dir = project_root.resolve() / ".dainexus" / "verify"
+    verify_dir = project_root.resolve() / ".daiharness" / "verify"
     if turn_env:
         if Path(turn_env).name != turn_env or any(
             part in {".", ".."} for part in Path(turn_env).parts
@@ -294,7 +294,7 @@ def _validate_schema(ev: dict) -> list[str]:
 
 
 def _replay_timeout() -> float:
-    raw = os.environ.get("DAINEXUS_REPLAY_TIMEOUT_SECS", "")
+    raw = os.environ.get("DAIHARNESS_REPLAY_TIMEOUT_SECS", "")
     try:
         value = float(raw) if raw.strip() else DEFAULT_REPLAY_TIMEOUT_SECS
     except ValueError:
@@ -881,7 +881,7 @@ def _correlate_claims(response_text: str) -> list[str]:
     except ImportError:
         return []
     evidence, _note = rule_validator.load_evidence(
-        os.environ.get("DAINEXUS_TURN") or None
+        os.environ.get("DAIHARNESS_TURN") or None
     )
     return rule_validator.validate(response_text, evidence)
 
@@ -921,7 +921,7 @@ def main() -> None:
     # passed unexamined the moment file detection came up empty — which it does
     # in a non-git workspace, or when the turn's edits were already committed.
     # Only the question "is evidence REQUIRED here" depends on code changing.
-    turn_evidence = _find_evidence(workspace, os.environ.get("DAINEXUS_TURN", ""))
+    turn_evidence = _find_evidence(workspace, os.environ.get("DAIHARNESS_TURN", ""))
     if not code_changed and not claim_errors and turn_evidence is None:
         _ok(
             f"No code changes detected ({len(changed)} doc/config file(s) changed) — gate OPEN"
@@ -957,13 +957,13 @@ def main() -> None:
 
     # 2. Machine-written evidence validation
     print("[VERIFY-GATE] 2. Validating machine-written evidence...")
-    turn_env = os.environ.get("DAINEXUS_TURN", "")
+    turn_env = os.environ.get("DAIHARNESS_TURN", "")
     ev_path = _find_evidence(workspace, turn_env)
     if ev_path is None and not code_changed:
         _ok("No code changes detected and no evidence to validate — gate OPEN")
         sys.exit(0)
     if ev_path is None:
-        _err("MISSING: No evidence file under .dainexus/verify/")
+        _err("MISSING: No evidence file under .daiharness/verify/")
         print(
             "   Code changes must be gated by a machine-written evidence file.",
             file=sys.stderr,

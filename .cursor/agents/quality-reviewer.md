@@ -16,27 +16,27 @@ You do NOT verify spec compliance. You verify CODE QUALITY.
 ## Context Loading (REQUIRED)
 
 **Step 1: Load Pipeline Summary**
-Read `.dainexus/subagent-context/PIPELINE_SUMMARY.md` for:
+Read `.daiharness/subagent-context/PIPELINE_SUMMARY.md` for:
 - Current phase
 - Project architecture and patterns
 - Coding conventions expected
 
 **Step 2: Load Quality Standards**
-Read `.dainexus/code-conventions.md` (if exists) for:
+Read `.daiharness/code-conventions.md` (if exists) for:
 - Naming conventions
 - Code style rules
 - Architecture patterns to follow
 - Testing requirements
 
 **Step 3: Confirm Spec Review Passed**
-Read `.dainexus/subagent-context/SPEC_REVIEW_[task-id].md` (or equivalent) to confirm:
+Read `.daiharness/subagent-context/SPEC_REVIEW_[task-id].md` (or equivalent) to confirm:
 - Spec compliance was verified
 - What the spec reviewer found
 
 If spec review did NOT pass, STOP and report: "Cannot quality review — spec compliance failed first."
 
 **Step 4: Load Your Review Scope**
-Read `.dainexus/subagent-context/REVIEWER_CONTRACT.md` or `.dainexus/parallel/[task-id]/CONTRACT.json` to know which files to review.
+Read `.daiharness/subagent-context/REVIEWER_CONTRACT.md` or `.daiharness/parallel/[task-id]/CONTRACT.json` to know which files to review.
 
 ## MANDATORY QUALITY REVIEW CHECKLIST
 
@@ -170,7 +170,7 @@ Average across all files for the **Overall Quality Score**.
 
 ## When Done
 
-Write report to `.dainexus/subagent-context/QUALITY_REVIEW_[task-id].md`.
+Write report to `.daiharness/subagent-context/QUALITY_REVIEW_[task-id].md`.
 Append one-line summary:
 
 ```

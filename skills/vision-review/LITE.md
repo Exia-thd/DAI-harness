@@ -9,7 +9,7 @@ version: 1.0.0
 ## SOLVE Step 2: GROUND (Vision Review Domain Slots)
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Project tech stack and language profile are established | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project tech stack and language profile are established | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 | Visual regression or E2E testing package configurations exist | `cat package.json \| jq '.devDependencies \| keys' \| grep -E \"(playwright\|puppeteer\|cypress\|midscene)\"` | ... | run the check command and paste output |
 | Playwright viewport dimensions and VRT config options are defined | `cat playwright.config.ts \|\| cat playwright.config.js` | ... | run the check command and paste output |
 
@@ -27,7 +27,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground target styling frameworks and testing settings
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 cat playwright.config.ts | grep -E "(use:|viewport|expect)" -A 3
 ```
 ```typescript

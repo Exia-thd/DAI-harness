@@ -8,8 +8,8 @@ and the provider-resolved model snapshot.
 Run a live report with evidence supplied by the configured provider:
 
 ```bash
-DAINEXUS_PROVIDER=<provider-id> \
-DAINEXUS_MODEL_SNAPSHOT=<provider-resolved-snapshot> \
+DAIHARNESS_PROVIDER=<provider-id> \
+DAIHARNESS_MODEL_SNAPSHOT=<provider-resolved-snapshot> \
 python3 evals/cheap-model/run-evals.py --live --legacy --model <model-id>
 ```
 

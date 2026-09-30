@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Trace DAI Nexus context offload events.
+Trace DAI Harness context offload events.
 
 Commands:
   trace-node <node_id> --session <session_id>
@@ -23,7 +23,7 @@ STATUS_CLASSES = {"queued", "running", "done", "error", "skipped"}
 
 
 def workspace_root() -> Path:
-    env_root = os.environ.get("DAINEXUS_WORKSPACE")
+    env_root = os.environ.get("DAIHARNESS_WORKSPACE")
     if env_root:
         return Path(env_root).resolve()
     try:
@@ -191,9 +191,9 @@ def cmd_trace_canvas(args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Trace DAI Nexus context offload events"
+        description="Trace DAI Harness context offload events"
     )
-    parser.add_argument("--data-dir", default=".dainexus/offload")
+    parser.add_argument("--data-dir", default=".daiharness/offload")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     node = subparsers.add_parser(

@@ -1,5 +1,5 @@
 #!/bin/bash
-# DAI Nexus Status Line
+# DAI Harness Status Line
 # Inspired by CCGS statusline.sh
 #
 # Purpose: Display current pipeline status in a compact format
@@ -14,8 +14,8 @@ set +e
 
 # Configuration
 STATUS_FILE="${1:-production/session-state/active.md}"
-SESSION_LOG="${2:-.dainexus/session-log.json}"
-SETTINGS_FILE="${3:-.dainexus/settings.md}"
+SESSION_LOG="${2:-.daiharness/session-log.json}"
+SETTINGS_FILE="${3:-.daiharness/settings.md}"
 
 # Color codes
 RED='\033[0;31m'
@@ -151,7 +151,7 @@ format_status() {
         # Full format
         echo ""
         echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
-        echo -e "${CYAN}║${NC} ${BLUE}DAI Nexus Status${NC}                                              ${CYAN}║${NC}"
+        echo -e "${CYAN}║${NC} ${BLUE}DAI Harness Status${NC}                                              ${CYAN}║${NC}"
         echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${NC}"
         
         # Context and Model

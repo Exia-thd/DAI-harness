@@ -1,6 +1,6 @@
 """
 tests/lite/test_gate.py
-Deterministic tests for the DAI Nexus verify-gate pipeline.
+Deterministic tests for the DAI Harness verify-gate pipeline.
 
 Covers:
   - Forgery detection (missing schema_version, empty command, empty output,
@@ -110,7 +110,7 @@ def _generate_review_keypair(tmp: Path, prefix: str) -> dict[str, Path | list[Pa
             "-N",
             "",
             "-C",
-            f"{prefix}@dai-nexus.test",
+            f"{prefix}@dai-harness.test",
             "-f",
             str(private_key),
         ],
@@ -248,9 +248,9 @@ def _make_evidence(
     risk: str | None = None,
     links: dict[str, str] | None = None,
 ) -> Path:
-    """Write a v2 evidence file to tmp/.dainexus/verify/<turn>.json."""
+    """Write a v2 evidence file to tmp/.daiharness/verify/<turn>.json."""
     ts = datetime.now(timezone.utc) + timedelta(seconds=timestamp_offset_secs)
-    ev_dir = tmp / ".dainexus" / "verify"
+    ev_dir = tmp / ".daiharness" / "verify"
     ev_dir.mkdir(parents=True, exist_ok=True)
 
     actual_command = (
@@ -325,16 +325,16 @@ def _run_validate(
         "RESPONSE_CONTENT": response,
         "FILES_TO_CHECK_STR": files_str,
         "FILES_TO_CHECK_NUL": "1",
-        "DAINEXUS_TURN": turn,
-        "DAINEXUS_STALENESS_SECS": "3600",
+        "DAIHARNESS_TURN": turn,
+        "DAIHARNESS_STALENESS_SECS": "3600",
     }
     fixture = _REVIEW_FIXTURES.get(tmp.resolve())
     if review_allowed_signers is not None:
-        env["DAINEXUS_REVIEW_ALLOWED_SIGNERS"] = str(review_allowed_signers)
+        env["DAIHARNESS_REVIEW_ALLOWED_SIGNERS"] = str(review_allowed_signers)
     elif fixture is not None:
         allowed_signers = fixture["allowed_signers"]
         assert isinstance(allowed_signers, Path)
-        env["DAINEXUS_REVIEW_ALLOWED_SIGNERS"] = str(allowed_signers)
+        env["DAIHARNESS_REVIEW_ALLOWED_SIGNERS"] = str(allowed_signers)
     if extra_env:
         env.update(extra_env)
     return _run_py(VERIFY_PY, cwd=tmp, env=env)
@@ -351,8 +351,8 @@ def _add_hard_support(
 ) -> None:
     final = json.loads(final_path.read_text(encoding="utf-8"))
     links = final.setdefault("links", {})
-    red_path = tmp / ".dainexus" / "verify" / links["red"]
-    mutation_path = tmp / ".dainexus" / "verify" / links["mutation"]
+    red_path = tmp / ".daiharness" / "verify" / links["red"]
+    mutation_path = tmp / ".daiharness" / "verify" / links["mutation"]
     pre_mutation_path = _make_evidence(
         tmp,
         turn=f"{final['turn']}-pre-mutation",
@@ -410,7 +410,7 @@ def _add_hard_support(
             phase="verification",
         )
         links[tier] = linked.name
-    review_path = tmp / ".dainexus" / "verify" / f"{final['turn']}-review.json"
+    review_path = tmp / ".daiharness" / "verify" / f"{final['turn']}-review.json"
     review_path.write_text(
         json.dumps(
             {
@@ -454,7 +454,7 @@ def _add_hard_support(
         REVIEW_ATTEST,
         ["sign", "--evidence", str(final_path), "--private-key", str(private_key)],
         cwd=tmp,
-        env={"DAINEXUS_REVIEW_ALLOWED_SIGNERS": str(allowed_signers)},
+        env={"DAIHARNESS_REVIEW_ALLOWED_SIGNERS": str(allowed_signers)},
     )
     assert signed.returncode == 0, signed.stderr
 
@@ -539,9 +539,9 @@ def _run_rule_validator(
         cwd=str(tmp),
         env={
             **os.environ,
-            "DAINEXUS_WORKSPACE": str(tmp),
-            "DAINEXUS_TURN": turn,
-            "DAINEXUS_RULE_LEDGER": str(tmp.parent / f"ledger-{turn}.jsonl"),
+            "DAIHARNESS_WORKSPACE": str(tmp),
+            "DAIHARNESS_TURN": turn,
+            "DAIHARNESS_RULE_LEDGER": str(tmp.parent / f"ledger-{turn}.jsonl"),
         },
     )
 
@@ -626,14 +626,14 @@ class TestEvidenceValidation:
     def test_no_turn_ignores_newer_review_and_historical_records(self):
         final = _make_evidence(self.tmp, turn="selected-final")
         red = _make_evidence(self.tmp, turn="newer-red", phase="red", exit_code=1)
-        review = self.tmp / ".dainexus" / "verify" / "newest-review.json"
+        review = self.tmp / ".daiharness" / "verify" / "newest-review.json"
         review.write_text(
             json.dumps(
                 {"schema_version": "review-2", "status": "independent-approved"}
             ),
             encoding="utf-8",
         )
-        malformed = self.tmp / ".dainexus" / "verify" / "malformed-final.json"
+        malformed = self.tmp / ".daiharness" / "verify" / "malformed-final.json"
         malformed.write_text(
             json.dumps({"schema_version": "2", "phase": "green", "exit_code": 0}),
             encoding="utf-8",
@@ -735,7 +735,7 @@ class TestEvidenceValidation:
         timed_out = _run_validate(
             self.tmp,
             turn="replay-timeout",
-            extra_env={"DAINEXUS_REPLAY_TIMEOUT_SECS": "0.01"},
+            extra_env={"DAIHARNESS_REPLAY_TIMEOUT_SECS": "0.01"},
         )
         assert timed_out.returncode == 1
         assert "REPLAY" in timed_out.stderr
@@ -902,7 +902,7 @@ class TestSourceImmutability:
         )
         assert result.returncode == 2
         assert "Command was not started" in result.stderr
-        assert not (self.tmp / ".dainexus" / "verify").exists()
+        assert not (self.tmp / ".daiharness" / "verify").exists()
 
     def test_v2_metadata_is_required_before_execution(self):
         result = subprocess.run(
@@ -992,7 +992,7 @@ class TestSourceImmutability:
         )
         assert mapped.returncode == 0, mapped.stderr
         evidence = json.loads(
-            next((self.tmp / ".dainexus" / "verify").glob("*.json")).read_text()
+            next((self.tmp / ".daiharness" / "verify").glob("*.json")).read_text()
         )
         assert evidence["negative_path_bindings"] == [
             {
@@ -1024,7 +1024,7 @@ class TestSourceImmutability:
         )
 
         # Evidence output should have the secret REDACTED
-        ev_dir = self.tmp / ".dainexus" / "verify"
+        ev_dir = self.tmp / ".daiharness" / "verify"
         ev_files = list(ev_dir.glob("*.json"))
         assert len(ev_files) == 1
         ev = json.loads(ev_files[0].read_text())
@@ -1041,7 +1041,7 @@ class TestSourceImmutability:
         r = _run_check(self.tmp, ["bash", str(script)], test_ref=str(script))
         assert r.returncode == 0, r.stderr
 
-        ev_dir = self.tmp / ".dainexus" / "verify"
+        ev_dir = self.tmp / ".daiharness" / "verify"
         ev_files = list(ev_dir.glob("*.json"))
         assert len(ev_files) == 1
         ev = json.loads(ev_files[0].read_text())
@@ -1059,7 +1059,7 @@ class TestSourceImmutability:
         )
         assert r.returncode == 0, r.stderr
 
-        ev_dir = self.tmp / ".dainexus" / "verify"
+        ev_dir = self.tmp / ".daiharness" / "verify"
         ev_files = list(ev_dir.glob("*.json"))
         assert len(ev_files) == 1
         ev = json.loads(ev_files[0].read_text())
@@ -1114,7 +1114,7 @@ class TestSourceImmutability:
             f"run_check.py should always exit 0, got {r.returncode}"
         )
 
-        ev_dir = self.tmp / ".dainexus" / "verify"
+        ev_dir = self.tmp / ".daiharness" / "verify"
         ev_files = list(ev_dir.glob("*.json"))
         assert len(ev_files) == 1
         ev = json.loads(ev_files[0].read_text())
@@ -1144,7 +1144,7 @@ class TestDirtyBaseline:
         )
         assert r.returncode == 0
 
-        ev_dir = self.tmp / ".dainexus" / "verify"
+        ev_dir = self.tmp / ".daiharness" / "verify"
         ev = json.loads(list(ev_dir.glob("*.json"))[0].read_text())
         assert re.fullmatch(r"TREE:[0-9a-f]{64}", ev["tree_sha"])
 
@@ -1157,7 +1157,7 @@ class TestDirtyBaseline:
         )
         assert r.returncode == 0
 
-        ev_dir = self.tmp / ".dainexus" / "verify"
+        ev_dir = self.tmp / ".daiharness" / "verify"
         ev = json.loads(list(ev_dir.glob("*.json"))[0].read_text())
         assert re.fullmatch(r"TREE:[0-9a-f]{64}", ev["tree_sha"])
 
@@ -1173,7 +1173,7 @@ class TestDirtyBaseline:
         )
         assert r.returncode == 0
 
-        ev_dir = self.tmp / ".dainexus" / "verify"
+        ev_dir = self.tmp / ".daiharness" / "verify"
         ev = json.loads(list(ev_dir.glob("*.json"))[0].read_text())
         assert re.fullmatch(r"TREE:[0-9a-f]{64}", ev["tree_sha"])
 
@@ -1324,23 +1324,23 @@ class TestDirtyBaseline:
         assert before != after
 
     def test_runtime_owned_state_is_excluded_but_project_config_remains_covered(self):
-        (self.tmp / ".gitignore").write_text(".dainexus/\n", encoding="utf-8")
+        (self.tmp / ".gitignore").write_text(".daiharness/\n", encoding="utf-8")
         volatile_paths = [
-            ".dainexus/memory.db",
-            ".dainexus/memory.db-wal",
-            ".dainexus/memory-bank/graph_memory.json",
-            ".dainexus/subagent-context/CONVERSATION_SUMMARY.md",
-            ".dainexus/rule-ledger.jsonl",
-            ".dainexus/session-tracker-v2.json",
-            ".dainexus/telemetry/events.jsonl",
-            ".dainexus/cache/runtime.json",
-            ".dainexus/verify/current.json",
+            ".daiharness/memory.db",
+            ".daiharness/memory.db-wal",
+            ".daiharness/memory-bank/graph_memory.json",
+            ".daiharness/subagent-context/CONVERSATION_SUMMARY.md",
+            ".daiharness/rule-ledger.jsonl",
+            ".daiharness/session-tracker-v2.json",
+            ".daiharness/telemetry/events.jsonl",
+            ".daiharness/cache/runtime.json",
+            ".daiharness/verify/current.json",
         ]
         for relative in volatile_paths:
             path = self.tmp / relative
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("version=1\n", encoding="utf-8")
-        project_config = self.tmp / ".dainexus" / "settings.env"
+        project_config = self.tmp / ".daiharness" / "settings.env"
         project_config.write_text("MODE=safe\n", encoding="utf-8")
 
         before = worktree_fingerprint(self.tmp)
@@ -1638,7 +1638,7 @@ class TestEvidenceV2BypassRegressions:
         )
         assert passed.returncode == 0, passed.stderr
 
-        review_path = self.tmp / ".dainexus" / "verify" / "pay-green-review.json"
+        review_path = self.tmp / ".daiharness" / "verify" / "pay-green-review.json"
         original_review = review_path.read_text(encoding="utf-8")
         tampered_review = json.loads(original_review)
         tampered_review["findings"] = ["tampered finding"]
@@ -1663,7 +1663,7 @@ class TestEvidenceV2BypassRegressions:
 
         green_payload = json.loads(green.read_text(encoding="utf-8"))
         pre_path = (
-            self.tmp / ".dainexus" / "verify" / green_payload["links"]["pre_mutation"]
+            self.tmp / ".daiharness" / "verify" / green_payload["links"]["pre_mutation"]
         )
         pre_payload = json.loads(pre_path.read_text(encoding="utf-8"))
         original_pre_tree = pre_payload["tree_sha"]
@@ -1802,7 +1802,7 @@ class TestEvidenceV2BypassRegressions:
             REVIEW_ATTEST,
             ["sign", "--evidence", str(final), "--private-key", str(attacker_key)],
             cwd=self.tmp,
-            env={"DAINEXUS_REVIEW_ALLOWED_SIGNERS": str(allowed_signers)},
+            env={"DAIHARNESS_REVIEW_ALLOWED_SIGNERS": str(allowed_signers)},
         )
         assert signed.returncode == 0, signed.stderr
 
@@ -1818,7 +1818,7 @@ class TestEvidenceV2BypassRegressions:
         original = json.loads(final.read_text(encoding="utf-8"))
         replay = dict(original)
         replay["turn"] = "signed-replay"
-        replay_path = self.tmp / ".dainexus" / "verify" / "signed-replay.json"
+        replay_path = self.tmp / ".daiharness" / "verify" / "signed-replay.json"
         replay_path.write_text(json.dumps(replay), encoding="utf-8")
 
         result = _run_validate(
@@ -2035,8 +2035,8 @@ class TestVerifyGateSh:
         assert result.returncode == 0, result.stderr
         assert json.loads(result.stdout) == {
             "continue": True,
-            "dai-nexus": {
-                "schema": "dai-nexus-stop-decision/v1",
+            "dai-harness": {
+                "schema": "dai-harness-stop-decision/v1",
                 "host_action": "allow_stop",
                 "completion_state": "verified",
                 "retry_suppressed": False,
@@ -2046,7 +2046,7 @@ class TestVerifyGateSh:
 
     def test_codex_custom_manifest_sources_skip_docs_but_keep_code_governed(self):
         """Manifest JSON/YAML/assets are continuity; a code file remains gated."""
-        forge = self.tmp / ".dainexus"
+        forge = self.tmp / ".daiharness"
         forge.mkdir()
         source = self.tmp / "knowledge"
         source.mkdir()
@@ -2075,9 +2075,9 @@ class TestVerifyGateSh:
         )
         env = {
             **os.environ,
-            "DAINEXUS_DOCS_CONTINUITY_MODE": "observe",
-            "DAINEXUS_STOP_STATE_DIR": str(self.tmp / "stop-state-docs"),
-            "DAINEXUS_DOCS_CONTINUITY_STATE_DIR": str(
+            "DAIHARNESS_DOCS_CONTINUITY_MODE": "observe",
+            "DAIHARNESS_STOP_STATE_DIR": str(self.tmp / "stop-state-docs"),
+            "DAIHARNESS_DOCS_CONTINUITY_STATE_DIR": str(
                 self.tmp / "continuity-state-docs"
             ),
         }
@@ -2101,7 +2101,7 @@ class TestVerifyGateSh:
         assert docs_result.returncode == 0, docs_result.stderr
         assert json.loads(docs_result.stdout)["continue"] is True
         assert (
-            json.loads(docs_result.stdout)["dai-nexus"]["completion_state"]
+            json.loads(docs_result.stdout)["dai-harness"]["completion_state"]
             == "unverified"
         )
 
@@ -2110,7 +2110,7 @@ class TestVerifyGateSh:
             cwd=self.tmp,
             env={
                 **env,
-                "DAINEXUS_STOP_STATE_DIR": str(self.tmp / "stop-state-code"),
+                "DAIHARNESS_STOP_STATE_DIR": str(self.tmp / "stop-state-code"),
             },
             input=json.dumps(
                 {
@@ -2208,7 +2208,7 @@ class TestVerifyGateSh:
         assert "Strict VERIFY response correlation passed" in r.stderr
 
     def test_codex_unmapped_platform_turn_id_discovers_correlated_final_evidence(self):
-        """A Codex routing ID must not shadow valid current DAI Nexus evidence."""
+        """A Codex routing ID must not shadow valid current DAI Harness evidence."""
         source = self.tmp / "fixture.py"
         source.write_text("print('changed')\n")
         evidence = _make_evidence(self.tmp, turn="internal-evidence-turn")
@@ -2228,8 +2228,8 @@ class TestVerifyGateSh:
         assert accepted.returncode == 0, accepted.stderr
         accepted_payload = json.loads(accepted.stdout)
         assert accepted_payload["continue"] is True
-        assert accepted_payload["dai-nexus"]["completion_state"] == "verified"
-        assert accepted_payload["dai-nexus"]["host_action"] == "allow_stop"
+        assert accepted_payload["dai-harness"]["completion_state"] == "verified"
+        assert accepted_payload["dai-harness"]["host_action"] == "allow_stop"
 
         payload["last_assistant_message"] = response.replace(
             "COMMAND:", "COMMAND: unrelated ", 1
@@ -2259,8 +2259,8 @@ class TestVerifyGateSh:
         assert accepted.returncode == 0, accepted.stderr
         parsed = json.loads(accepted.stdout)
         assert parsed["continue"] is True
-        assert parsed["dai-nexus"]["completion_state"] == "verified"
-        assert parsed["dai-nexus"]["host_action"] == "allow_stop"
+        assert parsed["dai-harness"]["completion_state"] == "verified"
+        assert parsed["dai-harness"]["host_action"] == "allow_stop"
 
     def test_codex_identical_invalid_stop_reentry_is_bounded(self):
         """The first invalid Stop retries; its identical re-entry must terminate."""
@@ -2276,8 +2276,8 @@ class TestVerifyGateSh:
             "session_id": "bounded-reentry-session",
             "stop_hook_active": True,
         }
-        state_dir = self.tmp / ".dainexus" / "runtime" / "stop-attempts"
-        env = {**os.environ, "DAINEXUS_STOP_STATE_DIR": str(state_dir)}
+        state_dir = self.tmp / ".daiharness" / "runtime" / "stop-attempts"
+        env = {**os.environ, "DAIHARNESS_STOP_STATE_DIR": str(state_dir)}
 
         first = subprocess.run(
             ["bash", str(STOP_SH), "--platform", "codex"],
@@ -2301,18 +2301,18 @@ class TestVerifyGateSh:
         first_payload = json.loads(first.stdout)
         second_payload = json.loads(second.stdout)
         assert first_payload["decision"] == "block"
-        assert first_payload["dai-nexus"] == {
-            "schema": "dai-nexus-stop-decision/v1",
+        assert first_payload["dai-harness"] == {
+            "schema": "dai-harness-stop-decision/v1",
             "host_action": "request_retry",
             "completion_state": "unverified",
             "retry_suppressed": False,
             "reason_code": "validation_failed",
         }
         assert second_payload["continue"] is True
-        assert second_payload["dai-nexus"]["host_action"] == "allow_stop"
-        assert second_payload["dai-nexus"]["completion_state"] == "unverified"
-        assert second_payload["dai-nexus"]["retry_suppressed"] is True
-        assert second_payload["dai-nexus"]["reason_code"] == "duplicate_invalid_stop"
+        assert second_payload["dai-harness"]["host_action"] == "allow_stop"
+        assert second_payload["dai-harness"]["completion_state"] == "unverified"
+        assert second_payload["dai-harness"]["retry_suppressed"] is True
+        assert second_payload["dai-harness"]["reason_code"] == "duplicate_invalid_stop"
 
     def test_codex_retry_state_symlink_lock_fails_open_without_external_write(self):
         """An attacker-controlled lock symlink cannot redirect Stop state writes."""
@@ -2327,7 +2327,7 @@ class TestVerifyGateSh:
             "turn": "symlink-lock-routing",
             "session_id": "symlink-lock-session",
         }
-        state_dir = self.tmp / ".dainexus" / "runtime" / "stop-attempts"
+        state_dir = self.tmp / ".daiharness" / "runtime" / "stop-attempts"
         state_dir.mkdir(parents=True)
         outside = Path(tempfile.mkdtemp(prefix="fw_external_stop_state_"))
         try:
@@ -2335,7 +2335,7 @@ class TestVerifyGateSh:
             if not _can_symlink(state_dir):
                 pytest.skip("host cannot create symlinks")
             (state_dir / ".lock").symlink_to(outside_target)
-            env = {**os.environ, "DAINEXUS_STOP_STATE_DIR": str(state_dir)}
+            env = {**os.environ, "DAIHARNESS_STOP_STATE_DIR": str(state_dir)}
             result = subprocess.run(
                 ["bash", str(STOP_SH), "--platform", "codex"],
                 capture_output=True,
@@ -2366,8 +2366,8 @@ class TestVerifyGateSh:
             "turn": "oversized-state-routing",
             "session_id": "oversized-state-session",
         }
-        state_dir = self.tmp / ".dainexus" / "runtime" / "stop-attempts"
-        env = {**os.environ, "DAINEXUS_STOP_STATE_DIR": str(state_dir)}
+        state_dir = self.tmp / ".daiharness" / "runtime" / "stop-attempts"
+        env = {**os.environ, "DAIHARNESS_STOP_STATE_DIR": str(state_dir)}
         first = subprocess.run(
             ["bash", str(STOP_SH), "--platform", "codex"],
             capture_output=True,
@@ -2414,8 +2414,8 @@ class TestVerifyGateSh:
             "session_id": f"{platform}-bounded-session",
             "stop_hook_active": True,
         }
-        state_dir = self.tmp / ".dainexus" / "runtime" / "stop-attempts"
-        env = {**os.environ, "DAINEXUS_STOP_STATE_DIR": str(state_dir)}
+        state_dir = self.tmp / ".daiharness" / "runtime" / "stop-attempts"
+        env = {**os.environ, "DAIHARNESS_STOP_STATE_DIR": str(state_dir)}
         command = ["bash", str(STOP_SH), "--platform", platform]
 
         first = subprocess.run(
@@ -2453,7 +2453,7 @@ class TestVerifyGateSh:
         counter_script.write_text(
             "import os\n"
             "from pathlib import Path\n"
-            "counter = Path(os.environ['DAINEXUS_TEST_REPLAY_COUNTER'])\n"
+            "counter = Path(os.environ['DAIHARNESS_TEST_REPLAY_COUNTER'])\n"
             "value = int(counter.read_text()) if counter.exists() else 0\n"
             "counter.write_text(str(value + 1))\n"
             "print('ok')\n",
@@ -2476,9 +2476,9 @@ class TestVerifyGateSh:
         }
         env = {
             **os.environ,
-            "DAINEXUS_TEST_REPLAY_COUNTER": str(counter),
-            "DAINEXUS_STOP_STATE_DIR": str(
-                self.tmp / ".dainexus" / "runtime" / "stop-attempts"
+            "DAIHARNESS_TEST_REPLAY_COUNTER": str(counter),
+            "DAIHARNESS_STOP_STATE_DIR": str(
+                self.tmp / ".daiharness" / "runtime" / "stop-attempts"
             ),
         }
 

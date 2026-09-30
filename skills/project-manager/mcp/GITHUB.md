@@ -19,7 +19,7 @@
 
 1. 访问: https://github.com/settings/tokens
 2. 点击 **Generate new token (classic)**
-3. 设置令牌名称: `dai-nexus-mcp`
+3. 设置令牌名称: `dai-harness-mcp`
 4. 勾选所需作用域:
 
 | 作用域 | 用途 |

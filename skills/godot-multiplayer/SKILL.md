@@ -6,7 +6,7 @@ description: >
   server-authoritative logic, client prediction, and lobby systems.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [godot, multiplayer, networking, enet, websocket, prediction, replication]
 ---
 

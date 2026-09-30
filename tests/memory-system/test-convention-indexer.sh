@@ -3,14 +3,14 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DAINEXUS_DIR="$(git -C "$(dirname "$SCRIPT_DIR")" rev-parse --show-toplevel 2>/dev/null || dirname "$SCRIPT_DIR")"
-INDEXER_SCRIPT="$DAINEXUS_DIR/scripts/convention-indexer.sh"
+DAIHARNESS_DIR="$(git -C "$(dirname "$SCRIPT_DIR")" rev-parse --show-toplevel 2>/dev/null || dirname "$SCRIPT_DIR")"
+INDEXER_SCRIPT="$DAIHARNESS_DIR/scripts/convention-indexer.sh"
 
 PASS=0; FAIL=0; TESTS=0
 pass() { PASS=$((PASS+1)); echo "  ✅ $1"; }
 fail() { FAIL=$((FAIL+1)); echo "  ❌ $1"; }
 
-cd "$DAINEXUS_DIR"
+cd "$DAIHARNESS_DIR"
 
 echo ""
 echo "━━━ test-convention-indexer.sh ━━━"

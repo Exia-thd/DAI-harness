@@ -6,7 +6,7 @@ import { sharedConfig } from './k6-config.js';
 /**
  * Stress Test Scenarios
  * Identifies system breaking points under extreme load
- * For dai-nexus project
+ * For dai-harness project
  */
 export const options = {
   stages: [

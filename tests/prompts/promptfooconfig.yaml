@@ -1,4 +1,4 @@
-# Promptfoo configuration for DAI Nexus internal benchmark tests
+# Promptfoo configuration for DAI Harness internal benchmark tests
 
 prompts:
   - 'file://../../skills/qa-engineer/SKILL.md'

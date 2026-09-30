@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": {
-    "summary": "DAI Nexus is a local-first, provider-neutral engineering orchestration toolkit with an evidence-backed six-phase delivery pipeline and optional domain capability packs.",
+    "summary": "DAI Harness is a local-first, provider-neutral engineering orchestration toolkit with an evidence-backed six-phase delivery pipeline and optional domain capability packs.",
     "product_type": "tooling",
     "lifecycle": "active"
   },
@@ -12,14 +12,14 @@
         "path": "kernel",
         "kind": "policy-kernel",
         "purpose": "Canonical boot, solve, verification, clarification, audit, and escalation contracts.",
-        "owner": "DAI Nexus maintainers"
+        "owner": "DAI Harness maintainers"
       },
       {
         "id": "skills",
         "path": "skills",
         "kind": "capability-library",
         "purpose": "Senior specialist skills and shared pipeline protocols used by routed roles.",
-        "owner": "DAI Nexus maintainers"
+        "owner": "DAI Harness maintainers"
       },
       {
         "id": "mcp",
@@ -68,7 +68,7 @@
         "path": "templates",
         "kind": "distribution",
         "purpose": "Project-owned templates installed or synchronized into supported client workspaces.",
-        "owner": "DAI Nexus maintainers"
+        "owner": "DAI Harness maintainers"
       }
     ],
     "dependencies": [
@@ -105,7 +105,7 @@
       "title": "Enforce continuously updated project intelligence and generated HTML/CSS documentation",
       "status": "done",
       "priority": "critical",
-      "owner": "DAI Nexus maintainers",
+      "owner": "DAI Harness maintainers",
       "target_date": null,
       "depends_on": [],
       "references": [
@@ -176,7 +176,7 @@
       "title": "Separate roadmap completion axes and replay exact local verifier contracts",
       "status": "done",
       "priority": "critical",
-      "owner": "DAI Nexus maintainers",
+      "owner": "DAI Harness maintainers",
       "target_date": null,
       "depends_on": [
         "docs-continuity"
@@ -290,7 +290,7 @@
       "title": "Harden completion evidence with exact acceptance/negative traceability, execution manifests, and signed review trust",
       "status": "done",
       "priority": "critical",
-      "owner": "DAI Nexus maintainers",
+      "owner": "DAI Harness maintainers",
       "target_date": null,
       "depends_on": [
         "docs-continuity"
@@ -876,7 +876,7 @@
       "type": "feature",
       "status": "done",
       "priority": "high",
-      "owner": "DAI Nexus maintainers",
+      "owner": "DAI Harness maintainers",
       "acceptance": [
         "Every request identifies the active execution surface, provider, capability source, and available concurrency before dispatch planning.",
         "Every candidate subagent model is compared using current first-party input, cached-input, and output token pricing; missing or host-specific actual cost stays explicitly UNVERIFIED.",
@@ -896,7 +896,7 @@
       "type": "feature",
       "status": "done",
       "priority": "critical",
-      "owner": "DAI Nexus maintainers",
+      "owner": "DAI Harness maintainers",
       "acceptance": [
         "Material code/config/runtime changes fail when the canonical state is absent from the same changeset.",
         "Strict doctor and a fresh temporary HTML/CSS build pass without modifying source files.",
@@ -969,7 +969,7 @@
       "type": "bug",
       "status": "done",
       "priority": "critical",
-      "owner": "DAI Nexus maintainers",
+      "owner": "DAI Harness maintainers",
       "acceptance": [
         "Schema v1 and trivial or unrelated verifier evidence cannot complete code changes.",
         "Every acceptance ID maps to exact concrete invoked test references and the machine-derived execution manifest matches the command.",
@@ -977,7 +977,7 @@
         "Every final-tree verifier is replayed from its exact stored argv; a nonzero, missing, timed-out, or worktree-mutating command blocks completion.",
         "Payment, billing, IAP, receipt, entitlement, subscription, and checkout work is always HARD/DEEP and requires contract, runtime, E2E, and signed review-2 evidence.",
         "Fixes require the same verifier RED to GREEN chain; HARD fixes also require pre-mutation GREEN, mutation failure, and exact final GREEN with tree restoration.",
-        "Only OpenSSH Ed25519 review-2 signatures trusted by external DAINEXUS_REVIEW_ALLOWED_SIGNERS or ~/.dainexus/reviewers.allowed_signers can approve HARD work; review-1/self-authored JSON is UNVERIFIED.",
+        "Only OpenSSH Ed25519 review-2 signatures trusted by external DAIHARNESS_REVIEW_ALLOWED_SIGNERS or ~/.daiharness/reviewers.allowed_signers can approve HARD work; review-1/self-authored JSON is UNVERIFIED.",
         "Any staged, unstaged, tracked, or untracked nonignored source change invalidates prior evidence; secrets and private keys stay outside the workspace.",
         "Verifier-owned evidence and volatile runtime memory, session, telemetry, cache, and review-handoff state cannot invalidate evidence merely by operating; arbitrary ignored project content remains fingerprinted.",
         "An opaque platform-native Codex turn_id cannot shadow current evidence; selection is frozen once, while mapped-but-invalid selectors and non-correlated responses block.",
@@ -995,8 +995,8 @@
     "lifecycle": "active",
     "health": "on_track",
     "phase": "SUSTAIN",
-    "summary": "GitNexus is gone: memory and code intelligence run on the DAI memory plugin, now a git submodule (vendor/dai-memory, pinned to one commit of Exia-thd/DAI-memory-layer-plugin; changes land in the plugin first) installed outside the repository by scripts/lite/dai_memory.py install, one directory per commit. The MCP setup registers a dai-memory server in every client and removes gitnexus entries it wrote before; the guard, orchestrator, sequence generator, docs hub (adapters.dai_memory reading .memory/meta.json), skills and docs use the layer. The retired memory stores are migrated and removed; the session machinery they shared (memory-session, memory-middleware, continuity, memory-trace) is kept and records into the layer. The pinned plugin commit is 705f62f. It carries three things the harness depends on: a full `dai-memory ingest` records the commit it read, so `status` and the docs hub's code-index adapter stop calling a current index stale; the install declares its script exceptions in all three places pnpm 9, 10 and 12 read, so the engine no longer installs with a native module it cannot load; and the MCP tool list costs 12,795 characters a session instead of 16,900, with the workflows served as MCP prompts so a client other than Claude Code can reach them.",
-    "updated_at": "2026-09-30T11:13:30+07:00",
+    "summary": "The product is DAI Harness everywhere: display text, identifiers, DAIHARNESS_* environment variables, the .daiharness runtime directory, script and package names, and the dh_* MCP tools; setup and install move runtime state kept under the former name once, and the former tool names are still served. Every tracked Markdown file now pairs its code fences under CommonMark, and the fence guard also fails on an inner opener the length of its enclosing block. GitNexus is gone: memory and code intelligence run on the DAI memory plugin, now a git submodule (vendor/dai-memory, pinned to one commit of Exia-thd/DAI-memory-layer-plugin; changes land in the plugin first) installed outside the repository by scripts/lite/dai_memory.py install, one directory per commit. The MCP setup registers a dai-memory server in every client and removes gitnexus entries it wrote before; the guard, orchestrator, sequence generator, docs hub (adapters.dai_memory reading .memory/meta.json), skills and docs use the layer. The retired memory stores are migrated and removed; the session machinery they shared (memory-session, memory-middleware, continuity, memory-trace) is kept and records into the layer. The pinned plugin commit is 705f62f. It carries three things the harness depends on: a full `dai-memory ingest` records the commit it read, so `status` and the docs hub's code-index adapter stop calling a current index stale; the install declares its script exceptions in all three places pnpm 9, 10 and 12 read, so the engine no longer installs with a native module it cannot load; and the MCP tool list costs 12,795 characters a session instead of 16,900, with the workflows served as MCP prompts so a client other than Claude Code can reach them.",
+    "updated_at": "2026-09-30T16:03:18+07:00",
     "blockers": [],
     "risks": [],
     "next_actions": [
@@ -1004,12 +1004,6 @@
         "id": "trajectory-lifecycle",
         "title": "Implement the H2 TrajectoryLedger, cancellation/disposer semantics, and quiescence receipts.",
         "owner": "Runtime maintainers",
-        "due_date": null
-      },
-      {
-        "id": "markdown-fence-backlog",
-        "title": "Repair the nine Markdown files whose code fences still do not pair; tests/markdown_fence_baseline.txt names where each inversion starts, and the guard test fails once a listed file is fixed.",
-        "owner": "Docs maintainers",
         "due_date": null
       },
       {

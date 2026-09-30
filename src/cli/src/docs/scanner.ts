@@ -393,7 +393,7 @@ export function refreshCatalogSummary(catalog: DocsCatalog): DocsCatalog {
   catalog.sourceFingerprint = hashContent(
     JSON.stringify({
       manifest: catalog.project.manifestPath
-        ? ".dainexus/docs-manifest.json"
+        ? ".daiharness/docs-manifest.json"
         : "legacy",
       project: {
         id: catalog.project.id,
@@ -574,7 +574,7 @@ export function scanProject(projectRootInput: string): DocsCatalog {
 
 export function getCatalogPath(projectRootInput: string): string {
   const projectRoot = canonicalProjectRoot(projectRootInput);
-  return join(projectRoot, ".dainexus", "cache", "docs-index.json");
+  return join(projectRoot, ".daiharness", "cache", "docs-index.json");
 }
 
 export function writeCatalog(catalog: DocsCatalog): string {

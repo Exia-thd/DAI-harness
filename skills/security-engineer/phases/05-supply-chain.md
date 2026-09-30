@@ -2,16 +2,16 @@
 
 ## Objective
 
-Audit every dependency in the project for known vulnerabilities, license risk, maintenance health, and supply chain integrity. Generate a Software Bill of Materials and evaluate the full dependency tree -- not just direct dependencies. security-engineer is the SOLE AUTHORITY on application-layer dependency security analysis. DevOps handles container image CVE scanning at the infrastructure layer; this phase covers library and package vulnerabilities. Generate all outputs in `.dainexus/security-engineer/supply-chain/`.
+Audit every dependency in the project for known vulnerabilities, license risk, maintenance health, and supply chain integrity. Generate a Software Bill of Materials and evaluate the full dependency tree -- not just direct dependencies. security-engineer is the SOLE AUTHORITY on application-layer dependency security analysis. DevOps handles container image CVE scanning at the infrastructure layer; this phase covers library and package vulnerabilities. Generate all outputs in `.daiharness/security-engineer/supply-chain/`.
 
 ## Context Bridge
 
-Read Phase 4 outputs from `.dainexus/security-engineer/data-security/`. Data security findings may reveal dependencies that handle encryption or PII processing -- these deserve elevated scrutiny in the supply chain audit. Also reference Phase 2 code audit A06 (Vulnerable and Outdated Components) for any dependency flags already raised.
+Read Phase 4 outputs from `.daiharness/security-engineer/data-security/`. Data security findings may reveal dependencies that handle encryption or PII processing -- these deserve elevated scrutiny in the supply chain audit. Also reference Phase 2 code audit A06 (Vulnerable and Outdated Components) for any dependency flags already raised.
 
 ## Inputs
 
-- Phase 2 code audit -- `.dainexus/security-engineer/code-audit/` (A06 findings)
-- Phase 4 data security -- `.dainexus/security-engineer/data-security/`
+- Phase 2 code audit -- `.daiharness/security-engineer/code-audit/` (A06 findings)
+- Phase 4 data security -- `.daiharness/security-engineer/data-security/`
 - Dependency manifests -- `package.json`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `requirements.txt`, `Pipfile.lock`, `poetry.lock`, `go.mod`, `go.sum`, `Cargo.toml`, `Cargo.lock`, `pom.xml`, `build.gradle`
 - Lockfiles -- verify they exist and are committed to version control
 - CI/CD configs -- canonical local automation under `scripts/ci/`; inspect hosted-provider files only when the project explicitly uses them
@@ -103,7 +103,7 @@ For frontend/client-side code:
 
 ## Output Deliverables
 
-Write all outputs to `.dainexus/security-engineer/supply-chain/`:
+Write all outputs to `.daiharness/security-engineer/supply-chain/`:
 
 | File | Contents |
 |------|----------|

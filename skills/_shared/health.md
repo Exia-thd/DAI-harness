@@ -1,4 +1,4 @@
-# DAI Nexus Skill Health Check Protocol
+# DAI Harness Skill Health Check Protocol
 
 > **Version:** 1.0.0
 > **Created:** 2026-05-29
@@ -9,7 +9,7 @@
 
 ## Overview
 
-The Skill Health Check Protocol defines automated validation procedures to ensure skill integrity, reliability, and consistency across the DAI Nexus ecosystem. It establishes severity levels, check categories, and remediation procedures.
+The Skill Health Check Protocol defines automated validation procedures to ensure skill integrity, reliability, and consistency across the DAI Harness ecosystem. It establishes severity levels, check categories, and remediation procedures.
 
 ---
 

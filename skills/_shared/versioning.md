@@ -75,7 +75,7 @@ bash scripts/skill-rollback.sh <skill-name> 2.2.0
 
 ## Version Compatibility Matrix
 
-| Skill Version | DAI Nexus Version | Compatible? |
+| Skill Version | DAI Harness Version | Compatible? |
 |--------------|---------------------|--------------|
 | 1.x.x | 8.x.x | ✅ Yes |
 | 2.x.x | 8.7+ | ✅ Yes |
@@ -84,7 +84,7 @@ bash scripts/skill-rollback.sh <skill-name> 2.2.0
 ## Backup Directory Structure
 
 ```
-.dainexus/backups/skills/<skill-name>/
+.daiharness/backups/skills/<skill-name>/
 ├── 20260529_143022/     # Timestamp format: YYYYMMDD_HHMMSS
 │   ├── VERSION
 │   └── SKILL.md

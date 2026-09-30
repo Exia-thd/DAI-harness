@@ -207,7 +207,7 @@ For a major new visual identity or redesign with no existing `DESIGN.md`/design 
 #### 2.1 BRD Folder Structure
 
 ```
-.dainexus/product-manager/
+.daiharness/product-manager/
 ├── BRD/
 │   ├── INDEX.md                    # Living table of contents
 │   └── {feature-name}/

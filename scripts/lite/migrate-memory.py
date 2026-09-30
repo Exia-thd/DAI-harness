@@ -3,7 +3,7 @@
 
     python scripts/lite/migrate-memory.py [--project DIR] [--dry-run]
 
-The harness used to keep memory in <project>/.dainexus/memory.db. It now keeps
+The harness used to keep memory in <project>/.daiharness/memory.db. It now keeps
 it in the DAI memory layer, at <project>/.memory. This copies the old records
 across, once, and changes nothing in the old database: it is opened read-only
 and left exactly as it was, so nothing is lost if the migration is wrong.
@@ -64,7 +64,7 @@ def main() -> int:
     args = parser.parse_args()
 
     project = Path(args.project).resolve()
-    db = project / ".dainexus" / "memory.db"
+    db = project / ".daiharness" / "memory.db"
     if not db.is_file():
         print(f"nothing to migrate: {db} does not exist")
         return 0

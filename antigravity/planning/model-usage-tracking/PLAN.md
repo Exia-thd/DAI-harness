@@ -1,7 +1,7 @@
 # Model Usage Tracking - Main Plan
 
 ## Summary
-Track model usage từ Cursor, DAI Nexus, Claude Code vào unified dashboard để hiểu chi phí và tối ưu hóa.
+Track model usage từ Cursor, DAI Harness, Claude Code vào unified dashboard để hiểu chi phí và tối ưu hóa.
 
 ---
 
@@ -10,7 +10,7 @@ Track model usage từ Cursor, DAI Nexus, Claude Code vào unified dashboard đ�
 | Criteria | Score | Justification |
 |----------|:-----:|---------------|
 | **Clarity** | 9/10 | Scope rõ ràng, data sources identified |
-| **Completeness** | 8/10 | Cover 2/3 sources (Cursor + DAI Nexus), API sau |
+| **Completeness** | 8/10 | Cover 2/3 sources (Cursor + DAI Harness), API sau |
 | **Feasibility** | 9/10 | SQLite read đơn giản, Flask server có sẵn |
 | **Risk Awareness** | 8/10 | SQLite schema có thể change, data quality varies |
 | **Testability** | 9/10 | Unit test readers, integration test dashboard |
@@ -43,7 +43,7 @@ Track model usage từ Cursor, DAI Nexus, Claude Code vào unified dashboard đ�
 | Task | Effort | Priority |
 |------|--------|----------|
 | Create UnifiedAggregator | 1h | P0 |
-| Add source tabs (Cursor / DAI Nexus / All) | 1h | P1 |
+| Add source tabs (Cursor / DAI Harness / All) | 1h | P1 |
 | Add model comparison chart | 1h | P1 |
 
 ### Phase 3: Enhancements (2h)

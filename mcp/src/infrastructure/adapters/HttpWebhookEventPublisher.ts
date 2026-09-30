@@ -14,11 +14,11 @@ export class HttpWebhookEventPublisher implements IEventPublisher {
   }
 
   private getWebhookUrl(): string | null {
-    if (process.env.DAINEXUS_WEBHOOK_URL) {
-      return process.env.DAINEXUS_WEBHOOK_URL;
+    if (process.env.DAIHARNESS_WEBHOOK_URL) {
+      return process.env.DAIHARNESS_WEBHOOK_URL;
     }
     try {
-      const portFile = path.join(os.homedir(), '.dainexus-console', 'webhook-port.txt');
+      const portFile = path.join(os.homedir(), '.daiharness-console', 'webhook-port.txt');
       if (fs.existsSync(portFile)) {
         const port = fs.readFileSync(portFile, 'utf8').trim();
         return `http://127.0.0.1:${port}`;
@@ -30,11 +30,11 @@ export class HttpWebhookEventPublisher implements IEventPublisher {
   }
 
   private getWebhookToken(): string | null {
-    if (process.env.DAINEXUS_WEBHOOK_TOKEN) {
-      return process.env.DAINEXUS_WEBHOOK_TOKEN;
+    if (process.env.DAIHARNESS_WEBHOOK_TOKEN) {
+      return process.env.DAIHARNESS_WEBHOOK_TOKEN;
     }
     try {
-      const tokenFile = path.join(os.homedir(), '.dainexus-console', 'webhook-token.txt');
+      const tokenFile = path.join(os.homedir(), '.daiharness-console', 'webhook-token.txt');
       if (fs.existsSync(tokenFile)) {
         return fs.readFileSync(tokenFile, 'utf8').trim();
       }
@@ -70,7 +70,7 @@ export class HttpWebhookEventPublisher implements IEventPublisher {
 
       const token = this.getWebhookToken();
       if (token) {
-        headers['X-DAI Nexus-Token'] = token;
+        headers['X-DAI Harness-Token'] = token;
       }
 
       const req = http.request(

@@ -20,9 +20,9 @@
 #   $RLG_HOME/logs/*.log         launch logs from dev-run.sh
 #   $RLG_HOME/sweep.log          reclaim log        (rotated, not deleted)
 #   $RLG_HOME/gate.log           detector log       (rotated, not deleted)
-#   <project>/.dainexus/verify/*.json    machine-written evidence
-#   <project>/.dainexus/reports/*        generated reports
-#   <project>/.dainexus/escalations/*    escalation transcripts
+#   <project>/.daiharness/verify/*.json    machine-written evidence
+#   <project>/.daiharness/reports/*        generated reports
+#   <project>/.daiharness/escalations/*    escalation transcripts
 #
 # TTL comes from budget.yaml (disk.artifact_ttl_days), default 7.
 # Exit: always 0 unless an explicit removal failed.
@@ -36,7 +36,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
 EXECUTE=0; DAYS=""; AS_JSON=0
 PROJECTS=()
-LOG_ROTATE_BYTES="${DAINEXUS_RLG_LOG_MAX:-10485760}"
+LOG_ROTATE_BYTES="${DAIHARNESS_RLG_LOG_MAX:-10485760}"
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -151,9 +151,9 @@ fi
 [ "${#targets[@]}" -gt 0 ] && for proj in "${targets[@]}"; do
   # Explicit allowlist. Nothing outside these three directories is ever a
   # candidate, so a wrong --project can at worst age out old evidence files.
-  sweep_dir "$proj/.dainexus/verify"       '*.json'
-  sweep_dir "$proj/.dainexus/reports"      '*'
-  sweep_dir "$proj/.dainexus/escalations"  '*'
+  sweep_dir "$proj/.daiharness/verify"       '*.json'
+  sweep_dir "$proj/.daiharness/reports"      '*'
+  sweep_dir "$proj/.daiharness/escalations"  '*'
 done
 
 if [ "$AS_JSON" -eq 1 ]; then

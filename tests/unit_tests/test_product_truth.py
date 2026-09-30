@@ -34,7 +34,7 @@ def _fixture(tmp_path: Path) -> Path:
         "package.json",
         json.dumps(
             {
-                "name": "dai-nexus",
+                "name": "dai-harness",
                 "version": version,
                 "description": "2 skills, 2 modes. Pipeline: " + pipeline,
             }

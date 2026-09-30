@@ -15,7 +15,7 @@ export function setMcpServer(server: Server): void {
 }
 
 function getSessionId(): string | undefined {
-  return process.env.DAINEXUS_SESSION_ID;
+  return process.env.DAIHARNESS_SESSION_ID;
 }
 
 export function initRpcClient(): void {

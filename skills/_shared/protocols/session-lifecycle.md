@@ -22,7 +22,7 @@ Every pipeline invocation begins here, BEFORE mode classification.
 ### Step 1 — Load Project Profile
 
 ```
-IF .dainexus/project-profile.json exists:
+IF .daiharness/project-profile.json exists:
   Read it → set project context
   Check file age:
     IF < 24 hours AND no new git commits since onboarded_at:
@@ -40,7 +40,7 @@ ELSE:
 ### Step 2 — Load Last Session State
 
 ```
-IF .dainexus/session-log.json exists:
+IF .daiharness/session-log.json exists:
   Read last_session entry
   Determine session state:
     IF last_session.status == "interrupted" OR "in_progress":
@@ -59,15 +59,15 @@ ELSE:
 ### Step 3 — Load Memory Context
 
 ```
-IF LOCAL_MEMORY_DISABLED != true AND DAINEXUS_SKIP_MEMORY != 1:
-  Run: dn_memory_search with the project name and the user request keywords (limit 5)
+IF LOCAL_MEMORY_DISABLED != true AND DAIHARNESS_SKIP_MEMORY != 1:
+  Run: dh_memory_search with the project name and the user request keywords (limit 5)
   IF no results returned:
-    Run: dn_memory_add "Project initialized" with category project
+    Run: dh_memory_add "Project initialized" with category project
     Run search again with same query
   Inject results into prompt context (max 800 tokens)
   Log: "✓ Memory loaded: [N] relevant items"
 ELSE:
-  Read .dainexus/code-conventions.md if exists
+  Read .daiharness/code-conventions.md if exists
   Log: "✓ Conventions loaded (memory skipped or disabled)"
 ```
 
@@ -107,14 +107,14 @@ IF running in Antigravity (Claude Code):
 
     IF manifest exists:
       Log: "✓ MCP manifest found — workspace isolation active"
-      IF .dainexus/mcp-server/server.ts exists:
-        Log: "  └── dai-nexus-mcp-server: ready"
+      IF .daiharness/mcp-server/server.ts exists:
+        Log: "  └── dai-harness-mcp-server: ready"
       IF .memory/meta.json exists:
         Log: "  └── dai-memory: ready"
-      # MCP server spawning is handled by dainexus-mcp-launcher.sh
+      # MCP server spawning is handled by daiharness-mcp-launcher.sh
       # (configured once in claude_desktop_config.json)
 
-    ELSE IF .dainexus/mcp-server/server.ts exists:
+    ELSE IF .daiharness/mcp-server/server.ts exists:
       Log: "ℹ MCP server generated but no manifest found"
       Log: "  Run '/mcp' to generate .antigravity/mcp-manifest.json"
 
@@ -143,13 +143,13 @@ ELSE:
        → Add interrupted_reason: "Session health check - stale data"
 
 2. Check Memory Bank freshness:
-   IF .dainexus/memory-bank/progress.md exists:
+   IF .daiharness/memory-bank/progress.md exists:
      Read last_updated from header
      IF last_updated > 7 days:
        Log: "⚠ Memory Bank may be stale — update at session end"
 
 3. Check activeContext.md:
-   IF .dainexus/memory-bank/activeContext.md exists:
+   IF .daiharness/memory-bank/activeContext.md exists:
      → Load and inject into context
      → Log: "✓ Active context loaded — resuming from [checkpoint]"
 ```
@@ -184,7 +184,7 @@ ELSE:
 ### Step 3.8 — Handover Loading (SAVE/Resume v8.2)
 
 ```
-IF .dainexus/memory-bank/HANDOVER.md exists:
+IF .daiharness/memory-bank/HANDOVER.md exists:
   Read it → inject into context
   Log: "✓ Handover loaded — session can resume from [checkpoint]"
 
@@ -195,7 +195,7 @@ IF .dainexus/memory-bank/HANDOVER.md exists:
   - Blockers: Open blockers or questions
   - Next Steps: What to continue with
 
-IF .dainexus/memory-bank/handover-*.md exists (but not HANDOVER.md):
+IF .daiharness/memory-bank/handover-*.md exists (but not HANDOVER.md):
   Find most recent timestamped handover
   Read it → inject into context
   Log: "✓ Handover loaded (timestamped version)"
@@ -337,15 +337,15 @@ When a subagent completes or context approaches limits, generate a handover docu
 3. Parse any previous handover for context continuity
 4. Generate new handover document
 5. Write to:
-   - .dainexus/memory-bank/handover-{timestamp}.md
-   - .dainexus/memory-bank/HANDOVER.md (latest alias)
+   - .daiharness/memory-bank/handover-{timestamp}.md
+   - .daiharness/memory-bank/HANDOVER.md (latest alias)
 6. Return path to generated file
 ```
 
 ### Handover Loading Flow
 
 ```
-1. Check for .dainexus/memory-bank/HANDOVER.md
+1. Check for .daiharness/memory-bank/HANDOVER.md
 2. If not found, find most recent handover-*.md
 3. Parse markdown into structured dict
 4. Inject key sections into prompt context
@@ -363,7 +363,7 @@ When a subagent completes or context approaches limits, generate a handover docu
 ### Step T1 — Load Conversation Summary
 
 ```
-IF .dainexus/subagent-context/CONVERSATION_SUMMARY.md exists:
+IF .daiharness/subagent-context/CONVERSATION_SUMMARY.md exists:
   Read it → inject into context
   Log: "✓ Conversation summary loaded — [N] exchanges summarized"
 ```
@@ -371,7 +371,7 @@ IF .dainexus/subagent-context/CONVERSATION_SUMMARY.md exists:
 ### Step T1.5 — Load Handover Document (NEW)
 
 ```
-IF .dainexus/memory-bank/HANDOVER.md exists:
+IF .daiharness/memory-bank/HANDOVER.md exists:
   Read it → inject into context
   Log: "✓ Handover loaded — session can resume from [checkpoint]"
 
@@ -382,7 +382,7 @@ IF .dainexus/memory-bank/HANDOVER.md exists:
   - Blockers: Open blockers or questions
   - Next Steps: What to continue with
 
-IF .dainexus/memory-bank/handover-*.md exists (but not HANDOVER.md):
+IF .daiharness/memory-bank/handover-*.md exists (but not HANDOVER.md):
   Find most recent timestamped handover
   Read it → inject into context
   Log: "✓ Handover loaded (timestamped version)"
@@ -391,12 +391,12 @@ IF .dainexus/memory-bank/handover-*.md exists (but not HANDOVER.md):
 ### Step T2 — Retrieve Recent Turns
 
 ```
-IF LOCAL_MEMORY_DISABLED != true AND DAINEXUS_SKIP_MEMORY != 1:
+IF LOCAL_MEMORY_DISABLED != true AND DAIHARNESS_SKIP_MEMORY != 1:
   # Search for recent conversation facts (within current session)
-  dn_memory_search "conversation recent" (limit 3)
+  dh_memory_search "conversation recent" (limit 3)
   
   # Search for task context relevant to current request
-  dn_memory_search "session" (limit 3)
+  dh_memory_search "session" (limit 3)
   
   # Inject: "Recent context: [top memories]"
   Log: "✓ Recent turns loaded — [N] relevant items"
@@ -405,12 +405,12 @@ IF LOCAL_MEMORY_DISABLED != true AND DAINEXUS_SKIP_MEMORY != 1:
 ### Step T3 — Detect Scope Context
 
 ```
-IF .dainexus/business-analyst/handoff/ba-package.md exists:
+IF .daiharness/business-analyst/handoff/ba-package.md exists:
   # BA scope persists across turns
   Read key sections → inject scope summary
   Log: "✓ BA scope context loaded"
 
-IF .dainexus/subagent-context/PIPELINE_SUMMARY.md exists:
+IF .daiharness/subagent-context/PIPELINE_SUMMARY.md exists:
   # Pipeline summary from orchestrator
   Log: "✓ Pipeline summary loaded"
 ```
@@ -448,7 +448,7 @@ The orchestrator calls these hooks at specific lifecycle points. All hooks are e
 Called after each pipeline phase completes (DEFINE, BUILD, HARDEN, SHIP, SUSTAIN).
 
 ```
-1. Update .dainexus/session-log.json:
+1. Update .daiharness/session-log.json:
    {
      "session_id": "session-{YYYYMMDD-HHmm}",
      "started_at": "ISO-8601",
@@ -463,7 +463,7 @@ Called after each pipeline phase completes (DEFINE, BUILD, HARDEN, SHIP, SUSTAIN
    }
 
 2. Save phase summary to memory:
-   Run: dn_memory_add "Phase [phase_name] completed: [summary]" with category procedure
+   Run: dh_memory_add "Phase [phase_name] completed: [summary]" with category procedure
 
 3. Update quality metrics (see quality-dashboard.md)
 ```
@@ -484,7 +484,7 @@ Called after each strategic gate.
 ```
 1. Update session-log.json → gates.[gate_number] = { decision, feedback, decided_at }
 2. Save to memory:
-   Run: dn_memory_add "Gate [N] [decision]: [feedback summary]" with category decision
+   Run: dh_memory_add "Gate [N] [decision]: [feedback summary]" with category decision
 ```
 
 ### Hook: HEARTBEAT(task_id, status_message)
@@ -597,7 +597,7 @@ The middleware chain references these protocols:
 
 ## Per-request memory (Turn-Close) — mandatory
 
-**When:** After the assistant has **fully addressed** the current user message (single-turn chat, end of pipeline step, or before waiting on the next user input). **Not optional** for normal sessions (`MEM0_DISABLED` / `DAINEXUS_SKIP_MEM0` exempt).
+**When:** After the assistant has **fully addressed** the current user message (single-turn chat, end of pipeline step, or before waiting on the next user input). **Not optional** for normal sessions (`MEM0_DISABLED` / `DAIHARNESS_SKIP_MEM0` exempt).
 
 **Why:** Without this, project memory only grows at gates/phases — **conversation facts and incremental decisions are lost** between requests.
 
@@ -611,7 +611,7 @@ BEFORE running the memory add command, auto-generate a summary:
    - What remains open?
 2. Compose auto-summary (~100-200 chars):
    "Exchange: [2-3 sentences summarizing the exchange]"
-3. Write to .dainexus/subagent-context/CONVERSATION_SUMMARY.md:
+3. Write to .daiharness/subagent-context/CONVERSATION_SUMMARY.md:
    # Conversation Summary — [session_id]
    - [timestamp]: [summary of exchange 1]
    - [timestamp]: [summary of exchange 2]
@@ -621,10 +621,10 @@ BEFORE running the memory add command, auto-generate a summary:
 
 ### Step TC2 — Write Turn-Close Memory (Mandatory)
 
-**MUST record at least one** memory per turn (`dn_memory_add`), using a **single compact line** (redact secrets; stay under ~400 chars):
+**MUST record at least one** memory per turn (`dh_memory_add`), using a **single compact line** (redact secrets; stay under ~400 chars):
 
 ```bash
-dn_memory_add "REQ: [1-line user goal] | DONE: [what changed or decided] | OPEN: [blockers/questions or none] | SCOPE_UPDATE: [scope change or 'stable'] | CONVERSATION: [auto-summary from TC1]" with category session
+dh_memory_add "REQ: [1-line user goal] | DONE: [what changed or decided] | OPEN: [blockers/questions or none] | SCOPE_UPDATE: [scope change or 'stable'] | CONVERSATION: [auto-summary from TC1]" with category session
 ```
 
 ### SCOPE_UPDATE Field
@@ -686,10 +686,10 @@ Called when pipeline completes OR when session is explicitly ended.
    }
 
 3. Save to memory:
-   Run: dn_memory_add "Session completed: [summary]. Next: [next_steps]" with category session
+   Run: dh_memory_add "Session completed: [summary]. Next: [next_steps]" with category session
 
 4. Add project identity (if no memories exist):
-   Run: dn_memory_add "Project: [name] v[version]" with category project
+   Run: dh_memory_add "Project: [name] v[version]" with category project
 
 5. Auto-reindex Code Intelligence:
    IF .memory/meta.json exists AND the memory engine is installed:
@@ -702,12 +702,12 @@ Called when pipeline completes OR when session is explicitly ended.
    all code changes made during this session.
 
 6. Update project profile:
-   .dainexus/project-profile.json → dai-nexus.last_session = session_id, total_sessions++
+   .daiharness/project-profile.json → dai-harness.last_session = session_id, total_sessions++
 ```
 
 ## Session Log Format
 
-`.dainexus/session-log.json`:
+`.daiharness/session-log.json`:
 
 ```json
 {

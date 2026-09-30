@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://dai-nexus.dev/schemas/peer-collaboration-event.v1.schema.json",
-  "title": "DAI Nexus Peer Collaboration Event v1",
+  "$id": "https://dai-harness.dev/schemas/peer-collaboration-event.v1.schema.json",
+  "title": "DAI Harness Peer Collaboration Event v1",
   "type": "object",
   "additionalProperties": false,
   "required": [

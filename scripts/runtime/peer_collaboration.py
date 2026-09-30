@@ -894,7 +894,7 @@ class JsonlEventLog:
 
     def __init__(
         self,
-        root: str | Path = ".dainexus",
+        root: str | Path = ".daiharness",
         session_id: str | None = None,
         *,
         max_event_bytes: int = MAX_EVENT_BYTES,

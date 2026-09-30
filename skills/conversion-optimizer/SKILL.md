@@ -6,7 +6,7 @@ description: >
   designs A/B test experiments, builds growth loops, and prevents churn.
   Activated in the GROW phase alongside Growth Marketer. Routed via the production-grade orchestrator.
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [cro, conversion, ab-testing, growth, retention, funnel, churn, experimentation]
 ---
 
@@ -75,7 +75,7 @@ Analytics → Measurement, iteration, data infrastructure
 
 ## Engagement Mode
 
-!`cat .dainexus/settings.md 2>/dev/null || echo "No settings — using Standard"`
+!`cat .daiharness/settings.md 2>/dev/null || echo "No settings — using Standard"`
 
 | Mode | Behavior |
 |------|----------|
@@ -125,7 +125,7 @@ marketing/cro/
     ├── dunning-strategy.md         # Failed payment recovery
     └── win-back-sequence.md        # Churn re-engagement campaign
 
-.dainexus/conversion-optimizer/
+.daiharness/conversion-optimizer/
 ├── cro-plan.md                    # Master CRO strategy
 ├── experiment-log.md              # Running experiment tracker
 └── findings.md                   # CRO audit findings
@@ -408,7 +408,7 @@ Benefits:
 
 ### Experiment Design Template
 
-```markdown
+````markdown
 ## Experiment: [EXP-001] [Name]
 
 ### Hypothesis
@@ -490,7 +490,7 @@ Instead of manual intuition, utilize AI to automatically surface conversion fric
 - [ ] Randomization unit defined (user vs session)
 - [ ] Exclusion criteria defined (bots, internal)
 - [ ] Result interpretation documented
-```
+````
 
 ### ICE Scoring for Experiment Backlog
 
@@ -524,6 +524,7 @@ Instead of manual intuition, utilize AI to automatically surface conversion fric
 | **Network** | Value increases with users | Slack workspace, LinkedIn | 0.5+ |
 | **Marketplace** | Supply meets demand | Airbnb, Uber | Varies |
 | **Developer** | Ecosystem + APIs | Stripe, Twilio | 0.2-0.5 |
+```
 
 ### Referral Program Design
 

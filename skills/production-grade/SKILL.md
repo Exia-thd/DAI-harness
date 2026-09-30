@@ -12,7 +12,7 @@ description: >
 
 !`git status 2>/dev/null || echo "No git repo detected"`
 !`cat CLAUDE.md 2>/dev/null || echo "No CLAUDE.md found"`
-!`ls .dainexus/ 2>/dev/null || echo "No existing workspace"`
+!`ls .daiharness/ 2>/dev/null || echo "No existing workspace"`
 !`cat .production-grade.yaml 2>/dev/null || echo "No config file — defaults apply"`
 
 ## Overview
@@ -24,7 +24,7 @@ Adaptive meta-skill orchestrator for software/product delivery. It analyzes the 
 **All skills are bundled in this plugin. Single install, everything included.**
 
 ### ⚠️ MANDATORY: Pipeline State Management (MCP Tools)
-If you are running in an environment with the DAI Nexus MCP Server connected, YOU MUST explicitly manage the pipeline state using the exposed `fw_*` tools. This ensures any connected IDE or Dashboard accurately tracks your progress.
+If you are running in an environment with the DAI Harness MCP Server connected, YOU MUST explicitly manage the pipeline state using the exposed `fw_*` tools. This ensures any connected IDE or Dashboard accurately tracks your progress.
 1. For substantial tracked work, call `fw_start_pipeline` when starting a new goal/session.
 2. Advance state only through phases the work actually enters; compressed `QUICK` work does not need artificial phase transitions.
 3. Use `fw_request_gate_approval` only for an actual human-approval contract, not merely because a phase exists.
@@ -67,7 +67,7 @@ Post-Skill: ⑥ QualityGate → ⑥b OperatingAudit → ⑦ BrownfieldSafety →
 
 ### Progressive Skill Loading (v8.0 — DeerFlow Pattern)
 
-Skills are loaded on-demand based on classified mode. Read `.dainexus/skills-config.json` for the mode→skill mapping.
+Skills are loaded on-demand based on classified mode. Read `.daiharness/skills-config.json` for the mode→skill mapping.
 
 ```
 Instead of loading the full current skill registry, load only skills relevant to the mode:
@@ -128,7 +128,7 @@ Ask the user only when ambiguity can materially change the product contract, saf
 
 BDD/Gherkin is useful when behavior scenarios materially improve acceptance/test handoff; it is not mandatory for text/config/status work or obvious local changes.
 
-If `.dainexus/subagent-context/INTERPRETED_REQUEST.md` exists, treat it as a derived cache/handoff. The latest user instruction remains authoritative for intent, and current workspace/runtime evidence remains authoritative for project state. Refresh the cache when either changes.
+If `.daiharness/subagent-context/INTERPRETED_REQUEST.md` exists, treat it as a derived cache/handoff. The latest user instruction remains authoritative for intent, and current workspace/runtime evidence remains authoritative for project state. Refresh the cache when either changes.
 
 ## Enhanced Mode Classification with Fuzzy Matching (v8.7+)
 
@@ -174,7 +174,7 @@ Use the shared plan-quality protocol proportionally: `QUICK` work uses the mini-
 
 **ALL skills** and Orchestrator MUST use the Local Webhook to report state changes and token usage. OSC sequences are deprecated. You may use direct HTTP Webhook via curl OR continue using MCP Tools (which will automatically proxy to the Webhook).
 
-!`cat skills/_shared/protocols/webhook-telemetry-protocol.md 2>/dev/null || echo "Protocol not found — apply defaults: POST to DAINEXUS_WEBHOOK_URL/api/v1/telemetry and /api/v1/state instead of using OSC sequences."`
+!`cat skills/_shared/protocols/webhook-telemetry-protocol.md 2>/dev/null || echo "Protocol not found — apply defaults: POST to DAIHARNESS_WEBHOOK_URL/api/v1/telemetry and /api/v1/state instead of using OSC sequences."`
 
 ### Evidence-Driven Recovery
 
@@ -183,7 +183,7 @@ Use `kernel/SOLVE.md`, `skills/_shared/protocols/graceful-failure.md`, and `skil
 - `QUICK` work has no numeric plan score requirement.
 - `STANDARD` / `DEEP` use the applicable plan threshold.
 - After the same step fails twice, stop repeating it. Research only when a material knowledge/evidence gap blocks the next decision; otherwise escalate with the evidence and alternatives.
-- Store lessons project-locally. Do **not** mutate shared DAI Nexus skill/protocol files unless improving DAI Nexus itself is the explicit task and the framework regression gates pass.
+- Store lessons project-locally. Do **not** mutate shared DAI Harness skill/protocol files unless improving DAI Harness itself is the explicit task and the framework regression gates pass.
 - A higher model tier may review/disagree, but it does not replace evidence.
 
 Legacy ASIP files/metrics may remain for backward compatibility; their old mandatory-research/self-mutation semantics are deprecated by the current Research Gate and Senior Execution Contract.
@@ -232,7 +232,7 @@ Invoke: /chat-interpreter [user's message]
 
 1. **9-Dimension Extraction** — silently extracts: Task, Target tool, Output format, Constraints, Input, Context, Audience, Success criteria, Examples
 
-2. **Mode Detection** — maps the request to DAI Nexus's 24 modes with confidence level (HIGH/MEDIUM/LOW)
+2. **Mode Detection** — maps the request to DAI Harness's 24 modes with confidence level (HIGH/MEDIUM/LOW)
 
 3. **Gap Detection** — identifies missing information (max 3 clarifying questions if needed)
 
@@ -280,7 +280,7 @@ After your answers, I'll route to the right pipeline.
 
 **Chat Interpretation Output:**
 ```
-.dainexus/subagent-context/INTERPRETED_REQUEST.md
+.daiharness/subagent-context/INTERPRETED_REQUEST.md
   ├── mode: [detected mode]
   ├── confidence: [HIGH/MEDIUM/LOW]
   ├── intent_summary: [1 sentence]
@@ -292,7 +292,7 @@ After your answers, I'll route to the right pipeline.
 ```
 
 **Reading the interpreted request before proceeding:**
-`.dainexus/subagent-context/INTERPRETED_REQUEST.md` is a derived handoff/cache, not a higher authority than the current user message. If they differ, re-interpret from the current request and verified project state before continuing.
+`.daiharness/subagent-context/INTERPRETED_REQUEST.md` is a derived handoff/cache, not a higher authority than the current user message. If they differ, re-interpret from the current request and verified project state before continuing.
 
 ## Tool-Specific Routing (from prompt-master)
 
@@ -316,10 +316,10 @@ Project: [extracted from user's message]
 2. **Bootstrap workspace:**
 ```bash
 mkdir -p skills/_shared/protocols/
-mkdir -p .dainexus/
+mkdir -p .daiharness/
 ```
 
-3. **Ensure canonical shared protocols are available** in `skills/_shared/protocols/` (reuse the current DAI Nexus/submodule files; do not rewrite existing canonical protocols):
+3. **Ensure canonical shared protocols are available** in `skills/_shared/protocols/` (reuse the current DAI Harness/submodule files; do not rewrite existing canonical protocols):
 
 | Protocol File | Content |
 |---------------|---------|
@@ -338,11 +338,11 @@ mkdir -p .dainexus/
 | `credit-killing-patterns.md` | 35 patterns that waste tokens: 7 task, 6 context, 6 format, 6 scope, 5 reasoning, 5 agentic |
 | `prompt-techniques.md` | 5 safe techniques: Role Assignment, Few-Shot, XML Tags, Grounding Anchors, Chain of Thought. Also lists forbidden techniques: ToT, GoT, USC, prompt chaining, MoE |
 
-Read these from the current DAI Nexus installation/submodule. Copy/link only when the target project explicitly needs local protocol files and they are absent. **Never reconstruct a missing canonical protocol from the summary table**; mark it `UNVERIFIED` and use the kernel/shared contract that is actually available.
+Read these from the current DAI Harness installation/submodule. Copy/link only when the target project explicitly needs local protocol files and they are absent. **Never reconstruct a missing canonical protocol from the summary table**; mark it `UNVERIFIED` and use the kernel/shared contract that is actually available.
 
 4. **Codebase discovery — detect greenfield vs brownfield:**
 
-   **If project onboarding already ran** (Phase 0.B loaded `.dainexus/project-profile.json`) → use cached fingerprint data. Otherwise, run scans:
+   **If project onboarding already ran** (Phase 0.B loaded `.daiharness/project-profile.json`) → use cached fingerprint data. Otherwise, run scans:
 
    Run these scans in parallel:
    ```
@@ -374,13 +374,13 @@ Read these from the current DAI Nexus installation/submodule. Copy/link only whe
    | Source files exist, no `.production-grade.yaml` | **Brownfield (unmapped)** | Deep onboarding, generate config, adapt |
    | Source files + `.production-grade.yaml` exist | **Brownfield (mapped)** | Use config paths, augment existing code |
 
-   **If Greenfield** → log `✓ Greenfield project — creating from scratch`. Write minimal `.dainexus/project-profile.json` (to be populated progressively). Continue to step 5.
+   **If Greenfield** → log `✓ Greenfield project — creating from scratch`. Write minimal `.daiharness/project-profile.json` (to be populated progressively). Continue to step 5.
 
    **If Brownfield** → run the enhanced adaptation sequence:
 
    a. **Deep project onboarding** — run full `skills/_shared/protocols/project-onboarding.md` if not already done in Phase 0.B. This produces:
-      - `.dainexus/project-profile.json` — full fingerprint, health, patterns, risk
-      - `.dainexus/code-conventions.md` — coding patterns for all skills to follow
+      - `.daiharness/project-profile.json` — full fingerprint, health, patterns, risk
+      - `.daiharness/code-conventions.md` — coding patterns for all skills to follow
 
    b. **Structure report** — display from project profile:
    ```
@@ -410,30 +410,30 @@ Read these from the current DAI Nexus installation/submodule. Copy/link only whe
 
    d. **Write `.production-grade.yaml`** from discovered structure — map `paths.*` to actual directories found.
 
-   e. **Set brownfield context** — write to `.dainexus/codebase-context.md`:
+   e. **Set brownfield context** — write to `.daiharness/codebase-context.md`:
    ```markdown
    # Codebase Context
    Mode: brownfield
    Language: [detected]
    Framework: [detected]
    Existing paths: [mapping]
-   Code conventions: .dainexus/code-conventions.md
-   Project profile: .dainexus/project-profile.json
+   Code conventions: .daiharness/code-conventions.md
+   Project profile: .daiharness/project-profile.json
 
    ## Rules for all agents
    - Don't overwrite existing files without explicit user approval — blindly replacing files can destroy production-critical configuration or break existing consumers that depend on current signatures
-   - READ .dainexus/code-conventions.md and MATCH existing code style
+   - READ .daiharness/code-conventions.md and MATCH existing code style
    - ADD to existing directories, don't replace them
    - If a file exists at the target path, create alongside it or extend it
    - Existing tests must still pass after changes (verified by quality-gate)
-   - Check .dainexus/project-profile.json → risk.protected_paths before writing
+   - Check .daiharness/project-profile.json → risk.protected_paths before writing
    ```
 
    f. **Activate brownfield safety net** — follow `skills/_shared/protocols/brownfield-safety.md`:
-      - Create session branch: `dai-nexus/session-{timestamp}`
+      - Create session branch: `dai-harness/session-{timestamp}`
       - Snapshot baseline (existing tests pass count)
       - Register protected paths
-      - Log: `✓ Safety net active — branch: dai-nexus/session-{timestamp}, baseline: [N] tests`
+      - Log: `✓ Safety net active — branch: dai-harness/session-{timestamp}, baseline: [N] tests`
 
    All skills read codebase-context.md and code-conventions.md before executing.
 
@@ -445,7 +445,7 @@ Resolve interaction depth without interrupting the client unnecessarily:
 - `Express`: maximum autonomy; only hard/material gates interrupt.
 - `Thorough` / `Meticulous`: use only when the user explicitly requests more review depth or the engagement contract requires it.
 
-Do not use fixed question quotas. A senior role asks the **minimum questions needed to change a decision**. Record the resolved mode in `.dainexus/settings.md` only when persistent state is useful.
+Do not use fixed question quotas. A senior role asks the **minimum questions needed to change a decision**. Record the resolved mode in `.daiharness/settings.md` only when persistent state is useful.
 
 5b. **Execution strategy — Scope Analysis & Recommendation:**
 
@@ -524,11 +524,11 @@ Shared_Write_Risk: [LOW|MEDIUM|HIGH]
 Reason: [evidence-based summary]
 ```
 
-Write `.dainexus/scope-analysis.md` only for substantial multi-lane work where another role/session will benefit from the artifact.
+Write `.daiharness/scope-analysis.md` only for substantial multi-lane work where another role/session will benefit from the artifact.
 
 When **Parallel** is selected, the BUILD and HARDEN phases use the parallel-dispatch skill (`skills/parallel-dispatch/SKILL.md`) to spawn git worktrees, distribute Task Contracts, and merge results. When **Sequential** is selected, the pipeline behaves as before.
 
-6. **Detect existing workspace & load memory** — if `.dainexus/` has prior state, use session-lifecycle resume protocol. If `.dainexus/session-log.json` has interrupted state, offer resume. Otherwise offer clean start via notify_user.
+6. **Detect existing workspace & load memory** — if `.daiharness/` has prior state, use session-lifecycle resume protocol. If `.daiharness/session-log.json` has interrupted state, offer resume. Otherwise offer clean start via notify_user.
    - **Memory load:** Run `python3 scripts/lite/dai_memory.py search "<project-name> <user-request-keywords>" --limit 5` to retrieve relevant project context. Inject results into your context for this session.
    - If no results or memory is empty, verify setup with `python3 scripts/lite/dai_memory.py where`.
 
@@ -536,11 +536,11 @@ When **Parallel** is selected, the BUILD and HARDEN phases use the parallel-disp
    - Read `skills/_shared/protocols/pipeline-operating-contract.md`.
    - Resolve desired outcome, observable acceptance, constraints/non-goals, `Minimum Safe Scope`, credible cross-domain `risk_signals` with owners, and only decision-changing unknowns.
    - If visual acceptance is material, establish `visual_basis` before UI/art implementation; if no reliable basis exists, resolve it at pipeline level rather than asking each visual skill to research independently.
-   - Keep this as task state for bounded work; persist `.dainexus/pipeline-context.md` only when multi-role/session handoff benefits from it.
+   - Keep this as task state for bounded work; persist `.daiharness/pipeline-context.md` only when multi-role/session handoff benefits from it.
    - Every specialist receives `PIPELINE_CONTEXT` and returns `DOMAIN_FINDING` for newly discovered cross-domain/scope-changing facts.
 
 7. **Polymath specialist check (only when research/decision synthesis itself is needed):**
-   - If `.dainexus/polymath/handoff/context-package.md` exists → read it, pass to PM as pre-loaded context. Log: `✓ Polymath context loaded — skipping redundant discovery`
+   - If `.daiharness/polymath/handoff/context-package.md` exists → read it, pass to PM as pre-loaded context. Log: `✓ Polymath context loaded — skipping redundant discovery`
    - Generic scope clarification, hidden-risk scanning, source trust, and instruction-boundary safety are already owned by OperatingPreflight; do **not** invoke Polymath merely to replay those steps.
    - Route to Polymath when the unresolved work genuinely needs deep cross-source analysis, alternative-hypothesis comparison, unfamiliar-domain synthesis, or decision memo quality beyond the control plane.
    - If no such specialist need exists → proceed directly. Log: `✓ Pipeline context ready — no Polymath specialist required`.
@@ -558,7 +558,7 @@ When **Parallel** is selected, the BUILD and HARDEN phases use the parallel-disp
 
    **Brownfield Full Build** (existing meaningful codebase):
 
-   - If `.dainexus/business-analyst/handoff/ba-package.md` exists → read it, pass to PM. Log: `✓ BA package loaded — requirements pre-validated`
+   - If `.daiharness/business-analyst/handoff/ba-package.md` exists → read it, pass to PM. Log: `✓ BA package loaded — requirements pre-validated`
    - If no BA package: inspect material requirement gaps directly. Route to BA when gaps can change the contract; otherwise proceed with a concise verified scope handoff.
    - Do not treat a self-scored completeness number as evidence. Use the actual user spec, project state, and unresolved decisions.
 
@@ -601,7 +601,7 @@ When context reaches 80% capacity or session needs to transfer:
 │ SESSION HANDOFF PROTOCOL │
 ├─────────────────────────────────────────────────────────────────────┤
 │ │
-│ 1. GENERATE handoff document at .dainexus/handover-[date].md │
+│ 1. GENERATE handoff document at .daiharness/handover-[date].md │
 │ │
 │ 2. INCLUDE in handoff: │
 │ - Goals accomplished │
@@ -927,11 +927,11 @@ Invoke: /verifier Confirm all pipeline deliverables are complete and functional 
 ```
 
 The verifier subagent:
-1. Reads `.dainexus/subagent-context/PIPELINE_SUMMARY.md` for scope
+1. Reads `.daiharness/subagent-context/PIPELINE_SUMMARY.md` for scope
 2. Reads all DELIVERY.json from completed tasks
 3. Runs compilation and tests for each deliverable
 4. Scans for TODOs, secrets, and obvious bugs
-5. Writes report to `.dainexus/subagent-context/VERIFIER_REPORT.md`
+5. Writes report to `.daiharness/subagent-context/VERIFIER_REPORT.md`
 
 **Step G3.2 — Present Gate 3 options (using verifier report):**
 
@@ -1132,12 +1132,12 @@ When HARDEN skills find Critical/High issues:
 | T11: Tech Writer | ALL workspace + project | `docs/` | `technical-writer/` |
 | T12: Skill Maker | ALL workspace | `skills/` | `skill-maker/` |
 
-**Deliverables** go to project root (respecting `.production-grade.yaml` path overrides). **Workspace artifacts** go to `.dainexus/<skill-name>/`.
+**Deliverables** go to project root (respecting `.production-grade.yaml` path overrides). **Workspace artifacts** go to `.daiharness/<skill-name>/`.
 
 ## Workspace Architecture
 
 ```
-.dainexus/
+.daiharness/
 ├── .protocols/              # Shared protocols (written at bootstrap)
 ├── .orchestrator/           # Pipeline state via task.md
 ├── product-manager/         # BRD, research
@@ -1184,7 +1184,7 @@ Every skill execution follows:
 4. **Self-debug** — read errors, identify root cause. After 3 failures: stop and report.
 5. **Quality bar** — no TODOs, no stubs. All code compiles. All tests pass. Quality score ≥ 90.
 6. **TDD enforced** — write test first, watch fail, implement, watch pass, refactor.
-7. **Convention compliance** — read `.dainexus/code-conventions.md` (if brownfield) and match existing patterns.
+7. **Convention compliance** — read `.daiharness/code-conventions.md` (if brownfield) and match existing patterns.
 
 ## Partial Execution
 
@@ -1212,13 +1212,13 @@ The dashboard includes:
 - **Acceptance** — BRD criteria coverage, traceability
 - **Pipeline stats** — mode, duration, skills run, files changed
 
-**Machine-readable output:** `.dainexus/quality-report-{session}.json`
-**Quality trending:** `.dainexus/quality-history.json` (appended each session)
+**Machine-readable output:** `.daiharness/quality-report-{session}.json`
+**Quality trending:** `.daiharness/quality-history.json` (appended each session)
 
 Also display the legacy summary for backward compatibility:
 ```
 ╔══════════════════════════════════════════════════════════════╗
-║          DAI Nexus v{local_version} — COMPLETE                    ║
+║          DAI Harness v{local_version} — COMPLETE                    ║
 ╠══════════════════════════════════════════════════════════════╣
 ║  Project: <name>                                             ║
 ║  Quality Score: [XX]/100 (Grade [A-F])                       ║
@@ -1229,9 +1229,9 @@ Also display the legacy summary for backward compatibility:
 ║  SHIP:    ✓ Docker ✓ CI/CD ✓ Terraform ✓ SRE approved       ║
 ║  SUSTAIN: ✓ Docs ✓ Skills (<N> created) ✓ Learnings captured ║
 ║                                                              ║
-║  Workspace: .dainexus/              ║
+║  Workspace: .daiharness/              ║
 ║  Config: .production-grade.yaml                              ║
-║  Report: .dainexus/quality-report-{session}.json              ║
+║  Report: .daiharness/quality-report-{session}.json              ║
 ╚══════════════════════════════════════════════════════════════╝
 ```
 
@@ -1241,7 +1241,7 @@ For ALL brownfield projects (any mode, not just Full Build), activate the safety
 
 | Safety Layer | When | Action |
 |-------------|------|--------|
-| Git branch | Pre-pipeline | Create `dai-nexus/session-{timestamp}` branch |
+| Git branch | Pre-pipeline | Create `dai-harness/session-{timestamp}` branch |
 | Baseline snapshot | Pre-pipeline | Run existing tests, record pass count |
 | Protected paths | Pre-pipeline | Register paths that must not be modified |
 | Regression checks | After T3a, T3b, T5 | Verify existing tests still pass |

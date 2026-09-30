@@ -32,7 +32,7 @@ Tool Result
 └─────────────────────┘
     │
     ├──► Write to Audit Log (async, non-blocking)
-    │    .dainexus/audit/{session}/{tool}/{timestamp}.jsonl
+    │    .daiharness/audit/{session}/{tool}/{timestamp}.jsonl
     │
     ├──► Sanitize Output
     │    Strip ANSI codes
@@ -66,7 +66,7 @@ Tool Result
 | `Bash` | `{N} lines, exit {code}` | `50 lines, exit 0` |
 | `Glob` | `{N} files` | `Glob **/*.ts: 24 files` |
 | `SemanticSearch` | `{N} results from {K} sources` | `SemanticSearch 'auth': 5 results from 3 sources` |
-| `FetchMcpResource` | `resource {uri}: {N} chars` | `resource dai-nexus://repos: 2048 chars` |
+| `FetchMcpResource` | `resource {uri}: {N} chars` | `resource dai-harness://repos: 2048 chars` |
 | `Write` | `wrote {path}: {N} bytes` | `wrote /src/a.ts: 2048 bytes` |
 | `Edit` | `edited {path}: {N} changes` | `edited /src/a.ts: 3 changes` |
 | `Delete` | `deleted {path}` | `deleted /tmp/cache.json` |
@@ -97,7 +97,7 @@ Tool Result
 # .production-grade.yaml
 tool_sandbox:
   enabled: true
-  audit_log_dir: ".dainexus/audit"
+  audit_log_dir: ".daiharness/audit"
   max_raw_size: 10240        # 10KB — truncate above this
   max_summary_size: 512       # chars in summary
   enable_audit: true          # write to audit log

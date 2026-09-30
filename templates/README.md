@@ -1,8 +1,8 @@
 # Templates
 
-> Canonical template directory for DAI Nexus v8.1+
+> Canonical template directory for DAI Harness v8.1+
 
-**Status:** Active development — see [antigravity plan](../antigravity/planning/dai-nexus-v81-templates/PLAN.md)
+**Status:** Active development — see [antigravity plan](../antigravity/planning/dai-harness-v81-templates/PLAN.md)
 
 ## Categories
 

@@ -3,7 +3,7 @@ name: software-engineer-python
 extends: software-engineer
 language: python
 version: 1.0.0
-author: dai-nexus
+author: dai-harness
 tags: [python, backend, api, services, clean-architecture, tdd]
 file_patterns: ["*.py", "pyproject.toml", "setup.py", "requirements*.txt", "Pipfile", "poetry.lock"]
 linter: pylint

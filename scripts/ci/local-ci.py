@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Provider-neutral local CI control plane for DAI Nexus.
+"""Provider-neutral local CI control plane for DAI Harness.
 
 Hosted CI systems are optional adapters. This runner is the canonical execution
 surface for quality, security, compatibility, review, indexing, and wiki gates.
@@ -25,8 +25,8 @@ from pathlib import Path
 from typing import Sequence
 
 ROOT = Path(__file__).resolve().parents[2]
-REPORT_DIR = ROOT / ".dainexus" / "reports" / "local-ci"
-LOCAL_VENV = ROOT / ".dainexus" / "local-ci-venv"
+REPORT_DIR = ROOT / ".daiharness" / "reports" / "local-ci"
+LOCAL_VENV = ROOT / ".daiharness" / "local-ci-venv"
 MIN_NODE_MAJOR = 22
 NODE_MATRIX = (22, 24)
 
@@ -241,7 +241,7 @@ class LocalCI:
         if self.primary_node:
             node_dir = str(Path(self.primary_node).resolve().parent)
             add_path(node_dir)
-            env["DAINEXUS_EFFECTIVE_NODE_BIN"] = self.primary_node
+            env["DAIHARNESS_EFFECTIVE_NODE_BIN"] = self.primary_node
         for component in ("root", "mcp", "cli"):
             for node_modules in self._node_modules_roots(component):
                 bin_dir = node_modules / ".bin"
@@ -315,9 +315,9 @@ class LocalCI:
 
     def _node_modules_roots(self, component: str) -> list[Path]:
         env_names = {
-            "root": "DAINEXUS_ROOT_NODE_MODULES",
-            "mcp": "DAINEXUS_MCP_NODE_MODULES",
-            "cli": "DAINEXUS_CLI_NODE_MODULES",
+            "root": "DAIHARNESS_ROOT_NODE_MODULES",
+            "mcp": "DAIHARNESS_MCP_NODE_MODULES",
+            "cli": "DAIHARNESS_CLI_NODE_MODULES",
         }
         configured = os.environ.get(env_names[component], "").strip()
         roots: list[Path] = []
@@ -350,14 +350,14 @@ class LocalCI:
 
     @property
     def bash(self) -> str:
-        configured = os.environ.get("DAINEXUS_BASH", "").strip()
+        configured = os.environ.get("DAIHARNESS_BASH", "").strip()
         if configured:
             return configured
         found = _which("bash")
         if not found:
             raise GateFailure(
-                "bash is required by current DAI Nexus shell gates. On Windows use Git Bash/WSL "
-                "or set DAINEXUS_BASH to a compatible bash executable."
+                "bash is required by current DAI Harness shell gates. On Windows use Git Bash/WSL "
+                "or set DAIHARNESS_BASH to a compatible bash executable."
             )
         return found
 
@@ -420,7 +420,7 @@ class LocalCI:
         return candidates
 
     def _resolve_node_runtime(self, major: int) -> str:
-        env_name = f"DAINEXUS_NODE{major}_BIN"
+        env_name = f"DAIHARNESS_NODE{major}_BIN"
         configured = os.environ.get(env_name, "").strip()
         if configured:
             path = Path(configured).expanduser().resolve()
@@ -459,13 +459,17 @@ class LocalCI:
         return str(path)
 
     def _resolve_primary_node(self) -> str:
-        configured = os.environ.get("DAINEXUS_NODE_BIN", "").strip()
+        configured = os.environ.get("DAIHARNESS_NODE_BIN", "").strip()
         if configured:
             path = Path(configured).expanduser().resolve()
             if not path.is_file():
-                raise GateFailure(f"DAINEXUS_NODE_BIN points to a missing file: {path}")
+                raise GateFailure(
+                    f"DAIHARNESS_NODE_BIN points to a missing file: {path}"
+                )
             if self._raw_node_major(str(path)) < MIN_NODE_MAJOR:
-                raise GateFailure(f"DAINEXUS_NODE_BIN must be Node >= {MIN_NODE_MAJOR}")
+                raise GateFailure(
+                    f"DAIHARNESS_NODE_BIN must be Node >= {MIN_NODE_MAJOR}"
+                )
             return str(path)
 
         current = _which("node")
@@ -578,7 +582,7 @@ class LocalCI:
         except GateFailure:
             python_ready = False
 
-        cache = ROOT / ".dainexus" / "cache"
+        cache = ROOT / ".daiharness" / "cache"
         markers = [
             name
             for name in ("reindex-needed", "wiki-sync-needed", "mcp-sync-needed")
@@ -817,7 +821,7 @@ class LocalCI:
             argv.append("--force")
         self.run("local-index", argv, timeout=900)
         if not self.dry_run:
-            (ROOT / ".dainexus" / "cache" / "reindex-needed").unlink(missing_ok=True)
+            (ROOT / ".daiharness" / "cache" / "reindex-needed").unlink(missing_ok=True)
 
     def wiki(self, *, reindex: bool, generate: bool = False) -> None:
         if reindex:
@@ -832,7 +836,7 @@ class LocalCI:
             # No provider, no model, no network: the layer's wiki is derived
             # from the graph, the recorded memory and the source, and every
             # page says so. The old step called a language model and needed
-            # DAINEXUS_WIKI_PROVIDER and DAINEXUS_WIKI_MODEL; nothing here does.
+            # DAIHARNESS_WIKI_PROVIDER and DAIHARNESS_WIKI_MODEL; nothing here does.
             self.run(
                 "wiki-generate",
                 [*self.dai_memory, "wiki"],
@@ -843,7 +847,9 @@ class LocalCI:
             [self.bash, "scripts/ci/verify-wiki-drift.sh", "--threshold", "0.3"],
         )
         if not self.dry_run:
-            (ROOT / ".dainexus" / "cache" / "wiki-sync-needed").unlink(missing_ok=True)
+            (ROOT / ".daiharness" / "cache" / "wiki-sync-needed").unlink(
+                missing_ok=True
+            )
 
     def dependencies(self, *, fix: bool) -> None:
         if fix:
@@ -1072,7 +1078,7 @@ class LocalCI:
             head = ""
             branch = ""
         payload = {
-            "schema": "dai-nexus-local-ci/v1",
+            "schema": "dai-harness-local-ci/v1",
             "mode": mode,
             "status": "fail" if self.failed else "pass",
             "dryRun": self.dry_run,
@@ -1096,7 +1102,9 @@ class LocalCI:
 
 
 def parser() -> argparse.ArgumentParser:
-    result = argparse.ArgumentParser(description="DAI Nexus provider-neutral local CI")
+    result = argparse.ArgumentParser(
+        description="DAI Harness provider-neutral local CI"
+    )
     result.add_argument(
         "mode",
         choices=(

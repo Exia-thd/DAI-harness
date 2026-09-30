@@ -6,9 +6,9 @@ Track AI usage (token, cost, model) from multiple platforms into unified dashboa
 
 ## Problem Statement
 
-Current token tracking only works within DAI Nexus context. User wants:
+Current token tracking only works within DAI Harness context. User wants:
 1. Track usage across ALL AI assistant platforms
-2. Per-project breakdown (not just DAI Nexus projects)
+2. Per-project breakdown (not just DAI Harness projects)
 3. Unified dashboard showing total AI spend
 4. Cross-platform analysis (compare Cursor vs Claude Code usage)
 
@@ -20,7 +20,7 @@ Current token tracking only works within DAI Nexus context. User wants:
 |----------|-----------|-------------|---------------|
 | **Cursor** | Model calls, conversations, files | ✅ HIGH | `~/.cursor/ai-tracking/ai-code-tracking.db` |
 | **Claude Code** | Sessions, models, env | ✅ HIGH | `~/.claude/telemetry/*.json` |
-| **DAI Nexus** | Tokens, cost, skill, mode | ✅ HIGH | `~/.dainexus/usage/{project}/*.jsonl` |
+| **DAI Harness** | Tokens, cost, skill, mode | ✅ HIGH | `~/.daiharness/usage/{project}/*.jsonl` |
 
 ### Future Sources (v2)
 
@@ -38,7 +38,7 @@ Current token tracking only works within DAI Nexus context. User wants:
 ```typescript
 interface UnifiedUsageRecord {
   timestamp: Date;
-  platform: 'cursor' | 'claude-code' | 'dai-nexus' | 'ollama';
+  platform: 'cursor' | 'claude-code' | 'dai-harness' | 'ollama';
   sessionId: string;
   project: string;
   projectPath: string;
@@ -47,8 +47,8 @@ interface UnifiedUsageRecord {
   
   // Metrics (may be estimated)
   calls: number;           // Always available
-  inputTokens?: number;    // DAI Nexus only
-  outputTokens?: number;   // DAI Nexus only
+  inputTokens?: number;    // DAI Harness only
+  outputTokens?: number;   // DAI Harness only
   estimatedTokens?: number; // For platforms without token counts
   
   // Computed
@@ -64,7 +64,7 @@ interface UnifiedUsageRecord {
 
 ### Core Features (v1)
 
-- [ ] **Multi-Platform Reader**: Read from Cursor DB, Claude telemetry, DAI Nexus logs
+- [ ] **Multi-Platform Reader**: Read from Cursor DB, Claude telemetry, DAI Harness logs
 - [ ] **Unified Aggregator**: Merge data by project, time, model
 - [ ] **Cost Estimation**: Estimate costs for platforms without token counts
 - [ ] **Dashboard**: Visual dashboard with source tabs

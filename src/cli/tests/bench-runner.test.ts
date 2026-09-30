@@ -177,7 +177,7 @@ describe("Benchmark runner", () => {
     expect([
       spawnCalls[0].options.cwd,
       `/private${spawnCalls[0].options.cwd}`,
-    ]).toContain(spawnCalls[0].options.env.DAINEXUS_WORKSPACE);
+    ]).toContain(spawnCalls[0].options.env.DAIHARNESS_WORKSPACE);
     expect(spawnCalls[1].program).toBe("node");
     expect(spawnCalls[1].args).toEqual(["verify.js"]);
     expect(spawnCalls[1].options.shell).toBe(false);

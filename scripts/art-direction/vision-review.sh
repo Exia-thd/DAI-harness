@@ -13,12 +13,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DAINEXUS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+DAIHARNESS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 ASSET_TYPE="${ASSET_TYPE:-ui}"  # ui | game-2d | game-3d
-PROJECT_STYLE_GUIDE="${PROJECT_STYLE_GUIDE:-"$DAINEXUS_DIR/.dainexus/art-direction/game-art-contract.json"}"
+PROJECT_STYLE_GUIDE="${PROJECT_STYLE_GUIDE:-"$DAIHARNESS_DIR/.daiharness/art-direction/game-art-contract.json"}"
 STYLE_CONTRACT_TOOL="${SCRIPT_DIR}/style-contract.py"
-SCORES_DIR="${ART_REVIEW_SCORES_DIR:-"${DAINEXUS_DIR}/.dainexus/art-reviews"}"
-VISION_REVIEWER_CMD="${DAINEXUS_VISION_REVIEWER_CMD:-}"  # executable adapter: prompt on stdin, image path as argv[1]
+SCORES_DIR="${ART_REVIEW_SCORES_DIR:-"${DAIHARNESS_DIR}/.daiharness/art-reviews"}"
+VISION_REVIEWER_CMD="${DAIHARNESS_VISION_REVIEWER_CMD:-}"  # executable adapter: prompt on stdin, image path as argv[1]
 
 # ---- helpers ----------------------------------------------------------------
 
@@ -311,14 +311,14 @@ review_image() {
     local result
     if [[ -n "$VISION_REVIEWER_CMD" ]]; then
         if [[ ! -x "$VISION_REVIEWER_CMD" ]] && ! command -v "$VISION_REVIEWER_CMD" >/dev/null 2>&1; then
-            die "DAINEXUS_VISION_REVIEWER_CMD is not executable/available: $VISION_REVIEWER_CMD"
+            die "DAIHARNESS_VISION_REVIEWER_CMD is not executable/available: $VISION_REVIEWER_CMD"
         fi
         result=$(printf '%s' "$prompt" | "$VISION_REVIEWER_CMD" "$image_path" 2>/dev/null | sed -n '/^{/,/^}$/p' || true)
     elif command -v claude >/dev/null 2>&1; then
-        warn "Using legacy claude vision adapter; set DAINEXUS_VISION_REVIEWER_CMD for provider-neutral review."
+        warn "Using legacy claude vision adapter; set DAIHARNESS_VISION_REVIEWER_CMD for provider-neutral review."
         result=$(claude -p "$prompt" --image "$image_path" 2>/dev/null | sed -n '/^{/,/^}$/p' || true)
     else
-        die "No vision reviewer configured. Set DAINEXUS_VISION_REVIEWER_CMD to an executable adapter."
+        die "No vision reviewer configured. Set DAIHARNESS_VISION_REVIEWER_CMD to an executable adapter."
     fi
 
     if [[ -z "$result" ]]; then
@@ -631,11 +631,11 @@ Examples:
 
 Environment:
   ASSET_TYPE          Asset type: ui (default), game-2d, game-3d
-  PROJECT_STYLE_GUIDE Path to Style DNA JSON (default: .dainexus/art-direction/game-art-contract.json)
-  DAINEXUS_VISION_REVIEWER_CMD Executable adapter; reads prompt on stdin, image path in argv[1], emits JSON
+  PROJECT_STYLE_GUIDE Path to Style DNA JSON (default: .daiharness/art-direction/game-art-contract.json)
+  DAIHARNESS_VISION_REVIEWER_CMD Executable adapter; reads prompt on stdin, image path in argv[1], emits JSON
 
 Output:
-  Reports saved to .dainexus/art-reviews/
+  Reports saved to .daiharness/art-reviews/
 EOF
             ;;
         *)

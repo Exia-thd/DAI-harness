@@ -6,7 +6,7 @@ description: >
   Core Web Vitals, and capacity planning.
   Routed via the production-grade orchestrator (Optimize mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [performance, load-testing, profiling, optimization, latency, core-web-vitals, k6, artillery, lighthouse]
 ---
 
@@ -562,7 +562,7 @@ groups:
 ## Output Structure
 
 ```
-.dainexus/performance-engineer/
+.daiharness/performance-engineer/
 ├── baseline/
 │   ├── lighthouse-baseline.json
 │   ├── api-baseline.json

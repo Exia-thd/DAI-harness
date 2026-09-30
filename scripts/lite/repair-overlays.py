@@ -8,8 +8,8 @@ Fixes all LITE.md skill overlays per Kernel v3 requirements:
   3. Strip orphan numeric citations [1], [2, 5] etc from prose
   4. Remove sync-obsidian boilerplate SYNC steps
   5. Remove ungrounded constraints: Temperature 1.0, ECE thresholds, zero pixel drift
-  6. Remove guaranteed-absent paths: .dainexus/project-profile.json, .agents/workflows,
-     dai-nexus-gemini-sdk, src/GeminiGuardrail.ts, test-gemini-behavior.js
+  6. Remove guaranteed-absent paths: .daiharness/project-profile.json, .agents/workflows,
+     dai-harness-gemini-sdk, src/GeminiGuardrail.ts, test-gemini-behavior.js
   7. Strip trailing whitespace from all lines
   8. Remove illustrative NOTE callouts and the worked-example block below code-reviewer
      that contains fake VERIFY blocks with pasted output
@@ -36,7 +36,7 @@ ILLUSTRATIVE_NOTE = re.compile(
 
 # Fake SDK / fake paths / fake commands that must not appear
 BANNED_PATTERNS = [
-    (re.compile(r"dai-nexus-gemini-sdk"), "dai-nexus-gemini-sdk"),
+    (re.compile(r"dai-harness-gemini-sdk"), "dai-harness-gemini-sdk"),
     (re.compile(r"src/GeminiGuardrail\.ts"), "src/GeminiGuardrail.ts"),
     (re.compile(r"test-gemini-behavior\.js"), "test-gemini-behavior.js"),
 ]
@@ -77,7 +77,7 @@ AGENTS_WORKFLOWS_GROUND = re.compile(
 
 # project-profile.json as a guaranteed file row in GROUND table
 PROJECT_PROFILE_GROUND = re.compile(
-    r"\|\s*[Pp]roject stack[^|]*profile[^|]*\|\s*`cat \.dainexus/project-profile\.json`[^|]*\|[^\n]+\n?"
+    r"\|\s*[Pp]roject stack[^|]*profile[^|]*\|\s*`cat \.daiharness/project-profile\.json`[^|]*\|[^\n]+\n?"
 )
 
 # Illustrative tail after the canonical domain slots. These examples embed fake

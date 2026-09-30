@@ -17,7 +17,7 @@ Usage:
     python scripts/lite/worktree_manager.py cleanup <task_id> [--force]
     python scripts/lite/worktree_manager.py status
 
-Env: DAINEXUS_MAX_WORKERS (default 4)
+Env: DAIHARNESS_MAX_WORKERS (default 4)
 """
 
 from __future__ import annotations
@@ -69,7 +69,7 @@ def branch_name(task_id: str) -> str:
 def cmd_create(args) -> None:
     import os
 
-    max_workers = int(os.environ.get("DAINEXUS_MAX_WORKERS", MAX_WORKERS))
+    max_workers = int(os.environ.get("DAIHARNESS_MAX_WORKERS", MAX_WORKERS))
     active = [
         line
         for line in sh(["git", "worktree", "list", "--porcelain"]).stdout.splitlines()
@@ -284,7 +284,7 @@ def _utf8_io() -> None:
 def main() -> None:
     _utf8_io()
     p = argparse.ArgumentParser(
-        description="DAI Nexus parallel-dispatch worktree manager"
+        description="DAI Harness parallel-dispatch worktree manager"
     )
     sub = p.add_subparsers(dest="cmd", required=True)
 

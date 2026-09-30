@@ -4,7 +4,7 @@
 
 ## Decision
 
-`evals/routing/live_evidence.py` is the canonical producer for P2 shadow, canary, and rollout evidence. It is opt-in through `DAINEXUS_LIVE_ROUTING=1` and exposes four JSON-over-stdin roles:
+`evals/routing/live_evidence.py` is the canonical producer for P2 shadow, canary, and rollout evidence. It is opt-in through `DAIHARNESS_LIVE_ROUTING=1` and exposes four JSON-over-stdin roles:
 
 - router: returns `initial_tier`, `selected_tier`, and the mechanically matching `escalation_count`;
 - provider: returns output, run identity, policy/model snapshot, finite positive cost, and cost unit;
@@ -13,9 +13,9 @@
 
 All four roles must belong to one selected provider ecosystem for a run. Router, provider, and verifier may share one adapter executable that dispatches on `ADAPTER_KIND`; cross-provider services are neither required nor used by default. The attester must independently resolve immutable provider audit/usage receipts, or the local gatekeeper must query those receipts through a separately authenticated provider API. An adapter cannot satisfy live evidence by signing only the fields it just produced. Providers without a native receipt/audit boundary remain eligible for local use but cannot satisfy the live rollout gate.
 
-The adapter owns capability discovery, model mapping, provider credentials, native verifier calls, run lookup, and usage/cost normalization. DAI Nexus owns only the stable envelope and gates. Adding a provider means implementing this contract, not adding the provider's model names to core routing logic.
+The adapter owns capability discovery, model mapping, provider credentials, native verifier calls, run lookup, and usage/cost normalization. DAI Harness owns only the stable envelope and gates. Adding a provider means implementing this contract, not adding the provider's model names to core routing logic.
 
-The producer must not receive `DAINEXUS_ROUTING_EVIDENCE_KEY`. A separate local gatekeeper runs `control_plane.py` with that verification key. The provider-native attester must resolve execution IDs and hashes against its own provider/verifier artifacts before signing; the deterministic test adapter is only a fixture and is not acceptable live evidence.
+The producer must not receive `DAIHARNESS_ROUTING_EVIDENCE_KEY`. A separate local gatekeeper runs `control_plane.py` with that verification key. The provider-native attester must resolve execution IDs and hashes against its own provider/verifier artifacts before signing; the deterministic test adapter is only a fixture and is not acceptable live evidence.
 
 The receipt stores task IDs, run IDs, resolved snapshots, costs, results, and SHA-256 digests. It does not store prompts or model outputs. Canary selection is deterministic, exactly 10% of the frozen corpus, and proportionally stratified by category. Any metadata, cost-unit, verifier-snapshot, or routing-invariant drift fails closed.
 
@@ -24,7 +24,7 @@ The receipt stores task IDs, run IDs, resolved snapshots, costs, results, and SH
 Pass the selected provider adapter command as a JSON string array for each role (the same command is allowed) and write the producer result to a restricted local path. Then run the local gatekeeper:
 
 ```bash
-DAINEXUS_ROUTING_EVIDENCE_KEY="$GATEKEEPER_KEY" \
+DAIHARNESS_ROUTING_EVIDENCE_KEY="$GATEKEEPER_KEY" \
   python3 evals/routing/control_plane.py path/to/evidence.json
 ```
 

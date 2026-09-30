@@ -494,7 +494,7 @@ curl -X GET "https://your-company.atlassian.net/rest/api/3/issue/PROJ-123" \
 
 ```bash
 # 使用 atlassian-cli
-npx @dai-nexus/jira-cli issue view PROJ-123
+npx @dai-harness/jira-cli issue view PROJ-123
 ```
 
 ### 3. 手动 Jira UI

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a signed DAI Nexus review-2 record with an existing SSH key."""
+"""Create a signed DAI Harness review-2 record with an existing SSH key."""
 
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ from evidence_common import (  # noqa: E402
 
 
 REVIEW_SCHEMA = "review-2"
-REVIEW_NAMESPACE = "dai-nexus-review-v2"
+REVIEW_NAMESPACE = "dai-harness-review-v2"
 MAX_EVIDENCE_BYTES = 4 * 1024 * 1024
 MAX_REVIEW_BYTES = 256 * 1024
 MAX_SIGNATURE_BYTES = 64 * 1024
@@ -60,13 +60,13 @@ def _within(path: Path, directory: Path) -> bool:
 
 
 def _verify_dir(workspace: Path) -> Path:
-    verify_dir = (workspace / ".dainexus" / "verify").resolve()
+    verify_dir = (workspace / ".daiharness" / "verify").resolve()
     if not verify_dir.is_dir():
-        raise ValueError(".dainexus/verify must be an existing directory")
-    for directory in (workspace / ".dainexus", verify_dir):
+        raise ValueError(".daiharness/verify must be an existing directory")
+    for directory in (workspace / ".daiharness", verify_dir):
         info = directory.lstat()
         if stat.S_ISLNK(info.st_mode):
-            raise ValueError(".dainexus/verify must not use symlinked directories")
+            raise ValueError(".daiharness/verify must not use symlinked directories")
     return verify_dir
 
 
@@ -143,11 +143,11 @@ def _validate_allowed_signers(payload: bytes) -> None:
 
 
 def _allowed_signers(workspace: Path) -> tuple[Path, bytes]:
-    configured = os.environ.get("DAINEXUS_REVIEW_ALLOWED_SIGNERS")
+    configured = os.environ.get("DAIHARNESS_REVIEW_ALLOWED_SIGNERS")
     raw_path = (
         configured
         if configured is not None
-        else "~/.dainexus/reviewers.allowed_signers"
+        else "~/.daiharness/reviewers.allowed_signers"
     )
     path, payload = _secure_external_file(
         raw_path,
@@ -168,7 +168,7 @@ def _evidence_path(raw_path: str, workspace: Path, verify_dir: Path) -> Path:
         candidate = Path.cwd() / candidate
     candidate = candidate.parent.resolve(strict=True) / candidate.name
     if not _within(candidate, verify_dir):
-        raise ValueError("evidence must be inside .dainexus/verify")
+        raise ValueError("evidence must be inside .daiharness/verify")
     read_evidence_bytes(workspace, candidate, max_bytes=MAX_EVIDENCE_BYTES)
     return candidate
 
@@ -184,7 +184,7 @@ def _output_path(
         raise ValueError(f"reviewer.evidence_ref is invalid: {ref_error}")
     ref_candidate = (verify_dir / Path(evidence_ref)).resolve()
     if not _within(ref_candidate, verify_dir) or ref_candidate == verify_dir:
-        raise ValueError("reviewer.evidence_ref must stay inside .dainexus/verify")
+        raise ValueError("reviewer.evidence_ref must stay inside .daiharness/verify")
     if raw_path is None:
         output = ref_candidate
     else:
@@ -197,7 +197,7 @@ def _output_path(
                 "--output must exactly match final evidence reviewer.evidence_ref"
             )
     if not _within(output, verify_dir) or output == verify_dir:
-        raise ValueError("review output must be inside .dainexus/verify")
+        raise ValueError("review output must be inside .daiharness/verify")
     if output.exists() and output.is_symlink():
         raise ValueError("review output must not replace a symlink")
     if not output.parent.is_dir():
@@ -250,7 +250,7 @@ def _atomic_write(path: Path, payload: bytes) -> None:
 
 def _sign(review: dict[str, Any], private_key: Path) -> bytes:
     payload = _canonical_json(review)
-    with tempfile.TemporaryDirectory(prefix="dai-nexus-review-") as directory:
+    with tempfile.TemporaryDirectory(prefix="dai-harness-review-") as directory:
         payload_path = Path(directory) / "payload"
         payload_path.write_bytes(payload)
         result = subprocess.run(
@@ -293,7 +293,7 @@ def _parser() -> argparse.ArgumentParser:
         "--private-key",
         "--key",
         dest="private_key",
-        default=os.environ.get("DAINEXUS_REVIEW_PRIVATE_KEY"),
+        default=os.environ.get("DAIHARNESS_REVIEW_PRIVATE_KEY"),
     )
     sign.add_argument("--output", "--out", dest="output", default=None)
     sign.add_argument("--finding", action="append", default=[])

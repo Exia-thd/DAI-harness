@@ -1,8 +1,8 @@
 ---
 name: goal-driven
 description: >
-  Autonomous goal-pursuit workflow for DAI Nexus. Inspired by Codex /goal
-  and Claude Code /goal. Set a goal once, and DAI Nexus works continuously
+  Autonomous goal-pursuit workflow for DAI Harness. Inspired by Codex /goal
+  and Claude Code /goal. Set a goal once, and DAI Harness works continuously
   until the condition is met — no need to prompt each step.
 version: 1.1.0
 ---
@@ -13,7 +13,7 @@ version: 1.1.0
 
 ## Overview
 
-Goal-Driven Workflow allows DAI Nexus to work autonomously toward a single objective across multiple turns without requiring user input at each step. Once a goal is set with a clear completion condition, DAI Nexus:
+Goal-Driven Workflow allows DAI Harness to work autonomously toward a single objective across multiple turns without requiring user input at each step. Once a goal is set with a clear completion condition, DAI Harness:
 
 1. Works continuously toward the goal
 2. Evaluates progress after each turn
@@ -83,7 +83,7 @@ A valid goal condition must be:
 | "Don't break anything" | Too vague to verify |
 
 ### Rule 2: Goal State Persistence
-Goals persist in `.dainexus/active-goal.json`:
+Goals persist in `.daiharness/active-goal.json`:
 ```json
 {
   "goal_id": "goal-20260524-1330",
@@ -106,7 +106,7 @@ After each turn, the evaluator:
 5. **Continues** or **completes**
 
 ### Rule 4: Progress Tracking
-Write progress to `.dainexus/goal-progress.md`:
+Write progress to `.daiharness/goal-progress.md`:
 ```markdown
 # Goal Progress — [goal_id]
 
@@ -198,7 +198,7 @@ Feasibility: HIGH — Ready to proceed
 }
 ```
 
-**Output:** `.dainexus/active-goal.json`
+**Output:** `.daiharness/active-goal.json`
 
 ---
 
@@ -251,7 +251,7 @@ Turn 4 (if needed):
 - Complete or escalate
 ```
 
-**Output:** `.dainexus/goal-progress.md` with action plan
+**Output:** `.daiharness/goal-progress.md` with action plan
 
 ---
 
@@ -277,7 +277,7 @@ cat auth/login.js
 # ... edit file ...
 
 # Log progress
-echo "| 1 | Add JWT to login | Complete | Test JWT generation |" >> .dainexus/goal-progress.md
+echo "| 1 | Add JWT to login | Complete | Test JWT generation |" >> .daiharness/goal-progress.md
 
 # Evaluate
 npm test -- test/auth/ 2>&1 | tail -20
@@ -408,7 +408,7 @@ All tests in test/auth pass and npm run lint exits 0
 ---
 
 _Goal completed at 2026-05-24T14:30:00+07:00_
-_Framework: DAI Nexus Goal-Driven Workflow v1.1_
+_Framework: DAI Harness Goal-Driven Workflow v1.1_
 ```
 
 **Output:** Goal completion report, clear goal state
@@ -422,8 +422,8 @@ _Framework: DAI Nexus Goal-Driven Workflow v1.1_
 # .production-grade.yaml
 goal:
   auto_mode: true              # Approve tool calls automatically
-  progress_file: ".dainexus/goal-progress.md"
-  state_file: ".dainexus/active-goal.json"
+  progress_file: ".daiharness/goal-progress.md"
+  state_file: ".daiharness/active-goal.json"
 ```
 
 ### Evaluator Settings
@@ -522,7 +522,7 @@ Cancels the active goal without completion.
 
 ## Security Considerations
 
-- Goals run in same trust context as normal DAI Nexus
+- Goals run in same trust context as normal DAI Harness
 - No additional permissions required
 - User can always `/goal clear` to stop
 - Runtime timeout and tool-call guards prevent runaway; the goal itself has no turn quota

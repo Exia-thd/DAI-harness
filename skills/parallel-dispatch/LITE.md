@@ -91,8 +91,8 @@ passes an allowlisted environment containing the canonical workspace, a fixed
 PATH, HOME, locale variables, and TMPDIR; other parent variables are not forwarded.
 Before any external call, execution fails closed unless Antigravity's
 runtime-loaded global `~/.gemini/config/hooks.json` contains the exact enabled
-`dai-nexus-policy` `PreToolUse` hook. Each worker receives the canonical
-workspace through `DAINEXUS_WORKSPACE`, because current `agy --print` builds
+`dai-harness-policy` `PreToolUse` hook. Each worker receives the canonical
+workspace through `DAIHARNESS_WORKSPACE`, because current `agy --print` builds
 may emit an empty `workspacePaths` hook field. A denial is terminal and
 explicit—do not bypass it by invoking AGY through another shell wrapper.
 

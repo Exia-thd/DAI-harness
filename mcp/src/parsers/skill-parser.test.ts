@@ -24,7 +24,7 @@ const CAN_SYMLINK = (() => {
 const itSymlink = CAN_SYMLINK ? it : it.skip;
 
 function createFixture(): { root: string; skillsDir: string; outsideDir: string } {
-  const root = fs.mkdtempSync(join(os.tmpdir(), 'dai-nexus-skill-parser-'));
+  const root = fs.mkdtempSync(join(os.tmpdir(), 'dai-harness-skill-parser-'));
   const skillsDir = join(root, 'project', 'skills');
   const outsideDir = join(root, 'outside');
   fs.mkdirSync(skillsDir, { recursive: true });

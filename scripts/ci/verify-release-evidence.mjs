@@ -14,7 +14,7 @@ import {
 } from './release-evidence-policy.mjs';
 
 const root = fileURLToPath(new URL('../..', import.meta.url));
-const temp = mkdtempSync(join(tmpdir(), 'dai-nexus-release-evidence-'));
+const temp = mkdtempSync(join(tmpdir(), 'dai-harness-release-evidence-'));
 
 function run(command, args, options = {}) {
   return execFileSync(command, args, {

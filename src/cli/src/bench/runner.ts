@@ -135,7 +135,7 @@ ${input.prompt}
         cwd: input.workspace,
         env: {
           ...process.env,
-          DAINEXUS_WORKSPACE: realpathSync(input.workspace),
+          DAIHARNESS_WORKSPACE: realpathSync(input.workspace),
         },
         shell: false,
         stdio: ["ignore", "pipe", "pipe"],
@@ -445,7 +445,7 @@ export async function runBenchmarkSuite(
       let attemptWorkspace = resolvedWorkspace;
       let cleanupFn = () => {};
 
-      const projectTmpDir = join(tmpdir(), "dai-nexus-bench");
+      const projectTmpDir = join(tmpdir(), "dai-harness-bench");
       mkdirSync(projectTmpDir, { recursive: true });
 
       if (resolvedWorkspace && existsSync(resolvedWorkspace)) {

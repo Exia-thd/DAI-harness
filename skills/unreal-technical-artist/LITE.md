@@ -10,7 +10,7 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Target Unreal project configuration exists | `find . -maxdepth 2 -name "*.uproject"` | ... | run the check command and paste output |
-| Project-specific tech stack and profile settings are active | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project-specific tech stack and profile settings are active | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 | Shader files, HLSL materials, or Niagara assets are indexed | `find Content/ -name "*.uasset" -o -name "*.hlsl" -o -name "*.ush"` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Unreal Technical Artist Domain Slots)
@@ -29,7 +29,7 @@ Format: `n. ACTION | TARGET | CHECK`
 ### Step 1: Ground target project settings
 ```bash
 find . -maxdepth 2 -name "*.uproject"
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 ```
 
 ### Step 2: Write an optimized, custom HLSL wind deformation shader function in `Shaders/WindDeformation.ush`

@@ -78,7 +78,7 @@ CREATE TABLE observations (
 
 def _legacy(project: Path) -> Path:
     """A legacy store with one of each case the migration has to tell apart."""
-    db_path = project / ".dainexus" / "memory.db"
+    db_path = project / ".daiharness" / "memory.db"
     rows = [
         # title, content, type, importance, archived
         (
@@ -136,7 +136,7 @@ def _legacy(project: Path) -> Path:
 
 def _project(tmp_path: Path, with_store: bool) -> tuple[Path, Path]:
     project = tmp_path / "project"
-    (project / ".dainexus").mkdir(parents=True)
+    (project / ".daiharness").mkdir(parents=True)
     (project / "notes.md").write_text("# Notes\n\nNothing much.\n", encoding="utf-8")
     subprocess.run(
         ["git", "-C", str(project), "init", "-q"], check=True, capture_output=True

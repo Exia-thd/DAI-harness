@@ -1,6 +1,6 @@
 # Mode Classification Reference
 
-> Extracted from chat-interpreter skill. Maps user prompts to DAI Nexus pipeline modes.
+> Extracted from chat-interpreter skill. Maps user prompts to DAI Harness pipeline modes.
 
 | Mode | Trigger Phrases |
 |------|----------------|

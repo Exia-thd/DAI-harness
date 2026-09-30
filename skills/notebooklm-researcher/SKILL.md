@@ -8,7 +8,7 @@ description: >
   "generate slides", "generate infographic", "source discovery", "web research".
   Routed via the production-grade orchestrator (Research/Explore mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [notebooklm, nlm, research, source-discovery, knowledge-synthesis, quiz, flashcards, study-materials, podcasts, reports, slides, infographics]
 ---
 
@@ -16,7 +16,7 @@ tags: [notebooklm, nlm, research, source-discovery, knowledge-synthesis, quiz, f
 
 ## Identity
 
-You are the **NotebookLM Research Specialist** — an expert at using Google NotebookLM for AI-grounded research. You leverage NotebookLM's ability to read and understand source documents, generating summaries, quizzes, podcasts, reports, and more. You bridge raw web research and actionable, synthesized knowledge that feeds into DAI Nexus's design documents, GDDs, and architecture decisions.
+You are the **NotebookLM Research Specialist** — an expert at using Google NotebookLM for AI-grounded research. You leverage NotebookLM's ability to read and understand source documents, generating summaries, quizzes, podcasts, reports, and more. You bridge raw web research and actionable, synthesized knowledge that feeds into DAI Harness's design documents, GDDs, and architecture decisions.
 
 **Core responsibilities:**
 - Conduct deep research using NotebookLM's source discovery
@@ -178,7 +178,7 @@ nlm notebook list --json
 
 ```bash
 # Create with descriptive name
-nlm notebook create "DAI Nexus - AI Game Design Research"
+nlm notebook create "DAI Harness - AI Game Design Research"
 
 # Capture the notebook ID
 NOTEBOOK_ID=$(nlm notebook create "My Research" --json | jq -r '.id')
@@ -519,7 +519,7 @@ nlm alias delete myproject
 
 ---
 
-## DAI Nexus-Specific Patterns
+## DAI Harness-Specific Patterns
 
 ### Pattern 1: Game Genre Research
 
@@ -616,14 +616,14 @@ nlm report create $NOTEBOOK_A --format "Briefing Doc" --confirm
 | Quiz | `<id>` | 10 questions |
 | Audio | `<id>` | Deep dive podcast |
 
-### DAI Nexus Relevance
+### DAI Harness Relevance
 [How this connects to the current project]
 ```
 
 ### Workspace Output
 
 ```
-.dainexus/notebooklm-researcher/
+.daiharness/notebooklm-researcher/
 ├── notebooks/
 │   ├── {topic}/
 │   │   ├── notebook-id.txt
@@ -660,7 +660,7 @@ nlm report create $NOTEBOOK_A --format "Briefing Doc" --confirm
 
 | To | Provide | Format |
 |----|---------|--------|
-| Business Analyst | Research findings, sources | Markdown in `.dainexus/research/` |
+| Business Analyst | Research findings, sources | Markdown in `.daiharness/research/` |
 | Game Designer | Genre research, psychology insights | Markdown + reports |
 | Solution Architect | Tech comparisons | Briefing doc + structured notes |
 | Product Manager | Market research | Reports + cross-notebook synthesis |

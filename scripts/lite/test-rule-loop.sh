@@ -11,10 +11,10 @@ TEST_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/fw-rule-loop.XXXXXX")"
 cleanup() { rm -rf "$TEST_ROOT"; }
 trap cleanup EXIT
 
-export DAINEXUS_RULE_LEDGER="$TEST_ROOT/rule-ledger.jsonl"
-export DAINEXUS_TELEMETRY_DIR="$TEST_ROOT/telemetry"
-export DAINEXUS_SKIP_MEM0=1
-export DAINEXUS_CONTEXT_CHAR_CAP=2000
+export DAIHARNESS_RULE_LEDGER="$TEST_ROOT/rule-ledger.jsonl"
+export DAIHARNESS_TELEMETRY_DIR="$TEST_ROOT/telemetry"
+export DAIHARNESS_SKIP_MEM0=1
+export DAIHARNESS_CONTEXT_CHAR_CAP=2000
 
 telemetry_record="$(bash scripts/lite/telemetry.sh emit test.event '{"token":"must-not-leak","status":"ok"}')"
 printf '%s' "$telemetry_record" | jq -e '.event == "test.event" and .data.token == "***REDACTED***"' >/dev/null
@@ -29,8 +29,8 @@ bash scripts/lite/rule-refresh.sh >/dev/null
 
 python3 scripts/lite/rule-validator.py --static >/dev/null
 git -C "$TEST_ROOT" init -q -b main
-git -C "$TEST_ROOT" config user.email test@dai-nexus.local
-git -C "$TEST_ROOT" config user.name "DAI Nexus Test"
+git -C "$TEST_ROOT" config user.email test@dai-harness.local
+git -C "$TEST_ROOT" config user.name "DAI Harness Test"
 mkdir -p "$TEST_ROOT/checks"
 printf '%s\n' "print('isolated-check passed')" > "$TEST_ROOT/checks/isolated_check.py"
 git -C "$TEST_ROOT" add checks/isolated_check.py
@@ -51,8 +51,8 @@ validator_response="$({
     --reviewer-status not_required \
     -- python3 checks/isolated_check.py
 })"
-export DAINEXUS_WORKSPACE="$TEST_ROOT"
-export DAINEXUS_TURN=isolated-validator
+export DAIHARNESS_WORKSPACE="$TEST_ROOT"
+export DAIHARNESS_TURN=isolated-validator
 printf '%s' "$validator_response" \
   | python3 scripts/lite/rule-validator.py --runtime >/dev/null
 if printf '%s\n' 'CLAIM: incomplete' 'VERDICT: PASS' \
@@ -60,7 +60,7 @@ if printf '%s\n' 'CLAIM: incomplete' 'VERDICT: PASS' \
   echo "Expected incomplete VERIFY block to fail." >&2
   exit 1
 fi
-unset DAINEXUS_WORKSPACE DAINEXUS_TURN
+unset DAIHARNESS_WORKSPACE DAIHARNESS_TURN
 
 python3 scripts/lite/context-manager.py load --keywords "rule compliance" > "$TEST_ROOT/context.txt"
 [[ "$(wc -c < "$TEST_ROOT/context.txt" | tr -d ' ')" -le 2000 ]]

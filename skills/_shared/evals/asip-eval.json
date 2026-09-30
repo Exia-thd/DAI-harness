@@ -1,13 +1,13 @@
 {
   "name": "ASIP Self-Evolution Mechanism",
   "version": "1.0.0",
-  "description": "Evaluates whether DAI Nexus's ASIP self-evolution mechanism triggers correctly: research gate enforcement, lesson persistence, session→skill migration, and cross-feedback loop.",
+  "description": "Evaluates whether DAI Harness's ASIP self-evolution mechanism triggers correctly: research gate enforcement, lesson persistence, session→skill migration, and cross-feedback loop.",
   "testCases": [
     {
       "id": "asip-001",
       "name": "Init script bootstraps all baseline files",
       "category": "bootstrap",
-      "prompt": "Run: bash scripts/dainexus-evolution-init.sh --check",
+      "prompt": "Run: bash scripts/daiharness-evolution-init.sh --check",
       "expected_behavior": "All infrastructure files present and scripts are executable",
       "success_criteria": [
         "asip-state.json exists and is valid JSON",
@@ -80,7 +80,7 @@
       "id": "asip-006",
       "name": "Lesson migrator: status shows empty state initially",
       "category": "migration",
-      "prompt": "Run: bash scripts/dainexus-lesson-migrator.sh status",
+      "prompt": "Run: bash scripts/daiharness-lesson-migrator.sh status",
       "expected_behavior": "Shows migration state with zero migrated entries",
       "success_criteria": [
         "totalMigrated: 0",
@@ -94,7 +94,7 @@
       "id": "asip-007",
       "name": "Lesson migrator: migrate with no new entries is a no-op",
       "category": "migration",
-      "prompt": "Run: bash scripts/dainexus-lesson-migrator.sh migrate",
+      "prompt": "Run: bash scripts/daiharness-lesson-migrator.sh migrate",
       "expected_behavior": "Exits cleanly without mutating shared skills; reports that framework mutation is disabled by default",
       "success_criteria": [
         "Output says 'No new plan lessons' or 'No new execution lessons'",
@@ -117,14 +117,14 @@
       ],
       "automatable": true,
       "expected_exit": 0,
-      "setup": "Append test entry to .dainexus/plan-lessons.md, record state",
-      "teardown": "Remove test entry from .dainexus/plan-lessons.md"
+      "setup": "Append test entry to .daiharness/plan-lessons.md, record state",
+      "teardown": "Remove test entry from .daiharness/plan-lessons.md"
     },
     {
       "id": "asip-009",
       "name": "Session tracker: init and status work",
       "category": "tracker",
-      "prompt": "Run: bash scripts/dainexus-session-tracker.sh init && bash scripts/dainexus-session-tracker.sh status",
+      "prompt": "Run: bash scripts/daiharness-session-tracker.sh init && bash scripts/daiharness-session-tracker.sh status",
       "expected_behavior": "Initializes tracking state and shows zero failures",
       "success_criteria": [
         "plan_failures: 0",
@@ -138,7 +138,7 @@
       "id": "asip-010",
       "name": "Session tracker: records plan failure and triggers gate at threshold",
       "category": "tracker",
-      "prompt": "Run: bash scripts/dainexus-session-tracker.sh plan 7.5 && bash scripts/dainexus-session-tracker.sh plan 7.0 && bash scripts/dainexus-session-tracker.sh check",
+      "prompt": "Run: bash scripts/daiharness-session-tracker.sh plan 7.5 && bash scripts/daiharness-session-tracker.sh plan 7.0 && bash scripts/daiharness-session-tracker.sh check",
       "expected_behavior": "After the configured consecutive-failure threshold, repeated attempts stop and recovery is required; research is only conditional on a material unknown",
       "success_criteria": [
         "First plan: failures reset",
@@ -152,7 +152,7 @@
       "id": "asip-011",
       "name": "Init script: update-metrics works",
       "category": "metrics",
-      "prompt": "Run: bash scripts/dainexus-evolution-init.sh --update-metrics lesson_learned software-engineer 3",
+      "prompt": "Run: bash scripts/daiharness-evolution-init.sh --update-metrics lesson_learned software-engineer 3",
       "expected_behavior": "Increments lessonsLearned by 3 for software-engineer skill",
       "success_criteria": [
         "Output says 'Metrics updated: lesson_learned (+3)'",
@@ -166,7 +166,7 @@
       "id": "asip-012",
       "name": "Init script: self-verify passes",
       "category": "bootstrap",
-      "prompt": "Run: bash scripts/dainexus-evolution-init.sh --verify",
+      "prompt": "Run: bash scripts/daiharness-evolution-init.sh --verify",
       "expected_behavior": "All scripts have valid shell syntax",
       "success_criteria": [
         "Output: 'Shell syntax: valid'",
@@ -189,14 +189,14 @@
       ],
       "automatable": true,
       "expected_exit": 0,
-      "setup": "Append test execution lesson with planning gap to .dainexus/execution-lessons.md",
+      "setup": "Append test execution lesson with planning gap to .daiharness/execution-lessons.md",
       "teardown": "Remove test entries from both lesson files"
     },
     {
       "id": "asip-014",
       "name": "Init script: idempotent (running twice doesn't corrupt state)",
       "category": "bootstrap",
-      "prompt": "Run: bash scripts/dainexus-evolution-init.sh init twice",
+      "prompt": "Run: bash scripts/daiharness-evolution-init.sh init twice",
       "expected_behavior": "Second run reports 'already exists' for all files, state is unchanged",
       "success_criteria": [
         "All files report 'already exists' on second run",

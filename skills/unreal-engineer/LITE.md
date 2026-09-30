@@ -10,7 +10,7 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Active Unreal project configuration file exists | `find . -maxdepth 2 -name "*.uproject"` | ... | run the check command and paste output |
-| Project-specific tech stack and profile settings are active | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project-specific tech stack and profile settings are active | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Unreal Engineer Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
@@ -28,7 +28,7 @@ Format: `n. ACTION | TARGET | CHECK`
 ### Step 1: Ground the target game configurations
 ```bash
 find . -maxdepth 2 -name "*.uproject"
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 ```
 
 ### Step 2: Implement a memory-safe, frame-independent player controller C++ class
@@ -73,7 +73,7 @@ AMyPlayerCharacter::AMyPlayerCharacter()
 void AMyPlayerCharacter::BeginPlay()
 {
     Super::BeginPlay();
-    UE_LOG(LogTemp, Log, TEXT("[DAI-NEXUS] Local player initialized safely."));
+    UE_LOG(LogTemp, Log, TEXT("[DAI-HARNESS] Local player initialized safely."));
 }
 
 void AMyPlayerCharacter::Tick(float DeltaTime)

@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-DAI Nexus's pre-commit hook ran four checks sequentially:
+DAI Harness's pre-commit hook ran four checks sequentially:
 1. ESLint
 2. Prettier
 3. TypeScript type check

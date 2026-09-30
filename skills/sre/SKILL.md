@@ -17,7 +17,7 @@ version: 2.0.0
 !`cat skills/_shared/protocols/input-validation.md 2>/dev/null || true`
 !`cat skills/_shared/protocols/tool-efficiency.md 2>/dev/null || true`
 !`cat .production-grade.yaml 2>/dev/null || echo "No config — using defaults"`
-!`cat .dainexus/codebase-context.md 2>/dev/null || true`
+!`cat .daiharness/codebase-context.md 2>/dev/null || true`
 
 ---
 
@@ -185,7 +185,7 @@ If codebase context indicates `brownfield` mode:
 
 ```yaml
 # slo/service-api.yaml
-apiVersion: dai-nexus.io/v1
+apiVersion: dai-harness.io/v1
 kind: ServiceLevelIndicator
 metadata:
   name: service-api-availability
@@ -235,7 +235,7 @@ spec:
 
 ```yaml
 # slo/error-budget-policy.yaml
-apiVersion: dai-nexus.io/v1
+apiVersion: dai-harness.io/v1
 kind: ErrorBudgetPolicy
 metadata:
   name: service-api-budget
@@ -294,7 +294,7 @@ spec:
 
 ```yaml
 # chaos/steady-state.yaml
-apiVersion: dai-nexus.io/v1
+apiVersion: dai-harness.io/v1
 kind: SteadyStateHypothesis
 metadata:
   name: service-api-steady-state
@@ -339,7 +339,7 @@ spec:
 
 ```yaml
 # chaos/experiments/service-failure.yaml
-apiVersion: dai-nexus.io/v1
+apiVersion: dai-harness.io/v1
 kind: ChaosExperiment
 metadata:
   name: service-pod-failure
@@ -389,7 +389,7 @@ spec:
 
 ```yaml
 # chaos/experiments/database-failure.yaml
-apiVersion: dai-nexus.io/v1
+apiVersion: dai-harness.io/v1
 kind: ChaosExperiment
 metadata:
   name: database-connection-failure
@@ -807,7 +807,7 @@ docs/runbooks/<service-name>/
 
 ### Workspace (Assessment & Analysis)
 ```
-.dainexus/sre/
+.daiharness/sre/
     production-readiness/
         checklist.md, findings.md, remediation.md
     slo/

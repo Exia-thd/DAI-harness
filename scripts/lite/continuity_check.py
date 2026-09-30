@@ -50,8 +50,8 @@ MALFORMED_PAYLOAD = "docs_stop_payload_malformed"
 MISSING_MATERIAL = "docs_material_path_missing"
 
 _GENERATED_PREFIXES = (
-    ".dainexus/docs-hub/",
-    ".dainexus/cache/",
+    ".daiharness/docs-hub/",
+    ".daiharness/cache/",
     ".git/",
     ".gitnexus/",
     ".memory/",
@@ -71,10 +71,10 @@ _DOCS_ASSET_EXTENSIONS = {
     ".webp",
 }
 _RECEIPT_RELATIVE_PATHS = (
-    ".dainexus/docs-hub/final-build-receipt.json",
-    ".dainexus/docs-hub/build-receipt.json",
-    ".dainexus/docs-hub/final-build.json",
-    ".dainexus/docs-hub/site/.dainexus-docs-hub",
+    ".daiharness/docs-hub/final-build-receipt.json",
+    ".daiharness/docs-hub/build-receipt.json",
+    ".daiharness/docs-hub/final-build.json",
+    ".daiharness/docs-hub/site/.daiharness-docs-hub",
 )
 _NODE_LOCALE_SORT_SCRIPT = """
 const fs = require("node:fs");
@@ -167,8 +167,8 @@ def _node_locale_sorted_paths(
 
 def _mode() -> str:
     raw = os.environ.get(
-        "DAINEXUS_DOCS_CONTINUITY_MODE",
-        os.environ.get("DAINEXUS_RULE_HOOK_MODE", "observe"),
+        "DAIHARNESS_DOCS_CONTINUITY_MODE",
+        os.environ.get("DAIHARNESS_RULE_HOOK_MODE", "observe"),
     )
     value = raw.strip().lower()
     return value if value in {"off", "observe", "enforce"} else "observe"
@@ -362,7 +362,7 @@ def _native_paths(
 
 
 def _manifest(root: Path) -> tuple[dict[str, Any] | None, str]:
-    path = _regular_contained(root, ".dainexus/docs-manifest.json")
+    path = _regular_contained(root, ".daiharness/docs-manifest.json")
     if path is None:
         return None, MISSING_MANIFEST
     value = _read_json(path, MAX_METADATA_BYTES)
@@ -493,12 +493,12 @@ def _sensitive_path(relative: str) -> bool:
     basename = segments[-1] if segments else ""
     if any(segment in _SENSITIVE_SEGMENTS for segment in segments):
         return True
-    if segments and segments[0] == ".dainexus":
+    if segments and segments[0] == ".daiharness":
         if relative.lower() not in {
-            ".dainexus/docs-manifest.json",
-            ".dainexus/project-profile.json",
-            ".dainexus/project.json",
-            ".dainexus/code-conventions.md",
+            ".daiharness/docs-manifest.json",
+            ".daiharness/project-profile.json",
+            ".daiharness/project.json",
+            ".daiharness/code-conventions.md",
         }:
             return True
     return any(
@@ -701,7 +701,7 @@ def _is_material(
     rel: str, manifest_paths: set[str], *, legacy_prefixes: bool = False
 ) -> bool:
     normalized = rel.replace("\\", "/").lstrip("./")
-    if normalized == ".dainexus/docs-manifest.json":
+    if normalized == ".daiharness/docs-manifest.json":
         return True
     if normalized in manifest_paths:
         return True
@@ -735,7 +735,7 @@ def _git_available(root: Path) -> bool:
 
 
 def _receipt_candidates(root: Path) -> list[Path]:
-    configured = os.environ.get("DAINEXUS_DOCS_BUILD_RECEIPT", "").strip()
+    configured = os.environ.get("DAIHARNESS_DOCS_BUILD_RECEIPT", "").strip()
     candidates: list[Path] = []
     if configured:
         path = Path(configured).expanduser()
@@ -746,7 +746,7 @@ def _receipt_candidates(root: Path) -> list[Path]:
         else:
             # Keep a sentinel outside the workspace out of file access; the
             # caller reports it as an infrastructure/path error.
-            candidates.append(Path("/dainexus-invalid-receipt"))
+            candidates.append(Path("/daiharness-invalid-receipt"))
     candidates.extend(
         root / relative
         for relative in _RECEIPT_RELATIVE_PATHS
@@ -760,7 +760,7 @@ def _cache_state(
 ) -> tuple[str, str]:
     """Read the bounded canonical catalog and bind it to current sources."""
 
-    path = _regular_contained(root, ".dainexus/cache/docs-index.json")
+    path = _regular_contained(root, ".daiharness/cache/docs-index.json")
     if path is None:
         return "invalid", ""
     catalog = _read_json(path, MAX_METADATA_BYTES)
@@ -955,7 +955,7 @@ def _cache_state(
         if content is None:
             return "invalid", ""
         expected = _sha256(content)
-        if relative == ".dainexus/docs-manifest.json":
+        if relative == ".daiharness/docs-manifest.json":
             # The scanner fingerprint records the normalized manifest effects,
             # not the manifest bytes. Cache/receipt mtimes below prove the
             # catalog was rebuilt after this file changed.
@@ -975,7 +975,7 @@ def _cache_state(
         return "invalid", ""
     ordered_documents, ordered_assets = ordered_paths
     canonical = {
-        "manifest": ".dainexus/docs-manifest.json",
+        "manifest": ".daiharness/docs-manifest.json",
         "project": {
             "id": project.get("id"),
             "title": project.get("title"),
@@ -1016,7 +1016,7 @@ def _receipt_fingerprint_matches(
 ) -> bool:
     """Bind a structurally valid receipt to the current project material."""
 
-    if value.get("schema") == "dainexus-docs-hub":
+    if value.get("schema") == "daiharness-docs-hub":
         fingerprints = value.get("source_fingerprints")
         return isinstance(fingerprints, list) and any(
             isinstance(item, dict)
@@ -1046,7 +1046,7 @@ def _receipt_valid(
     """
 
     schema = value.get("schema")
-    if schema == "dainexus-docs-hub":
+    if schema == "daiharness-docs-hub":
         if value.get("schema_version") != 1:
             return False
         project_id = manifest["project"]["id"]
@@ -1064,7 +1064,7 @@ def _receipt_valid(
             if item_project == project_id:
                 matching += 1
         return matching == 1
-    if isinstance(schema, str) and schema.startswith("dainexus-docs-build-receipt/"):
+    if isinstance(schema, str) and schema.startswith("daiharness-docs-build-receipt/"):
         status = value.get("status", value.get("build_status"))
         if status not in {"pass", "passed", "ok", "success", "verified"}:
             return False
@@ -1104,7 +1104,7 @@ def _receipt_state(
     root: Path, manifest: dict[str, Any], material: list[str]
 ) -> tuple[str, str, str]:
     candidates = _receipt_candidates(root)
-    if any(str(path).startswith("/dainexus-invalid") for path in candidates):
+    if any(str(path).startswith("/daiharness-invalid") for path in candidates):
         return "infra", PATH_ERROR, ""
     existing: list[Path] = []
     for path in candidates:
@@ -1155,7 +1155,7 @@ def _receipt_state(
 
 
 def _state_dir(root: Path) -> Path | None:
-    configured = os.environ.get("DAINEXUS_DOCS_CONTINUITY_STATE_DIR", "").strip()
+    configured = os.environ.get("DAIHARNESS_DOCS_CONTINUITY_STATE_DIR", "").strip()
     if configured:
         raw = Path(configured).expanduser()
         lexical = raw if raw.is_absolute() else root / raw
@@ -1165,7 +1165,7 @@ def _state_dir(root: Path) -> Path | None:
         if candidate is None:
             return None
         return candidate
-    default = root / ".dainexus" / "runtime" / "docs-continuity"
+    default = root / ".daiharness" / "runtime" / "docs-continuity"
     return None if _has_symlink_component(root, default) else default
 
 
@@ -1289,8 +1289,8 @@ def check_continuity(
     if path_error:
         # Keep the manifest itself in scope so an invalid manifest cannot
         # silently turn a docs Stop into a verified no-code event.
-        if ".dainexus/docs-manifest.json" in native:
-            material = [".dainexus/docs-manifest.json", *material]
+        if ".daiharness/docs-manifest.json" in native:
+            material = [".daiharness/docs-manifest.json", *material]
         return ContinuityResult("unverified", path_error, tuple(material))
     if not material:
         return ContinuityResult("irrelevant")
@@ -1314,7 +1314,7 @@ def check_continuity(
     state = _read_json(state_path, MAX_METADATA_BYTES)
     if state is None:
         return ContinuityResult("unverified", INVALID_STATE, tuple(material))
-    configured_cli = os.environ.get("DAINEXUS_DOCS_CLI", "").strip()
+    configured_cli = os.environ.get("DAIHARNESS_DOCS_CLI", "").strip()
     if configured_cli:
         cli = _within(root, configured_cli)
         if cli is None or not cli.is_file() or not os.access(cli, os.X_OK):

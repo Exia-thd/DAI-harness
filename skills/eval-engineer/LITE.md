@@ -17,7 +17,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 1. AUDIT | Validate prompts, active model/runtime parameters, and completion schema constraints | Verify parameters from current provider/runtime configuration and executable schema checks.
 2. BENCHMARK | Execute automated prompt assertion loops across multiple target model providers | Confirm that output completions pass semantic constraints and structured schema validators.
-3. MEASURE | Analyze model completion latency, token counts, and API spend footprints | Verify model output metrics are logged under ~/.dainexus/usage/ and stay within budget rules.
+3. MEASURE | Analyze model completion latency, token counts, and API spend footprints | Verify model output metrics are logged under ~/.daiharness/usage/ and stay within budget rules.
 
 ## Common Mistakes Checklist
 - **Breaking provider-native payloads**: Removing provider-required fields during automated testing without verifying the current runtime contract.
@@ -28,7 +28,7 @@ Format: `n. ACTION | TARGET | CHECK`
 ### Step 1: Ground target project evaluation settings
 ```bash
 cat .production-grade.yaml
-cat .dainexus/budget.yaml
+cat .daiharness/budget.yaml
 ```
 
 ### Step 2: Run a secure prompt completion assertion in `tests/eval_prompt.py`
@@ -61,5 +61,5 @@ print(calculate_quality_score('{"confidence": 0.95, "citations": [""]}'))
 ### Step 3: Run the prompt validator and check token usage metrics
 ```bash
 python3 tests/eval_prompt.py
-dai token status || cat ~/.dainexus/usage/summary.json
+dai token status || cat ~/.daiharness/usage/summary.json
 ```

@@ -1,8 +1,8 @@
-# Scope Definition: DAI Nexus Docs Hub
+# Scope Definition: DAI Harness Docs Hub
 
 ## Users
 
-- Project owner managing multiple DAI Nexus workspaces.
+- Project owner managing multiple DAI Harness workspaces.
 - Engineer reading architecture, runbooks, ADRs, and verification status.
 - AI agent retrieving deterministic project context.
 - Reviewer tracing requirements to code, tests, and evidence.
@@ -11,15 +11,15 @@
 
 ### Project configuration
 
-- `.dainexus/docs-manifest.json`
-- `$DAINEXUS_HOME/docs-hub/projects.json`
+- `.daiharness/docs-manifest.json`
+- `$DAIHARNESS_HOME/docs-hub/projects.json`
 - Manifest fallback for legacy projects.
 - Schema versioning and explicit migration errors.
 
 ### Collection and normalization
 
 - Markdown, JSON, YAML, SVG, PNG, and explicitly allowed assets.
-- Git metadata and curated DAI Nexus profile fields.
+- Git metadata and curated DAI Harness profile fields.
 - GitNexus process/symbol references.
 - Safe evidence summaries without raw secret-bearing output.
 - Stable project, document, relation, and diagram IDs.
@@ -48,7 +48,7 @@
 - LLM-required classification, generation, or summarization.
 - Automatic deletion, rename, or movement of project documents.
 - Raw ingestion of credentials, transcripts, memory databases, audits, or
-  arbitrary `.dainexus/artifacts/**`.
+  arbitrary `.daiharness/artifacts/**`.
 - Replacing GitNexus as the code graph.
 
 ## User Stories

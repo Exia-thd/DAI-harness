@@ -1,10 +1,10 @@
 ---
-description: Set up Paperclip multi-agent orchestration alongside DAI Nexus
+description: Set up Paperclip multi-agent orchestration alongside DAI Harness
 ---
 
 # Setup Paperclip (Multi-Agent Orchestration)
 
-Paperclip is an **optional** business orchestration layer that manages multiple AI agents as a company. DAI Nexus provides the engineering skills; Paperclip provides the management layer.
+Paperclip is an **optional** business orchestration layer that manages multiple AI agents as a company. DAI Harness provides the engineering skills; Paperclip provides the management layer.
 
 **Prerequisites:** Node.js 22+, pnpm 9.15+
 
@@ -44,7 +44,7 @@ For each AI agent you want to manage:
 1. Click "Add Agent"
 2. Choose agent type (OpenClaw, Antigravity, Codex, etc.)
 3. Set heartbeat schedule (e.g., every 5 minutes)
-4. Point working directory to your project (where DAI Nexus is installed)
+4. Point working directory to your project (where DAI Harness is installed)
 
 ### 6. Set Goals
 
@@ -59,8 +59,8 @@ Paperclip's AI CEO will break goals into tickets and assign them to agents.
 
 Agents should:
 1. Receive tickets from Paperclip (via heartbeat)
-2. Read `AGENTS.md` in your project → DAI Nexus routes to skills
-3. Execute using DAI Nexus's pipeline (DEFINE → BUILD → HARDEN → SHIP)
+2. Read `AGENTS.md` in your project → DAI Harness routes to skills
+3. Execute using DAI Harness's pipeline (DEFINE → BUILD → HARDEN → SHIP)
 4. Report completion back to Paperclip dashboard
 
 ## Architecture
@@ -70,7 +70,7 @@ Paperclip Server (localhost:3100)     ← Business layer (goals, tickets, budget
     ↓ assigns tickets
 AI Agents (OpenClaw, Antigravity)     ← Execution layer
     ↓ reads AGENTS.md
-DAI Nexus (git submodule)           ← Engineering layer (53 skills)
+DAI Harness (git submodule)           ← Engineering layer (53 skills)
     ↓ writes code
 Your Project (git repo)              ← Your codebase
 ```
@@ -86,6 +86,6 @@ Your Project (git repo)              ← Your codebase
 ## Notes
 
 - Paperclip runs as a **separate server** — it does NOT modify your git repo
-- DAI Nexus skills auto-detect Paperclip context via the `paperclip-integration` protocol
-- Budget tracking is handled by Paperclip, not DAI Nexus
-- To stop Paperclip, just stop the server — your project continues working with DAI Nexus alone
+- DAI Harness skills auto-detect Paperclip context via the `paperclip-integration` protocol
+- Budget tracking is handled by Paperclip, not DAI Harness
+- To stop Paperclip, just stop the server — your project continues working with DAI Harness alone

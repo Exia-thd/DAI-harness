@@ -7,17 +7,17 @@ import { z } from 'zod';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Build → parsers → build → mcp → DAINEXUS_ROOT
-const MCP_DIR = __dirname; // DAI-NEXUS/mcp/build/parsers
-const MCP_BUILD_DIR = dirname(MCP_DIR); // DAI-NEXUS/mcp/build
-const MCP_ROOT_DIR = dirname(MCP_BUILD_DIR); // DAI-NEXUS/mcp
-const DAINEXUS_ROOT = dirname(MCP_ROOT_DIR); // DAI-NEXUS
+// Build → parsers → build → mcp → DAIHARNESS_ROOT
+const MCP_DIR = __dirname; // DAI-HARNESS/mcp/build/parsers
+const MCP_BUILD_DIR = dirname(MCP_DIR); // DAI-HARNESS/mcp/build
+const MCP_ROOT_DIR = dirname(MCP_BUILD_DIR); // DAI-HARNESS/mcp
+const DAIHARNESS_ROOT = dirname(MCP_ROOT_DIR); // DAI-HARNESS
 
 let resolvedRoot: string;
 try {
-  resolvedRoot = fs.realpathSync(DAINEXUS_ROOT);
+  resolvedRoot = fs.realpathSync(DAIHARNESS_ROOT);
 } catch {
-  resolvedRoot = DAINEXUS_ROOT;
+  resolvedRoot = DAIHARNESS_ROOT;
 }
 
 export let SKILLS_DIR = join(resolvedRoot, 'skills');
@@ -133,7 +133,7 @@ function resolveSkillsRoot(): string | null {
 export function getAllSkills(): Skill[] {
   const skillsRoot = resolveSkillsRoot();
   if (!skillsRoot) {
-    console.error(`[DAI Nexus Global MCP] Skills directory not found: ${SKILLS_DIR}`);
+    console.error(`[DAI Harness Global MCP] Skills directory not found: ${SKILLS_DIR}`);
     return [];
   }
 
@@ -153,7 +153,7 @@ export function getAllSkills(): Skill[] {
 
       const folderName = basename(dirname(safeFilePath));
       const name = data.name || folderName;
-      const description = data.description || `DAI Nexus Skill: ${name}`;
+      const description = data.description || `DAI Harness Skill: ${name}`;
 
       skills.push({
         name,
@@ -164,7 +164,7 @@ export function getAllSkills(): Skill[] {
         content,
       });
     } catch (e) {
-      console.error(`[DAI Nexus Global MCP] Failed to read skill: ${filePath}`, e);
+      console.error(`[DAI Harness Global MCP] Failed to read skill: ${filePath}`, e);
     }
   }
 
@@ -200,12 +200,12 @@ export function getSharedProtocols(): SharedProtocol[] {
 
       protocols.push({
         name: `protocol-${protocolId}`,
-        description: `DAI Nexus Shared Protocol: ${protocolId}`,
+        description: `DAI Harness Shared Protocol: ${protocolId}`,
         uri: `fw://protocols/${protocolId}`,
         content,
       });
     } catch (e) {
-      console.error(`[DAI Nexus Global MCP] Failed to read protocol: ${filePath}`, e);
+      console.error(`[DAI Harness Global MCP] Failed to read protocol: ${filePath}`, e);
     }
   }
 

@@ -2,16 +2,16 @@
 
 ## Objective
 
-Aggregate all findings from Phases 1-5 into a single prioritized remediation plan with executable fix instructions. Every Critical and High finding gets before/after code, a verification test, and an owner assignment. Medium and Low findings get a timeline. Also generate a structured penetration test plan. Generate all outputs in `.dainexus/security-engineer/remediation/` and `.dainexus/security-engineer/pen-test/`.
+Aggregate all findings from Phases 1-5 into a single prioritized remediation plan with executable fix instructions. Every Critical and High finding gets before/after code, a verification test, and an owner assignment. Medium and Low findings get a timeline. Also generate a structured penetration test plan. Generate all outputs in `.daiharness/security-engineer/remediation/` and `.daiharness/security-engineer/pen-test/`.
 
 ## Context Bridge
 
 Read ALL prior phase outputs:
-- `.dainexus/security-engineer/threat-model/` (Phase 1)
-- `.dainexus/security-engineer/code-audit/` (Phase 2)
-- `.dainexus/security-engineer/auth-review/` (Phase 3)
-- `.dainexus/security-engineer/data-security/` (Phase 4)
-- `.dainexus/security-engineer/supply-chain/` (Phase 5)
+- `.daiharness/security-engineer/threat-model/` (Phase 1)
+- `.daiharness/security-engineer/code-audit/` (Phase 2)
+- `.daiharness/security-engineer/auth-review/` (Phase 3)
+- `.daiharness/security-engineer/data-security/` (Phase 4)
+- `.daiharness/security-engineer/supply-chain/` (Phase 5)
 
 Every finding from every phase feeds into this plan. Do not re-analyze -- aggregate, deduplicate, and prioritize.
 
@@ -41,7 +41,7 @@ Classify every finding into a priority tier:
 
 For EVERY P0 and P1 finding, produce a complete fix specification:
 
-```markdown
+````markdown
 ## [SEVERITY] SEC-XXX: Finding Title
 
 **Source:** Phase X -- <report file>
@@ -69,7 +69,7 @@ For EVERY P0 and P1 finding, produce a complete fix specification:
 ### References
 - CWE-XXX: <title>
 - OWASP guidance: <relevant OWASP page>
-```
+````
 
 Requirements for code fixes:
 - MUST include the actual vulnerable code (not a description of it)
@@ -79,7 +79,7 @@ Requirements for code fixes:
 
 ### Step 4: Generate Penetration Test Plan
 
-Create a structured pen test plan in `.dainexus/security-engineer/pen-test/`:
+Create a structured pen test plan in `.daiharness/security-engineer/pen-test/`:
 
 **Authentication Tests:**
 - Brute force login (test lockout threshold and timing)
@@ -218,7 +218,7 @@ Produce a summary suitable for stakeholders:
 
 ## Output Deliverables
 
-Write all outputs to `.dainexus/security-engineer/remediation/` and `.dainexus/security-engineer/pen-test/`:
+Write all outputs to `.daiharness/security-engineer/remediation/` and `.daiharness/security-engineer/pen-test/`:
 
 | File | Contents |
 |------|----------|

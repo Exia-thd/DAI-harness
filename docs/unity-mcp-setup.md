@@ -2,7 +2,7 @@
 
 ## Overview
 
-Hướng dẫn cài đặt và cấu hình **Unity-MCP** (IvanMurzak/Unity-MCP) để tích hợp với DAI Nexus Unity skills.
+Hướng dẫn cài đặt và cấu hình **Unity-MCP** (IvanMurzak/Unity-MCP) để tích hợp với DAI Harness Unity skills.
 
 **Unity-MCP** cung cấp 100+ MCP tools để thao tác với Unity Editor từ AI agents như Claude Code, Cursor, Gemini.
 
@@ -164,13 +164,13 @@ docker run -t -e MCP_PLUGIN_CLIENT_TRANSPORT=stdio -p 8080:8080 ivanmurzakdev/un
 
 ---
 
-## Usage with DAI Nexus
+## Usage with DAI Harness
 
 ### Combined Workflow
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ DAI Nexus: Architecture Design (NO Unity Editor)              │
+│ DAI Harness: Architecture Design (NO Unity Editor)              │
 │ - SO framework, event channels, component architecture          │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
@@ -180,7 +180,7 @@ docker run -t -e MCP_PLUGIN_CLIENT_TRANSPORT=stdio -p 8080:8080 ivanmurzakdev/un
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│ DAI Nexus: Code Implementation (NO Unity Editor)              │
+│ DAI Harness: Code Implementation (NO Unity Editor)              │
 │ - Gameplay logic, event wiring, UI systems                     │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
@@ -192,10 +192,10 @@ docker run -t -e MCP_PLUGIN_CLIENT_TRANSPORT=stdio -p 8080:8080 ivanmurzakdev/un
 
 ### Example: Create Player System
 
-**Step 1: Design Architecture (DAI Nexus)**
+**Step 1: Design Architecture (DAI Harness)**
 
 ```
-# Prompt cho DAI Nexus:
+# Prompt cho DAI Harness:
 "Design a player controller system using SO-first architecture.
  Include FloatVariable for health, GameEvent for damage, and
  single-responsibility components for movement and combat."
@@ -210,10 +210,10 @@ gameobject-component-add(object="Player", component="Rigidbody")
 gameobject-component-add(object="Player", component="CapsuleCollider")
 ```
 
-**Step 3: Implement Logic (DAI Nexus)**
+**Step 3: Implement Logic (DAI Harness)**
 
 ```
-# Prompt cho DAI Nexus:
+# Prompt cho DAI Harness:
 "Implement PlayerHealth.cs that uses FloatVariable SO for health
  and raises GameEvent on damage. Follow the architecture we designed."
 ```
@@ -369,7 +369,7 @@ openupm add com.ivanmurzak.unity.ai-probuilder
 - [Unity-MCP GitHub](https://github.com/IvanMurzak/Unity-MCP)
 - [Documentation](https://github.com/IvanMurzak/Unity-MCP/wiki)
 - [Discord Community](https://discord.gg/unity-mcp)
-- [DAI Nexus Unity Skills](./unity-mcp-integration)
+- [DAI Harness Unity Skills](./unity-mcp-integration)
 
 ---
 

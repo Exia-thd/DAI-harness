@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════════════════════
-# DAI Nexus Submodule Auto-Updater Hook
-# Tự động kiểm tra và pull bản cập nhật mới nhất khi DAI Nexus là submodule
+# DAI Harness Submodule Auto-Updater Hook
+# Tự động kiểm tra và pull bản cập nhật mới nhất khi DAI Harness là submodule
 # ═══════════════════════════════════════════════════════════════════════════════
 
 set -euo pipefail
@@ -15,7 +15,7 @@ if [[ -z "$SUPERPROJECT" ]]; then
     exit 0
 fi
 
-LOCK_FILE="$(git rev-parse --git-path dai-nexus-auto-update.lock)"
+LOCK_FILE="$(git rev-parse --git-path dai-harness-auto-update.lock)"
 if [[ "$LOCK_FILE" != /* ]]; then
     LOCK_FILE="$FW_ROOT/$LOCK_FILE"
 fi
@@ -32,7 +32,7 @@ if ! ln "$OWNER_FILE" "$LOCK_FILE" 2>/dev/null; then
         rm -f "$OWNER_FILE"
         exit 0
     fi
-    echo "⚠️ [DAI Nexus] Đã thu hồi stale lock từ lần chạy trước." >&2
+    echo "⚠️ [DAI Harness] Đã thu hồi stale lock từ lần chạy trước." >&2
     if ! ln "$OWNER_FILE" "$LOCK_FILE" 2>/dev/null; then
         rm -f "$OWNER_FILE" "$STALE_FILE"
         exit 0
@@ -50,7 +50,7 @@ cleanup() {
 trap cleanup EXIT HUP INT TERM
 
 if ! git fetch origin main -q; then
-    echo "⚠️ [DAI Nexus] Không thể kiểm tra origin/main; giữ nguyên phiên bản hiện tại." >&2
+    echo "⚠️ [DAI Harness] Không thể kiểm tra origin/main; giữ nguyên phiên bản hiện tại." >&2
     exit 0
 fi
 
@@ -60,42 +60,42 @@ if [[ -z "$LOCAL" || -z "$REMOTE" || "$LOCAL" == "$REMOTE" ]]; then
     exit 0
 fi
 
-echo "🔄 [DAI Nexus] Phát hiện bản cập nhật mới từ remote. Đang tiến hành auto-update..."
+echo "🔄 [DAI Harness] Phát hiện bản cập nhật mới từ remote. Đang tiến hành auto-update..."
 if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
-    echo "⚠️ [DAI Nexus] Bỏ qua auto-update vì submodule có thay đổi cục bộ chưa commit." >&2
+    echo "⚠️ [DAI Harness] Bỏ qua auto-update vì submodule có thay đổi cục bộ chưa commit." >&2
     exit 0
 fi
 if ! git merge-base --is-ancestor "$LOCAL" "$REMOTE"; then
-    echo "⚠️ [DAI Nexus] Bỏ qua auto-update vì local HEAD đã phân kỳ với origin/main." >&2
+    echo "⚠️ [DAI Harness] Bỏ qua auto-update vì local HEAD đã phân kỳ với origin/main." >&2
     exit 0
 fi
 if ! git merge --ff-only -q "$REMOTE"; then
-    echo "❌ [DAI Nexus] Không thể fast-forward submodule đến origin/main." >&2
+    echo "❌ [DAI Harness] Không thể fast-forward submodule đến origin/main." >&2
     exit 1
 fi
 
 NEW_HEAD="$(git rev-parse HEAD)"
-echo "✅ [DAI Nexus] Đã tự động cập nhật submodule lên ${NEW_HEAD:0:8}."
+echo "✅ [DAI Harness] Đã tự động cập nhật submodule lên ${NEW_HEAD:0:8}."
 
-INSTALLER="$FW_ROOT/scripts/dainexus-install.sh"
-DOCTOR="$FW_ROOT/scripts/dainexus-hook-doctor.sh"
-MCP_SETUP="$FW_ROOT/scripts/dainexus-mcp-setup.sh"
+INSTALLER="$FW_ROOT/scripts/daiharness-install.sh"
+DOCTOR="$FW_ROOT/scripts/daiharness-hook-doctor.sh"
+MCP_SETUP="$FW_ROOT/scripts/daiharness-mcp-setup.sh"
 
 if [[ -x "$INSTALLER" ]]; then
-    if ! DAINEXUS_SOURCE_DIR="$FW_ROOT" bash "$INSTALLER" \
+    if ! DAIHARNESS_SOURCE_DIR="$FW_ROOT" bash "$INSTALLER" \
         --profile minimal --yes --skip-mcp --skip-skills --skip-config; then
-        echo "❌ [DAI Nexus] Code đã cập nhật nhưng không refresh được global hook runtime." >&2
+        echo "❌ [DAI Harness] Code đã cập nhật nhưng không refresh được global hook runtime." >&2
         exit 1
     fi
 fi
 if [[ -x "$DOCTOR" ]]; then
     if ! bash "$DOCTOR" --quick --fix; then
-        echo "⚠️ [DAI Nexus] Doctor còn cảnh báo; hãy chạy lại doctor thủ công để xem chi tiết." >&2
+        echo "⚠️ [DAI Harness] Doctor còn cảnh báo; hãy chạy lại doctor thủ công để xem chi tiết." >&2
     fi
 fi
 if [[ -x "$MCP_SETUP" ]]; then
     if ! (cd "$SUPERPROJECT" && bash "$MCP_SETUP" --force); then
-        echo "⚠️ [DAI Nexus] MCP refresh thất bại; code và policy hook vẫn đã được cập nhật." >&2
+        echo "⚠️ [DAI Harness] MCP refresh thất bại; code và policy hook vẫn đã được cập nhật." >&2
     fi
 fi
 

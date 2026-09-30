@@ -16,7 +16,7 @@ One-command setup to enable AI-powered testing on Android/iOS devices. After thi
 ### Step 1: Run the setup script
 // turbo
 ```bash
-bash dai-nexus/scripts/mobile-test-setup.sh
+bash dai-harness/scripts/mobile-test-setup.sh
 ```
 
 This will automatically:
@@ -102,7 +102,7 @@ console.log(data);
 
 To see what's installed/missing without making changes:
 ```bash
-bash dai-nexus/scripts/mobile-test-setup.sh --check-only
+bash dai-harness/scripts/mobile-test-setup.sh --check-only
 ```
 
 ## Troubleshooting

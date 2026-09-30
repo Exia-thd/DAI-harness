@@ -1,4 +1,4 @@
-"""dn_memory_add and dn_memory_search, through the DAI memory layer.
+"""dh_memory_add and dh_memory_search, through the DAI memory layer.
 
 The harness's two memory tools keep their names and their arguments; what
 answers them is now the vendored memory layer, reached through its CLI. These
@@ -45,7 +45,7 @@ pytestmark = [
 def _env(project: Path, home: Path) -> dict[str, str]:
     env = dict(os.environ)
     env.update(
-        DAINEXUS_ROOT=str(project),
+        DAIHARNESS_ROOT=str(project),
         MEMORY_LAYER_HOME=str(home),
         MEMORY_LAYER_EMBEDDINGS="hash",
         MEMORY_LAYER_TEST="1",
@@ -117,7 +117,7 @@ def test_an_observation_is_recorded_with_its_layer_and_importance(project) -> No
     payload, failed = _call(
         repo,
         home,
-        "dn_memory_add",
+        "dh_memory_add",
         {
             "text": "PRs stay under 400 lines\nReview quality drops past that.",
             "category": "decisions",
@@ -148,11 +148,11 @@ def test_a_search_finds_what_was_recorded(project) -> None:
     added, _ = _call(
         repo,
         home,
-        "dn_memory_add",
+        "dh_memory_add",
         {"text": "Refunds settle within five business days", "category": "decisions"},
     )
     payload, failed = _call(
-        repo, home, "dn_memory_search", {"query": "refunds settle days", "limit": 5}
+        repo, home, "dh_memory_search", {"query": "refunds settle days", "limit": 5}
     )
     assert not failed, payload
     assert any(hit["id"] == added["id"] for hit in payload["results"]), payload
@@ -171,7 +171,7 @@ def test_a_category_nobody_mapped_is_a_fact(project) -> None:
         payload, failed = _call(
             repo,
             home,
-            "dn_memory_add",
+            "dh_memory_add",
             {"text": f"a {category} record", "category": category},
         )
         assert not failed, payload
@@ -199,7 +199,7 @@ def test_a_project_without_a_store_is_an_error_not_an_empty_answer(
     )
     home = tmp_path / "home"
     home.mkdir()
-    payload, failed = _call(bare, home, "dn_memory_search", {"query": "anything"})
+    payload, failed = _call(bare, home, "dh_memory_search", {"query": "anything"})
     assert failed, payload
     assert "error" in payload and payload["error"], payload
     assert "results" not in payload
@@ -208,8 +208,8 @@ def test_a_project_without_a_store_is_an_error_not_an_empty_answer(
 def test_empty_arguments_are_refused(project) -> None:
     repo, home = project
     for tool, arguments in (
-        ("dn_memory_add", {"text": "  "}),
-        ("dn_memory_search", {"query": ""}),
+        ("dh_memory_add", {"text": "  "}),
+        ("dh_memory_search", {"query": ""}),
     ):
         payload, failed = _call(repo, home, tool, arguments)
         assert failed and "needs" in payload["error"], (tool, payload)

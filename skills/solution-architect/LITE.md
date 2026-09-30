@@ -9,7 +9,7 @@ version: 1.0.0
 ## SOLVE Step 2: GROUND (Solution Architect Domain Slots)
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Target project-specific tech stack and profile are active | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Target project-specific tech stack and profile are active | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 | Existing system architecture records, design specs, or ADRs are indexed | `find docs/02-architecture/ -name "*.md"` | ... | run the check command and paste output |
 | The DAI memory code graph is initialized and ready for structural analysis | `dai-memory status` | ... | run the check command and paste output |
 
@@ -28,7 +28,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground target project settings and verify code graph readiness
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 dai-memory status
 ```
 

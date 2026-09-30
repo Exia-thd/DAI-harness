@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# DAI Nexus Session Lifecycle Manager
+# DAI Harness Session Lifecycle Manager
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 #
 # Usage:
@@ -17,22 +17,22 @@ set -euo pipefail
 #   session.sh help                      — show this help
 #
 # Files:
-#   .dainexus/session-log.json        — session history
+#   .daiharness/session-log.json        — session history
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # ── Resolve paths ──────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-DAINEXUS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+DAIHARNESS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-if [[ -d "$DAINEXUS_DIR/.dainexus" ]]; then
-  PROJECT_ROOT="$DAINEXUS_DIR"
-elif [[ -d "$DAINEXUS_DIR/../.dainexus" ]]; then
-  PROJECT_ROOT="$(cd "$DAINEXUS_DIR/.." && pwd)"
+if [[ -d "$DAIHARNESS_DIR/.daiharness" ]]; then
+  PROJECT_ROOT="$DAIHARNESS_DIR"
+elif [[ -d "$DAIHARNESS_DIR/../.daiharness" ]]; then
+  PROJECT_ROOT="$(cd "$DAIHARNESS_DIR/.." && pwd)"
 else
   PROJECT_ROOT="$(pwd)"
 fi
 
-WORKSPACE="$PROJECT_ROOT/.dainexus"
+WORKSPACE="$PROJECT_ROOT/.daiharness"
 SESSION_LOG="$WORKSPACE/session-log.json"
 PROFILE="$WORKSPACE/project-profile.json"
 

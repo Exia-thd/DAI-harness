@@ -36,4 +36,4 @@ def test_repository_keeps_hosted_execution_out_of_the_canonical_path() -> None:
     local_ci = (ROOT / "scripts" / "ci" / "local-ci.py").read_text(encoding="utf-8")
     assert "scripts/parallel-dispatch-runner.py" not in local_ci
     assert "scripts/lite/escalate.sh" not in local_ci
-    assert "dai-nexus-local-ci/v1" in local_ci
+    assert "dai-harness-local-ci/v1" in local_ci

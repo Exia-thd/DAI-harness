@@ -1,5 +1,5 @@
 {
-  "dai-nexus-policy": {
+  "dai-harness-policy": {
     "PreInvocation": [
       {
         "type": "command",

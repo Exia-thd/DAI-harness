@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install optional OS-native schedules for DAI Nexus local CI.
+"""Install optional OS-native schedules for DAI Harness local CI.
 
 No daemon is installed. The OS scheduler invokes the canonical local CI entrypoint.
 """
@@ -28,9 +28,9 @@ def _command(mode: str) -> list[str]:
 def _mac_paths() -> tuple[Path, Path, Path]:
     base = Path.home() / "Library" / "LaunchAgents"
     return (
-        base / f"com.dainexus.{REPO_ID}.quick.plist",
-        base / f"com.dainexus.{REPO_ID}.reindex.plist",
-        base / f"com.dainexus.{REPO_ID}.deps.plist",
+        base / f"com.daiharness.{REPO_ID}.quick.plist",
+        base / f"com.daiharness.{REPO_ID}.reindex.plist",
+        base / f"com.daiharness.{REPO_ID}.deps.plist",
     )
 
 
@@ -44,16 +44,16 @@ def _mac_install() -> None:
     )
     for path, mode, calendar in configs:
         payload = {
-            "Label": f"com.dainexus.{REPO_ID}.{mode}",
+            "Label": f"com.daiharness.{REPO_ID}.{mode}",
             "ProgramArguments": _command(mode),
             "WorkingDirectory": str(ROOT),
             "StartCalendarInterval": calendar,
             "RunAtLoad": False,
             "StandardOutPath": str(
-                Path.home() / ".dainexus" / f"local-ci-{REPO_ID}-{mode}.log"
+                Path.home() / ".daiharness" / f"local-ci-{REPO_ID}-{mode}.log"
             ),
             "StandardErrorPath": str(
-                Path.home() / ".dainexus" / f"local-ci-{REPO_ID}-{mode}.err.log"
+                Path.home() / ".daiharness" / f"local-ci-{REPO_ID}-{mode}.err.log"
             ),
         }
         path.write_bytes(plistlib.dumps(payload))
@@ -91,16 +91,16 @@ def _linux_install() -> None:
         ("reindex", "*-*-* 19:00:00"),
         ("deps", "Mon *-*-* 10:00:00"),
     ):
-        stem = f"dai-nexus-{REPO_ID}-{mode}"
+        stem = f"dai-harness-{REPO_ID}-{mode}"
         service = directory / f"{stem}.service"
         timer = directory / f"{stem}.timer"
         service.write_text(
-            "[Unit]\nDescription=DAI Nexus local CI\n[Service]\nType=oneshot\n"
+            "[Unit]\nDescription=DAI Harness local CI\n[Service]\nType=oneshot\n"
             f"WorkingDirectory={ROOT}\nExecStart={shlex.join(_command(mode))}\n",
             encoding="utf-8",
         )
         timer.write_text(
-            "[Unit]\nDescription=Schedule DAI Nexus local CI\n[Timer]\n"
+            "[Unit]\nDescription=Schedule DAI Harness local CI\n[Timer]\n"
             f"OnCalendar={calendar}\nPersistent=true\n[Install]\nWantedBy=timers.target\n",
             encoding="utf-8",
         )
@@ -113,7 +113,7 @@ def _linux_install() -> None:
 def _linux_uninstall() -> None:
     directory = _linux_dir()
     for mode in ("quick", "reindex", "deps"):
-        stem = f"dai-nexus-{REPO_ID}-{mode}"
+        stem = f"dai-harness-{REPO_ID}-{mode}"
         subprocess.run(
             ["systemctl", "--user", "disable", "--now", f"{stem}.timer"], check=False
         )
@@ -131,7 +131,7 @@ def _windows_install() -> None:
         ("reindex", ["/SC", "DAILY", "/ST", "19:00"]),
         ("deps", ["/SC", "WEEKLY", "/D", "MON", "/ST", "10:00"]),
     ):
-        name = f"DAI Nexus-{REPO_ID}-{mode}"
+        name = f"DAI Harness-{REPO_ID}-{mode}"
         command = subprocess.list2cmdline(_command(mode))
         subprocess.run(
             ["schtasks", "/Create", "/F", "/TN", name, "/TR", command, *schedule],
@@ -142,7 +142,7 @@ def _windows_install() -> None:
 
 def _windows_uninstall() -> None:
     for mode in ("quick", "reindex", "deps"):
-        name = f"DAI Nexus-{REPO_ID}-{mode}"
+        name = f"DAI Harness-{REPO_ID}-{mode}"
         subprocess.run(["schtasks", "/Delete", "/F", "/TN", name], check=False)
 
 
@@ -164,7 +164,7 @@ def _dry_run_plan(system: str, action: str) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Manage OS-native schedules for DAI Nexus local CI"
+        description="Manage OS-native schedules for DAI Harness local CI"
     )
     parser.add_argument("action", choices=("install", "uninstall"))
     parser.add_argument("--dry-run", action="store_true")

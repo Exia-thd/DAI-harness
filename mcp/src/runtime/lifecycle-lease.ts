@@ -6,7 +6,7 @@ import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
 
 const execFileAsync = promisify(execFile);
-const LEASE_SCHEMA = 'dai-nexus-mcp-lifecycle-lease/v1' as const;
+const LEASE_SCHEMA = 'dai-harness-mcp-lifecycle-lease/v1' as const;
 
 export interface ProcessIdentity {
   pid: number;
@@ -220,8 +220,8 @@ export class LifecycleLeaseStore {
   constructor(options: StoreOptions = {}) {
     this.root = resolve(
       options.root ??
-        process.env.DAINEXUS_MCP_LEASE_ROOT ??
-        join(homedir(), '.dainexus', 'runtime', 'mcp-leases'),
+        process.env.DAIHARNESS_MCP_LEASE_ROOT ??
+        join(homedir(), '.daiharness', 'runtime', 'mcp-leases'),
     );
     this.inspector = options.inspector ?? new SystemProcessInspector();
     this.sender = options.sender ?? new SystemSignalSender();

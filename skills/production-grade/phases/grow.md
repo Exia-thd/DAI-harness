@@ -23,9 +23,9 @@ Update task.md: T5 status → in_progress
 
 Read skills/growth-marketer/SKILL.md and follow its instructions.
 Context:
-- Read shipped product context from: .dainexus/ship/handoff/
-- Read BRD from: .dainexus/product-manager/BRD/
-- Write outputs to: .dainexus/growth-marketer/
+- Read shipped product context from: .daiharness/ship/handoff/
+- Read BRD from: .daiharness/product-manager/BRD/
+- Write outputs to: .daiharness/growth-marketer/
 
 Outputs: go-to-market.md, content-plan.md, seo-audit.md, analytics-setup.md
 ```
@@ -37,8 +37,8 @@ Update task.md: T5b status → in_progress
 
 Read skills/conversion-optimizer/SKILL.md and follow its instructions.
 Context:
-- Read analytics data from: .dainexus/growth-marketer/analytics-setup.md
-- Read product context from: .dainexus/ship/handoff/
+- Read analytics data from: .daiharness/growth-marketer/analytics-setup.md
+- Read product context from: .daiharness/ship/handoff/
 
 Outputs: ab-test-plan.md, conversion-analysis.md, optimization-roadmap.md
 ```

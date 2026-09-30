@@ -5,7 +5,7 @@ description: >
   and proactively suggests optimizations. Hook-based, GDPR-aware, and designed
   to add < 50ms latency to any tool execution.
 version: 1.0.0
-author: dai-nexus
+author: dai-harness
 tags: [learning, patterns, hooks, automation, optimization, observation]
 ---
 
@@ -17,7 +17,7 @@ tags: [learning, patterns, hooks, automation, optimization, observation]
 
 | Command | Action |
 |---------|--------|
-| `DAINEXUS_INSTINCTS_ENABLED=0` | Disable entire system |
+| `DAIHARNESS_INSTINCTS_ENABLED=0` | Disable entire system |
 | `processToolCall(tool, args, success, projectRoot)` | Record a tool call |
 | `promotePatterns()` | Check for pattern suggestions |
 | `getInstinctsConfig()` | View current configuration |
@@ -74,7 +74,7 @@ The Instinct System is a **hook-based continuous learning system** that:
 | Every tool call | If instincts enabled |
 | Tool sequence length >= `minSequenceLength` (default: 3) | Pattern detection begins |
 | Confidence >= `promotionThreshold` (default: 0.7) | Suggestion triggered |
-| `DAINEXUS_INSTINCTS_ENABLED=0` | Fast exit, no overhead |
+| `DAIHARNESS_INSTINCTS_ENABLED=0` | Fast exit, no overhead |
 
 ### When does a Suggestion appear?
 
@@ -176,12 +176,12 @@ Should I add an automatic hook for this?
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `DAINEXUS_INSTINCTS_ENABLED` | `1` | Master switch (0 = disable) |
-| `DAINEXUS_INSTINCTS_CONFIG` | auto | Path to config JSON |
-| `DAINEXUS_INSTINCTS_STORE` | auto | Path to store.json |
-| `DAINEXUS_INSTINCTS_LOG` | `info` | Log level (silent/error/info/debug) |
+| `DAIHARNESS_INSTINCTS_ENABLED` | `1` | Master switch (0 = disable) |
+| `DAIHARNESS_INSTINCTS_CONFIG` | auto | Path to config JSON |
+| `DAIHARNESS_INSTINCTS_STORE` | auto | Path to store.json |
+| `DAIHARNESS_INSTINCTS_LOG` | `info` | Log level (silent/error/info/debug) |
 
-### Config File (.dainexus/instincts-config.json)
+### Config File (.daiharness/instincts-config.json)
 
 ```json
 {
@@ -203,7 +203,7 @@ Should I add an automatic hook for this?
 
 ### Per-Project Override
 
-Create `.dainexus/instincts-config.json` in any project to override defaults:
+Create `.daiharness/instincts-config.json` in any project to override defaults:
 
 ```json
 {
@@ -262,7 +262,7 @@ hashArguments: true  // Default: hashes tool args for privacy
 
 ## Store Format
 
-**Location:** `.dainexus/instincts/store.json`
+**Location:** `.daiharness/instincts/store.json`
 
 ```json
 {
@@ -280,7 +280,7 @@ hashArguments: true  // Default: hashes tool args for privacy
       "lastSeen": "2026-06-02T14:30:00Z",
       "suggested": false,
       "crossProject": true,
-      "projectIds": ["dai-nexus", "my-app"]
+      "projectIds": ["dai-harness", "my-app"]
     }
   ],
   "version": "1.0.0",
@@ -299,7 +299,7 @@ Add to `~/.claude/settings.json`:
 ```json
 {
   "hooks": {
-    "PostToolUse": "./scripts/dainexus-instinct-hook.sh observe"
+    "PostToolUse": "./scripts/daiharness-instinct-hook.sh observe"
   }
 }
 ```
@@ -368,7 +368,7 @@ console.log(getObserverStats());
 | 1 | Observer fires on tool_use events | ≥ 95% | [ ] |
 | 2 | Confidence scores generated | ≥ 80% of patterns | [ ] |
 | 3 | Patterns persist across sessions | store.json verified | [ ] |
-| 4 | `DAINEXUS_INSTINCTS_ENABLED=0` disables | No code changes needed | [ ] |
+| 4 | `DAIHARNESS_INSTINCTS_ENABLED=0` disables | No code changes needed | [ ] |
 | 5 | SKILL.md created | Full documentation | [ ] |
 | 6 | No latency regression | Tool call < +50ms | [ ] |
 
@@ -387,7 +387,7 @@ console.log(getObserverStats());
 ## File Structure
 
 ```
-.dainexus/
+.daiharness/
 ├── instincts/
 │   ├── index.ts              # Main exports
 │   ├── observer.ts           # Hook: fires on every tool_use
@@ -397,7 +397,7 @@ console.log(getObserverStats());
 │   └── instincts-config.ts   # Configuration
 ├── instincts-config.json     # Per-project overrides (optional)
 scripts/
-└── dainexus-instinct-hook.sh  # CLI/hook integration
+└── daiharness-instinct-hook.sh  # CLI/hook integration
 skills/
 └── instinct-system/
     └── SKILL.md              # This file
@@ -409,17 +409,17 @@ skills/
 
 ```bash
 # Check status
-./scripts/dainexus-instinct-hook.sh status
+./scripts/daiharness-instinct-hook.sh status
 
 # View stats
-./scripts/dainexus-instinct-hook.sh stats
+./scripts/daiharness-instinct-hook.sh stats
 
 # Clear pattern store
-./scripts/dainexus-instinct-hook.sh clear
+./scripts/daiharness-instinct-hook.sh clear
 
 # Observe a tool call
-./scripts/dainexus-instinct-hook.sh observe "Read" '{}' "true"
+./scripts/daiharness-instinct-hook.sh observe "Read" '{}' "true"
 
 # Promote patterns
-./scripts/dainexus-instinct-hook.sh promote "session-id"
+./scripts/daiharness-instinct-hook.sh promote "session-id"
 ```

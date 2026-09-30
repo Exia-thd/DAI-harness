@@ -1,6 +1,6 @@
 # MCP Setup Technical Reference
 
-> Detailed technical documentation for DAI Nexus MCP setup across Cursor, Claude Code, Antigravity, and OpenAI Codex CLI.
+> Detailed technical documentation for DAI Harness MCP setup across Cursor, Claude Code, Antigravity, and OpenAI Codex CLI.
 
 ## Table of Contents
 
@@ -27,10 +27,10 @@
                            │ MCP Protocol (stdio)
                            ▼
 ┌─────────────────────────────────────────────────────────┐
-│              dainexus-mcp-launcher.sh                │
+│              daiharness-mcp-launcher.sh                │
 │                                                         │
 │  Detects workspace:                                     │
-│  1. DAINEXUS_WORKSPACE env var                       │
+│  1. DAIHARNESS_WORKSPACE env var                       │
 │  2. MCP_WORKSPACE_ROOT env var                          │
 │  3. Git repository root                                │
 │  4. Current working directory                           │
@@ -40,7 +40,7 @@
               │            │            │
               ▼            ▼            ▼
         ┌──────────┐ ┌──────────┐ ┌──────────┐
-        │ DAI Nexus │ │ DAI Nexus Node│ │ Antigrav │
+        │ DAI Harness │ │ DAI Harness Node│ │ Antigrav │
         │   MCP      │ │   MCP    │ │  Manifest│
         └──────────┘ └──────────┘ └──────────┘
 ```
@@ -51,7 +51,7 @@ Each project has isolated configuration:
 
 ```
 ~/.cursor/mcp.json (global)
-└── dai-nexus → dainexus-mcp-launcher.sh
+└── dai-harness → daiharness-mcp-launcher.sh
 
 Project A/.antigravity/mcp-manifest.json
 Project B/.antigravity/mcp-manifest.json
@@ -68,8 +68,8 @@ Project C/.antigravity/mcp-manifest.json
 project/
 ├── .antigravity/
 │   └── mcp-manifest.json      # MCP server manifest
-├── .dainexus/
-│   ├── settings.env            # DAI Nexus settings
+├── .daiharness/
+│   ├── settings.env            # DAI Harness settings
 │   └── mcp-server/            # Generated MCP server
 └── .memory/                      # DAI memory: code graph + project memory
     ├── meta.json
@@ -79,10 +79,10 @@ project/
 ### Script Location
 
 ```
-dai-nexus/
+dai-harness/
 ├── scripts/
-│   ├── dainexus-mcp-setup.sh                    # Unified MCP manager
-│   ├── dainexus-mcp-launcher.sh                 # MCP launcher
+│   ├── daiharness-mcp-setup.sh                    # Unified MCP manager
+│   ├── daiharness-mcp-launcher.sh                 # MCP launcher
 │   └── templates/
 │       ├── mcp.cursor.json          # Cursor config template
 │       ├── mcp.claude.json          # Claude config template
@@ -93,19 +93,19 @@ dai-nexus/
 
 ## Launcher Scripts
 
-### dainexus-mcp-launcher.sh
+### daiharness-mcp-launcher.sh
 
-Main launcher that routes to DAI Nexus MCP server.
+Main launcher that routes to DAI Harness MCP server.
 
 **Key Functions:**
-1. Detect DAI Nexus directory
+1. Detect DAI Harness directory
 2. Detect workspace (env/git/cwd)
 3. Find/create manifest
 4. Execute MCP server
 
 **Environment Variables:**
-- `DAINEXUS_WORKSPACE` - Override workspace
-- `DAINEXUS_DEBUG=1` - Enable debug output
+- `DAIHARNESS_WORKSPACE` - Override workspace
+- `DAIHARNESS_DEBUG=1` - Enable debug output
 
 ### Code-intelligence launcher — not shipped
 
@@ -114,7 +114,7 @@ server. That module is not part of this repository: code intelligence is
 provided by the DAI memory layer (`vendor/dai-memory`), which the setup script
 registers as its own `dai-memory` server. `.cursor/` still
 carries a dead entry point for the removed module — see the audit notes in
-`.dainexus/plan-lessons.md`.
+`.daiharness/plan-lessons.md`.
 
 ---
 
@@ -126,19 +126,19 @@ carries a dead entry point for the removed module — see the audit notes in
 {
   "manifest_version": "2.0",
   "workspace": "/absolute/path/to/project",
-  "dai-nexus_path": "/path/to/dai-nexus",
+  "dai-harness_path": "/path/to/dai-harness",
   "generated_at": "2026-05-07T10:00:00Z",
-  "dai-nexus_version": "8.3.0",
+  "dai-harness_version": "8.3.0",
   "servers": [
     {
-      "name": "dai-nexus",
-      "type": "dai-nexus",
+      "name": "dai-harness",
+      "type": "dai-harness",
       "enabled": true,
-      "description": "DAI Nexus project intelligence"
+      "description": "DAI Harness project intelligence"
     },
     {
-      "name": "dainexus-node",
-      "type": "dainexus-node",
+      "name": "daiharness-node",
+      "type": "daiharness-node",
       "enabled": true,
       "description": "Code intelligence graph"
     }
@@ -152,9 +152,9 @@ carries a dead entry point for the removed module — see the audit notes in
 |-------|----------|-------------|
 | `manifest_version` | Yes | Version of manifest format (2.0) |
 | `workspace` | Yes | Absolute path to project |
-| `dai-nexus_path` | Yes | Absolute path to DAI Nexus |
+| `dai-harness_path` | Yes | Absolute path to DAI Harness |
 | `generated_at` | Yes | ISO-8601 timestamp |
-| `dai-nexus_version` | No | DAI Nexus version |
+| `dai-harness_version` | No | DAI Harness version |
 | `servers` | Yes | Array of MCP servers |
 
 ### Server Entry
@@ -162,7 +162,7 @@ carries a dead entry point for the removed module — see the audit notes in
 ```json
 {
   "name": "server-name",
-  "type": "dai-nexus|dainexus-node|custom",
+  "type": "dai-harness|daiharness-node|custom",
   "enabled": true,
   "description": "What this server does",
   "config": {}
@@ -180,9 +180,9 @@ carries a dead entry point for the removed module — see the audit notes in
 ```json
 {
   "mcpServers": {
-    "dai-nexus": {
+    "dai-harness": {
       "command": "bash",
-      "args": ["/path/to/dai-nexus/scripts/dainexus-mcp-launcher.sh"]
+      "args": ["/path/to/dai-harness/scripts/daiharness-mcp-launcher.sh"]
     }
   }
 }
@@ -195,9 +195,9 @@ carries a dead entry point for the removed module — see the audit notes in
 ```json
 {
   "mcpServers": {
-    "dai-nexus": {
+    "dai-harness": {
       "command": "bash",
-      "args": ["/path/to/dai-nexus/scripts/dainexus-mcp-launcher.sh"]
+      "args": ["/path/to/dai-harness/scripts/daiharness-mcp-launcher.sh"]
     }
   }
 }
@@ -205,14 +205,14 @@ carries a dead entry point for the removed module — see the audit notes in
 
 ### Antigravity
 
-**Config Location:** `~/.cursor/projects/<hash>/mcps/user-dai-nexus/`
+**Config Location:** `~/.cursor/projects/<hash>/mcps/user-dai-harness/`
 
-Antigravity uses the **canonical MCP server** at `~/.dainexus/mcp-server/src/index.ts`. The per-project manifest (`.antigravity/mcp-manifest.json`) provides workspace context only — it does NOT contain a separate server.
+Antigravity uses the **canonical MCP server** at `~/.daiharness/mcp-server/src/index.ts`. The per-project manifest (`.antigravity/mcp-manifest.json`) provides workspace context only — it does NOT contain a separate server.
 
 #### Canonical Server Rule
 
 ```
-~/.dainexus/mcp-server/src/index.ts  ← CANONICAL (single source of truth)
+~/.daiharness/mcp-server/src/index.ts  ← CANONICAL (single source of truth)
 │
 ├── ~/.cursor/mcp.json              → Cursor
 ├── ~/.claude/settings.json        → Claude Code
@@ -220,32 +220,32 @@ Antigravity uses the **canonical MCP server** at `~/.dainexus/mcp-server/src/ind
 ```
 
 **Key points:**
-- `.antigravity/mcp-manifest.json` stores project metadata (workspace, dai-nexus path) — NOT server code
-- Antigravity launcher `~/.cursor/projects/<hash>/mcps/user-dai-nexus/launcher.sh` uses the canonical server
-- Never point Antigravity to a submodule DAI Nexus path
+- `.antigravity/mcp-manifest.json` stores project metadata (workspace, dai-harness path) — NOT server code
+- Antigravity launcher `~/.cursor/projects/<hash>/mcps/user-dai-harness/launcher.sh` uses the canonical server
+- Never point Antigravity to a submodule DAI Harness path
 
 #### Setup Command
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --antigravity
+bash dai-harness/scripts/daiharness-mcp-setup.sh --antigravity
 ```
 
 #### Verify
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --check
+bash dai-harness/scripts/daiharness-mcp-setup.sh --check
 ```
 
 ### OpenAI Codex CLI
 
 **Config Location:** `~/.codex/config.toml`
 
-OpenAI Codex CLI uses the **canonical MCP server** at `~/.dainexus/mcp-server/src/index.ts`. Codex uses TOML config format.
+OpenAI Codex CLI uses the **canonical MCP server** at `~/.daiharness/mcp-server/src/index.ts`. Codex uses TOML config format.
 
 #### Canonical Server Rule
 
 ```
-~/.dainexus/mcp-server/src/index.ts  ← CANONICAL (single source of truth)
+~/.daiharness/mcp-server/src/index.ts  ← CANONICAL (single source of truth)
 │
 ├── ~/.cursor/mcp.json              → Cursor
 ├── ~/.claude/settings.json        → Claude Code
@@ -255,12 +255,12 @@ OpenAI Codex CLI uses the **canonical MCP server** at `~/.dainexus/mcp-server/sr
 #### Config Format
 
 ```toml
-[mcp_servers.dainexus]
+[mcp_servers.daiharness]
 enabled = true
 transport = { type = "stdio" }
-command = "~/.dainexus/mcp-server/node_modules/.bin/tsx"
-args = ["~/.dainexus/mcp-server/src/index.ts"]
-env = { DAINEXUS_WORKSPACE = "$PROJECT_ROOT" }
+command = "~/.daiharness/mcp-server/node_modules/.bin/tsx"
+args = ["~/.daiharness/mcp-server/src/index.ts"]
+env = { DAIHARNESS_WORKSPACE = "$PROJECT_ROOT" }
 
 [mcp_servers.dai-memory]
 enabled = true
@@ -274,13 +274,13 @@ args = ["~/.cache/dai-harness/dai-memory/<commit>/bin/dai-memory.mjs", "serve"]
 #### Setup Command
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --codex
+bash dai-harness/scripts/daiharness-mcp-setup.sh --codex
 ```
 
 #### Verify
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --check
+bash dai-harness/scripts/daiharness-mcp-setup.sh --check
 # or native
 codex mcp list
 ```
@@ -293,7 +293,7 @@ codex mcp list
 
 | Variable | Priority | Description |
 |----------|----------|-------------|
-| `DAINEXUS_WORKSPACE` | 1 | DAI Nexus workspace override |
+| `DAIHARNESS_WORKSPACE` | 1 | DAI Harness workspace override |
 | `MCP_WORKSPACE_ROOT` | 2 | MCP standard workspace |
 | `CLAUDE_DESKTOP_WORKSPACE` | 3 | Claude Desktop workspace |
 | Git root | 4 | Auto-detected from `.git` |
@@ -303,14 +303,14 @@ codex mcp list
 
 | Variable | Values | Effect |
 |----------|--------|--------|
-| `DAINEXUS_DEBUG` | 0, 1 | Enable debug output in launcher |
-| `FW_MCP_VERBOSE` | 0, 1 | Verbose output for dainexus-mcp-setup.sh |
+| `DAIHARNESS_DEBUG` | 0, 1 | Enable debug output in launcher |
+| `FW_MCP_VERBOSE` | 0, 1 | Verbose output for daiharness-mcp-setup.sh |
 
 ---
 
 ## Exit Codes
 
-### dainexus-mcp-setup.sh
+### daiharness-mcp-setup.sh
 
 | Code | Meaning |
 |------|---------|
@@ -342,7 +342,7 @@ echo "$variable"
 [[ -f "$file" ]]
 
 # Use ${var:-default} for defaults
-path="${DAINEXUS_DIR:-/default}"
+path="${DAIHARNESS_DIR:-/default}"
 ```
 
 ### Path Handling
@@ -375,24 +375,24 @@ set -- "item1" "item2"
 
 ```bash
 # Test help
-bash dainexus-mcp-setup.sh --help
+bash daiharness-mcp-setup.sh --help
 
 # Test check
-bash dainexus-mcp-setup.sh --check
+bash daiharness-mcp-setup.sh --check
 
 # Test diagnose
-bash dainexus-mcp-setup.sh --diagnose
+bash daiharness-mcp-setup.sh --diagnose
 
 # Test wizard (non-interactive)
-echo "" | bash dainexus-mcp-setup.sh wizard
+echo "" | bash daiharness-mcp-setup.sh wizard
 ```
 
 ### ShellCheck
 
 ```bash
 # Check scripts
-shellcheck scripts/dainexus-mcp-setup.sh
-shellcheck scripts/dainexus-mcp-launcher.sh
+shellcheck scripts/daiharness-mcp-setup.sh
+shellcheck scripts/daiharness-mcp-launcher.sh
 ```
 
 ### Integration Test
@@ -404,10 +404,10 @@ cd /tmp/fw-test
 git init
 
 # Run setup
-bash /path/to/dai-nexus/scripts/dainexus-mcp-setup.sh setup
+bash /path/to/dai-harness/scripts/daiharness-mcp-setup.sh setup
 
 # Verify
-bash /path/to/dai-nexus/scripts/dainexus-mcp-setup.sh --check
+bash /path/to/dai-harness/scripts/daiharness-mcp-setup.sh --check
 
 # Clean up
 cd /
@@ -424,19 +424,19 @@ rm -rf /tmp/fw-test
 |-------|-------|-----|
 | `command not found: node` | Node.js not installed | Install from nodejs.org |
 | `launcher not found` | Wrong path | Re-run setup |
-| `workspace mismatch` | Manifest stale | `dainexus-mcp-setup.sh setup --force` |
+| `workspace mismatch` | Manifest stale | `daiharness-mcp-setup.sh setup --force` |
 | `npm install failed` | Network/proxy | Check npm config |
 
 ### Debug Commands
 
 ```bash
 # Verbose output
-FW_MCP_VERBOSE=1 bash dainexus-mcp-setup.sh --diagnose
+FW_MCP_VERBOSE=1 bash daiharness-mcp-setup.sh --diagnose
 
 # Debug launcher
-DAINEXUS_DEBUG=1 bash scripts/dainexus-mcp-launcher.sh
+DAIHARNESS_DEBUG=1 bash scripts/daiharness-mcp-launcher.sh
 
-# Debug DAI Nexus Node
+# Debug DAI Harness Node
 ```
 
 ---

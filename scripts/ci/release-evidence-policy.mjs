@@ -15,7 +15,7 @@ export function assertCoveragePolicy(totals, thresholds) {
 export function forbiddenMcpPaths(files) {
   return files
     .map((entry) => entry.path)
-    .filter((path) => path.startsWith('.dainexus/') || path.startsWith('coverage/') || path.startsWith('src/') || path.endsWith('.test.js'));
+    .filter((path) => path.startsWith('.daiharness/') || path.startsWith('coverage/') || path.startsWith('src/') || path.endsWith('.test.js'));
 }
 
 export function assertRequiredPaths(report, paths) {

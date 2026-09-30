@@ -1,7 +1,7 @@
 {
   "version": "1.0",
-  "name": "DAI Nexus Lite Performance Validation",
-  "description": "Golden evaluation suite for DAI Nexus Lite performance validation using a cheap model",
+  "name": "DAI Harness Lite Performance Validation",
+  "description": "Golden evaluation suite for DAI Harness Lite performance validation using a cheap model",
   "defaultProviderSettings": {
     "provider": "agy",
     "model": "Gemini 3.5 Flash (High)"

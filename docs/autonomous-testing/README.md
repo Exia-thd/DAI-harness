@@ -102,7 +102,7 @@ dai test update-baseline
 ## Configuration
 
 ```yaml
-# .dainexus/autonomous.yaml
+# .daiharness/autonomous.yaml
 autonomous:
   enabled: true
   maxAutoFixAttempts: 3

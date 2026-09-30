@@ -6,7 +6,7 @@ description: >
   shader/material operations, and Editor automation. Works alongside C# code
   for hybrid workflow. Routed via production-grade orchestrator (Game Build mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [unity, mcp, automation, editor, scene, prefab, shader, material, build]
 ---
 
@@ -798,7 +798,7 @@ gameobject-component-modify(
 ## Output Structure
 
 ```
-.dainexus/unity-mcp/
+.daiharness/unity-mcp/
 ├── scene-wiring.md           # Scene setup documentation
 ├── component-mappings.md      # Component configuration reference
 ├── prefab-inventory.md       # Created prefabs list

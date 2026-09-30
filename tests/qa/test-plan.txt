@@ -1,7 +1,7 @@
-# QA Test Plan — DAI Nexus
+# QA Test Plan — DAI Harness
 
 > **Last Updated:** 2026-04-13
-> **QA Engineer:** Claude Agent (DAI Nexus QA Skill)
+> **QA Engineer:** Claude Agent (DAI Harness QA Skill)
 > **Status:** Active
 
 ---
@@ -12,7 +12,7 @@
 
 | Package | Scope |
 |---------|-------|
-| **dainexus-node** | Code intelligence engine — agents, graph, scanner, RAG, CLI |
+| **daiharness-node** | Code intelligence engine — agents, graph, scanner, RAG, CLI |
 | **mcp** | Global MCP server — tools, pipeline, parsers, errors |
 
 ### 1.2 Goals
@@ -33,7 +33,7 @@
 
 ## 2. Unit Test Coverage Matrix
 
-### 2.1 DAI Nexus Node Package
+### 2.1 DAI Harness Node Package
 
 | Module | Files | Covered | Threshold |
 |--------|-------|---------|-----------|
@@ -65,10 +65,10 @@
 | `gate workflow` | Request → wait → approve end-to-end | ✅ |
 | `getAllSkills` | Returns skills from disk | ✅ |
 | `getSharedProtocols` | Returns protocols from disk | ✅ |
-| `error serialization` | DaiNexusError → JSON | ✅ |
-| `isDaiNexusError` | Type detection | ✅ |
+| `error serialization` | DaiHarnessError → JSON | ✅ |
+| `isDaiHarnessError` | Type detection | ✅ |
 
-### 3.2 DAI Nexus Node Integration Tests
+### 3.2 DAI Harness Node Integration Tests
 
 | Test Case | Description | Status |
 |-----------|-------------|--------|
@@ -98,14 +98,14 @@
 - `typecheck` — TypeScript build (mcp)
 - `test` — Unit tests (mcp)
 - `commitlint` — Commit message validation
-- `dainexus-node-lint` — ESLint + Prettier (dainexus-node)
-- `dainexus-node-typecheck` — TypeScript build (dainexus-node)
-- `dainexus-node-test` — Unit tests (dainexus-node)
+- `daiharness-node-lint` — ESLint + Prettier (daiharness-node)
+- `daiharness-node-typecheck` — TypeScript build (daiharness-node)
+- `daiharness-node-test` — Unit tests (daiharness-node)
 
 ### 5.2 Wave 2 (After test)
 
 - `test-coverage` — Coverage gate (mcp)
-- `dainexus-node-coverage` — Coverage gate (dainexus-node)
+- `daiharness-node-coverage` — Coverage gate (daiharness-node)
 
 ---
 
@@ -121,8 +121,8 @@
 
 | Metric | Current | Target |
 |--------|---------|--------|
-| dainexus-node unit tests | 127 | 200+ |
+| daiharness-node unit tests | 127 | 200+ |
 | mcp unit tests | 61 | 100+ |
 | integration tests | 11 | 30+ |
-| dainexus-node coverage | ~45% (unreported) | 80% |
+| daiharness-node coverage | ~45% (unreported) | 80% |
 | mcp coverage | ~70% (unreported) | 80% |

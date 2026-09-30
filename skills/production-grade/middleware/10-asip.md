@@ -24,14 +24,14 @@ Failure
 - `STANDARD` / `DEEP` plan scores may be tracked as telemetry using their applicable thresholds.
 - Research is conditional on a material knowledge/evidence gap, not an attempt counter alone.
 - NotebookLM, web search, or any specific research provider is optional and must be verified available before use.
-- Lessons are stored in project-local state (`.dainexus/plan-lessons.md`, `.dainexus/execution-lessons.md`, decision/handoff state) when they have future value.
-- **Never append session lessons into shared DAI Nexus `SKILL.md`/protocol files automatically.** Framework mutation requires explicit DAI Nexus-development scope plus regression tests/review.
+- Lessons are stored in project-local state (`.daiharness/plan-lessons.md`, `.daiharness/execution-lessons.md`, decision/handoff state) when they have future value.
+- **Never append session lessons into shared DAI Harness `SKILL.md`/protocol files automatically.** Framework mutation requires explicit DAI Harness-development scope plus regression tests/review.
 - Graph/ASIP metrics may remain for backward-compatible telemetry, but a score/edge weight is not evidence that a conclusion is true.
 - Do not automatically decay/reinforce a procedural rule from one unreviewed model judgment.
 
 ## State Compatibility
 
-Existing `.dainexus/session/asip-state.json` / `.dainexus/asip-metrics.json` may be read for continuity. New code should prefer neutral fields such as:
+Existing `.daiharness/session/asip-state.json` / `.daiharness/asip-metrics.json` may be read for continuity. New code should prefer neutral fields such as:
 
 ```json
 {

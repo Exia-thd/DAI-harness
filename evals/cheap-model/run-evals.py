@@ -361,7 +361,7 @@ def print_comparison(legacy_path, lite_path):
     print(
         f"\n{BOLD}{CYAN}======================================================================{RESET}"
     )
-    print(f"{BOLD}DAI-NEXUS UPGRADE BENCHMARK COMPARISON{RESET}")
+    print(f"{BOLD}DAI-HARNESS UPGRADE BENCHMARK COMPARISON{RESET}")
     print(
         f"{BOLD}{CYAN}----------------------------------------------------------------------{RESET}"
     )
@@ -475,7 +475,7 @@ def print_comparison(legacy_path, lite_path):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="DAI Nexus Lite Evaluation Harness")
+    parser = argparse.ArgumentParser(description="DAI Harness Lite Evaluation Harness")
     parser.add_argument(
         "--mock",
         action="store_true",
@@ -484,17 +484,17 @@ def parse_args():
     parser.add_argument(
         "--live",
         action="store_true",
-        help="Run live using the dai-nexus orchestrator",
+        help="Run live using the dai-harness orchestrator",
     )
     parser.add_argument(
         "--legacy",
         action="store_true",
-        help="Run using the legacy orchestrator prompt (DAINEXUS_LITE=false)",
+        help="Run using the legacy orchestrator prompt (DAIHARNESS_LITE=false)",
     )
     parser.add_argument(
         "--lite",
         action="store_true",
-        help="Run using the upgraded Lite orchestrator prompt (DAINEXUS_LITE=true)",
+        help="Run using the upgraded Lite orchestrator prompt (DAIHARNESS_LITE=true)",
     )
     parser.add_argument(
         "--compare",
@@ -505,7 +505,7 @@ def parse_args():
         "--model",
         type=str,
         default="",
-        help="Model to use in live execution (required for --live; set via DAINEXUS_MODEL env var)",
+        help="Model to use in live execution (required for --live; set via DAIHARNESS_MODEL env var)",
     )
     parser.add_argument(
         "--verbose",
@@ -572,15 +572,17 @@ def main():
 
     if args.live and not args.model:
         # Fall back to the env var used by the orchestrator.
-        args.model = os.environ.get("DAINEXUS_MODEL", "")
+        args.model = os.environ.get("DAIHARNESS_MODEL", "")
     if args.live and not args.model:
-        log_error("--model (or DAINEXUS_MODEL env var) is required for --live runs.")
+        log_error("--model (or DAIHARNESS_MODEL env var) is required for --live runs.")
         sys.exit(1)
-    if args.live and not os.environ.get("DAINEXUS_PROVIDER", "").strip():
-        log_error("DAINEXUS_PROVIDER is required for a comparable --live report.")
+    if args.live and not os.environ.get("DAIHARNESS_PROVIDER", "").strip():
+        log_error("DAIHARNESS_PROVIDER is required for a comparable --live report.")
         sys.exit(1)
-    if args.live and not os.environ.get("DAINEXUS_MODEL_SNAPSHOT", "").strip():
-        log_error("DAINEXUS_MODEL_SNAPSHOT is required for a comparable --live report.")
+    if args.live and not os.environ.get("DAIHARNESS_MODEL_SNAPSHOT", "").strip():
+        log_error(
+            "DAIHARNESS_MODEL_SNAPSHOT is required for a comparable --live report."
+        )
         sys.exit(1)
 
     results = []
@@ -588,7 +590,7 @@ def main():
 
     # Absolute paths
     repo_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
-    orchestrator_path = os.path.join(repo_root, "scripts", "dainexus-orchestrator.py")
+    orchestrator_path = os.path.join(repo_root, "scripts", "daiharness-orchestrator.py")
 
     for task in tasks:
         task_id = task["id"]
@@ -619,9 +621,9 @@ def main():
         # Initialize git repository to track changes objectively
         run_command("git init", cwd=temp_dir)
         run_command(
-            "git config user.email 'eval-harness@dai-nexus.local'", cwd=temp_dir
+            "git config user.email 'eval-harness@dai-harness.local'", cwd=temp_dir
         )
-        run_command("git config user.name 'DAI Nexus Eval Harness'", cwd=temp_dir)
+        run_command("git config user.name 'DAI Harness Eval Harness'", cwd=temp_dir)
         run_command("git add . && git commit -m 'Initial commit'", cwd=temp_dir)
         log_info("Initialized git repository and committed template files")
 
@@ -651,14 +653,14 @@ def main():
             log_info(f"Live Mode: Running orchestrator with model {args.model}...")
             # Set model and Lite configuration in env
             env = os.environ.copy()
-            env["DAINEXUS_MODEL"] = args.model
+            env["DAIHARNESS_MODEL"] = args.model
             if args.lite:
-                env["DAINEXUS_LITE"] = "true"
+                env["DAIHARNESS_LITE"] = "true"
             elif args.legacy:
-                env["DAINEXUS_LITE"] = "false"
+                env["DAIHARNESS_LITE"] = "false"
 
             # Run the orchestrator script
-            # Usage: python3 dainexus-orchestrator.py <PROJECT_ID> <TASK_PROMPT> [CODE_DIR]
+            # Usage: python3 daiharness-orchestrator.py <PROJECT_ID> <TASK_PROMPT> [CODE_DIR]
             cmd = f"python3 '{orchestrator_path}' 'eval-{task_id}' '{prompt}' '{temp_dir}'"
             agent_exit_code, agent_stdout, agent_stderr = run_command(
                 cmd, cwd=temp_dir, verbose=args.verbose, env=env
@@ -756,16 +758,16 @@ def main():
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "mode": "mock" if args.mock else "live",
         "model": args.model if not args.mock else "mocked",
-        "provider": os.environ.get("DAINEXUS_PROVIDER", ""),
+        "provider": os.environ.get("DAIHARNESS_PROVIDER", ""),
         "defaultAttempts": suite.get("defaultAttempts", 1),
         "verifierVersion": suite.get("verifierVersion", "1"),
         "comparisonMetadata": {
             "mode": "mock" if args.mock else "live",
-            "provider": os.environ.get("DAINEXUS_PROVIDER", "")
+            "provider": os.environ.get("DAIHARNESS_PROVIDER", "")
             if not args.mock
             else "mock",
             "modelId": args.model if not args.mock else "mocked",
-            "modelSnapshot": os.environ.get("DAINEXUS_MODEL_SNAPSHOT", "")
+            "modelSnapshot": os.environ.get("DAIHARNESS_MODEL_SNAPSHOT", "")
             if not args.mock
             else "mock",
             "taskIds": [task["id"] for task in tasks],

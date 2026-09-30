@@ -7,7 +7,7 @@ description: >
   Produces interaction specs that Frontend Engineers can implement precisely.
   Routed via the production-grade orchestrator (Design mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [interaction-design, micro-interactions, state-machines, motion, animation, behavioral-spec, interaction-spec]
 ---
 
@@ -609,7 +609,7 @@ Document how interactions change across screen sizes:
 
 Interaction specifications should be implementation-ready:
 
-```markdown
+````markdown
 ## Handoff Spec: [Component Name]
 
 ### File
@@ -647,7 +647,7 @@ Interaction specifications should be implementation-ready:
 5. [ ] Error state displays message
 6. [ ] Disabled blocks interaction
 7. [ ] Focus visible on Tab
-```
+````
 
 ---
 
@@ -714,7 +714,7 @@ const motionPresets = {
 ## Output Structure
 
 ```
-.dainexus/interaction-designer/
+.daiharness/interaction-designer/
 ├── interaction-specs/
 │   ├── [component-name]/
 │   │   ├── state-machine.md     # State diagram + transitions

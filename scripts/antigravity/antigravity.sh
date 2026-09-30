@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# antigravity.sh - DAI Nexus Antigravity Planning System
+# antigravity.sh - DAI Harness Antigravity Planning System
 # =============================================================================
 # Quick commands for managing feature planning with Antigravity
 # 

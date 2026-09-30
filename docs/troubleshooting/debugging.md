@@ -4,10 +4,10 @@
 
 ## Common Issues
 
-### DAI Nexus not responding
+### DAI Harness not responding
 
 1. Check that `CLAUDE.md` or `AGENTS.md` exists in project root
-2. Verify MCP server is running: `bash scripts/dainexus-mcp-setup.sh --check`
+2. Verify MCP server is running: `bash scripts/daiharness-mcp-setup.sh --check`
 3. Check session health: `dai-memory status`
 
 ### Wrong mode selected
@@ -41,7 +41,7 @@ dai-memory ingest
 ## Getting Help
 
 - [Common Issues](common-issues.md) — Detailed solutions
-- [GitHub Issues](https://github.com/Exia-thd/DAI-nexus/issues)
+- [GitHub Issues](https://github.com/Exia-thd/DAI-harness/issues)
 
 ---
 

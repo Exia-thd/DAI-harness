@@ -1,5 +1,5 @@
 #!/bin/bash
-# DAI Nexus Pre-Commit Validation Hook
+# DAI Harness Pre-Commit Validation Hook
 # Inspired by CCGS validate-commit.sh
 # 
 # Purpose: Validate git commit commands before execution
@@ -50,7 +50,7 @@ if ! echo "$COMMAND" | grep -qE '^git[[:space:]]+commit'; then
     exit 0
 fi
 
-echo "=== DAI Nexus Commit Validation ===" >&2
+echo "=== DAI Harness Commit Validation ===" >&2
 
 # Get staged files
 STAGED=$(git diff --cached --name-only 2>/dev/null)

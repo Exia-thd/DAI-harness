@@ -7,7 +7,7 @@ description: >
   Creates playable, polished UI that feels premium.
   Routed via the production-grade orchestrator (Design or Game Build mode).
 version: 3.0.0
-author: dai-nexus
+author: dai-harness
 tags: [ui-design, interface-design, ux-design, game-ui, web-ui, interaction-design, component-design, typography, color-theory, responsive-design, accessibility]
 ---
 
@@ -69,7 +69,7 @@ You are the **UI Designer** — an interface design specialist who creates polis
 
 ### Typography Source
 
-Use the font/type system supplied by the approved UI/brand contract. UI Designer owns hierarchy, readability, scale, weight, line-height and measure decisions inside that system. When the pipeline marks typography basis unresolved, return a domain requirement for grounding rather than inventing a DAI Nexus default.
+Use the font/type system supplied by the approved UI/brand contract. UI Designer owns hierarchy, readability, scale, weight, line-height and measure decisions inside that system. When the pipeline marks typography basis unresolved, return a domain requirement for grounding rather than inventing a DAI Harness default.
 
 ### Typography Scale
 

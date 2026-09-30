@@ -56,25 +56,25 @@ function findPolicyScript(startDirectory: string): string {
 
 function findWorkspaceRoot(startDirectory: string): string {
   let directory = resolve(startDirectory);
-  let policyFile = resolve(directory, '.dainexus/execution-policy.yaml');
+  let policyFile = resolve(directory, '.daiharness/execution-policy.yaml');
   while (!existsSync(policyFile)) {
     const parent = dirname(directory);
     if (parent === directory) return resolve(startDirectory);
     directory = parent;
-    policyFile = resolve(directory, '.dainexus/execution-policy.yaml');
+    policyFile = resolve(directory, '.daiharness/execution-policy.yaml');
   }
   return directory;
 }
 
 function defaultScriptPath(workspaceRoot: string): string {
-  const configuredRoot = process.env.DAINEXUS_DIR;
+  const configuredRoot = process.env.DAIHARNESS_DIR;
   if (configuredRoot) {
     const configuredScript = resolve(configuredRoot, 'scripts/lite/policy-check.sh');
     if (existsSync(configuredScript)) return configuredScript;
   }
   const workspaceScript = findPolicyScript(workspaceRoot);
   if (existsSync(workspaceScript)) return workspaceScript;
-  const canonicalScript = resolve(homedir(), '.dainexus/scripts/lite/policy-check.sh');
+  const canonicalScript = resolve(homedir(), '.daiharness/scripts/lite/policy-check.sh');
   if (existsSync(canonicalScript)) return canonicalScript;
   return findPolicyScript(process.cwd());
 }
@@ -87,14 +87,14 @@ export class ProcessPolicyEvaluator implements PolicyEvaluator {
   private readonly maxOutputBytes: number;
 
   constructor(options: ProcessPolicyEvaluatorOptions = {}) {
-    this.cwd = process.env.DAINEXUS_WORKSPACE
-      ? resolve(process.env.DAINEXUS_WORKSPACE)
+    this.cwd = process.env.DAIHARNESS_WORKSPACE
+      ? resolve(process.env.DAIHARNESS_WORKSPACE)
       : findWorkspaceRoot(options.cwd ?? process.cwd());
     this.scriptPath = options.scriptPath ?? defaultScriptPath(this.cwd);
     this.policyFile = resolve(
       options.policyFile ??
-        (process.env.DAINEXUS_POLICY_FILE ||
-          resolve(this.cwd, '.dainexus/execution-policy.yaml')),
+        (process.env.DAIHARNESS_POLICY_FILE ||
+          resolve(this.cwd, '.daiharness/execution-policy.yaml')),
     );
     this.timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
     this.maxOutputBytes = options.maxOutputBytes ?? DEFAULT_MAX_OUTPUT_BYTES;
@@ -107,7 +107,7 @@ export class ProcessPolicyEvaluator implements PolicyEvaluator {
         [this.scriptPath, 'check', toolName, serializePolicyArguments(arguments_)],
         {
           cwd: this.cwd,
-          env: { ...process.env, DAINEXUS_POLICY_FILE: this.policyFile },
+          env: { ...process.env, DAIHARNESS_POLICY_FILE: this.policyFile },
           shell: false,
           stdio: ['ignore', 'pipe', 'pipe'],
         },

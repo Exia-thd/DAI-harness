@@ -1,4 +1,4 @@
-# Task Breakdown: DAI Nexus Docs Hub
+# Task Breakdown: DAI Harness Docs Hub
 
 ## P0 — Contracts and safety
 
@@ -46,7 +46,7 @@
 |---|---|---|---|
 | P4-01 | Add `dai docs doctor` checks and exit codes | Unit/integration tests | Completed |
 | P4-02 | Convert wiki-sync scripts to compatibility shims | Existing script tests | Completed — existing scripts remain documented shims |
-| P4-03 | Add DAI Nexus and Pixelworld golden fixtures | Golden CI | Completed |
+| P4-03 | Add DAI Harness and Pixelworld golden fixtures | Golden CI | Completed |
 | P4-04 | Add browser and accessibility verification | Browser DOM/screenshot audit | Completed — direct tab traversal is adapter-limited |
 | P4-05 | Run detect-changes and independent review | Review verdict | Completed — no P0/P1 findings remain |
 

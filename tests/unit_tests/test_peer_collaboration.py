@@ -431,7 +431,7 @@ def test_collaboration_layout_rejects_symlinks(tmp_path: Path, layout: str) -> N
 def test_tmp_alias_ancestor_is_canonicalized_but_root_symlink_is_rejected(
     tmp_path: Path,
 ) -> None:
-    alias_root = Path("/tmp") / f"dai-nexus-peer-{tmp_path.name}"
+    alias_root = Path("/tmp") / f"dai-harness-peer-{tmp_path.name}"
     alias_root.mkdir()
     try:
         log = JsonlEventLog(alias_root, "session-1")

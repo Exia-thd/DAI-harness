@@ -1,6 +1,6 @@
-# DAI Nexus MCP Setup Guide
+# DAI Harness MCP Setup Guide
 
-> Complete guide to setting up DAI Nexus MCP (Model Context Protocol) for your AI IDE.
+> Complete guide to setting up DAI Harness MCP (Model Context Protocol) for your AI IDE.
 
 ## Table of Contents
 
@@ -25,16 +25,16 @@
 cd /path/to/your/project
 
 # Run the setup wizard
-bash dai-nexus/scripts/dainexus-mcp-setup.sh wizard
+bash dai-harness/scripts/daiharness-mcp-setup.sh wizard
 
 # Or use quick setup (all defaults)
-bash dai-nexus/scripts/dainexus-mcp-setup.sh setup
+bash dai-harness/scripts/daiharness-mcp-setup.sh setup
 ```
 
 ### Verify Installation
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --check
+bash dai-harness/scripts/daiharness-mcp-setup.sh --check
 ```
 
 Expected output:
@@ -42,7 +42,7 @@ Expected output:
 ━━━ MCP Status ━━━
   ➜ Project: /path/to/project
   ✓ Manifest: ✓
-  ✓ DAI Nexus Launcher: ✓
+  ✓ DAI Harness Launcher: ✓
   ✓ DAI memory: ✓ (code graph indexed at HEAD)
 ```
 
@@ -75,7 +75,7 @@ git --version     # Should show 2.x+
 ```bash
 # From your project directory
 cd /path/to/project
-bash dai-nexus/scripts/dainexus-mcp-setup.sh setup
+bash dai-harness/scripts/daiharness-mcp-setup.sh setup
 ```
 
 This automatically:
@@ -89,9 +89,9 @@ This automatically:
 ```json
 {
   "mcpServers": {
-    "dai-nexus": {
+    "dai-harness": {
       "command": "bash",
-      "args": ["/path/to/dai-nexus/scripts/dainexus-mcp-launcher.sh"]
+      "args": ["/path/to/dai-harness/scripts/daiharness-mcp-launcher.sh"]
     }
   }
 }
@@ -110,14 +110,14 @@ dai-memory init
 #### Verify Cursor Setup
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --check
+bash dai-harness/scripts/daiharness-mcp-setup.sh --check
 ```
 
 Look for:
 ```
   ➜ IDE: cursor
   ✓ Config: ✓
-  ✓ DAI Nexus: configured
+  ✓ DAI Harness: configured
 ```
 
 ---
@@ -128,7 +128,7 @@ Look for:
 
 ```bash
 cd /path/to/project
-bash dai-nexus/scripts/dainexus-mcp-setup.sh setup
+bash dai-harness/scripts/daiharness-mcp-setup.sh setup
 ```
 
 #### Option 2: Manual Setup
@@ -138,14 +138,14 @@ bash dai-nexus/scripts/dainexus-mcp-setup.sh setup
    - **Linux**: `~/.config/Claude/claude_desktop_config.json`
    - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
-2. Add dai-nexus server:
+2. Add dai-harness server:
 
 ```json
 {
   "mcpServers": {
-    "dai-nexus": {
+    "dai-harness": {
       "command": "bash",
-      "args": ["/absolute/path/to/dai-nexus/scripts/dainexus-mcp-launcher.sh"]
+      "args": ["/absolute/path/to/dai-harness/scripts/daiharness-mcp-launcher.sh"]
     }
   }
 }
@@ -164,41 +164,41 @@ dai-memory init
 #### Verify Claude Setup
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --check
+bash dai-harness/scripts/daiharness-mcp-setup.sh --check
 ```
 
 ---
 
 ### Antigravity CLI
 
-Antigravity CLI cũng dùng **canonical MCP server** tại `~/.dainexus/mcp-server/src/index.ts`. Không có server riêng cho Antigravity.
+Antigravity CLI cũng dùng **canonical MCP server** tại `~/.daiharness/mcp-server/src/index.ts`. Không có server riêng cho Antigravity.
 
 #### Canonical Server Rule
 
 ```
-~/.dainexus/mcp-server/src/index.ts  ← CANONICAL (duy nhất, shared)
+~/.daiharness/mcp-server/src/index.ts  ← CANONICAL (duy nhất, shared)
 │
 ├── ~/.cursor/mcp.json              → Cursor points here
 ├── ~/.claude/settings.json        → Claude Code points here
-└── ~/.cursor/projects/<hash>/mcps/user-dai-nexus/  → Antigravity reads manifest for CONTEXT, uses canonical server
+└── ~/.cursor/projects/<hash>/mcps/user-dai-harness/  → Antigravity reads manifest for CONTEXT, uses canonical server
 ```
 
 **Điểm quan trọng:**
-- `.antigravity/mcp-manifest.json` chỉ chứa **project context** (workspace path, dai-nexus path) — nó KHÔNG chứa server code riêng
-- Antigravity launcher sử dụng `~/.dainexus/mcp-server/src/index.ts` — canonical server
+- `.antigravity/mcp-manifest.json` chỉ chứa **project context** (workspace path, dai-harness path) — nó KHÔNG chứa server code riêng
+- Antigravity launcher sử dụng `~/.daiharness/mcp-server/src/index.ts` — canonical server
 - Manifest/isolation theo project chỉ để Antigravity biết workspace hiện tại, không override global server path
 
 #### Automated Setup
 
 ```bash
 cd /path/to/project
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --antigravity
+bash dai-harness/scripts/daiharness-mcp-setup.sh --antigravity
 ```
 
 Hoặc setup tất cả platforms cùng lúc:
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh
+bash dai-harness/scripts/daiharness-mcp-setup.sh
 ```
 
 #### How It Works
@@ -206,11 +206,11 @@ bash dai-nexus/scripts/dainexus-mcp-setup.sh
 ```
 Antigravity reads .antigravity/mcp-manifest.json
                     ↓
-        Reads workspace path + dai-nexus path (CONTEXT ONLY)
+        Reads workspace path + dai-harness path (CONTEXT ONLY)
                     ↓
-        Starts dainexus-mcp-launcher.sh
+        Starts daiharness-mcp-launcher.sh
                     ↓
-        Launcher uses ~/.dainexus/mcp-server/src/index.ts (CANONICAL)
+        Launcher uses ~/.daiharness/mcp-server/src/index.ts (CANONICAL)
                     ↓
         MCP server starts with correct workspace context
 ```
@@ -218,7 +218,7 @@ Antigravity reads .antigravity/mcp-manifest.json
 #### Verify Antigravity Setup
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --check
+bash dai-harness/scripts/daiharness-mcp-setup.sh --check
 ```
 
 Expected output:
@@ -227,16 +227,16 @@ Expected output:
   ➜ Project: /path/to/project
 
   ✓ Cursor: ~/.cursor/mcp.json
-    dai-nexus: CONFIGURED
+    dai-harness: CONFIGURED
     dai-memory: CONFIGURED
 
   ✓ Claude Code: ~/.claude/settings.json
-    dai-nexus: CONFIGURED
+    dai-harness: CONFIGURED
     dai-memory: CONFIGURED
 
   ➜ Antigravity:
-    ✓ Server: ~/.cursor/projects/<hash>/mcps/user-dai-nexus/
-    ✓ dai-nexus: CONFIGURED
+    ✓ Server: ~/.cursor/projects/<hash>/mcps/user-dai-harness/
+    ✓ dai-harness: CONFIGURED
 
   ✓ Manifest: /path/to/project/.antigravity/mcp-manifest.json
 ```
@@ -248,29 +248,29 @@ Nếu cần config thủ công, launcher vẫn phải dùng canonical server:
 ```json
 {
   "mcpServers": {
-    "dai-nexus": {
+    "dai-harness": {
       "command": "bash",
-      "args": ["/path/to/dai-nexus/scripts/dainexus-mcp-launcher.sh"],
+      "args": ["/path/to/dai-harness/scripts/daiharness-mcp-launcher.sh"],
       "env": {
-        "DAINEXUS_WORKSPACE": "${workspaceFolder}"
+        "DAIHARNESS_WORKSPACE": "${workspaceFolder}"
       }
     }
   }
 }
 ```
 
-**⚠️ Never point Antigravity to a submodule DAI Nexus path.** Luôn dùng canonical server hoặc launcher đã được setup script configure đúng.
+**⚠️ Never point Antigravity to a submodule DAI Harness path.** Luôn dùng canonical server hoặc launcher đã được setup script configure đúng.
 
 ---
 
 ### OpenAI Codex CLI
 
-Codex CLI cũng dùng **canonical MCP server** tại `~/.dainexus/mcp-server/src/index.ts`. Config file: `~/.codex/config.toml` (TOML format).
+Codex CLI cũng dùng **canonical MCP server** tại `~/.daiharness/mcp-server/src/index.ts`. Config file: `~/.codex/config.toml` (TOML format).
 
 #### Canonical Server Rule
 
 ```
-~/.dainexus/mcp-server/src/index.ts  ← CANONICAL (duy nhất, shared)
+~/.daiharness/mcp-server/src/index.ts  ← CANONICAL (duy nhất, shared)
 │
 ├── ~/.cursor/mcp.json              → Cursor
 ├── ~/.claude/settings.json        → Claude Code
@@ -282,36 +282,36 @@ Codex CLI cũng dùng **canonical MCP server** tại `~/.dainexus/mcp-server/src
 
 ```bash
 # Codex CLI only
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --codex
+bash dai-harness/scripts/daiharness-mcp-setup.sh --codex
 ```
 
 Hoặc setup tất cả platforms cùng lúc:
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh
+bash dai-harness/scripts/daiharness-mcp-setup.sh
 ```
 
 #### Verify Codex Setup
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --check
+bash dai-harness/scripts/daiharness-mcp-setup.sh --check
 ```
 
 Hoặc dùng Codex CLI native:
 
 ```bash
 codex mcp list
-codex mcp get dai-nexus
+codex mcp get dai-harness
 ```
 
 Expected output trong config:
 ```toml
-[mcp_servers.dainexus]
+[mcp_servers.daiharness]
 enabled = true
 transport = { type = "stdio" }
-command = "~/.dainexus/mcp-server/node_modules/.bin/tsx"
-args = ["~/.dainexus/mcp-server/src/index.ts"]
-env = { DAINEXUS_WORKSPACE = "$PROJECT_ROOT" }
+command = "~/.daiharness/mcp-server/node_modules/.bin/tsx"
+args = ["~/.daiharness/mcp-server/src/index.ts"]
+env = { DAIHARNESS_WORKSPACE = "$PROJECT_ROOT" }
 
 [mcp_servers.dai-memory]
 enabled = true
@@ -333,14 +333,14 @@ If you use multiple AI IDEs with the same project, here's how it works:
 ```
 Project/
 ├── .antigravity/mcp-manifest.json    # Antigravity reads this
-├── .dainexus/                    # Shared DAI Nexus state
+├── .daiharness/                    # Shared DAI Harness state
 └── .memory/                         # DAI memory: code graph + project memory
 
 ~/.cursor/mcp.json                   # Cursor MCP config
 ~/.claude/settings.json             # Claude Code MCP config
 ~/.codex/config.toml                 # OpenAI Codex CLI MCP config
 ~/.cache/dai-harness/dai-memory/     # DAI memory engine, one directory per pinned commit
-~/.dainexus/mcp-server/           # CANONICAL MCP server (shared by all)
+~/.daiharness/mcp-server/           # CANONICAL MCP server (shared by all)
 ```
 
 ### Setup Steps
@@ -349,12 +349,12 @@ Project/
 
 ```bash
 cd /path/to/project
-bash dai-nexus/scripts/dainexus-mcp-setup.sh setup
+bash dai-harness/scripts/daiharness-mcp-setup.sh setup
 ```
 
 This creates the shared files:
 - `.antigravity/mcp-manifest.json`
-- `.dainexus/fw-mcp-launcher.sh`
+- `.daiharness/fw-mcp-launcher.sh`
 - `.memory/` (after `dai-memory init`: code graph + project memory)
 
 #### Step 2: Restart All IDEs
@@ -373,8 +373,8 @@ Each IDE will automatically detect the workspace and load the correct context.
 
 | IDE | Config Location | Auto-Detection |
 |-----|---------------|-----------------|
-| **Cursor** | `~/.cursor/mcp.json` | Updated by `dainexus-mcp-setup.sh` |
-| **Claude Desktop** | `~/.config/Claude/...` | Updated by `dainexus-mcp-setup.sh` |
+| **Cursor** | `~/.cursor/mcp.json` | Updated by `daiharness-mcp-setup.sh` |
+| **Claude Desktop** | `~/.config/Claude/...` | Updated by `daiharness-mcp-setup.sh` |
 | **Antigravity** | `.antigravity/` | Reads manifest automatically |
 
 ### Workspace Detection Per IDE
@@ -382,14 +382,14 @@ Each IDE will automatically detect the workspace and load the correct context.
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ Cursor                                                      │
-│   ↓ ~/.cursor/mcp.json → dainexus-mcp-launcher.sh      │
+│   ↓ ~/.cursor/mcp.json → daiharness-mcp-launcher.sh      │
 │   ↓ Workspace: git rev-parse --show-toplevel               │
 │   ↓ Project context loaded                                 │
 └─────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
 │ Claude Desktop                                              │
-│   ↓ ~/.config/Claude/... → dainexus-mcp-launcher.sh    │
+│   ↓ ~/.config/Claude/... → daiharness-mcp-launcher.sh    │
 │   ↓ Workspace: git rev-parse --show-toplevel               │
 │   ↓ Project context loaded                                 │
 └─────────────────────────────────────────────────────────────┘
@@ -397,8 +397,8 @@ Each IDE will automatically detect the workspace and load the correct context.
 ┌─────────────────────────────────────────────────────────────┐
 │ Antigravity                                                 │
 │   ↓ Reads .antigravity/mcp-manifest.json                   │
-│   ↓ Sets DAINEXUS_WORKSPACE env var                     │
-│   ↓ dainexus-mcp-launcher.sh uses this env var          │
+│   ↓ Sets DAIHARNESS_WORKSPACE env var                     │
+│   ↓ daiharness-mcp-launcher.sh uses this env var          │
 │   ↓ Project context loaded                                 │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -424,42 +424,42 @@ When you switch from one IDE to another:
 
 ```bash
 # Check which IDEs are configured
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --check
+bash dai-harness/scripts/daiharness-mcp-setup.sh --check
 
 # Run diagnostics for detailed view
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --diagnose
+bash dai-harness/scripts/daiharness-mcp-setup.sh --diagnose
 ```
 
 ---
 
 ## Commands Reference
 
-### dainexus-mcp-setup.sh
+### daiharness-mcp-setup.sh
 
 Unified MCP setup for Cursor + Claude Code + Antigravity + OpenAI Codex CLI.
 
 ```bash
 # Setup all platforms
-bash dai-nexus/scripts/dainexus-mcp-setup.sh
+bash dai-harness/scripts/daiharness-mcp-setup.sh
 
 # Setup individual platform
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --cursor
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --claude-code
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --antigravity
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --codex
+bash dai-harness/scripts/daiharness-mcp-setup.sh --cursor
+bash dai-harness/scripts/daiharness-mcp-setup.sh --claude-code
+bash dai-harness/scripts/daiharness-mcp-setup.sh --antigravity
+bash dai-harness/scripts/daiharness-mcp-setup.sh --codex
 
 # Force re-generate MCP server
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --force
+bash dai-harness/scripts/daiharness-mcp-setup.sh --force
 
 # Status & diagnostics
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --check
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --diagnose
+bash dai-harness/scripts/daiharness-mcp-setup.sh --check
+bash dai-harness/scripts/daiharness-mcp-setup.sh --diagnose
 
 # Remove MCP setup from all platforms
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --uninstall
+bash dai-harness/scripts/daiharness-mcp-setup.sh --uninstall
 
 # Help
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --help
+bash dai-harness/scripts/daiharness-mcp-setup.sh --help
 ```
 
 ### DAI memory CLI
@@ -490,7 +490,7 @@ dai-memory group list
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `DAINEXUS_WORKSPACE` | Override workspace detection | Auto-detected |
+| `DAIHARNESS_WORKSPACE` | Override workspace detection | Auto-detected |
 | `MCP_WORKSPACE_ROOT` | MCP standard workspace | Auto-detected |
 | `FW_MCP_VERBOSE` | Enable debug output | 0 |
 | `FW_MCP_FORCE` | Force operations | 0 |
@@ -499,10 +499,10 @@ dai-memory group list
 
 ```bash
 # Enable verbose output
-FW_MCP_VERBOSE=1 bash dainexus-mcp-setup.sh --diagnose
+FW_MCP_VERBOSE=1 bash daiharness-mcp-setup.sh --diagnose
 
 # Or use --verbose flag
-bash dainexus-mcp-setup.sh --diagnose
+bash daiharness-mcp-setup.sh --diagnose
 ```
 
 ---
@@ -517,12 +517,12 @@ bash dainexus-mcp-setup.sh --diagnose
 
 1. Check status:
    ```bash
-   bash dainexus-mcp-setup.sh --check
+   bash daiharness-mcp-setup.sh --check
    ```
 
 2. Run diagnostics:
    ```bash
-   bash dainexus-mcp-setup.sh --diagnose
+   bash daiharness-mcp-setup.sh --diagnose
    ```
 
 3. Restart IDE
@@ -539,25 +539,25 @@ On Windows, path structures and command execution differ from macOS. If you enco
 
 2. **TypeScript Execution (tsx)**:
    - Avoid using bash-style paths `/c/Users/...` directly as the executable `command` on Windows.
-   - Instead, configure the server to run with `"command": "npx"` and `"args": ["tsx", "C:/Users/<YourUsername>/.dainexus/mcp-server/src/index.ts"]`.
+   - Instead, configure the server to run with `"command": "npx"` and `"args": ["tsx", "C:/Users/<YourUsername>/.daiharness/mcp-server/src/index.ts"]`.
 
 3. **Claude Code Hooks**:
    - For Windows environments, prefix hook script paths with `bash` to ensure they execute correctly under non-POSIX shells:
      ```json
      "hooks": {
-       "PostMessage": "bash D:/path/to/dai-nexus/scripts/dainexus-memory-hook.sh tick",
-       "PostToolUse": "bash D:/path/to/dai-nexus/scripts/dainexus-memory-hook.sh checkpoint"
+       "PostMessage": "bash D:/path/to/dai-harness/scripts/daiharness-memory-hook.sh tick",
+       "PostToolUse": "bash D:/path/to/dai-harness/scripts/daiharness-memory-hook.sh checkpoint"
      }
      ```
 
 4. **OpenAI Codex CLI (`config.toml` on Windows)**:
    - Ensure the TOML configurations use Windows paths and native tools:
      ```toml
-     [mcp_servers.dainexus]
+     [mcp_servers.daiharness]
      enabled = true
      transport = { type = "stdio" }
      command = "npx"
-     args = ["tsx", "C:/Users/<YourUsername>/.dainexus/mcp-server/src/index.ts"]
+     args = ["tsx", "C:/Users/<YourUsername>/.daiharness/mcp-server/src/index.ts"]
 
      [mcp_servers.dai-memory]
      enabled = true
@@ -569,11 +569,11 @@ On Windows, path structures and command execution differ from macOS. If you enco
 5. **Antigravity CLI & App (`mcp_config.json` on Windows)**:
    - Ensure both `~/.gemini/config/mcp_config.json` and `~/.gemini/antigravity-cli/mcp_config.json` configure the servers correctly:
      ```json
-     "dai-nexus": {
+     "dai-harness": {
        "command": "npx",
        "args": [
          "tsx",
-         "C:/Users/<YourUsername>/.dainexus/mcp-server/src/index.ts"
+         "C:/Users/<YourUsername>/.daiharness/mcp-server/src/index.ts"
        ]
      },
      "dai-memory": {
@@ -593,14 +593,14 @@ On Windows, path structures and command execution differ from macOS. If you enco
 
 1. Set workspace explicitly:
    ```bash
-   export DAINEXUS_WORKSPACE=/path/to/project
-   bash dainexus-mcp-setup.sh --check
+   export DAIHARNESS_WORKSPACE=/path/to/project
+   bash daiharness-mcp-setup.sh --check
    ```
 
 2. Run from project directory:
    ```bash
    cd /path/to/project
-   bash dainexus-mcp-setup.sh --check
+   bash daiharness-mcp-setup.sh --check
    ```
 
 ### Code Graph Index Stale
@@ -619,7 +619,7 @@ dai-memory ingest --force
 
 **Solution:** Re-run setup:
 ```bash
-bash dainexus-mcp-setup.sh setup --force
+bash daiharness-mcp-setup.sh setup --force
 ```
 
 ### npm Install Failures
@@ -647,25 +647,25 @@ bash dainexus-mcp-setup.sh setup --force
 
 ## FAQ
 
-### Q: What's the difference between DAI Nexus and DAI memory?
+### Q: What's the difference between DAI Harness and DAI memory?
 
 **A:**
-- **DAI Nexus** provides project intelligence, skills, and orchestration
+- **DAI Harness** provides project intelligence, skills, and orchestration
 - **DAI memory** (`vendor/dai-memory`, a submodule of the plugin's own repository) provides the code graph, context and impact analysis, and the project's recorded memory
 
 The harness installs and registers DAI memory for you.
 
-### Q: Can I use just DAI memory without DAI Nexus?
+### Q: Can I use just DAI memory without DAI Harness?
 
 **A:** Yes. It is a Claude Code plugin in its own right; install it from its repository and it registers its own `dai-memory` MCP server.
 
-### Q: How do I update DAI Nexus MCP?
+### Q: How do I update DAI Harness MCP?
 
 **A:**
 ```bash
-cd dai-nexus
+cd dai-harness
 git pull origin main
-bash scripts/dainexus-mcp-setup.sh setup --force
+bash scripts/daiharness-mcp-setup.sh setup --force
 ```
 
 ### Q: Multiple projects - do I need separate configs?
@@ -680,21 +680,21 @@ bash scripts/dainexus-mcp-setup.sh setup --force
 
 **A:**
 ```bash
-bash dainexus-mcp-setup.sh --uninstall
+bash daiharness-mcp-setup.sh --uninstall
 ```
 
-### Q: Can I use DAI Nexus with multiple IDEs simultaneously?
+### Q: Can I use DAI Harness with multiple IDEs simultaneously?
 
 **A:** Yes! Setup once, use everywhere:
 
 ```bash
 # Setup once
-bash dai-nexus/scripts/dainexus-mcp-setup.sh setup
+bash dai-harness/scripts/daiharness-mcp-setup.sh setup
 
 # Restart all IDEs (Cursor + Claude Desktop + Antigravity)
 # They all share the same:
 #   - .antigravity/mcp-manifest.json
-#   - .dainexus/ (state)
+#   - .daiharness/ (state)
 #   - .memory/ (code graph + project memory)
 ```
 
@@ -706,7 +706,7 @@ See [Multi-IDE Setup](#multi-ide-setup-cursor--claude--antigravity) section abov
 - **Manifest**: `.antigravity/mcp-manifest.json`
 - **Code graph + memory**: `.memory/` (in project directory, gitignored)
 - **Memory engine**: outside the repository, `python3 scripts/lite/dai_memory.py where`
-- **Settings**: `.dainexus/settings.env`
+- **Settings**: `.daiharness/settings.env`
 
 All are in your project directory and can be committed to git.
 
@@ -714,7 +714,7 @@ All are in your project directory and can be committed to git.
 
 ## Support
 
-- **GitHub Issues**: [Report bugs](https://github.com/Exia-thd/DAI-nexus/issues)
+- **GitHub Issues**: [Report bugs](https://github.com/Exia-thd/DAI-harness/issues)
 - **Documentation**: [docs/SETUP-REFERENCE.md](SETUP-REFERENCE.md)
 
 ---

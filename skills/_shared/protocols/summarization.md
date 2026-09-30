@@ -32,7 +32,7 @@ summarization:
   threshold: 0.7                # compress when > 70% of max context used
   keep_recent: 5                # keep last 5 message pairs intact (question + answer)
   strategy: structured_summary  # structured_summary | truncate | offload_filesystem
-  offload_path: .dainexus/context-cache/
+  offload_path: .daiharness/context-cache/
   min_messages_before_trigger: 10  # don't summarize very short conversations
 ```
 
@@ -91,10 +91,10 @@ Best for Full Build pipelines where future skills may need older context.
 Trigger: context_tokens > threshold × max_context_tokens
 
 Procedure:
-  1. Write full conversation to: .dainexus/context-cache/{session-id}-{timestamp}.md
+  1. Write full conversation to: .daiharness/context-cache/{session-id}-{timestamp}.md
   2. Apply Strategy 1 (structured summary) to active context
   3. Add filesystem reference:
-     "[Full context saved to .dainexus/context-cache/{filename}]"
+     "[Full context saved to .daiharness/context-cache/{filename}]"
   4. Any future skill can read the offloaded file if needed
 ```
 

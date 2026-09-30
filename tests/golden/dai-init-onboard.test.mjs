@@ -18,7 +18,7 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 // and fails with ENOENT on a bare `npm`. runtime-smoke already does this.
 const npm = process.platform === "win32" ? "npm.cmd" : "npm";
 const cliPath = join(repoRoot, "src/cli/dist/index.js");
-const fixtureRoot = mkdtempSync(join(tmpdir(), "dai-nexus-golden-"));
+const fixtureRoot = mkdtempSync(join(tmpdir(), "dai-harness-golden-"));
 const startedAt = Date.now();
 
 function runDai(...args) {
@@ -55,8 +55,8 @@ try {
   const init = runDai("--json", "init", target);
   assertEnvelope(init, "dai.init");
   assert.equal(init.envelope.data.status, "created");
-  assert.deepEqual(readdirSync(join(target, ".dainexus")), ["project.json"]);
-  const manifestPath = join(target, ".dainexus", "project.json");
+  assert.deepEqual(readdirSync(join(target, ".daiharness")), ["project.json"]);
+  const manifestPath = join(target, ".daiharness", "project.json");
   const manifestBytes = readFileSync(manifestPath, "utf8");
 
   const initAgain = runDai("--json", "init", target);
@@ -87,7 +87,7 @@ try {
   const onboard = runDai("--json", "onboard", target);
   assertEnvelope(onboard, "dai.onboard");
   assert.equal(onboard.envelope.data.status, "created");
-  const profilePath = join(target, ".dainexus", "project-profile.json");
+  const profilePath = join(target, ".daiharness", "project-profile.json");
   const profileBytes = readFileSync(profilePath, "utf8");
   assert.deepEqual(JSON.parse(profileBytes), {
     schema_version: 1,

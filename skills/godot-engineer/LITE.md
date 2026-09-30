@@ -10,7 +10,7 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Project structure contains a valid main project configuration | `cat project.godot` | ... | run the check command and paste output |
-| Project-specific tech stack and baseline profile are defined | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project-specific tech stack and baseline profile are defined | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 | Active scripts, scene files, or resource catalogs are indexed | `find . -name "*.gd" -o -name "*.tscn" -o -name "*.tres"` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Godot Engineer Domain Slots)
@@ -27,14 +27,14 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground the Godot engine workspace configurations
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 head -n 5 project.godot
 ```
 ```ini
 config_version=5
 
 [application]
-config/name="DAI Nexus Godot RPG"
+config/name="DAI Harness Godot RPG"
 run/main_scene="res://scenes/main.tscn"
 ```
 

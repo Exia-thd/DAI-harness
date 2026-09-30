@@ -21,7 +21,7 @@ tags: [ml, ai, llm, data-science, optimization, analytics, ab-testing, prompt-en
 
 ## Engagement Mode
 
-!`cat .dainexus/settings.md 2>/dev/null || echo "No settings — using Standard"`
+!`cat .daiharness/settings.md 2>/dev/null || echo "No settings — using Standard"`
 
 | Mode | Behavior |
 |------|----------|
@@ -106,7 +106,7 @@ def calculate_monthly_cost(
 | Input | Status | What Data Scientist Needs |
 |-------|--------|---------------------------|
 | Source code with AI/ML/LLM usage | Critical | API calls, model configs, prompt templates, token flows |
-| `.dainexus/product-manager/` | Degraded | Business context, success criteria, user personas |
+| `.daiharness/product-manager/` | Degraded | Business context, success criteria, user personas |
 | `infrastructure/monitoring/` | Degraded | Current metrics, cost data, latency baselines |
 | Architecture docs | Degraded | Service boundaries, data flow, dependency map |
 | Analytics/event data | Optional | Usage patterns, user behavior, experiment history |
@@ -115,7 +115,7 @@ def calculate_monthly_cost(
 
 All artifacts go into:
 ```
-.dainexus/data-scientist/
+.daiharness/data-scientist/
     analysis/          (system-audit.md, optimization-opportunities.md, cost-model.md)
     llm-optimization/  (prompt-library/, token-analysis.md, caching-strategy.md, quality-metrics.md)
     experiments/       (framework/, studies/, experiment-registry.md)

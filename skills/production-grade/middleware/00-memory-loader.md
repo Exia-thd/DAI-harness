@@ -23,7 +23,7 @@ MAX_BA_SCOPE_TOKENS=500
 # =============================================================================
 
 # Guardrail: Set safe defaults if tokens env var not set
-DAINEXUS_MAX_INJECTION_TOKENS="${DAINEXUS_MAX_INJECTION_TOKENS:-2000}"
+DAIHARNESS_MAX_INJECTION_TOKENS="${DAIHARNESS_MAX_INJECTION_TOKENS:-2000}"
 INJECTED_TOKEN_COUNT=0
 
 # Helper: Truncate file to max tokens (rough estimate: ~4 chars per token)
@@ -56,7 +56,7 @@ add_section() {
 
   # Guardrail: Check if adding this section would exceed token budget
   local projected_total=$((INJECTED_TOKEN_COUNT + section_tokens))
-  if [ "$projected_total" -gt "$DAINEXUS_MAX_INJECTION_TOKENS" ]; then
+  if [ "$projected_total" -gt "$DAIHARNESS_MAX_INJECTION_TOKENS" ]; then
     echo ""
     echo "# [${label}: skipped — would exceed token budget]"
     return 1
@@ -73,11 +73,11 @@ add_section() {
 # =============================================================================
 HANDOVER_CONTENT="NOT_FOUND"
 
-if [ -f ".dainexus/memory-bank/HANDOVER.md" ]; then
-  HANDOVER_CONTENT=$(truncate_to_tokens ".dainexus/memory-bank/HANDOVER.md" "$MAX_HANDOVER_TOKENS")
-elif [ -d ".dainexus/memory-bank" ]; then
+if [ -f ".daiharness/memory-bank/HANDOVER.md" ]; then
+  HANDOVER_CONTENT=$(truncate_to_tokens ".daiharness/memory-bank/HANDOVER.md" "$MAX_HANDOVER_TOKENS")
+elif [ -d ".daiharness/memory-bank" ]; then
   # Fallback: find most recent timestamped handover
-  latest_handover=$(ls -t .dainexus/memory-bank/handover-*.md 2>/dev/null | head -1)
+  latest_handover=$(ls -t .daiharness/memory-bank/handover-*.md 2>/dev/null | head -1)
   if [ -n "$latest_handover" ] && [ -f "$latest_handover" ]; then
     HANDOVER_CONTENT=$(truncate_to_tokens "$latest_handover" "$MAX_HANDOVER_TOKENS")
   fi
@@ -90,8 +90,8 @@ add_section "HANDOVER" "$HANDOVER_CONTENT" "$MAX_HANDOVER_TOKENS"
 # =============================================================================
 CONV_SUMMARY_CONTENT="NOT_FOUND"
 
-if [ -f ".dainexus/subagent-context/CONVERSATION_SUMMARY.md" ]; then
-  CONV_SUMMARY_CONTENT=$(truncate_to_tokens ".dainexus/subagent-context/CONVERSATION_SUMMARY.md" "$MAX_CONVERSATION_TOKENS")
+if [ -f ".daiharness/subagent-context/CONVERSATION_SUMMARY.md" ]; then
+  CONV_SUMMARY_CONTENT=$(truncate_to_tokens ".daiharness/subagent-context/CONVERSATION_SUMMARY.md" "$MAX_CONVERSATION_TOKENS")
 fi
 
 add_section "CONVERSATION SUMMARY" "$CONV_SUMMARY_CONTENT" "$MAX_CONVERSATION_TOKENS"
@@ -101,8 +101,8 @@ add_section "CONVERSATION SUMMARY" "$CONV_SUMMARY_CONTENT" "$MAX_CONVERSATION_TO
 # =============================================================================
 ACTIVECONTEXT_CONTENT="NOT_FOUND"
 
-if [ -f ".dainexus/memory-bank/activeContext.md" ]; then
-  ACTIVECONTEXT_CONTENT=$(truncate_to_tokens ".dainexus/memory-bank/activeContext.md" "$MAX_ACTIVECONTEXT_TOKENS")
+if [ -f ".daiharness/memory-bank/activeContext.md" ]; then
+  ACTIVECONTEXT_CONTENT=$(truncate_to_tokens ".daiharness/memory-bank/activeContext.md" "$MAX_ACTIVECONTEXT_TOKENS")
 fi
 
 add_section "ACTIVE CONTEXT" "$ACTIVECONTEXT_CONTENT" "$MAX_ACTIVECONTEXT_TOKENS"
@@ -128,8 +128,8 @@ add_section "MEM0 RECENTS" "$MEM0_CONTENT" "$MAX_MEM0_TOKENS"
 # =============================================================================
 BA_SCOPE_CONTENT="NOT_FOUND"
 
-if [ -f ".dainexus/business-analyst/handoff/ba-package.md" ]; then
-  BA_SCOPE_CONTENT=$(truncate_to_tokens ".dainexus/business-analyst/handoff/ba-package.md" "$MAX_BA_SCOPE_TOKENS")
+if [ -f ".daiharness/business-analyst/handoff/ba-package.md" ]; then
+  BA_SCOPE_CONTENT=$(truncate_to_tokens ".daiharness/business-analyst/handoff/ba-package.md" "$MAX_BA_SCOPE_TOKENS")
   add_section "BA SCOPE" "$BA_SCOPE_CONTENT" "$MAX_BA_SCOPE_TOKENS"
 fi
 
@@ -137,5 +137,5 @@ fi
 # Summary (for debugging)
 # =============================================================================
 echo ""
-echo "# [Memory injection: ~${INJECTED_TOKEN_COUNT} tokens / ${DAINEXUS_MAX_INJECTION_TOKENS} max]"
+echo "# [Memory injection: ~${INJECTED_TOKEN_COUNT} tokens / ${DAIHARNESS_MAX_INJECTION_TOKENS} max]"
 ```

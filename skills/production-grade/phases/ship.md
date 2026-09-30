@@ -23,7 +23,7 @@ Context:
 - Read .production-grade.yaml for paths and preferences.
 - Generate: Terraform/Pulumi, K8s manifests (if microservices), CI/CD pipelines, monitoring dashboards.
 - Write canonical automation to project root: infrastructure/, scripts/ci/, scripts/; hosted-provider adapters only when explicitly requested
-- Write workspace artifacts to: .dainexus/devops/
+- Write workspace artifacts to: .daiharness/devops/
 - DO NOT define SLOs — add placeholder: "SLO thresholds defined by SRE."
 - DO NOT write runbooks — SRE writes runbooks to docs/runbooks/.
 - Validate: terraform validate, pipeline syntax lint.
@@ -37,7 +37,7 @@ Update task.md: T7 status → completed
 Update task.md: T8 status → in_progress
 
 Context:
-- Read HARDEN findings from workspace: .dainexus/security-engineer/, code-reviewer/, qa-engineer/
+- Read HARDEN findings from workspace: .daiharness/security-engineer/, code-reviewer/, qa-engineer/
 - Focus on Critical and High severity findings only.
 - For each finding:
   1. Read the affected file
@@ -64,7 +64,7 @@ Context:
 - Define SLIs/SLOs per service, error budgets, burn-rate alerts.
 - Design chaos engineering scenarios and game-day playbook.
 - Write runbooks to project root: docs/runbooks/
-- Write workspace artifacts to: .dainexus/sre/
+- Write workspace artifacts to: .daiharness/sre/
 
 Update task.md: T9 status → completed
 ```
@@ -83,7 +83,7 @@ Context:
 - Consume `PIPELINE_CONTEXT` product metrics/cost/quality constraints and AI-related risk signals.
 - Optimize: prompt engineering, token usage, semantic caching, fallback chains.
 - Design: A/B testing infrastructure, experiment framework, data pipeline.
-- Write workspace artifacts to: .dainexus/data-scientist/
+- Write workspace artifacts to: .daiharness/data-scientist/
 
 Update task.md: T10 status → completed
 ```

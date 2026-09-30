@@ -7,7 +7,7 @@
 ## Execution
 
 ```
-1. Update .dainexus/task.md with skill completion status
+1. Update .daiharness/task.md with skill completion status
 
 2. Emit session lifecycle hook:
    TASK_COMPLETE(task_id, name, status, summary)

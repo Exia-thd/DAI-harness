@@ -23,9 +23,9 @@ from evidence_common import worktree_fingerprint  # noqa: E402
 
 
 DEFAULT_MANIFEST = ROOT / "docs" / "roadmap-completion.json"
-MANIFEST_SCHEMA = "dai-nexus-roadmap-completion/v2"
+MANIFEST_SCHEMA = "dai-harness-roadmap-completion/v2"
 REPORT_CONTRACT = {
-    "schema": "dai-nexus-roadmap-verification/v1",
+    "schema": "dai-harness-roadmap-verification/v1",
     "producer": "scripts/ci/verify-roadmap-completion.py",
 }
 AXES = {
@@ -50,8 +50,8 @@ VERIFIER_VOLATILE_MOUNTS = {
     ".pytest_cache": "pytest collection/result cache",
     ".hypothesis": "Hypothesis example database",
     ".ruff_cache": "Ruff analysis cache",
-    ".dainexus/audit": "runtime audit events emitted by MCP smoke tests",
-    "mcp/.dainexus": "MCP verification and quality-gate event ledgers",
+    ".daiharness/audit": "runtime audit events emitted by MCP smoke tests",
+    "mcp/.daiharness": "MCP verification and quality-gate event ledgers",
     "mcp/node_modules/.vite": "Vitest dependency and result cache",
     "src/cli/dist": "CLI build output exercised by the onboarding verifier",
 }
@@ -454,7 +454,7 @@ def main() -> int:
         ]
         source_before = worktree_fingerprint(ROOT)
         with tempfile.TemporaryDirectory(
-            prefix="dainexus-roadmap-replay-"
+            prefix="daiharness-roadmap-replay-"
         ) as temporary:
             replay_root = Path(temporary)
             workspace, snapshot_strategy = _clone_workspace(replay_root)

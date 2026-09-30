@@ -38,7 +38,7 @@
 ```
 Mode: Full Build
 Confidence: HIGH
-Reasoning: "Build a SaaS"是Full Build模式的明确触发短语。用户要求构建完整的软件即服务平台，包含任务管理核心功能，这需要全栈开发、架构设计、数据库设计和部署，属于DAI Nexus最完整的构建管道。
+Reasoning: "Build a SaaS"是Full Build模式的明确触发短语。用户要求构建完整的软件即服务平台，包含任务管理核心功能，这需要全栈开发、架构设计、数据库设计和部署，属于DAI Harness最完整的构建管道。
 ```
 
 ---
@@ -197,7 +197,7 @@ Reasoning: "Why is the login failing?"使用"Why is...failing"结构，是Debug�
 ```
 Mode: Harden
 Confidence: HIGH
-Reasoning: "Security audit"包含"audit"触发短语，明确要求对auth模块进行安全审查。根据DAI Nexus管道，安全审计路由到Security Engineer技能，执行OWASP标准检查。
+Reasoning: "Security audit"包含"audit"触发短语，明确要求对auth模块进行安全审查。根据DAI Harness管道，安全审计路由到Security Engineer技能，执行OWASP标准检查。
 ```
 
 **Missing (需要澄清)**:
@@ -361,7 +361,7 @@ Reasoning: "Optimize the database queries"使用"Optimize"触发短语，明确�
 ```
 Mode: Ship
 Confidence: HIGH
-Reasoning: "Deploy to Kubernetes"包含"deploy"触发短语和具体平台"Kubernetes"，根据DAI Nexus管道，部署相关任务路由到Ship模式（DevOps → SRE）。
+Reasoning: "Deploy to Kubernetes"包含"deploy"触发短语和具体平台"Kubernetes"，根据DAI Harness管道，部署相关任务路由到Ship模式（DevOps → SRE）。
 ```
 
 **Missing (需要澄清)**:
@@ -446,7 +446,7 @@ Chat Interpreter配置对所有10个测试用例的模式检测均表现**完美
 
 1. **触发短语匹配有效**: 配置中的触发短语（如"build a SaaS", "add", "Unity", "deploy", "research"等）与用户自然语言高度吻合
 2. **多维度提取完整**: 9维度提取框架能够全面捕获用户意图的关键要素
-3. **边界情况覆盖**: 测试用例覆盖了DAI Nexus的多种模式变体，包括Full Build、Feature、Game Build、Debug、Harden、AI Build、Research、Optimize、Ship和XR Build
+3. **边界情况覆盖**: 测试用例覆盖了DAI Harness的多种模式变体，包括Full Build、Feature、Game Build、Debug、Harden、AI Build、Research、Optimize、Ship和XR Build
 4. **澄清机制合理**: 每个需要额外信息的用例都提供了最多3个关键问题
 
 ### 潜在改进建议

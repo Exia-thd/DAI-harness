@@ -31,7 +31,7 @@ Format: `n. ACTION | TARGET | CHECK`
 ```bash
 eas --version
 fastlane --version
-cat .dainexus/budget.yaml
+cat .daiharness/budget.yaml
 ```
 
 ### Step 2: Execute Expo EAS pre-flight validation check

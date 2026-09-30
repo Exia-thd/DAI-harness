@@ -7,22 +7,22 @@
  *   node load-prompt-file.ts business-analyst system-prompt.md
  *
  * Environment:
- *   DAINEXUS_DIR - Override DAI Nexus directory (defaults to computed path)
+ *   DAIHARNESS_DIR - Override DAI Harness directory (defaults to computed path)
  */
 
 import { readFileSync, existsSync, readdirSync } from 'fs';
 import { resolve, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
-// Detect DAI Nexus directory
-function detectDaiNexusDir(): string {
-  // Check DAINEXUS_DIR env var first
-  if (process.env.DAINEXUS_DIR) {
-    return process.env.DAINEXUS_DIR;
+// Detect DAI Harness directory
+function detectDaiHarnessDir(): string {
+  // Check DAIHARNESS_DIR env var first
+  if (process.env.DAIHARNESS_DIR) {
+    return process.env.DAIHARNESS_DIR;
   }
 
   // Fall back to computing from script location
-  // scripts/load-prompt-file.ts -> scripts/.. -> dai-nexus root
+  // scripts/load-prompt-file.ts -> scripts/.. -> dai-harness root
   let currentDir: string;
   if (typeof __dirname !== 'undefined') {
     currentDir = __dirname;
@@ -52,8 +52,8 @@ interface LoadResult {
  * @returns Load result with content or error
  */
 export function loadPromptFile(skillName: string, promptName: string): LoadResult {
-  const daiNexusDir = detectDaiNexusDir();
-  const promptPath = resolve(daiNexusDir, 'skills', skillName, 'prompts', promptName);
+  const daiHarnessDir = detectDaiHarnessDir();
+  const promptPath = resolve(daiHarnessDir, 'skills', skillName, 'prompts', promptName);
 
   if (!existsSync(promptPath)) {
     return {
@@ -122,8 +122,8 @@ export function resolvePromptReference(skillMdPath: string, fileRef: string): Lo
  * List available prompt files for a skill
  */
 export function listPromptFiles(skillName: string): string[] {
-  const daiNexusDir = detectDaiNexusDir();
-  const promptsDir = resolve(daiNexusDir, 'skills', skillName, 'prompts');
+  const daiHarnessDir = detectDaiHarnessDir();
+  const promptsDir = resolve(daiHarnessDir, 'skills', skillName, 'prompts');
 
   if (!existsSync(promptsDir)) {
     return [];
@@ -152,7 +152,7 @@ Usage:
 
 Options:
   --json    Output JSON format
-  --env     Show resolved DAINEXUS_DIR and exit
+  --env     Show resolved DAIHARNESS_DIR and exit
 
 Examples:
   node load-prompt-file.ts business-analyst system-prompt.md
@@ -174,8 +174,8 @@ Examples:
   );
 
   if (showEnv) {
-    const dir = detectDaiNexusDir();
-    console.log(`DAINEXUS_DIR=${dir}`);
+    const dir = detectDaiHarnessDir();
+    console.log(`DAIHARNESS_DIR=${dir}`);
     process.exit(0);
   }
 
@@ -250,7 +250,7 @@ Examples:
 }
 
 // Export for programmatic use
-export { detectDaiNexusDir };
+export { detectDaiHarnessDir };
 
 // Run if called directly
 main();

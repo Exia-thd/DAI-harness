@@ -10,7 +10,7 @@ description: >
   API integration, or standalone Python script — even if tabular data is involved.
   Routed via the production-grade orchestrator (Feature/Custom mode).
 version: 1.1.0
-author: dai-nexus
+author: dai-harness
 tags: [excel, xlsx, csv, spreadsheet, financial-model, openpyxl, pandas, data-report]
 ---
 
@@ -643,7 +643,7 @@ def clean_and_export(input_file, output_file):
 ## Output Structure
 
 ```
-.dainexus/xlsx-engineer/
+.daiharness/xlsx-engineer/
 ├── [output-file].xlsx
 ├── data-cleaning/
 │   ├── input/

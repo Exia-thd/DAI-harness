@@ -2,7 +2,7 @@
 name: data-engineer
 description: "Builds data infrastructure — ETL/ELT pipelines, data warehousing, stream processing, data quality, orchestration (Airflow/Dagster), and analytics engineering (dbt). Use when the user asks to build data pipelines, set up ETL/ELT workflows, design a data warehouse, configure stream processing, or implement analytics engineering with dbt, Airflow, or Dagster."
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [data, etl, pipeline, warehouse, spark, airflow, dbt, streaming, data-quality, databricks, snowflake, bigquery]
 ---
 
@@ -540,7 +540,7 @@ WHERE order_id IS NOT NULL;
 ## Output Structure
 
 ```
-.dainexus/data-engineer/
+.daiharness/data-engineer/
 ├── architecture.md                  # Data architecture decisions
 ├── data-catalog/
 │   ├── sources.md                  # Data source inventory

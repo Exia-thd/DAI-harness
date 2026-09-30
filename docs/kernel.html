@@ -4,12 +4,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kernel — DAI Nexus</title>
+<title>Kernel — DAI Harness</title>
 <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 <nav class="nav"><div class="nav-inner">
-  <a href="./index.html" class="nav-brand"><span class="dot"></span> DAI Nexus <small>docs</small></a>
+  <a href="./index.html" class="nav-brand"><span class="dot"></span> DAI Harness <small>docs</small></a>
   <div class="nav-links"><a href="./index.html">Tổng quan</a><a href="./kernel.html" class=current>Kernel</a><a href="./skills.html">Skills</a><a href="./evidence.html">Bằng chứng</a><a href="./runtime.html">Runtime</a><a href="./memory.html">Memory</a><a href="./patterns.html">Tinh túy</a></div>
 </div></nav>
 <main>
@@ -17,7 +17,7 @@
 <section class="hero compact">
   <span class="tag">TẦNG 1</span>
   <h1>Kernel — <span class="accent">bộ luật bất biến</span></h1>
-  <p class="lead">8 file markdown, tổng ~6914 token, được
+  <p class="lead">8 file markdown, tổng ~6916 token, được
   <code>sync-kernel.py</code> gộp thành <code>CLAUDE.md</code> / <code>AGENTS.md</code> / <code>GEMINI.md</code>
   và nạp tự động ở mọi phiên. Budget cứng 7k token — vượt là build fail.</p>
 </section>
@@ -38,12 +38,12 @@
 
 ## Compact Skill Routing (Boot-time — no INDEX load required)
 | Task class | Skill overlay path |</code></pre></div>
-<p>Bước 5.5 là thứ phân biệt DAI Nexus với một tập prompt thường: <strong>nạp memory là bắt buộc</strong>,
+<p>Bước 5.5 là thứ phân biệt DAI Harness với một tập prompt thường: <strong>nạp memory là bắt buộc</strong>,
 có trần token cho từng nguồn, và quy tắc cắt bớt rõ ràng thay vì "đọc nếu thấy cần".</p>
 <div class="code-block"><div class="code-head"><span class="file">kernel/ENTRY.md:40</span></div><pre><code>## Boot Step 5.5 — Memory Load
 Load persistent memory before processing the request; total injection ≤ 500 tokens.
-1. Read `.dainexus/memory-bank/activeContext.md` if present (≤150 tokens; truncate beyond that).
-2. Call `dn_memory_search` with the keywords from the request (limit 3) and inject the top results (≤200 tokens). No results → skip silently.
+1. Read `.daiharness/memory-bank/activeContext.md` if present (≤150 tokens; truncate beyond that).
+2. Call `dh_memory_search` with the keywords from the request (limit 3) and inject the top results (≤200 tokens). No results → skip silently.
 3. Log `✓ Memory loaded: [N] sources injected`.
 
 **Truncation rule**: if a source exceeds its cap, take the first N characters (cap × 4) and append `...[truncated]`. Never exceed 500 tokens across all sources.
@@ -104,11 +104,11 @@ preserved_note = (
 print(
     f"Generated: {target_name} ({target_tokens} est. tokens) -&gt; [{status}]{preserved_note}"
 )</code></pre></div>
-<div class="callout tip"><div class="title">Hiện tại</div>Boot file ~6914 token / 7000 — còn khoảng 86 token dư cho luật mới.</div>
+<div class="callout tip"><div class="title">Hiện tại</div>Boot file ~6916 token / 7000 — còn khoảng 84 token dư cho luật mới.</div>
 
 </main>
 <footer>
-  <div><strong>DAI Nexus docs</strong> · sinh tự động từ source bằng <code>docs/build_docs.py</code></div>
+  <div><strong>DAI Harness docs</strong> · sinh tự động từ source bằng <code>docs/build_docs.py</code></div>
   <div>v0.9.4 · generated from source</div>
 </footer>
 </body>

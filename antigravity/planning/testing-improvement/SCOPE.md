@@ -37,7 +37,7 @@ Thiết lập một quy trình kiểm thử đa lớp khép kín, chuyển dịc
 
 ## 4. Constraints (Ràng Buộc)
 * **Thời gian:** Không giới hạn thời gian thực hiện. Chất lượng đầu ra là ưu tiên tuyệt đối.
-* **Công nghệ:** Phải tương thích hoàn toàn với nền tảng hiện có của DAI Nexus (Node.js/TypeScript, Python, Shell scripts).
+* **Công nghệ:** Phải tương thích hoàn toàn với nền tảng hiện có của DAI Harness (Node.js/TypeScript, Python, Shell scripts).
 * **Hiệu năng CI/CD:** Các bài test tự động nặng (như E2E Playwright hoặc Mutation Testing toàn diện) phải được thiết lập chạy song song hoặc chạy định kỳ (nightly build) để tránh làm nghẽn luồng Pull Request thông thường.
 
 ---

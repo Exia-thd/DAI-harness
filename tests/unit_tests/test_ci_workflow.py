@@ -45,7 +45,7 @@ def test_docs_continuity_is_in_docs_ci_and_required_release_checks():
     required = REQUIRED_CHECKS.read_text(encoding="utf-8")
     assert "run_required cli-build npm run build:cli" in required
     assert "run_required docs-continuity run_docs_continuity" in required
-    assert "DAINEXUS_DOCS_BASE_REF" in required
+    assert "DAIHARNESS_DOCS_BASE_REF" in required
     assert "origin/main...HEAD" in required
     assert 'docs gate . --base-ref "$base_ref" --json' in required
     assert "docs gate . --worktree --json" in required

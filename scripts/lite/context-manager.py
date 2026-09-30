@@ -13,7 +13,7 @@ from pathlib import Path
 
 EXECUTABLE_ROOT = Path(__file__).resolve().parents[2]
 WORKSPACE_ERROR: str | None = None
-workspace_value = os.environ.get("DAINEXUS_WORKSPACE")
+workspace_value = os.environ.get("DAIHARNESS_WORKSPACE")
 if workspace_value:
     try:
         candidate_workspace = Path(workspace_value).expanduser().resolve(strict=True)
@@ -24,7 +24,7 @@ if workspace_value:
         PROJECT_ROOT = candidate_workspace
     except OSError as error:
         PROJECT_ROOT = EXECUTABLE_ROOT
-        WORKSPACE_ERROR = f"DAINEXUS_WORKSPACE is invalid: {error}"
+        WORKSPACE_ERROR = f"DAIHARNESS_WORKSPACE is invalid: {error}"
 else:
     PROJECT_ROOT = EXECUTABLE_ROOT
 DEFAULT_CHAR_CAP = 2_000  # Approximation of the kernel's global 500-token cap.
@@ -77,10 +77,10 @@ def load_context(
     used = 0
     loaded_sources = 0
     files = (
-        (PROJECT_ROOT / ".dainexus/memory-bank/activeContext.md", 150 * 4, None),
-        (PROJECT_ROOT / ".dainexus/memory-bank/HANDOVER.md", 150 * 4, None),
+        (PROJECT_ROOT / ".daiharness/memory-bank/activeContext.md", 150 * 4, None),
+        (PROJECT_ROOT / ".daiharness/memory-bank/HANDOVER.md", 150 * 4, None),
         (
-            PROJECT_ROOT / ".dainexus/subagent-context/CONVERSATION_SUMMARY.md",
+            PROJECT_ROOT / ".daiharness/subagent-context/CONVERSATION_SUMMARY.md",
             100 * 4,
             10,
         ),
@@ -100,7 +100,7 @@ def load_context(
     mem0_path = EXECUTABLE_ROOT / "scripts/lite/dai_memory.py"
     if (
         keywords.strip()
-        and os.environ.get("DAINEXUS_SKIP_MEM0") != "1"
+        and os.environ.get("DAIHARNESS_SKIP_MEM0") != "1"
         and mem0_path.is_file()
         and used < char_cap
     ):
@@ -134,12 +134,14 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("load",))
     parser.add_argument(
-        "--keywords", default=os.environ.get("DAINEXUS_CONTEXT_KEYWORDS", "")
+        "--keywords", default=os.environ.get("DAIHARNESS_CONTEXT_KEYWORDS", "")
     )
     parser.add_argument(
         "--char-cap",
         type=int,
-        default=int(os.environ.get("DAINEXUS_CONTEXT_CHAR_CAP", str(DEFAULT_CHAR_CAP))),
+        default=int(
+            os.environ.get("DAIHARNESS_CONTEXT_CHAR_CAP", str(DEFAULT_CHAR_CAP))
+        ),
     )
     args = parser.parse_args()
     if WORKSPACE_ERROR:

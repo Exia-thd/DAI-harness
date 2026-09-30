@@ -1,5 +1,5 @@
 /**
- * DAI Nexus Studio - Standalone Application
+ * DAI Harness Studio - Standalone Application
  *
  * Real-time pipeline monitoring dashboard
  *
@@ -27,7 +27,7 @@ eventEmitter.setWebSocketServer(wsServer);
 
 console.log(`
 ╔══════════════════════════════════════════════════════════════╗
-║                   DAI Nexus Studio                         ║
+║                   DAI Harness Studio                         ║
 ╠══════════════════════════════════════════════════════════════╣
 ║                                                              ║
 ║  🎯 WebSocket: ws://localhost:${PORT.toString().padEnd(26)}║

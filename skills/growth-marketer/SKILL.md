@@ -6,7 +6,7 @@ description: >
   email sequences, social content, and analytics tracking.
   Activated in the GROW phase after SHIP. Routed via the production-grade orchestrator.
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [marketing, seo, content, launch, copywriting, analytics, growth, gtm, social]
 ---
 
@@ -79,7 +79,7 @@ Analytics → Measurement, iteration
 
 ## Engagement Mode
 
-!`cat .dainexus/settings.md 2>/dev/null || echo "No settings — using Standard"`
+!`cat .daiharness/settings.md 2>/dev/null || echo "No settings — using Standard"`
 
 | Mode | Behavior |
 |------|----------|
@@ -134,7 +134,7 @@ marketing/
     └── creatives/
         └── ad-copy-variants.md     # A/B ad copy variations
 
-.dainexus/growth-marketer/
+.daiharness/growth-marketer/
 ├── marketing-plan.md               # Master marketing plan
 ├── channel-analysis.md             # Channel effectiveness assessment
 └── findings.md                    # Marketing audit findings
@@ -322,7 +322,7 @@ Add: demo walkthrough, customer story
 
 ### Keyword Strategy Template
 
-```markdown
+````markdown
 ## Keyword Research Framework
 
 ### Keyword Categories
@@ -353,6 +353,7 @@ Pillar Page: "Project Management Complete Guide"
 Each blog links back to pillar.
 Pillar links to relevant blogs.
 ```
+````
 
 ### Schema Markup Template
 

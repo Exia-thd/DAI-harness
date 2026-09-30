@@ -18,7 +18,7 @@ import {
   type ManifestLoadResult,
 } from "./types.js";
 
-export const DOCS_MANIFEST_PATH = join(".dainexus", "docs-manifest.json");
+export const DOCS_MANIFEST_PATH = join(".daiharness", "docs-manifest.json");
 
 const relativePathSchema = z
   .string()
@@ -173,9 +173,9 @@ function discoverSources(projectRoot: string): DocsSource[] {
     }
   }
 
-  if (existsSync(join(projectRoot, ".dainexus", "project-profile.json"))) {
+  if (existsSync(join(projectRoot, ".daiharness", "project-profile.json"))) {
     sources.push({
-      path: ".dainexus/project-profile.json",
+      path: ".daiharness/project-profile.json",
       type: "metadata",
     });
   }
@@ -236,7 +236,7 @@ export function validateManifest(input: unknown): DocsManifest {
   const parsed = docsManifestSchema.safeParse(input);
   if (!parsed.success) {
     throw new DocsManifestError(
-      "Invalid DAI Nexus docs manifest.",
+      "Invalid DAI Harness docs manifest.",
       parsed.error.issues.map(
         (issue) => `${issue.path.join(".") || "<root>"}: ${issue.message}`,
       ),
@@ -311,7 +311,7 @@ export function initManifest(
   }
 
   const manifest = createDefaultManifest(projectRoot);
-  mkdirSync(join(projectRoot, ".dainexus"), { recursive: true });
+  mkdirSync(join(projectRoot, ".daiharness"), { recursive: true });
   writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
   const statePath = join(projectRoot, manifest.project_docs!.state);
   if (!existsSync(statePath)) {
@@ -357,7 +357,7 @@ export function loadManifest(projectRootInput: string): ManifestLoadResult {
       code: "LEGACY_MANIFEST_FALLBACK",
       projectId: manifest.project.id,
       message:
-        "No .dainexus/docs-manifest.json was found; using safe legacy source discovery.",
+        "No .daiharness/docs-manifest.json was found; using safe legacy source discovery.",
       suggestion:
         "Run `dai docs init` to make the documentation contract explicit.",
     },

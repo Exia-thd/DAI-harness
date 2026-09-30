@@ -12,7 +12,7 @@
 set -euo pipefail
 
 # Configuration
-REPO_URL="https://github.com/Exia-thd/DAI-nexus"
+REPO_URL="https://github.com/Exia-thd/DAI-harness"
 SUBMODULE_PATH=".antigravity/plugins/production-grade"
 BRANCH="main"
 
@@ -28,7 +28,7 @@ BOLD='\033[1m'
 print_header() {
     echo ""
     echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}║${NC}  ${BOLD}DAI Nexus${NC} — 52 Skills for Antigravity              ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  ${BOLD}DAI Harness${NC} — 52 Skills for Antigravity              ${CYAN}║${NC}"
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════╝${NC}"
     echo ""
 }
@@ -89,8 +89,8 @@ cmd_install() {
     git submodule update --init --recursive
 
     echo ""
-    print_info "Initializing Code Intelligence (DAI Nexus Node)..."
-    npx --yes dainexus-node analyze || print_warn "DAI Nexus Node analysis failed, skipping."
+    print_info "Initializing Code Intelligence (DAI Harness Node)..."
+    npx --yes daiharness-node analyze || print_warn "DAI Harness Node analysis failed, skipping."
     
     print_info "Generating project MCP server..."
     bash "$SUBMODULE_PATH/scripts/mcp-generate.sh" || print_warn "MCP generation failed, skipping."
@@ -104,10 +104,10 @@ cmd_install() {
     echo -e "  ${BOLD}Skills location:${NC}  $SUBMODULE_PATH/skills/"
     echo -e "  ${BOLD}Skill count:${NC}      18 skills (17 domain + parallel dispatch)"
     echo -e "  ${BOLD}Pipeline:${NC}         DEFINE → BUILD → HARDEN → SHIP → SUSTAIN"
-    echo -e "  ${BOLD}Intelligence:${NC}     DAI Nexus Node indexed + MCP server active"
+    echo -e "  ${BOLD}Intelligence:${NC}     DAI Harness Node indexed + MCP server active"
     echo ""
     echo -e "  ${BOLD}Next steps:${NC}"
-    echo -e "  1. Commit the setup: ${CYAN}git add . && git commit -m 'feat: add dai-nexus v$version'${NC}"
+    echo -e "  1. Commit the setup: ${CYAN}git add . && git commit -m 'feat: add dai-harness v$version'${NC}"
     echo -e "  2. Start building: ${CYAN}\"Build a production-grade SaaS for [your idea]\"${NC}"
     echo -e "  3. Analyze project (optional): ${CYAN}Run /onboard to analyze stack & setup profiles${NC}"
     echo -e "  4. Check for updates: ${CYAN}./setup.sh status${NC}"
@@ -131,8 +131,8 @@ cmd_update() {
     git submodule update --remote "$SUBMODULE_PATH"
 
     echo ""
-    print_info "Re-initializing Code Intelligence (DAI Nexus Node)..."
-    npx --yes dainexus-node analyze || print_warn "DAI Nexus Node analysis failed, skipping."
+    print_info "Re-initializing Code Intelligence (DAI Harness Node)..."
+    npx --yes daiharness-node analyze || print_warn "DAI Harness Node analysis failed, skipping."
     
     print_info "Re-generating project MCP server..."
     bash "$SUBMODULE_PATH/scripts/mcp-generate.sh" || print_warn "MCP generation failed, skipping."

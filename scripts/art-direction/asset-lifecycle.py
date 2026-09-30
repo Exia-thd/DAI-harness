@@ -100,7 +100,7 @@ def install_json_no_clobber(path: Path, value: dict[str, Any]) -> bool:
         with tempfile.NamedTemporaryFile(
             "w",
             encoding="utf-8",
-            prefix=f".{path.name}.dainexus-",
+            prefix=f".{path.name}.daiharness-",
             dir=path.parent,
             delete=False,
         ) as handle:
@@ -554,7 +554,7 @@ def copy_asset_no_clobber(source: Path, destination: Path, expected: str) -> boo
     """Copy and atomically publish an asset without replacing any destination."""
     destination.parent.mkdir(parents=True, exist_ok=True)
     file_descriptor, temporary_name = tempfile.mkstemp(
-        prefix=f".{destination.name}.dainexus-", dir=destination.parent
+        prefix=f".{destination.name}.daiharness-", dir=destination.parent
     )
     os.close(file_descriptor)
     temporary = Path(temporary_name)

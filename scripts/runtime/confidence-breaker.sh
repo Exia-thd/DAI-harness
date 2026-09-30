@@ -1,5 +1,5 @@
 #!/bin/bash
-# DAI Nexus Confidence Breaker (Anti-Loop mechanism)
+# DAI Harness Confidence Breaker (Anti-Loop mechanism)
 # Usage:
 #   ./confidence-breaker.sh record <task_id> <confidence_score>
 #   ./confidence-breaker.sh check <task_id>
@@ -9,7 +9,7 @@ set -e
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$DIR")"
-STATE_DIR="$PROJECT_ROOT/.dainexus"
+STATE_DIR="$PROJECT_ROOT/.daiharness"
 STATE_FILE="$STATE_DIR/confidence-state.json"
 MAX_RETRIES=3
 

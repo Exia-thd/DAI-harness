@@ -10,7 +10,7 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Project is initialized with a valid Godot config | `cat project.godot` | ... | run the check command and paste output |
-| Project-specific tech stack and profile configurations are active | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project-specific tech stack and profile configurations are active | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Godot Multiplayer Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
@@ -26,7 +26,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Verify the game dev project configuration
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 ```
 
 ### Step 2: Implement a server-authoritative player replication script in GDScript

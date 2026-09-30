@@ -1,7 +1,7 @@
 /**
  * MSW Mock Browser Setup
  * Service Worker-based API mocking for Playwright E2E tests
- * For dai-nexus project
+ * For dai-harness project
  */
 import { setupWorker } from 'msw/browser';
 import { handlers } from './handlers/index.js';

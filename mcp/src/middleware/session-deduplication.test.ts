@@ -76,8 +76,8 @@ describe('SessionDeduplicationMiddleware', () => {
 
     it('should deduplicate FetchMcpResource', () => {
       const ctx = makeCtx('FetchMcpResource', {
-        server: 'dai-nexus',
-        uri: 'dai-nexus://repos',
+        server: 'dai-harness',
+        uri: 'dai-harness://repos',
       });
       const result = mw.before_tool(ctx);
       expect(result.action).toBe('pass'); // First call = miss

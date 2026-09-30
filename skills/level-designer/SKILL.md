@@ -6,7 +6,7 @@ description: >
   design documents and blockout specifications consumed by engine engineers.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 1.1.0
-author: dai-nexus
+author: dai-harness
 tags: [level-design, encounters, pacing, blockout, environmental-storytelling, world-building]
 ---
 
@@ -356,7 +356,7 @@ Intensity
 ```
 
 2. **Boss Design Framework:**
-```markdown
+````markdown
 ## Boss: The Librarian
 
 ### Design Principles
@@ -405,7 +405,7 @@ Phase 3 Pattern:
 │          [Ground Floor]              │
 └────────────────────────────────────┘
 ```
-```
+````
 
 3. **Difficulty Scaling Table:**
 ```markdown
@@ -430,7 +430,7 @@ Phase 3 Pattern:
 
 **Actions:**
 1. **Wayfinding Implementation Guide:**
-```markdown
+````markdown
 ## Wayfinding Tools (Priority Order)
 
 ### 1. Light as Guide
@@ -473,7 +473,7 @@ Distractor Points:
 Dead end: 5m corridor, plain walls
 Correct path: 15m+ corridor, interesting features
 ```
-```
+````
 
 2. **Pacing Curve Implementation:**
 ```markdown
@@ -492,10 +492,9 @@ Correct path: 15m+ corridor, interesting features
 - [ ] No! Puzzle without any break
 - [ ] No! All combat, no exploration
 ```
-```
 
 3. **Golden Path Timing Calculator:**
-```markdown
+````markdown
 ## Timing Standards
 
 | Level Type | Target Time | Min | Max |
@@ -514,7 +513,7 @@ Puzzle time = Base time × Complexity multiplier
 
 Total = Walk + Combat + Puzzle + Buffer (15%)
 ```
-```
+````
 
 **Output:** `pacing/pacing-curves.md`, `environmental/wayfinding.md`
 
@@ -550,7 +549,7 @@ Total = Walk + Combat + Puzzle + Buffer (15%)
 ## Output Structure
 
 ```
-.dainexus/level-designer/
+.daiharness/level-designer/
 ├── level-plan.md
 ├── levels/
 │   ├── level-01-tutorial.md

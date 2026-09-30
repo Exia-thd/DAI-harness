@@ -189,14 +189,14 @@ export const MonitoringConfigSchema = z.object({
   enabled: z.boolean().default(true),
   // Audit logging
   logAllOperations: z.boolean().default(true),
-  auditPath: z.string().default(".dainexus/sandbox-audit.jsonl"),
+  auditPath: z.string().default(".daiharness/sandbox-audit.jsonl"),
   auditMaxSize: z.string().default("100MB"),
   // Bypass detection
   detectEscapeAttempts: z.boolean().default(true),
   alertOnBypass: z.boolean().default(true),
   // Metrics
   collectMetrics: z.boolean().default(true),
-  metricsPath: z.string().default(".dainexus/sandbox-metrics.json"),
+  metricsPath: z.string().default(".daiharness/sandbox-metrics.json"),
 });
 export type MonitoringConfig = z.infer<typeof MonitoringConfigSchema>;
 

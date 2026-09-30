@@ -23,7 +23,7 @@ def _git_workspace(path: Path) -> None:
 
 
 def _run(workspace: Path, *args: str, payload: dict | None = None):
-    env = {**os.environ, "DAINEXUS_WORKSPACE": str(workspace)}
+    env = {**os.environ, "DAIHARNESS_WORKSPACE": str(workspace)}
     return subprocess.run(
         [sys.executable, str(CONTINUITY), *args],
         cwd=workspace,
@@ -78,7 +78,7 @@ def test_checkpoint_round_trip_is_project_and_session_scoped(tmp_path: Path) -> 
     )
     assert written.returncode == 0, written.stderr
     checkpoint = json.loads(written.stdout)
-    assert checkpoint["schema"] == "dai-nexus-continuity/v1"
+    assert checkpoint["schema"] == "dai-harness-continuity/v1"
     assert checkpoint["authority"] == "context-only"
     assert checkpoint["session_id"] == "session-a"
     assert checkpoint["workspace_id"]
@@ -102,7 +102,7 @@ def test_resume_fails_fresh_on_cross_project_or_tree_mismatch(tmp_path: Path) ->
     _git_workspace(workspace)
     _git_workspace(other)
     state_root = tmp_path / "continuity-state"
-    env = {**os.environ, "DAINEXUS_CONTINUITY_ROOT": str(state_root)}
+    env = {**os.environ, "DAIHARNESS_CONTINUITY_ROOT": str(state_root)}
 
     written = subprocess.run(
         [
@@ -117,7 +117,7 @@ def test_resume_fails_fresh_on_cross_project_or_tree_mismatch(tmp_path: Path) ->
             "handoff",
         ],
         cwd=workspace,
-        env={**env, "DAINEXUS_WORKSPACE": str(workspace)},
+        env={**env, "DAIHARNESS_WORKSPACE": str(workspace)},
         input=json.dumps(_payload()),
         text=True,
         capture_output=True,
@@ -128,7 +128,7 @@ def test_resume_fails_fresh_on_cross_project_or_tree_mismatch(tmp_path: Path) ->
     cross = subprocess.run(
         [sys.executable, str(CONTINUITY), "resume", "--session", "shared-session"],
         cwd=other,
-        env={**env, "DAINEXUS_WORKSPACE": str(other)},
+        env={**env, "DAIHARNESS_WORKSPACE": str(other)},
         text=True,
         capture_output=True,
         check=False,
@@ -139,7 +139,7 @@ def test_resume_fails_fresh_on_cross_project_or_tree_mismatch(tmp_path: Path) ->
     mismatched = subprocess.run(
         [sys.executable, str(CONTINUITY), "resume", "--session", "shared-session"],
         cwd=workspace,
-        env={**env, "DAINEXUS_WORKSPACE": str(workspace)},
+        env={**env, "DAIHARNESS_WORKSPACE": str(workspace)},
         text=True,
         capture_output=True,
         check=False,
@@ -304,7 +304,7 @@ def test_memory_middleware_defaults_are_workspace_scoped(tmp_path: Path) -> None
         cwd=workspace,
         env={
             **os.environ,
-            "DAINEXUS_WORKSPACE": str(workspace),
+            "DAIHARNESS_WORKSPACE": str(workspace),
             "HOME": str(tmp_path / "home"),
         },
         text=True,
@@ -313,7 +313,7 @@ def test_memory_middleware_defaults_are_workspace_scoped(tmp_path: Path) -> None
     )
     assert result.returncode == 0, result.stderr
     paths = json.loads(result.stdout)
-    runtime_root = workspace / ".dainexus" / "runtime" / "memory"
+    runtime_root = workspace / ".daiharness" / "runtime" / "memory"
     assert Path(paths["session"]).is_relative_to(runtime_root)
     assert Path(paths["handover"]).is_relative_to(runtime_root)
 
@@ -325,7 +325,7 @@ def test_message_tick_does_not_checkpoint_from_simulated_counts(tmp_path: Path) 
     memory_root = tmp_path / "memory-root"
     env = {
         **os.environ,
-        "DAINEXUS_WORKSPACE": str(workspace),
+        "DAIHARNESS_WORKSPACE": str(workspace),
         "MEMORY_DB_DIR": str(memory_root),
         "MEMORY_CHECKPOINT_INTERVAL": "1",
     }

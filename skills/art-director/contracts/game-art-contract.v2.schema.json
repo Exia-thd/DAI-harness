@@ -1,6 +1,6 @@
 {
   "$id": "game-art-contract/v2",
-  "title": "DAI Nexus Game Art Contract v2",
+  "title": "DAI Harness Game Art Contract v2",
   "description": "Machine-readable Style DNA contract for deterministic game-asset prompting and review.",
   "required_top_level": [
     "schema_version",

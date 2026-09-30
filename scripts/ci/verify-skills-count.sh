@@ -9,7 +9,7 @@
 
 set -e
 
-echo "=== DAI Nexus Skills Count Verification ==="
+echo "=== DAI Harness Skills Count Verification ==="
 echo ""
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

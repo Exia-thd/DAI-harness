@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────
-# fw-global-registry — Project Registry CLI for DAI Nexus
+# fw-global-registry — Project Registry CLI for DAI Harness
 #
 # Manages the central project registry for global MCP setup.
-# Tracks which projects have been set up with DAI Nexus.
+# Tracks which projects have been set up with DAI Harness.
 #
 # USAGE:
 #   fw-global-registry.sh list                    # List all registered projects
@@ -36,14 +36,14 @@ log_info()  { echo -e "  $1"; }
 
 # ─── Paths ─────────────────────────────────────────────────────────────────
 
-GLOBAL_CONFIG_DIR="${HOME}/.config/dai-nexus"
+GLOBAL_CONFIG_DIR="${HOME}/.config/dai-harness"
 GLOBAL_REGISTRY="${GLOBAL_CONFIG_DIR}/registry.json"
 
 # ─── Help ─────────────────────────────────────────────────────────────────
 
 show_help() {
     cat << 'EOF'
-fw-global-registry — Project Registry CLI for DAI Nexus
+fw-global-registry — Project Registry CLI for DAI Harness
 
 SYNOPSIS
     fw-global-registry.sh <command> [options]
@@ -76,7 +76,7 @@ EXAMPLES
     fw-global-registry.sh clean
 
     # Export for backup
-    fw-global-registry.sh export ~/dai-nexus-registry-backup.json
+    fw-global-registry.sh export ~/dai-harness-registry-backup.json
 
 EOF
 }
@@ -175,8 +175,8 @@ try {
         var p = projects[path];
         var exists = require('fs').existsSync(path) ? '✓' : '✗';
         console.log('[' + exists + '] ' + path);
-        if (p.dainexus_path) {
-            console.log('    DAI Nexus: ' + p.dainexus_path);
+        if (p.daiharness_path) {
+            console.log('    DAI Harness: ' + p.daiharness_path);
         }
         if (p.registered_at) {
             console.log('    Registered: ' + p.registered_at);
@@ -213,17 +213,17 @@ cmd_add() {
         return 0
     fi
     
-    # Find dai-nexus for this project
-    local dai_nexus_path=""
+    # Find dai-harness for this project
+    local dai_harness_path=""
     local current="$path"
     
     while [[ "$current" != "/" ]] && [[ "$current" != "$HOME" ]]; do
-        if [[ -f "$current/dai-nexus/AGENTS.md" ]] || [[ -f "$current/dai-nexus/CLAUDE.md" ]]; then
-            dai_nexus_path="$current/dai-nexus"
+        if [[ -f "$current/dai-harness/AGENTS.md" ]] || [[ -f "$current/dai-harness/CLAUDE.md" ]]; then
+            dai_harness_path="$current/dai-harness"
             break
         fi
         if [[ -f "$current/AGENTS.md" ]] || [[ -f "$current/CLAUDE.md" ]]; then
-            dai_nexus_path="$current"
+            dai_harness_path="$current"
             break
         fi
         current="$(dirname "$current")"
@@ -236,7 +236,7 @@ try {
     var reg = JSON.parse(fs.readFileSync('${GLOBAL_REGISTRY}', 'utf8'));
     if (!reg.projects) reg.projects = {};
     reg.projects['${path}'] = {
-        dai_nexus_path: '${dai_nexus_path}' || null,
+        dai_harness_path: '${dai_harness_path}' || null,
         registered_at: new Date().toISOString(),
         last_used: new Date().toISOString()
     };
@@ -247,8 +247,8 @@ try {
     
     if [[ $? -eq 0 ]]; then
         log_ok "Registered: $path"
-        if [[ -n "$dai_nexus_path" ]]; then
-            log_info "  DAI Nexus: $dai_nexus_path"
+        if [[ -n "$dai_harness_path" ]]; then
+            log_info "  DAI Harness: $dai_harness_path"
         fi
     else
         log_error "Failed to register: $path"
@@ -324,7 +324,7 @@ try {
     var p = reg.projects['${path}'];
     if (p) {
         console.log('');
-        console.log('  DAI Nexus: ' + (p.dainexus_path || 'auto'));
+        console.log('  DAI Harness: ' + (p.daiharness_path || 'auto'));
         console.log('  Registered:  ' + (p.registered_at || 'unknown'));
         console.log('  Last used:   ' + (p.last_used || 'never'));
     }
@@ -429,7 +429,7 @@ try {
 # ─── Command: Export ───────────────────────────────────────────────────────
 
 cmd_export() {
-    local file="${1:-${HOME}/dai-nexus-registry-export.json}"
+    local file="${1:-${HOME}/dai-harness-registry-export.json}"
     
     init_registry
     

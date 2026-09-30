@@ -1,8 +1,8 @@
 # Mode Reference
 
-> **Complete guide to DAI Nexus's 24 execution modes**
+> **Complete guide to DAI Harness's 24 execution modes**
 
-Modes determine how DAI Nexus processes requests. Each mode invokes different skills in different sequences.
+Modes determine how DAI Harness processes requests. Each mode invokes different skills in different sequences.
 
 ## Mode Overview
 
@@ -46,7 +46,7 @@ Modes determine how DAI Nexus processes requests. Each mode invokes different sk
 
 ```
 User: "Build a task management SaaS with React and Node.js"
-DAI Nexus:
+DAI Harness:
   1. DEFINE → Architecture, API design, data model
   2. BUILD → Backend services, frontend app
   3. HARDEN → Security, testing, performance
@@ -67,7 +67,7 @@ DAI Nexus:
 
 ```
 User: "Add user roles and permissions"
-DAI Nexus:
+DAI Harness:
   1. PM → Scope the feature
   2. Architect → Design RBAC system
   3. Engineer → Implement
@@ -86,7 +86,7 @@ DAI Nexus:
 
 ```
 User: "Review the authentication module"
-DAI Nexus:
+DAI Harness:
   1. Code Reviewer → Architecture, quality, performance, test quality
   2. Output: Findings with severity levels
 ```
@@ -103,7 +103,7 @@ DAI Nexus:
 
 ```
 User: "Users can't log in on mobile"
-DAI Nexus:
+DAI Harness:
   1. Debugger → Root cause analysis
   2. Engineer → Minimal fix
   3. QA → Regression test
@@ -121,7 +121,7 @@ DAI Nexus:
 
 ```
 User: "Deploy to Kubernetes"
-DAI Nexus:
+DAI Harness:
   1. DevOps → Docker, K8s configs
   2. SRE → Monitoring, alerting
 ```
@@ -138,7 +138,7 @@ DAI Nexus:
 
 ```
 User: "Add unit tests for the payment service"
-DAI Nexus:
+DAI Harness:
   1. QA → Test strategy, test cases, implementation
 ```
 
@@ -154,7 +154,7 @@ DAI Nexus:
 
 ```
 User: "Harden this for production"
-DAI Nexus:
+DAI Harness:
   1. Security → Vulnerability scan
   2. QA → Test coverage check
   3. Code Review → Architecture conformance
@@ -172,7 +172,7 @@ DAI Nexus:
 
 ```
 User: "Design a microservices architecture"
-DAI Nexus:
+DAI Harness:
   1. Architect → Service boundaries, API contracts, data ownership
 ```
 
@@ -188,7 +188,7 @@ DAI Nexus:
 
 ```
 User: "Document the user API"
-DAI Nexus:
+DAI Harness:
   1. Tech Writer → API reference, guides, examples
 ```
 
@@ -204,7 +204,7 @@ DAI Nexus:
 
 ```
 User: "Help me understand microservices"
-DAI Nexus:
+DAI Harness:
   1. Polymath → Explanations, analogies, context
 ```
 
@@ -220,7 +220,7 @@ DAI Nexus:
 
 ```
 User: "Research best practices for auth"
-DAI Nexus:
+DAI Harness:
   1. NotebookLM → Deep research with sources
   2. Polymath → Synthesize findings
 ```
@@ -237,7 +237,7 @@ DAI Nexus:
 
 ```
 User: "The dashboard is slow"
-DAI Nexus:
+DAI Harness:
   1. Performance → Profiling
   2. SRE → Infrastructure
   3. Code Review → Code patterns
@@ -255,7 +255,7 @@ DAI Nexus:
 
 ```
 User: "Design the checkout flow"
-DAI Nexus:
+DAI Harness:
   1. UX Researcher → User research
   2. Concept Artist → Distinct visual directions and selected concept packet
   3. Art Director → Style DNA and production visual gates
@@ -274,7 +274,7 @@ DAI Nexus:
 
 ```
 User: "Build an iOS app"
-DAI Nexus:
+DAI Harness:
   1. Mobile Engineer → React Native/Flutter
   2. Testing → Device testing
 ```
@@ -291,7 +291,7 @@ DAI Nexus:
 
 ```
 User: "Build a Unity game"
-DAI Nexus:
+DAI Harness:
   1. UX/research → Player needs and constraints
   2. Concept Artist → Distinct visual directions and selected concept packet
   3. Art Director → Style DNA and production visual gates
@@ -301,7 +301,7 @@ DAI Nexus:
 
 The executable route resolves ordered verified paths with
 `python3 scripts/runtime/skill_routing.py --mode design|game-build --config
-.dainexus/skills-config.json`, validates concept/art artifacts with
+.daiharness/skills-config.json`, validates concept/art artifacts with
 `python3 scripts/art-direction/creative-handoff.py validate-handoff "$CONCEPT_PACKET" "$ART_DIRECTION_GATES"`, freezes a
 skill-aware dispatch packet, and then uses the host-owned native `spawn_agent`
 only after `python3 scripts/runtime/codex-subagent-routing.py` resolves safe
@@ -331,7 +331,7 @@ spawn arguments.
 
 ```
 User: "Create a VR training app"
-DAI Nexus:
+DAI Harness:
   1. XR Engineer → VR implementation
   2. Game Designer → Experience design
 ```
@@ -348,7 +348,7 @@ DAI Nexus:
 
 ```
 User: "Plan the launch"
-DAI Nexus:
+DAI Harness:
   1. Growth Marketer → Strategy, channels
   2. Conversion Optimizer → Landing pages
 ```
@@ -365,7 +365,7 @@ DAI Nexus:
 
 ```
 User: "Improve our checkout conversion"
-DAI Nexus:
+DAI Harness:
   1. Conversion Optimizer → Funnel analysis, A/B tests
 ```
 
@@ -381,7 +381,7 @@ DAI Nexus:
 
 ```
 User: "Add a chatbot to the app"
-DAI Nexus:
+DAI Harness:
   1. AI Engineer → RAG pipeline
   2. Prompt Engineer → Prompt design
   3. Data Scientist → Embeddings
@@ -399,7 +399,7 @@ DAI Nexus:
 
 ```
 User: "Analyze these requirements"
-DAI Nexus:
+DAI Harness:
   1. BA → Feasibility, gaps, completeness
 ```
 
@@ -415,7 +415,7 @@ DAI Nexus:
 
 ```
 User: "Migrate to PostgreSQL"
-DAI Nexus:
+DAI Harness:
   1. Database Engineer → Schema design
   2. Software Engineer → Code changes
   3. QA → Test migration
@@ -433,7 +433,7 @@ DAI Nexus:
 
 ```
 User: "Improve these prompts"
-DAI Nexus:
+DAI Harness:
   1. Prompt Engineer → Analysis
   2. Prompt Optimizer → Systematic optimization
 ```
@@ -450,7 +450,7 @@ DAI Nexus:
 
 ```
 User: "Set goal: Implement the accepted requirement and keep CI green"
-DAI Nexus:
+DAI Harness:
   → Locks behavioral test oracles to the accepted requirement
   → Auto-evaluates after each implementation/infrastructure fix
   → If expected behavior is ambiguous, blocks and asks the user/PO instead of editing tests
@@ -481,7 +481,7 @@ Orchestrate execution
 
 ## Custom Mode
 
-If no mode matches, DAI Nexus presents a skill menu and lets you pick.
+If no mode matches, DAI Harness presents a skill menu and lets you pick.
 
 ---
 

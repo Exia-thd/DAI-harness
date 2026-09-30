@@ -5,8 +5,8 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MAX_PAYLOAD_BYTES=1048576
-if ! TEMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/dai-nexus-antigravity-hook.XXXXXX")"; then
-  printf '%s\n' '{"decision":"deny","reason":"DAI Nexus could not validate this tool call."}'
+if ! TEMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/dai-harness-antigravity-hook.XXXXXX")"; then
+  printf '%s\n' '{"decision":"deny","reason":"DAI Harness could not validate this tool call."}'
   exit 0
 fi
 PAYLOAD_FILE="${TEMP_ROOT}/payload.json"
@@ -25,7 +25,7 @@ emit_decision() {
   python3 -c 'import json,sys; print(json.dumps({"decision":sys.argv[1],"reason":sys.argv[2]}, separators=(",", ":")))' "$1" "$2"
 }
 emit_deny() {
-  emit_decision deny "DAI Nexus could not validate this tool call."
+  emit_decision deny "DAI Harness could not validate this tool call."
 }
 
 touch "$PAYLOAD_FILE" "$TOOL_FILE" "$ARGS_FILE" "$WORKSPACE_FILE" || {
@@ -70,7 +70,7 @@ candidate_paths = workspace_paths if isinstance(workspace_paths, list) else []
 candidate_paths = [
     *candidate_paths,
     payload_cwd,
-    os.environ.get("DAINEXUS_WORKSPACE"),
+    os.environ.get("DAIHARNESS_WORKSPACE"),
 ]
 
 workspaces = []
@@ -81,7 +81,7 @@ for candidate in candidate_paths:
     if not os.path.isdir(resolved):
         continue
     while True:
-        if os.path.isfile(os.path.join(resolved, ".dainexus", "execution-policy.yaml")):
+        if os.path.isfile(os.path.join(resolved, ".daiharness", "execution-policy.yaml")):
             workspaces.append(resolved)
             break
         parent = os.path.dirname(resolved)
@@ -90,7 +90,7 @@ for candidate in candidate_paths:
         resolved = parent
 workspace = workspaces[0] if workspaces else None
 if workspace is None:
-    raise ValueError("no workspace contains a DAI Nexus execution policy")
+    raise ValueError("no workspace contains a DAI Harness execution policy")
 
 args = next(
     (
@@ -115,13 +115,13 @@ fi
 TOOL_NAME="$(cat "$TOOL_FILE")"
 TOOL_ARGS="$(cat "$ARGS_FILE")"
 WORKSPACE="$(cat "$WORKSPACE_FILE")"
-DAINEXUS_WORKSPACE="$WORKSPACE" bash "${SCRIPT_DIR}/policy-check.sh" \
+DAIHARNESS_WORKSPACE="$WORKSPACE" bash "${SCRIPT_DIR}/policy-check.sh" \
   check "$TOOL_NAME" "$TOOL_ARGS" >/dev/null 2>/dev/null
 POLICY_RC=$?
 
 case "$POLICY_RC" in
-  0) emit_decision allow "DAI Nexus policy allowed this tool call." ;;
-  2) emit_decision force_ask "DAI Nexus policy requires explicit permission." ;;
+  0) emit_decision allow "DAI Harness policy allowed this tool call." ;;
+  2) emit_decision force_ask "DAI Harness policy requires explicit permission." ;;
   *) emit_deny ;;
 esac
 exit 0

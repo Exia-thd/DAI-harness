@@ -44,7 +44,7 @@ make existing truth stale.
 |---|---|---:|---|
 | **Canonical** | Authoritative current requirement, decision, state, contract, or runbook | Yes | Must be manifest-approved, owned, current, and uniquely authoritative |
 | **Supporting** | Explanation or guide that links to canonical truth | Yes | Must declare a distinct audience/purpose and avoid copying authoritative state |
-| **Transient** | Task plan, scratch analysis, chat summary, test output, handoff, or working note | No | Keep in task/runtime state or an ignored `.dainexus/` area; never add to the Docs Hub truth set |
+| **Transient** | Task plan, scratch analysis, chat summary, test output, handoff, or working note | No | Keep in task/runtime state or an ignored `.daiharness/` area; never add to the Docs Hub truth set |
 | **Generated** | Portal page, index, diagram render, report, or export derived from sources | No | Rebuild from source; never edit or accept as project truth |
 | **Archived** | Historical document retained for context | Historical only | Mark non-current, identify its replacement when one exists, and exclude it from active truth |
 

@@ -1,6 +1,6 @@
-# DAI Nexus Quickstart Guide
+# DAI Harness Quickstart Guide
 
-> **Get up and running with DAI Nexus in 5 minutes**
+> **Get up and running with DAI Harness in 5 minutes**
 
 ## Prerequisites
 
@@ -14,24 +14,24 @@
 
 **Option A: Clone directly**
 ```bash
-git clone https://github.com/Exia-thd/DAI-nexus
-cd dai-nexus
+git clone https://github.com/Exia-thd/DAI-harness
+cd dai-harness
 ```
 
 **Option B: Add as submodule to existing project**
 ```bash
-git submodule add https://github.com/Exia-thd/DAI-nexus dai-nexus
-cd dai-nexus
+git submodule add https://github.com/Exia-thd/DAI-harness dai-harness
+cd dai-harness
 ```
 
 ### 2. Setup MCP (Optional but Recommended)
 
 ```bash
 # Run the setup script
-bash scripts/dainexus-mcp-setup.sh
+bash scripts/daiharness-mcp-setup.sh
 
 # Verify setup
-bash scripts/dainexus-mcp-setup.sh --check
+bash scripts/daiharness-mcp-setup.sh --check
 ```
 
 This enables MCP tools for enhanced code intelligence.
@@ -40,7 +40,7 @@ This enables MCP tools for enhanced code intelligence.
 
 ```bash
 # Run onboarding to analyze your project
-dai-nexus onboard
+dai-harness onboard
 
 # Or manually create config
 cp .production-grade.yaml.example .production-grade.yaml
@@ -54,7 +54,7 @@ Start a conversation with your AI assistant:
 You: "Help me build a user authentication system with JWT"
 ```
 
-DAI Nexus will:
+DAI Harness will:
 1. **Interpret** your request
 2. **Classify** it as a Feature or Full Build
 3. **Plan** the implementation
@@ -80,7 +80,7 @@ DAI Nexus will:
 
 ```
 User: "Build a full-stack task management app with React and Node.js"
-DAI Nexus: 
+DAI Harness:
   1. DEFINE → Creates architecture
   2. BUILD → Implements backend + frontend
   3. HARDEN → Security, testing
@@ -91,7 +91,7 @@ DAI Nexus:
 
 ```
 User: "Add user roles and permissions to the API"
-DAI Nexus:
+DAI Harness:
   1. PM → Scopes the feature
   2. Architect → Designs the RBAC system
   3. Engineer → Implements
@@ -102,7 +102,7 @@ DAI Nexus:
 
 ```
 User: "Users can't log in on mobile"
-DAI Nexus:
+DAI Harness:
   1. Debugger → Investigates root cause
   2. Engineer → Implements fix
   3. QA → Verifies fix
@@ -112,7 +112,7 @@ DAI Nexus:
 
 ```
 User: "Review the security of my authentication module"
-DAI Nexus:
+DAI Harness:
   1. Code Reviewer → Reviews architecture
   2. Security Engineer → Checks for vulnerabilities
   3. Report → Lists findings with severity
@@ -152,10 +152,10 @@ memory:
 
 ## Troubleshooting
 
-### "DAI Nexus didn't respond correctly"
+### "DAI Harness didn't respond correctly"
 
 1. Check `.production-grade.yaml` exists
-2. Run `bash scripts/dainexus-mcp-setup.sh --diagnose`
+2. Run `bash scripts/daiharness-mcp-setup.sh --diagnose`
 3. Verify CLAUDE.md or AGENTS.md is in project root
 
 ### "Wrong mode selected"
@@ -174,8 +174,8 @@ Check skill paths in `skills/production-grade/SKILL.md` and verify skills direct
 ## Getting Help
 
 - **Documentation**: [docs/index.md](index.md)
-- **Issues**: [GitHub Issues](https://github.com/Exia-thd/DAI-nexus/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Exia-thd/DAI-nexus/discussions)
+- **Issues**: [GitHub Issues](https://github.com/Exia-thd/DAI-harness/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Exia-thd/DAI-harness/discussions)
 
 ---
 

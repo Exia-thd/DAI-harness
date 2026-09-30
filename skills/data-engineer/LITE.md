@@ -9,7 +9,7 @@ version: 1.0.0
 ## SOLVE Step 2: GROUND (Data Engineer Domain Slots)
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Target database type, project tech stack, and profile settings are active | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Target database type, project tech stack, and profile settings are active | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 | Active schema definitions, DB indexes, or migration folders are indexed | `find db/ -name "*.sql" -o -name "*schema*" -o -name "*migration*"` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Data Engineer Domain Slots)
@@ -27,8 +27,8 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground target project database systems and verify active budget
 ```bash
-cat .dainexus/project-profile.json
-cat .dainexus/budget.yaml
+cat .daiharness/project-profile.json
+cat .daiharness/budget.yaml
 ```
 ```yaml
 budget: 15.00

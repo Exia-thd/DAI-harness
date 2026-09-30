@@ -30,15 +30,15 @@ TOKEN_BUDGET = 7000
 
 TARGETS = {
     "CLAUDE.md": {
-        "title": "# DAI Nexus Kernel LITE — Claude Code",
+        "title": "# DAI Harness Kernel LITE — Claude Code",
         "description": "This file is read by Claude Code on every new chat. It defines the core rules, boot sequence, and solving loop.",
     },
     "AGENTS.md": {
-        "title": "# DAI Nexus Kernel LITE — Antigravity / Cursor / Codex",
+        "title": "# DAI Harness Kernel LITE — Antigravity / Cursor / Codex",
         "description": "This file is read by Antigravity / Cursor / Codex on every new chat. It defines the core rules, boot sequence, and solving loop.",
     },
     "GEMINI.md": {
-        "title": "# DAI Nexus Kernel LITE — Gemini",
+        "title": "# DAI Harness Kernel LITE — Gemini",
         "description": "This file is read by Gemini on every new chat. It defines the core rules, boot sequence, and solving loop.",
     },
 }
@@ -79,7 +79,7 @@ def _target_content(target_name, info, combined_kernel, existing=""):
     preserved_sections = ""
     if existing:
         # Find all <!-- marker:start --> ... <!-- marker:end --> blocks.
-        for marker in ["gitnexus", "dainexus-node"]:
+        for marker in ["gitnexus", "daiharness-node"]:
             pattern = rf"(<!-- {marker}:start -->.*?<!-- {marker}:end -->)"
             match = re.search(pattern, existing, re.DOTALL)
             if match:

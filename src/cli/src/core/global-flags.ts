@@ -1,5 +1,5 @@
 /**
- * Global flags configuration for DAI Nexus CLI
+ * Global flags configuration for DAI Harness CLI
  */
 import type { Command } from "commander";
 

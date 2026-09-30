@@ -17,7 +17,7 @@ from pathlib import Path
 
 MAX_VERSION_BYTES = 4096
 MAX_SMOKE_BYTES = 64 * 1024
-SMOKE_MARKER = "DAINEXUS_PROVIDER_SMOKE_OK"
+SMOKE_MARKER = "DAIHARNESS_PROVIDER_SMOKE_OK"
 
 
 def _string_array(value: str, name: str) -> list[str]:
@@ -125,9 +125,9 @@ def _terminate_process_group(process: subprocess.Popen[bytes]) -> None:
 def smoke(
     provider: str, executable: str, invocation_args: list[str]
 ) -> dict[str, object]:
-    if os.environ.get("DAINEXUS_PROVIDER_SMOKE") != "1":
+    if os.environ.get("DAIHARNESS_PROVIDER_SMOKE") != "1":
         raise ValueError(
-            "set DAINEXUS_PROVIDER_SMOKE=1 to authorize one provider invocation"
+            "set DAIHARNESS_PROVIDER_SMOKE=1 to authorize one provider invocation"
         )
     if sum(item.count("{prompt}") for item in invocation_args) != 1:
         raise ValueError(
@@ -182,9 +182,9 @@ def smoke(
 def catalog(
     provider: str, executable: str, catalog_args: list[str], catalog_format: str
 ) -> dict[str, object]:
-    if os.environ.get("DAINEXUS_PROVIDER_CATALOG") != "1":
+    if os.environ.get("DAIHARNESS_PROVIDER_CATALOG") != "1":
         raise ValueError(
-            "set DAINEXUS_PROVIDER_CATALOG=1 to authorize one provider catalog call"
+            "set DAIHARNESS_PROVIDER_CATALOG=1 to authorize one provider catalog call"
         )
     if os.name != "posix":
         raise ValueError(

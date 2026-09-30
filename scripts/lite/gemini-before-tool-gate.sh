@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Gemini BeforeTool hook: adapt the native JSON payload to DAI Nexus policy.
+# Gemini BeforeTool hook: adapt the native JSON payload to DAI Harness policy.
 
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MAX_PAYLOAD_BYTES=1048576
-TEMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/dai-nexus-before-tool.XXXXXX")" || exit 2
+TEMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/dai-harness-before-tool.XXXXXX")" || exit 2
 PAYLOAD_FILE="${TEMP_ROOT}/payload.json"
 TOOL_FILE="${TEMP_ROOT}/tool-name"
 ARGS_FILE="${TEMP_ROOT}/tool-args"
@@ -21,7 +21,7 @@ chmod 700 "$TEMP_ROOT" 2>/dev/null || true
 chmod 600 "$PAYLOAD_FILE" "$TOOL_FILE" "$ARGS_FILE" 2>/dev/null || true
 
 deny() {
-  echo "DAI Nexus policy denied this tool call." >&2
+  echo "DAI Harness policy denied this tool call." >&2
   exit 2
 }
 
@@ -60,7 +60,7 @@ PYEOF
 
 TOOL_NAME="$(cat "$TOOL_FILE")"
 TOOL_ARGS="$(cat "$ARGS_FILE")"
-DAINEXUS_WORKSPACE="$(pwd -P)" bash "${SCRIPT_DIR}/policy-check.sh" \
+DAIHARNESS_WORKSPACE="$(pwd -P)" bash "${SCRIPT_DIR}/policy-check.sh" \
   check "$TOOL_NAME" "$TOOL_ARGS" >/dev/null 2>/dev/null
 POLICY_RC=$?
 

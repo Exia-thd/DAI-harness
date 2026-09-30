@@ -7,8 +7,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-INSTALLER = ROOT / "scripts" / "bootstrap" / "dainexus-install.sh"
-DOCTOR = ROOT / "scripts" / "hooks" / "dainexus-hook-doctor.sh"
+INSTALLER = ROOT / "scripts" / "bootstrap" / "daiharness-install.sh"
+DOCTOR = ROOT / "scripts" / "hooks" / "daiharness-hook-doctor.sh"
 
 
 def run_installer(home: Path, framework: Path) -> subprocess.CompletedProcess[str]:
@@ -16,8 +16,8 @@ def run_installer(home: Path, framework: Path) -> subprocess.CompletedProcess[st
     env.update(
         {
             "HOME": str(home),
-            "DAINEXUS_DIR": str(framework),
-            "DAINEXUS_SOURCE_DIR": str(ROOT),
+            "DAIHARNESS_DIR": str(framework),
+            "DAIHARNESS_SOURCE_DIR": str(ROOT),
         }
     )
     return subprocess.run(
@@ -73,7 +73,7 @@ def _hook_path(path: Path | str) -> str:
 def _slash(text: str) -> str:
     """Collapse every separator spelling to a single forward slash.
 
-    The installer joins DAINEXUS_DIR with forward slashes, and the Codex TOML
+    The installer joins DAIHARNESS_DIR with forward slashes, and the Codex TOML
     writer escapes Windows backslashes by doubling them, so one path can appear
     three ways in generated config. All of them name the same file.
     """
@@ -92,10 +92,12 @@ def assert_context_command(hook: dict, framework: Path, event: str) -> None:
     assert '--event "$event"' in command
     assert '--workspace "$workspace"' in command
     assert "git -C" in command and "rev-parse --show-toplevel" in command
-    assert "DAINEXUS_PROJECT_ROOT" in command
-    assert "DAINEXUS_WORKSPACE" in command
+    assert "DAIHARNESS_PROJECT_ROOT" in command
+    assert "DAIHARNESS_WORKSPACE" in command
     assert _paths_agree(framework, command)
-    assert 'DAINEXUS_RULE_HOOK_MODE="${DAINEXUS_RULE_HOOK_MODE:-observe}"' in command
+    assert (
+        'DAIHARNESS_RULE_HOOK_MODE="${DAIHARNESS_RULE_HOOK_MODE:-observe}"' in command
+    )
     assert "|| true" in command
     if event == "sessionStart":
         assert "timeout" not in hook
@@ -147,7 +149,7 @@ def seed_user_configs(home: Path) -> None:
         json.dumps(
             {
                 "userSetting": {"keep": True},
-                "dai-nexus-policy": {
+                "dai-harness-policy": {
                     "PreToolUse": [
                         {
                             "matcher": "*",
@@ -182,7 +184,7 @@ def test_installer_distributes_rule_runtime_and_preserves_user_hooks(
     tmp_path: Path,
 ) -> None:
     home = tmp_path / "home"
-    framework = home / ".dainexus"
+    framework = home / ".daiharness"
     home.mkdir()
     seed_user_configs(home)
 
@@ -241,7 +243,7 @@ def test_installer_distributes_rule_runtime_and_preserves_user_hooks(
     )
 
     antigravity = load_json(home / ".gemini" / "config" / "hooks.json")
-    named = antigravity["dai-nexus-policy"]
+    named = antigravity["dai-harness-policy"]
     assert any(
         hook.get("command") == "user-security"
         for hook in lifecycle_commands(named, "PreToolUse")
@@ -275,7 +277,7 @@ def test_installer_distributes_rule_runtime_and_preserves_user_hooks(
     assert "--workspace" in codex
     assert _paths_agree(framework, codex)
     assert (
-        "DAINEXUS_RULE_HOOK_MODE=" in codex
+        "DAIHARNESS_RULE_HOOK_MODE=" in codex
         and ":-observe" in codex
         and "|| true" in codex
     )
@@ -302,7 +304,7 @@ def test_installer_distributes_rule_runtime_and_preserves_user_hooks(
         if "rule-context-hook.py" in hook.get("command", "")
     )
     off_env = os.environ.copy()
-    off_env["DAINEXUS_RULE_HOOK_MODE"] = "off"
+    off_env["DAIHARNESS_RULE_HOOK_MODE"] = "off"
     off = subprocess.run(
         [BASH, "-c", claude_context_command],
         cwd=tmp_path,
@@ -320,7 +322,7 @@ def test_hook_doctor_reports_and_repairs_only_rule_lifecycle_hooks(
     tmp_path: Path,
 ) -> None:
     home = tmp_path / "home"
-    framework = home / ".dainexus"
+    framework = home / ".daiharness"
     home.mkdir()
     seed_user_configs(home)
     installed = run_installer(home, framework)
@@ -343,8 +345,8 @@ def test_hook_doctor_reports_and_repairs_only_rule_lifecycle_hooks(
     env.update(
         {
             "HOME": str(home),
-            "DAINEXUS_DIR": str(framework),
-            "DAINEXUS_SOURCE_DIR": str(ROOT),
+            "DAIHARNESS_DIR": str(framework),
+            "DAIHARNESS_SOURCE_DIR": str(ROOT),
         }
     )
     diagnose = subprocess.run(
@@ -391,7 +393,7 @@ def test_hook_doctor_reports_and_repairs_only_rule_lifecycle_hooks(
 
 def test_hook_doctor_repairs_missing_framework_runtime(tmp_path: Path) -> None:
     home = tmp_path / "home"
-    framework = home / ".dainexus"
+    framework = home / ".daiharness"
     home.mkdir()
     seed_user_configs(home)
     installed = run_installer(home, framework)
@@ -405,8 +407,8 @@ def test_hook_doctor_repairs_missing_framework_runtime(tmp_path: Path) -> None:
     env.update(
         {
             "HOME": str(home),
-            "DAINEXUS_DIR": str(framework),
-            "DAINEXUS_SOURCE_DIR": str(ROOT),
+            "DAIHARNESS_DIR": str(framework),
+            "DAIHARNESS_SOURCE_DIR": str(ROOT),
         }
     )
     fixed = subprocess.run(
@@ -427,7 +429,7 @@ def test_installer_migrates_old_codex_context_path_without_duplicates(
     tmp_path: Path,
 ) -> None:
     home = tmp_path / "home"
-    framework = home / ".dainexus"
+    framework = home / ".daiharness"
     home.mkdir()
     seed_user_configs(home)
     installed = run_installer(home, framework)
@@ -452,7 +454,7 @@ def test_installer_migrates_old_codex_context_path_without_duplicates(
 
 def test_installer_preserves_unrelated_verify_and_context_hooks(tmp_path: Path) -> None:
     home = tmp_path / "home"
-    framework = home / ".dainexus"
+    framework = home / ".daiharness"
     home.mkdir()
     seed_user_configs(home)
 
@@ -486,7 +488,7 @@ def test_hook_doctor_preserves_unrelated_verify_and_context_hooks(
     tmp_path: Path,
 ) -> None:
     home = tmp_path / "home"
-    framework = home / ".dainexus"
+    framework = home / ".daiharness"
     home.mkdir()
     seed_user_configs(home)
     installed = run_installer(home, framework)
@@ -508,8 +510,8 @@ def test_hook_doctor_preserves_unrelated_verify_and_context_hooks(
     env.update(
         {
             "HOME": str(home),
-            "DAINEXUS_DIR": str(framework),
-            "DAINEXUS_SOURCE_DIR": str(ROOT),
+            "DAIHARNESS_DIR": str(framework),
+            "DAIHARNESS_SOURCE_DIR": str(ROOT),
         }
     )
     fixed = subprocess.run(
@@ -540,7 +542,7 @@ def test_hook_doctor_preserves_unrelated_verify_and_context_hooks(
 
 def test_hook_doctor_preserves_unrelated_codex_verify_hook(tmp_path: Path) -> None:
     home = tmp_path / "home"
-    framework = home / ".dainexus"
+    framework = home / ".daiharness"
     home.mkdir()
     seed_user_configs(home)
     codex_path = home / ".codex" / "config.toml"
@@ -568,8 +570,8 @@ def test_hook_doctor_preserves_unrelated_codex_verify_hook(tmp_path: Path) -> No
     env.update(
         {
             "HOME": str(home),
-            "DAINEXUS_DIR": str(framework),
-            "DAINEXUS_SOURCE_DIR": str(ROOT),
+            "DAIHARNESS_DIR": str(framework),
+            "DAIHARNESS_SOURCE_DIR": str(ROOT),
         }
     )
     fixed = subprocess.run(
@@ -591,7 +593,7 @@ def test_hook_doctor_preserves_unrelated_codex_verify_hook(tmp_path: Path) -> No
 
 def test_hook_doctor_migrates_trusted_legacy_codex_verify_hook(tmp_path: Path) -> None:
     home = tmp_path / "home"
-    framework = home / ".dainexus"
+    framework = home / ".daiharness"
     home.mkdir()
     seed_user_configs(home)
     installed = run_installer(home, framework)
@@ -607,8 +609,8 @@ def test_hook_doctor_migrates_trusted_legacy_codex_verify_hook(tmp_path: Path) -
     env.update(
         {
             "HOME": str(home),
-            "DAINEXUS_DIR": str(framework),
-            "DAINEXUS_SOURCE_DIR": str(ROOT),
+            "DAIHARNESS_DIR": str(framework),
+            "DAIHARNESS_SOURCE_DIR": str(ROOT),
         }
     )
     fixed = subprocess.run(
@@ -665,8 +667,8 @@ def run_context_command(
     command: str, project: Path, env: dict[str, str]
 ) -> subprocess.CompletedProcess[str]:
     clean_env = env.copy()
-    clean_env.pop("DAINEXUS_PROJECT_ROOT", None)
-    clean_env.pop("DAINEXUS_WORKSPACE", None)
+    clean_env.pop("DAIHARNESS_PROJECT_ROOT", None)
+    clean_env.pop("DAIHARNESS_WORKSPACE", None)
     return subprocess.run(
         [BASH, "-c", command],
         cwd=project,
@@ -682,7 +684,7 @@ def test_global_lifecycle_hook_uses_project_manifest_from_git_root(
     tmp_path: Path,
 ) -> None:
     home = tmp_path / "home"
-    framework = home / ".dainexus"
+    framework = home / ".daiharness"
     project = tmp_path / "project"
     home.mkdir()
     project.mkdir()
@@ -707,7 +709,11 @@ def test_global_lifecycle_hook_uses_project_manifest_from_git_root(
     assert "Project-owned rule" in context
     assert "kernel-entry" not in context
     assert (
-        project / ".dainexus" / "runtime" / "rule-context" / "CLAUDE-SessionStart.json"
+        project
+        / ".daiharness"
+        / "runtime"
+        / "rule-context"
+        / "CLAUDE-SessionStart.json"
     ).is_file()
 
 
@@ -715,7 +721,7 @@ def test_global_lifecycle_hook_falls_back_to_framework_on_invalid_project_manife
     tmp_path: Path,
 ) -> None:
     home = tmp_path / "home"
-    framework = home / ".dainexus"
+    framework = home / ".daiharness"
     project = tmp_path / "project"
     home.mkdir()
     project.mkdir()
@@ -741,7 +747,7 @@ def test_global_lifecycle_hook_falls_back_to_framework_on_invalid_project_manife
 
 def test_cursor_project_dir_precedes_cwd_and_git_resolution(tmp_path: Path) -> None:
     home = tmp_path / "home"
-    framework = home / ".dainexus"
+    framework = home / ".daiharness"
     project = tmp_path / "cursor-project"
     invocation_dir = tmp_path / "invocation"
     home.mkdir()
@@ -774,7 +780,7 @@ def test_cursor_project_dir_precedes_cwd_and_git_resolution(tmp_path: Path) -> N
 
 def test_codex_legacy_migration_removes_orphan_parent_timeout(tmp_path: Path) -> None:
     home = tmp_path / "home"
-    framework = home / ".dainexus"
+    framework = home / ".daiharness"
     home.mkdir()
     seed_user_configs(home)
     codex_path = home / ".codex" / "config.toml"
@@ -809,7 +815,7 @@ def test_global_lifecycle_hook_is_fail_open_when_framework_runtime_breaks(
     tmp_path: Path,
 ) -> None:
     home = tmp_path / "home"
-    framework = home / ".dainexus"
+    framework = home / ".daiharness"
     project = tmp_path / "project"
     home.mkdir()
     project.mkdir()
@@ -833,7 +839,7 @@ def test_global_lifecycle_hook_never_executes_project_runtime_when_global_runtim
     tmp_path: Path,
 ) -> None:
     home = tmp_path / "home"
-    framework = home / ".dainexus"
+    framework = home / ".daiharness"
     project = tmp_path / "project"
     home.mkdir()
     project.mkdir()

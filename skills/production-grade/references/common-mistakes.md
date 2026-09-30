@@ -21,7 +21,7 @@
 | Not leveraging skill architecture | Even though execution is sequential, each skill's internal phase structure ensures quality. Foundations before dependent work. |
 | Duplicating security review | code-reviewer references security-engineer findings |
 | Skipping quality gate | EVERY skill output must pass quality-gate.md — no exceptions, even in sequential mode |
-| Ignoring code conventions in brownfield | Read `.dainexus/code-conventions.md` BEFORE writing code. Match existing patterns. |
+| Ignoring code conventions in brownfield | Read `.daiharness/code-conventions.md` BEFORE writing code. Match existing patterns. |
 | Modifying protected paths | Check brownfield-safety protected paths before ANY file write |
 | No regression check in brownfield | After EACH build skill, verify existing tests still pass against baseline |
 | Not saving session state | Call session lifecycle hooks at every phase/task/gate completion |

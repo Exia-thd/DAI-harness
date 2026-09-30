@@ -23,5 +23,5 @@ for (const [command, prefix] of candidates) {
   }
 }
 
-console.error('DAI Nexus local scheduler requires Python 3.11+.');
+console.error('DAI Harness local scheduler requires Python 3.11+.');
 process.exit(6);

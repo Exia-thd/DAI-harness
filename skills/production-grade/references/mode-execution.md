@@ -19,13 +19,13 @@ All modes share these behaviors:
 
 ### Goal Mode Execution (v8.2)
 
-When Goal mode is triggered, DAI Nexus enters autonomous pursuit mode:
+When Goal mode is triggered, DAI Harness enters autonomous pursuit mode:
 
 ```
 1. SET GOAL:
    - Parse condition from user message
    - Validate condition is measurable
-   - Create .dainexus/active-goal.json
+   - Create .daiharness/active-goal.json
 
 2. AUTONOMOUS LOOP:
    After each turn:
@@ -37,7 +37,7 @@ When Goal mode is triggered, DAI Nexus enters autonomous pursuit mode:
       - UNKNOWN: Ask user to verify
 
 3. PROGRESS TRACKING:
-   - Write progress to .dainexus/goal-progress.md
+   - Write progress to .daiharness/goal-progress.md
    - Update turns counter in active-goal.json
    - Emit heartbeat: "Working toward goal: [reason why not met yet]"
 
@@ -64,7 +64,7 @@ Before claiming completion, verify the checks that actually apply:
 | Impact | When changing existing symbols/contracts, inspect callers/dependents with available project tools before finalizing. |
 | Approval | Obtain user/human approval only where the project/safety/release/preference contract requires it. |
 | Review | Independent review is required for `DEEP`, sensitive/public-contract work, or materially broad change as defined by the kernel. |
-| Learning | Store useful lessons project-locally; never auto-append them to shared DAI Nexus skills. |
+| Learning | Store useful lessons project-locally; never auto-append them to shared DAI Harness skills. |
 
 Tests are derived from acceptance and risk, not a fixed lifecycle. Test-first is preferred for meaningful behavior/regression risk; `QUICK` reversible work may use an existing focused verifier instead of manufacturing a test artifact.
 
@@ -447,13 +447,13 @@ Build a game from concept to a verified release using the control plane in
    Unreal, Godot, Phaser 3, or Three.js from platform and production constraints
    and ask only when the choice materially changes architecture.
 6. **Preserve the concept and Style DNA gates** — call
-   `python3 scripts/runtime/skill_routing.py --mode game-build --config .dainexus/skills-config.json`
+   `python3 scripts/runtime/skill_routing.py --mode game-build --config .daiharness/skills-config.json`
    for ordered verified paths, use `concept-artist` to produce
    structurally distinct visual directions and a selected concept packet, then
    validate the concept/art artifacts with
    `python3 scripts/art-direction/creative-handoff.py validate-handoff "$CONCEPT_PACKET" "$ART_DIRECTION_GATES"`,
    freeze the skill-aware dispatch packet, and then initialize and validate
-   `.dainexus/art-direction/game-art-contract.json` using the Art Director
+   `.daiharness/art-direction/game-art-contract.json` using the Art Director
    protocol. Asset generation and engine handoff require approved style,
    confidence resolution, drift validation, manifest, and handoff evidence.
 7. **Require a vertical slice before scale-up** — prototype risky assumptions,

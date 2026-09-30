@@ -6,7 +6,7 @@ description: >
   detects bugs, attempts auto-fix, and continues development.
   Requires: Vitest, Playwright (VRT via Docker), LLM access.
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [autonomous, self-healing, testing, CI-CD, automated-bug-fix, vitest, playwright, e2e]
 ---
 
@@ -434,7 +434,7 @@ dai test --report
 ## Configuration
 
 ```yaml
-# .dainexus/autonomous.yaml
+# .daiharness/autonomous.yaml
 autonomous:
   enabled: true
   maxAutoFixAttempts: 3
@@ -598,7 +598,7 @@ docker run --rm --network host -v $(pwd):/work/ -w /work/ mcr.microsoft.com/play
 *   **CI/CD (GitHub Actions / GitLab CI)**: Run mobile web/responsive tests using Playwright's mobile emulation (e.g., `devices['Pixel 5']` or `devices['iPhone 12']`) on a standard Linux runner.
 *   **Local Machine (Pre-commit/PR check)**: Run full E2E testing on native Android Emulators or iOS Simulators.
 
-## Integration with DAI Nexus
+## Integration with DAI Harness
 
 ### Hook into Build Pipeline
 ```typescript
@@ -649,7 +649,7 @@ export async function postBuildHook(): Promise<void> {
 When tests run, generate a report:
 
 ```
-.dainexus/autonomous-testing/
+.daiharness/autonomous-testing/
 ├── reports/
 │   ├── {timestamp}-report.json
 │   ├── {timestamp}-report.html

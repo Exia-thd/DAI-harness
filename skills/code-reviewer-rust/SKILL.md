@@ -3,7 +3,7 @@ name: code-reviewer-rust
 extends: code-reviewer
 language: rust
 version: 1.0.0
-author: dai-nexus
+author: dai-harness
 tags: [rust, code-review, quality, patterns, anti-patterns, safety, ownership]
 file_patterns: ["*.rs", "Cargo.toml", "Cargo.lock", "rustfmt.toml", ".rustfmt.toml"]
 linter: clippy

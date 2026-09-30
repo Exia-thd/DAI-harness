@@ -3,7 +3,7 @@
 scripts/lite/policy_check.py
 Execution policy gate (pure Python, zero-dependency).
 
-Reads .dainexus/execution-policy.yaml and checks tool arguments against
+Reads .daiharness/execution-policy.yaml and checks tool arguments against
 deny_patterns. Called by guard middleware before a tool call executes.
 See kernel/POLICY.md.
 
@@ -31,11 +31,13 @@ import sys
 import time
 from pathlib import Path
 
-PROJECT_ROOT = Path(os.environ.get("DAINEXUS_WORKSPACE", ".")).resolve()
+PROJECT_ROOT = Path(os.environ.get("DAIHARNESS_WORKSPACE", ".")).resolve()
 POLICY_FILE = Path(
-    os.environ.get("DAINEXUS_POLICY_FILE", PROJECT_ROOT / ".dainexus" / "execution-policy.yaml")
+    os.environ.get(
+        "DAIHARNESS_POLICY_FILE", PROJECT_ROOT / ".daiharness" / "execution-policy.yaml"
+    )
 )
-LOG_FILE = PROJECT_ROOT / ".dainexus" / "policy-log.jsonl"
+LOG_FILE = PROJECT_ROOT / ".daiharness" / "policy-log.jsonl"
 
 VALID_MODES = {"strict", "permissive", "audit"}
 SCALAR_KEYS = {"mode", "require_verify", "max_escalations", "refresh_interval_ticks"}
@@ -46,11 +48,19 @@ def _log_event(decision: str, tool: str, args: str, pattern: str = "") -> None:
     try:
         LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
         with LOG_FILE.open("a", encoding="utf-8") as f:
-            f.write(json.dumps({
-                "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                "decision": decision, "tool": tool, "args": args[:300],
-                "pattern": pattern,
-            }, ensure_ascii=False) + "\n")
+            f.write(
+                json.dumps(
+                    {
+                        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                        "decision": decision,
+                        "tool": tool,
+                        "args": args[:300],
+                        "pattern": pattern,
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n"
+            )
     except OSError:
         pass
 
@@ -85,8 +95,11 @@ def load_policy() -> dict | None:
 def cmd_check(tool: str, args: list[str]) -> int:
     policy = load_policy()
     if policy is None:
-        print(f"[POLICY] ERROR: policy file missing/empty/malformed at {POLICY_FILE} — "
-              f"DENY (fail-closed).", file=sys.stderr)
+        print(
+            f"[POLICY] ERROR: policy file missing/empty/malformed at {POLICY_FILE} — "
+            f"DENY (fail-closed).",
+            file=sys.stderr,
+        )
         _log_event("deny-failclosed", tool, " ".join(args))
         return 1
 
@@ -103,18 +116,25 @@ def cmd_check(tool: str, args: list[str]) -> int:
                     _log_event("audit", tool, haystack, pattern)
                     return 0
                 if mode == "permissive":
-                    print(f"[POLICY] WARNING: '{pattern}' matched — allowed, tag step HARD.",
-                          file=sys.stderr)
+                    print(
+                        f"[POLICY] WARNING: '{pattern}' matched — allowed, tag step HARD.",
+                        file=sys.stderr,
+                    )
                     _log_event("warn", tool, haystack, pattern)
                     return 2
-                print(f"[POLICY] DENY: '{pattern}' matched '{haystack[:120]}'. "
-                      f"Report to the user instead of retrying.", file=sys.stderr)
+                print(
+                    f"[POLICY] DENY: '{pattern}' matched '{haystack[:120]}'. "
+                    f"Report to the user instead of retrying.",
+                    file=sys.stderr,
+                )
                 _log_event("deny", tool, haystack, pattern)
                 return 1
         except re.error as e:
             # Broken security pattern fails closed
-            print(f"[POLICY] ERROR: invalid pattern {pattern!r} ({e}) — DENY (fail-closed).",
-                  file=sys.stderr)
+            print(
+                f"[POLICY] ERROR: invalid pattern {pattern!r} ({e}) — DENY (fail-closed).",
+                file=sys.stderr,
+            )
             _log_event("deny-badpattern", tool, haystack, pattern)
             return 1
 
@@ -142,7 +162,10 @@ def main() -> None:
         sys.exit(cmd_check(sys.argv[2], sys.argv[3:]))
     elif cmd == "get":
         if len(sys.argv) != 3 or sys.argv[2] not in SCALAR_KEYS:
-            print(f"usage: policy_check.py get <{'|'.join(sorted(SCALAR_KEYS))}>", file=sys.stderr)
+            print(
+                f"usage: policy_check.py get <{'|'.join(sorted(SCALAR_KEYS))}>",
+                file=sys.stderr,
+            )
             sys.exit(3)
         policy = load_policy()
         if policy is None:

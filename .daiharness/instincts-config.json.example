@@ -1,0 +1,19 @@
+{
+  "_comment": "Per-project instinct system configuration. Copy to .daiharness/instincts-config.json in your project.",
+  
+  "enabled": true,
+  "minSequenceLength": 3,
+  "sequenceWindowSize": 10,
+  "minInitialConfidence": 0.35,
+  "promotionThreshold": 0.7,
+  "maxEventsPerMinute": 60,
+  "storePath": ".daiharness/instincts/store.json",
+  "maxPatterns": 1000,
+  "pruneThreshold": 0.15,
+  "logLevel": "info",
+  "autoSuggest": true,
+  "maxSuggestionsPerSession": 3,
+  "suggestionDebounceMs": 5000,
+  "crossProjectTracking": true,
+  "hashArguments": true
+}

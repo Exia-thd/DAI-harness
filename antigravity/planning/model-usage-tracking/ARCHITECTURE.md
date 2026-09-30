@@ -7,7 +7,7 @@
 │                    Token Dashboard                          │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐   │
-│  │  Cursor DB  │  │ DAI Nexus │  │  (Future) API   │   │
+│  │  Cursor DB  │  │ DAI Harness │  │  (Future) API   │   │
 │  │  Reader     │  │   Reader    │  │    Readers      │   │
 │  └──────┬──────┘  └──────┬──────┘  └────────┬────────┘   │
 │         │                 │                   │             │
@@ -34,7 +34,7 @@
 ```python
 class UnifiedUsageRecord:
     timestamp: datetime
-    source: str           # "cursor" | "dai-nexus" | "claude-code"
+    source: str           # "cursor" | "dai-harness" | "claude-code"
     model: str            # Full model name
     provider: str         # "anthropic" | "openai" | "google"
     count: int            # For Cursor: frequency
@@ -103,19 +103,19 @@ class CursorDBReader:
         return self.execute(sql)
 ```
 
-### 2. DaiNexusReader
+### 2. DaiHarnessReader
 ```python
-class DaiNexusReader:
+class DaiHarnessReader:
     def get_usage(self, project: str, days: int = 7) -> List[Dict]:
-        """Read usage records from ~/.dainexus/usage/"""
-        base_path = Path.home() / ".dainexus" / "usage" / project
+        """Read usage records from ~/.daiharness/usage/"""
+        base_path = Path.home() / ".daiharness" / "usage" / project
         # ... read .jsonl files
 ```
 
 ### 3. UnifiedAggregator
 ```python
 class UnifiedAggregator:
-    def aggregate(self, cursor_data, dai_nexus_data) -> Dict:
+    def aggregate(self, cursor_data, dai_harness_data) -> Dict:
         return {
             "by_source": {...},
             "by_model": {...},
@@ -138,8 +138,8 @@ def cursor_models():
 @app.route('/api/unified/usage')
 def unified_usage():
     cursor = CursorDBReader().get_code_hashes()
-    dai-nexus = DaiNexusReader().get_usage(project)
-    return jsonify(UnifiedAggregator().aggregate(cursor, dai-nexus))
+    dai-harness = DaiHarnessReader().get_usage(project)
+    return jsonify(UnifiedAggregator().aggregate(cursor, dai-harness))
 ```
 
 ## Dashboard Updates

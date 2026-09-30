@@ -2,7 +2,7 @@
 
 ## Overview
 
-Complete reference of Unity-MCP tools (100+) với DAI Nexus use case mapping.
+Complete reference of Unity-MCP tools (100+) với DAI Harness use case mapping.
 
 **Source:** [IvanMurzak/Unity-MCP](https://github.com/IvanMurzak/Unity-MCP)  
 **Version:** 0.63.4 (latest)
@@ -13,7 +13,7 @@ Complete reference of Unity-MCP tools (100+) với DAI Nexus use case mapping.
 
 ### Asset Management
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `assets-copy` | Copy asset at path | Duplicate prefab templates |
 | `assets-create-folder` | Create folder in project | Organize project structure |
@@ -28,7 +28,7 @@ Complete reference of Unity-MCP tools (100+) với DAI Nexus use case mapping.
 
 ### Prefab Operations
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `assets-prefab-close` | Close prefab edit mode | Finish prefab editing |
 | `assets-prefab-create` | Create prefab from GameObject | Convert scene objects |
@@ -38,7 +38,7 @@ Complete reference of Unity-MCP tools (100+) với DAI Nexus use case mapping.
 
 ### Package Management
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `package-add` | Install UPM package | Add dependencies |
 | `package-list` | List installed packages | Check dependencies |
@@ -47,7 +47,7 @@ Complete reference of Unity-MCP tools (100+) với DAI Nexus use case mapping.
 
 ### Shaders & Materials
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `assets-shader-list-all` | List all shaders | Find available shaders |
 | `assets-material-create` | Create material | Create PBR/custom materials |
@@ -58,7 +58,7 @@ Complete reference of Unity-MCP tools (100+) với DAI Nexus use case mapping.
 
 ### GameObject Creation
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `gameobject-create` | Create new GameObject | Create spawn points, managers |
 | `gameobject-destroy` | Destroy GameObject | Clean up objects |
@@ -68,7 +68,7 @@ Complete reference of Unity-MCP tools (100+) với DAI Nexus use case mapping.
 
 ### Component Operations
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `gameobject-component-add` | Add Component | Add NetworkObject, Rigidbody |
 | `gameobject-component-destroy` | Destroy component | Remove components |
@@ -78,13 +78,13 @@ Complete reference of Unity-MCP tools (100+) với DAI Nexus use case mapping.
 
 ### Hierarchy
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `gameobject-set-parent` | Set parent | Organize hierarchy |
 
 ### Object Reference
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `object-get-data` | Get object data | Inspect scene objects |
 | `object-modify` | Modify object | Change properties |
@@ -95,7 +95,7 @@ Complete reference of Unity-MCP tools (100+) với DAI Nexus use case mapping.
 
 ### Scene Management
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `scene-create` | Create new scene | Add gameplay scenes |
 | `scene-get-data` | Get scene data | List root GameObjects |
@@ -111,7 +111,7 @@ Complete reference of Unity-MCP tools (100+) với DAI Nexus use case mapping.
 
 ### Script Management
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `script-delete` | Delete script file | Remove unused scripts |
 | `script-read` | Read script content | Analyze existing code |
@@ -119,13 +119,13 @@ Complete reference of Unity-MCP tools (100+) với DAI Nexus use case mapping.
 
 ### Dynamic Execution
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `script-execute` | Compile & execute C# via Roslyn | Test code snippets without saving |
 
 ### Reflection
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `reflection-method-call` | Call C# method | Invoke gameplay methods |
 | `reflection-method-find` | Find method | Discover available APIs |
@@ -134,7 +134,7 @@ Complete reference of Unity-MCP tools (100+) với DAI Nexus use case mapping.
 
 ## Category: Screenshot
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `screenshot-camera` | Capture from camera | Shader preview, VFX capture |
 | `screenshot-game-view` | Capture game view | Visual verification |
@@ -146,21 +146,21 @@ Complete reference of Unity-MCP tools (100+) với DAI Nexus use case mapping.
 
 ### Application Control
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `editor-application-get-state` | Get play mode state | Check if playing |
 | `editor-application-set-state` | Control play mode | Start/stop/pause |
 
 ### Selection
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `editor-selection-get` | Get selection | Inspect selected object |
 | `editor-selection-set` | Set selection | Focus on object |
 
 ### Console
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `console-get-logs` | Get Editor logs | Debug errors, warnings |
 
@@ -168,7 +168,7 @@ Complete reference of Unity-MCP tools (100+) với DAI Nexus use case mapping.
 
 ## Category: Testing
 
-| Tool | Description | DAI Nexus Use Case |
+| Tool | Description | DAI Harness Use Case |
 |------|-------------|---------------------|
 | `tests-run` | Run Unity tests | Execute PlayMode/EditMode tests |
 
@@ -215,11 +215,11 @@ Geometry-specific tools:
 
 ---
 
-## DAI Nexus → Unity-MCP Mapping
+## DAI Harness → Unity-MCP Mapping
 
 ### By Phase
 
-| Phase | DAI Nexus Task | Unity-MCP Tool |
+| Phase | DAI Harness Task | Unity-MCP Tool |
 |-------|-----------------|---------------|
 | Scene Setup | Create manager | `gameobject-create` |
 | Scene Setup | Add components | `gameobject-component-add` |
@@ -234,7 +234,7 @@ Geometry-specific tools:
 
 ### By Tool Category
 
-| Category | Unity-MCP Tools | DAI Nexus Skills |
+| Category | Unity-MCP Tools | DAI Harness Skills |
 |----------|-----------------|-------------------|
 | Architecture | None | `unity-engineer` |
 | Scene Setup | `gameobject-*`, `assets-*` | `unity-engineer` |
@@ -269,7 +269,7 @@ assets-prefab-create(source_path="Characters/Player", target_path="Assets/Prefab
 ### Workflow 2: Shader Iteration
 
 ```bash
-# 1. Create dissolve shader (manual via DAI Nexus)
+# 1. Create dissolve shader (manual via DAI Harness)
 
 # 2. Create material
 assets-material-create(name="M_Dissolve", shader="Shader Graphs/SG_Dissolve")

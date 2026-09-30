@@ -9,7 +9,7 @@ version: 1.0.0
 ## SOLVE Step 2: GROUND (Sre Domain Slots)
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Active project tech stack and development profile are established | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Active project tech stack and development profile are established | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 | Performance monitoring stack (k6/InfluxDB/Grafana) configurations exist | `find docker/perf-stack/ -name \"*.yml\" -o -name \"*.json\" \|\| ls -la docker-compose.test.yml` | ... | run the check command and paste output |
 | Deployment and staged-rollout automation scripts exist | `find scripts/ci/ scripts/ -maxdepth 2 -type f 2>/dev/null` | ... | run the check command and paste output |
 
@@ -28,7 +28,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground target project settings and CI/CD benchmarks
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 ls -la docker-compose.test.yml
 ```
 ```

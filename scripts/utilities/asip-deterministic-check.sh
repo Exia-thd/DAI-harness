@@ -6,7 +6,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DAINEXUS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+DAIHARNESS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 PLAN_FILE="${1:-/dev/stdin}"
 VERBOSE="${VERBOSE:-0}"
 
@@ -38,8 +38,8 @@ check_feasibility() {
       pkg=$(echo "$dep" | awk '{print $NF}')
       case "$dep" in
         *npm\ install*|*pip\ install*)
-          if [ -f "$DAINEXUS_DIR/package.json" ]; then
-            if ! grep -q "\"$pkg\"" "$DAINEXUS_DIR/package.json" 2>/dev/null; then
+          if [ -f "$DAIHARNESS_DIR/package.json" ]; then
+            if ! grep -q "\"$pkg\"" "$DAIHARNESS_DIR/package.json" 2>/dev/null; then
               warn "Dependency '$pkg' may not be installed. Add to package.json or note as missing."
             fi
           fi
@@ -75,14 +75,14 @@ check_feasibility() {
 
   # 3. Check that referenced files actually exist
   local referenced_files
-  referenced_files=$(echo "$plan_content" | grep -oE '(skills/|scripts/|\.dainexus/|middleware/)[a-zA-Z0-9_./-]+' | sort -u || true)
+  referenced_files=$(echo "$plan_content" | grep -oE '(skills/|scripts/|\.daiharness/|middleware/)[a-zA-Z0-9_./-]+' | sort -u || true)
 
   local missing_files=0
   while IFS= read -r ref; do
     # Normalize: remove line numbers, comments, trailing punctuation
     local normalized="${ref%.}"; normalized="${normalized%,}"; normalized="${normalized//,/}"
     if [ -n "$normalized" ] && [ "$normalized" != "skills/" ] && [ "$normalized" != "scripts/" ]; then
-      if [ ! -e "$DAINEXUS_DIR/$normalized" ]; then
+      if [ ! -e "$DAIHARNESS_DIR/$normalized" ]; then
         fail "Referenced path does not exist: $normalized"
         missing_files=$((missing_files + 1))
       fi
@@ -98,7 +98,7 @@ check_feasibility() {
 
   # 4. Check for circular dependencies in file modification list
   local modified_files
-  modified_files=$(echo "$plan_content" | grep -oE '(create|modify|update|edit|write).* [:filename filepath]([^\n]+)' | grep -oE '(skills/|scripts/|\.dainexus/)[a-zA-Z0-9_./-]+\.(md|sh|py|json|yaml|yml)' | sort -u || true)
+  modified_files=$(echo "$plan_content" | grep -oE '(create|modify|update|edit|write).* [:filename filepath]([^\n]+)' | grep -oE '(skills/|scripts/|\.daiharness/)[a-zA-Z0-9_./-]+\.(md|sh|py|json|yaml|yml)' | sort -u || true)
 
   if [ -n "$modified_files" ]; then
     local file_count
@@ -162,7 +162,7 @@ check_testability() {
     local missing_tests=0
     while IFS= read -r tf; do
       local normalized="${tf%.}"; normalized="${normalized//,/}"
-      if [ -n "$normalized" ] && [ ! -e "$DAINEXUS_DIR/$normalized" ]; then
+      if [ -n "$normalized" ] && [ ! -e "$DAIHARNESS_DIR/$normalized" ]; then
         warn "Test file referenced but not found: $normalized"
         missing_tests=$((missing_tests + 1))
       fi

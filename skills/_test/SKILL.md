@@ -1,14 +1,14 @@
-# DAI Nexus Self-Test Orchestrator
+# DAI Harness Self-Test Orchestrator
 
-> **Purpose:** Validates DAI Nexus's own behavior including mode classification, plan quality scoring, and middleware chain execution.
+> **Purpose:** Validates DAI Harness's own behavior including mode classification, plan quality scoring, and middleware chain execution.
 
-**Source:** This skill is part of Phase 1 (Quick Wins) of the DAI Nexus improvement plan (v9). It ensures DAI Nexus tests itself systematically before shipping changes.
+**Source:** This skill is part of Phase 1 (Quick Wins) of the DAI Harness improvement plan (v9). It ensures DAI Harness tests itself systematically before shipping changes.
 
 ---
 
 ## Overview
 
-The Test Orchestrator provides automated testing for core DAI Nexus behaviors:
+The Test Orchestrator provides automated testing for core DAI Harness behaviors:
 
 | Category | Coverage |
 |----------|----------|
@@ -146,7 +146,7 @@ Add to your CI pipeline:
 
 ```yaml
 # Canonical local command (hosted adapters may call this when explicitly requested)
-- name: Run DAI Nexus Self-Tests
+- name: Run DAI Harness Self-Tests
   run: |
     bash scripts/run-self-tests.sh --coverage --junit results.xml
 ```

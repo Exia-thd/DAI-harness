@@ -6,7 +6,7 @@ description: >
   about. Replaces the SQLite, ChromaDB and GraphRAG stacks this project used
   before 2026-09-21.
 version: 3.0.0
-author: dai-nexus
+author: dai-harness
 tags: [memory, decisions, retrieval, code-graph, context]
 ---
 
@@ -33,7 +33,7 @@ The MCP server exposes these; the same things exist as CLI commands.
 ### Recording
 
 ```
-dn_memory_add({ text: "...", category: "decision", importance: 8 })
+dh_memory_add({ text: "...", category: "decision", importance: 8 })
 ```
 
 Categories map onto the layer's three layers: `decision`, `convention`,
@@ -49,7 +49,7 @@ logic" is a commit message.
 ### Retrieving
 
 ```
-dn_memory_search({ query: "why do we retry declined cards", limit: 5 })
+dh_memory_search({ query: "why do we retry declined cards", limit: 5 })
 dai_memory_why({ target: "src/billing/retry.ts" })
 dai_memory_context({ target: "chargeCard" })
 ```

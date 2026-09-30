@@ -6,7 +6,7 @@ description: >
   error handling, idempotency, concurrency, and clean architecture patterns.
   Routed via the production-grade orchestrator.
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [backend, api, services, implementation, clean-architecture, tdd]
 ---
 
@@ -33,7 +33,7 @@ tags: [backend, api, services, implementation, clean-architecture, tdd]
 !`cat skills/_shared/protocols/tool-efficiency.md 2>/dev/null || true`
 !`cat skills/_shared/protocols/code-intelligence.md 2>/dev/null || true`
 !`cat .production-grade.yaml 2>/dev/null || echo "No config — using defaults"`
-!`cat .dainexus/codebase-context.md 2>/dev/null || true`
+!`cat .daiharness/codebase-context.md 2>/dev/null || true`
 
 **Fallback:** Never ask open-ended questions. Use notify_user. Work continuously. Print progress.
 
@@ -63,7 +63,7 @@ QA Engineer → tests/
 
 ## Engagement Mode
 
-!`cat .dainexus/settings.md 2>/dev/null || echo "No settings — using Standard"`
+!`cat .daiharness/settings.md 2>/dev/null || echo "No settings — using Standard"`
 
 | Mode | Behavior |
 |------|----------|
@@ -76,7 +76,7 @@ QA Engineer → tests/
 
 ## Brownfield Awareness
 
-If `.dainexus/codebase-context.md` exists and mode is `brownfield`:
+If `.daiharness/codebase-context.md` exists and mode is `brownfield`:
 
 - **READ existing code first** — understand patterns, naming, structure
 - **MATCH existing style** — if they use camelCase, use camelCase

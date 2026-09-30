@@ -23,10 +23,10 @@ Hệ thống quản lý chất lượng (Quality Management) được phân chia
 
 *   **Quality Assurance (QA) - Định hướng Quy trình (Process-oriented / Preventive):**
     *   Tập trung vào việc thiết kế, xây dựng và cải tiến quy trình phát triển phần mềm để đảm bảo đội ngũ "làm đúng ngay từ đầu" và ngăn ngừa lỗi xuất hiện (Preventive).
-    *   *Nhiệm vụ trong DAI Nexus:* Xác định tiêu chuẩn code, lập quy hoạch kiểm thử, cấu hình Quality Gate trong CI/CD, thực thi rà soát quy trình.
+    *   *Nhiệm vụ trong DAI Harness:* Xác định tiêu chuẩn code, lập quy hoạch kiểm thử, cấu hình Quality Gate trong CI/CD, thực thi rà soát quy trình.
 *   **Quality Control (QC) - Định hướng Sản phẩm (Product-oriented / Detective):**
     *   Tập trung vào kiểm tra sản phẩm đầu ra thực tế nhằm phát hiện, phân loại và khoanh vùng các lỗi hiện hữu trước khi phát hành (Detective).
-    *   *Nhiệm vụ trong DAI Nexus:* Chạy các bộ test suite (unit, integration, visual regression, E2E), rà soát code (code review), ghi nhận và phân loại lỗi.
+    *   *Nhiệm vụ trong DAI Harness:* Chạy các bộ test suite (unit, integration, visual regression, E2E), rà soát code (code review), ghi nhận và phân loại lỗi.
 
 ### Liên kết Chỉ số Đo lường (ISO/IEC 14598-1)
 Các chỉ số quy trình nội bộ (Internal Metrics) chỉ thực sự có giá trị khi chúng ta chứng minh được bằng thống kê rằng chúng có mối tương quan chặt chẽ với chất lượng sản phẩm đầu ra (External Indicators).
@@ -143,7 +143,7 @@ Mutation testing là công cụ tối thượng để kiểm tra xem bộ test c
 
 ## 5. Quy trình Kiểm thử Liên tục: Shift-Left & Shift-Right
 
-Để tối ưu hóa chi phí sửa lỗi, DAI Nexus áp dụng song song hai mô hình kiểm thử dịch chuyển:
+Để tối ưu hóa chi phí sửa lỗi, DAI Harness áp dụng song song hai mô hình kiểm thử dịch chuyển:
 
 ```
 SHIFT-LEFT (Phòng ngừa lỗi sớm) ◄─── [ PHÁT TRIỂN / CI ] ───► SHIFT-RIGHT (Vận hành thực tế)

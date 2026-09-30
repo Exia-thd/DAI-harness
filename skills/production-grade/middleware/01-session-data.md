@@ -7,12 +7,12 @@
 ## Execution
 
 ```
-1. Load .dainexus/project-profile.json
+1. Load .daiharness/project-profile.json
    → If exists and fresh (<24h): use cached fingerprint
    → If stale: re-run health check only
    → If missing: run full project onboarding
 
-2. Load .dainexus/session-log.json
+2. Load .daiharness/session-log.json
    → If interrupted session: offer resume via notify_user
    → If completed: log summary, continue to new request
    → If first session: continue normally
@@ -22,7 +22,7 @@
    → If structural changes detected: re-run onboarding fingerprint + patterns
 
 4. Display quality trend (if history exists)
-   → Read .dainexus/quality-history.json → show trend of last 5 sessions
+   → Read .daiharness/quality-history.json → show trend of last 5 sessions
 ```
 
 ## Outputs

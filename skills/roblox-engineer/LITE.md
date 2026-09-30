@@ -10,7 +10,7 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Rojo project configuration file is active | `cat default.project.json` | ... | run the check command and paste output |
-| Project-specific tech stack and profile configurations are active | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project-specific tech stack and profile configurations are active | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Roblox Engineer Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
@@ -27,11 +27,11 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground the Roblox Rojo workspace settings
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 cat default.project.json | grep -E "(name|tree)" -A 3
 ```
 ```json
-  "name": "dai-nexus-roblox-battle",
+  "name": "dai-harness-roblox-battle",
   "tree": {
     "$className": "DataModel",
     "ReplicatedStorage": {

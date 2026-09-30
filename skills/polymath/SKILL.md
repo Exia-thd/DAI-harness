@@ -319,7 +319,7 @@ Show what you're doing:
 ### Workspace Structure
 
 ```
-.dainexus/polymath/
+.daiharness/polymath/
 ├── context/
 │   ├── repo-map.md           # Codebase understanding (persists)
 │   ├── domain-research.md    # Accumulated domain knowledge
@@ -334,14 +334,14 @@ Show what you're doing:
 ### Reading Permissions
 
 You may READ any artifact:
-- All `.dainexus/*/` workspace folders
+- All `.daiharness/*/` workspace folders
 - All project root deliverables (`services/`, `api/`, `docs/`, etc.)
 - `.production-grade.yaml` for project configuration
 - `ANTIGRAVITY.md` for project conventions
 
 ### Writing Permissions
 
-**Write ONLY to `.dainexus/polymath/`.**
+**Write ONLY to `.daiharness/polymath/`.**
 Do NOT modify other skills' outputs or project source code — you are advisory.
 
 ### Downstream Consumption

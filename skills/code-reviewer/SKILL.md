@@ -2,7 +2,7 @@
 name: code-reviewer
 description: "Reviews code for quality — architecture conformance, anti-patterns, performance issues, maintainability. Read-only analysis that detects circular dependencies, N+1 queries, dead code, naming violations, and layering breaches. Use when the user asks for a code review, wants feedback on code quality, PR review, tech debt analysis, or architecture conformance checks."
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [code-review, quality, architecture, anti-patterns, tech-debt, maintainability]
 ---
 
@@ -35,7 +35,7 @@ tags: [code-review, quality, architecture, anti-patterns, tech-debt, maintainabi
 
 ## Engagement Mode
 
-!`cat .dainexus/settings.md 2>/dev/null || echo "No settings — using Standard"`
+!`cat .daiharness/settings.md 2>/dev/null || echo "No settings — using Standard"`
 
 | Mode | Behavior |
 |------|----------|
@@ -48,7 +48,7 @@ tags: [code-review, quality, architecture, anti-patterns, tech-debt, maintainabi
 
 ## read_only Policy
 
-This skill **produces findings only**. Does NOT modify source code. All output goes to `.dainexus/code-reviewer/`.
+This skill **produces findings only**. Does NOT modify source code. All output goes to `.daiharness/code-reviewer/`.
 
 ---
 
@@ -91,7 +91,7 @@ Only after spec compliance passes.
 ## Output Structure
 
 ```
-.dainexus/code-reviewer/
+.daiharness/code-reviewer/
 ├── review-report.md                    # Executive summary + all findings
 ├── architecture-conformance.md          # ADR compliance check
 ├── findings/
@@ -153,7 +153,7 @@ Only after spec compliance passes.
 
 ### ADR Compliance Table
 
-```markdown
+````markdown
 ## ADR Compliance Status
 
 | ADR | Title | Status | Violations |
@@ -178,7 +178,7 @@ await messageQueue.publish('inventory.check', { orderId });
 ```
 
 **ADR Reference:** ADR-002 Section 3.2 — "All inter-service communication must use RabbitMQ"
-```
+````
 
 ---
 
@@ -188,7 +188,7 @@ await messageQueue.publish('inventory.check', { orderId });
 
 ### SOLID Principles Checklist
 
-```markdown
+````markdown
 ### S — Single Responsibility
 | Class/Function | Lines | Responsibility | Violation? |
 |---------------|-------|----------------|------------|
@@ -249,6 +249,7 @@ class OrderService {
   constructor(private db: Database) {} // Injected interface
 }
 ```
+````
 
 ### Code Structure Issues
 
@@ -657,7 +658,7 @@ test('getUser returns correct user data', async () => {
 | Mixing security with quality | Security → security-engineer. You → quality. |
 | Flagging linter issues | Focus on structural issues linters miss |
 | One finding per file | Group related symptoms under root cause |
-| Modifying source files | Write all output to .dainexus/code-reviewer/ |
+| Modifying source files | Write all output to .daiharness/code-reviewer/ |
 
 ---
 
@@ -670,6 +671,6 @@ test('getUser returns correct user data', async () => {
 - [ ] Phase 4: Test quality evaluated (coverage, assertions)
 - [ ] Phase 5: Review report written with severity distribution
 - [ ] Phase 6: Git workflow reviewed (if applicable)
-- [ ] All findings to `.dainexus/code-reviewer/findings/`
+- [ ] All findings to `.daiharness/code-reviewer/findings/`
 - [ ] No source files modified
 - [ ] No security review performed (security-engineer scope)

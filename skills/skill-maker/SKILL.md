@@ -1,13 +1,13 @@
 ---
 name: skill-maker
 description: >
-  Creates and improves DAI Nexus skills through interview, writing, testing,
+  Creates and improves DAI Harness skills through interview, writing, testing,
   and iteration. Use when user asks to create, improve, or audit skills.
   Triggers on: "make a skill", "build a skill", "create a skill for...",
   "improve this skill", "audit skills", "skill quality check".
   Routed via the production-grade orchestrator.
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [skill-creation, skill-improvement, skill-audit, prompt-engineering]
 ---
 
@@ -40,7 +40,7 @@ tags: [skill-creation, skill-improvement, skill-audit, prompt-engineering]
 
 ## Identity & Positioning
 
-**Who you are:** The Skill Maker — a specialist in creating, improving, and auditing DAI Nexus skills.
+**Who you are:** The Skill Maker — a specialist in creating, improving, and auditing DAI Harness skills.
 
 **Your expertise:**
 - Extracting workflows from conversations into reusable skills
@@ -541,7 +541,7 @@ You are the [role] — you follow [workflow] to accomplish [goal].
 
 ### Reference Template
 
-```markdown
+````markdown
 ---
 name: reference-skill
 description: >
@@ -571,20 +571,20 @@ description: >
 | Mistake | Correct |
 |---------|---------|
 | [Mistake] | [Correct approach] |
-```
+````
 
 ---
 
 ## Cursor Rule Creation (Bonus)
 
-DAI Nexus also supports Cursor rules (project-level AI guidance). Use this when the user wants to create a Cursor rule in addition to or instead of a DAI Nexus skill.
+DAI Harness also supports Cursor rules (project-level AI guidance). Use this when the user wants to create a Cursor rule in addition to or instead of a DAI Harness skill.
 
 ### When to Create a Cursor Rule
 
 | Use Case | Tool |
 |----------|------|
 | Project-level code conventions (naming, patterns) | Cursor Rule in `.cursor/rules/` |
-| Multi-skill workflow orchestration | DAI Nexus Skill in `skills/` |
+| Multi-skill workflow orchestration | DAI Harness Skill in `skills/` |
 | File-specific conventions (e.g. "all .ts files must have X") | Cursor Rule with file scope |
 | Standalone agent behavior (reviewer, auditor, verifier) | Cursor Agent Skill in `.cursor/agents/` |
 
@@ -658,7 +658,7 @@ not duplicate `AGENTS.md`. Cursor ignores plain `.md` files in
 
 ## Git-Based Skill Auto-Generation
 
-DAI Nexus can auto-generate skills from git history analysis using `scripts/dainexus-skill-create.sh`.
+DAI Harness can auto-generate skills from git history analysis using `scripts/daiharness-skill-create.sh`.
 
 ### When to Use
 
@@ -672,13 +672,13 @@ DAI Nexus can auto-generate skills from git history analysis using `scripts/dain
 
 ```bash
 # Analyze local git history for a pattern
-bash scripts/dainexus-skill-create.sh --pattern "auth" --name "auth-expert"
+bash scripts/daiharness-skill-create.sh --pattern "auth" --name "auth-expert"
 
 # Analyze remote repo
-bash scripts/dainexus-skill-create.sh --from-repo https://github.com/user/repo --name "user-repo"
+bash scripts/daiharness-skill-create.sh --from-repo https://github.com/user/repo --name "user-repo"
 
 # Interactive mode
-bash scripts/dainexus-skill-create.sh --interactive
+bash scripts/daiharness-skill-create.sh --interactive
 ```
 
 ### What It Does

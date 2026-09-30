@@ -1,5 +1,5 @@
 /**
- * Studio Types - TypeScript interfaces for DAI Nexus Studio
+ * Studio Types - TypeScript interfaces for DAI Harness Studio
  *
  * Based on AgentScope Studio patterns
  * https://github.com/agentscope-ai/agentscope-studio

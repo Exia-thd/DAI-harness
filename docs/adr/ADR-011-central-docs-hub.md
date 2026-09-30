@@ -5,7 +5,7 @@
 
 ## Context
 
-DAI Nexus currently has project documentation, a static landing page,
+DAI Harness currently has project documentation, a static landing page,
 specialized dashboards, GitNexus-generated flow material, and Obsidian/LLM Wiki
 sync scripts. These capabilities are useful but fragmented:
 
@@ -13,7 +13,7 @@ sync scripts. These capabilities are useful but fragmented:
 - sync scripts contain machine-specific assumptions;
 - project profiles have evolved beyond the minimal CLI-created schema;
 - real projects use mixed documentation roots and limited metadata;
-- `.dainexus/` can contain large, private execution artifact sets;
+- `.daiharness/` can contain large, private execution artifact sets;
 - visual tokens and navigation patterns are not shared across surfaces.
 
 ## Decision
@@ -140,7 +140,7 @@ experience dependent on symlinks or a specific desktop application.
 
 ### Cloud-first documentation service
 
-Rejected because DAI Nexus requires project-owned, provider-neutral local
+Rejected because DAI Harness requires project-owned, provider-neutral local
 commands and projects can contain private artifacts.
 
 ### Scan the entire repository and filter after ingestion
@@ -162,6 +162,6 @@ break links and increase adoption cost.
   changeset state requirements, strict in-memory doctor behavior, temporary
   HTML/CSS output verification, and fail-closed diagnostics.
 - Security tests prove root containment and excluded-path handling.
-- DAI Nexus and Pixelworld fixtures prove mixed project compatibility.
+- DAI Harness and Pixelworld fixtures prove mixed project compatibility.
 - Browser tests prove static navigation, responsiveness, and accessibility.
 - Detect-changes and independent review gate public-contract modifications.

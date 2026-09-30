@@ -6,7 +6,7 @@ description: >
   Includes clean architecture, TDD, error handling, and state management patterns.
   Combines: software-engineer + frontend-engineer
 version: 1.0.0
-author: dai-nexus
+author: dai-harness
 tags: [fullstack, backend, frontend, react, nextjs, typescript, clean-architecture, tdd]
 consolidated_from:
   - software-engineer
@@ -150,7 +150,7 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 
 ## Brownfield Awareness
 
-If `.dainexus/codebase-context.md` exists:
+If `.daiharness/codebase-context.md` exists:
 
 - **READ existing code first** — understand patterns, naming, structure
 - **MATCH existing style** — if they use camelCase, use camelCase

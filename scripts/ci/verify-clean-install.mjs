@@ -7,13 +7,13 @@ import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
-const snapshot = mkdtempSync(join(tmpdir(), "dainexus-clean-install-"));
+const snapshot = mkdtempSync(join(tmpdir(), "daiharness-clean-install-"));
 const excluded = new Set([
   "node_modules",
   "build",
   "dist",
   "coverage",
-  ".dainexus",
+  ".daiharness",
   ".DS_Store",
 ]);
 const npm = process.platform === "win32" ? "npm.cmd" : "npm";

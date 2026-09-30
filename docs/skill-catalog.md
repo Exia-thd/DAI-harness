@@ -1,8 +1,8 @@
 # Skill Catalog
 
-> **Complete reference of all DAI Nexus skills**
+> **Complete reference of all DAI Harness skills**
 
-DAI Nexus includes 55+ skills organized into 8 categories. Skills are loaded on-demand based on the detected mode.
+DAI Harness includes 55+ skills organized into 8 categories. Skills are loaded on-demand based on the detected mode.
 
 ## Skill Categories
 

@@ -6,7 +6,7 @@ description: >
   Maintains structural coherence and optimization budgets across 3D pipelines.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 1.0.0
-author: dai-nexus
+author: dai-harness
 tags: [3d, layout, coordinate-systems, blockout, optimization, matrices, rendering]
 ---
 
@@ -150,7 +150,7 @@ Every level layout must enforce active culling (Frustum, Occlusion, and Distance
 ## Output Structure
 
 ```
-.dainexus/3d-spatial-engineer/
+.daiharness/3d-spatial-engineer/
 ├── spatial-metrics.md
 ├── wayfinding-layout.md
 ├── blockout-specs.md

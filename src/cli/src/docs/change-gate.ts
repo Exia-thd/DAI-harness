@@ -261,7 +261,7 @@ const GIT_QUERY_TIMEOUT_MS = 10_000;
  * with an empty stderr, so the gate blamed Git for being unreadable.
  */
 const GIT_SNAPSHOT_TIMEOUT_MS = Number.parseInt(
-  process.env.DAINEXUS_DOCS_GIT_SNAPSHOT_TIMEOUT_MS ?? "120000",
+  process.env.DAIHARNESS_DOCS_GIT_SNAPSHOT_TIMEOUT_MS ?? "120000",
   10,
 );
 
@@ -386,7 +386,7 @@ function selectedProjectView(
     );
   }
 
-  const temporaryParent = mkdtempSync(join(tmpdir(), "dai-nexus-docs-view-"));
+  const temporaryParent = mkdtempSync(join(tmpdir(), "dai-harness-docs-view-"));
   try {
     const snapshotRoot = join(temporaryParent, "repository");
     runGitOutput(
@@ -461,8 +461,8 @@ function isIgnoredGeneratedPath(path: string): boolean {
   const segments = pathSegments(path);
   return (
     segments.includes(".git") ||
-    lower === ".dainexus/cache" ||
-    lower.startsWith(".dainexus/cache/") ||
+    lower === ".daiharness/cache" ||
+    lower.startsWith(".daiharness/cache/") ||
     isGeneratedDocsOutputPath(path) ||
     segments.some((segment) => GENERATED_DIRECTORIES.has(segment))
   );
@@ -471,7 +471,8 @@ function isIgnoredGeneratedPath(path: string): boolean {
 function isGeneratedDocsOutputPath(path: string): boolean {
   const lower = path.toLowerCase();
   return (
-    lower === ".dainexus/docs-hub" || lower.startsWith(".dainexus/docs-hub/")
+    lower === ".daiharness/docs-hub" ||
+    lower.startsWith(".daiharness/docs-hub/")
   );
 }
 
@@ -507,7 +508,7 @@ function isDocumentationOnlyPath(path: string): boolean {
 function isProjectConfigPath(path: string): boolean {
   const basename = path.split("/").at(-1)?.toLowerCase() ?? "";
   return (
-    path.toLowerCase() === ".dainexus/docs-manifest.json" ||
+    path.toLowerCase() === ".daiharness/docs-manifest.json" ||
     PROJECT_MANIFESTS.has(basename) ||
     /^(\.env|\.nvmrc|\.npmrc|\.tool-versions|tsconfig(?:\.|$)|jsconfig(?:\.|$)|vitest\.config\.|jest\.config\.|vite\.config\.|webpack\.config\.|rollup\.config\.|eslint\.config\.|\.eslintrc|\.prettierrc)/.test(
       basename,
@@ -654,7 +655,7 @@ function outputRelativePath(outputDir: string, candidate: string): string {
 function verifyOutput(outputDir: string, catalog: DocsCatalog): string[] {
   const projectRoot = `projects/${encodeURIComponent(catalog.project.id)}`;
   const required = [
-    ".dainexus-docs-hub",
+    ".daiharness-docs-hub",
     "index.html",
     "style.css",
     "app.js",
@@ -687,7 +688,7 @@ function verifyOutput(outputDir: string, catalog: DocsCatalog): string[] {
   let ownership: unknown;
   try {
     ownership = JSON.parse(
-      readFileSync(resolve(outputDir, ".dainexus-docs-hub"), "utf8"),
+      readFileSync(resolve(outputDir, ".daiharness-docs-hub"), "utf8"),
     );
   } catch (error) {
     throw new DocsGateError(
@@ -714,7 +715,7 @@ function verifyOutput(outputDir: string, catalog: DocsCatalog): string[] {
   if (
     !ownership ||
     typeof ownership !== "object" ||
-    (ownership as { schema?: unknown }).schema !== "dai-nexus-docs-hub" ||
+    (ownership as { schema?: unknown }).schema !== "dai-harness-docs-hub" ||
     (ownership as { schema_version?: unknown }).schema_version !== 1 ||
     !ownsCatalog
   ) {
@@ -801,7 +802,9 @@ export function runDocsGate(
     };
     if (doctorReport.status === "fail") return result;
 
-    const temporaryParent = mkdtempSync(join(tmpdir(), "dai-nexus-docs-gate-"));
+    const temporaryParent = mkdtempSync(
+      join(tmpdir(), "dai-harness-docs-gate-"),
+    );
     try {
       const outputDir = join(temporaryParent, "site");
       buildDocsHub([catalog], outputDir);

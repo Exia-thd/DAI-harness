@@ -20,9 +20,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DAINEXUS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-STYLE_GUIDE_DIR="${DAINEXUS_DIR}/.dainexus/art-direction"
-REVIEWS_DIR="${DAINEXUS_DIR}/.dainexus/art-reviews"
+DAIHARNESS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+STYLE_GUIDE_DIR="${DAIHARNESS_DIR}/.daiharness/art-direction"
+REVIEWS_DIR="${DAIHARNESS_DIR}/.daiharness/art-reviews"
 VISION_REVIEW="${SCRIPT_DIR}/vision-review.sh"
 STYLE_CONTRACT_TOOL="${SCRIPT_DIR}/style-contract.py"
 ASSET_LIFECYCLE_TOOL="${SCRIPT_DIR}/asset-lifecycle.py"

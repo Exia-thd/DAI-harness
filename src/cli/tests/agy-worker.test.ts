@@ -28,7 +28,7 @@ function makeWorkspace(hook: unknown | undefined): {
   contractPath: string;
   gatePath: string;
 } {
-  const root = mkdtempSync(join(tmpdir(), "dai-nexus-agy-worker-"));
+  const root = mkdtempSync(join(tmpdir(), "dai-harness-agy-worker-"));
   roots.push(root);
   const contractPath = join(root, "tasks", "T1", "CONTRACT.json");
   const gatePath = join(
@@ -51,7 +51,7 @@ function makeWorkspace(hook: unknown | undefined): {
 
 function validHook(enabled: boolean | undefined = true): unknown {
   return {
-    "dai-nexus-policy": {
+    "dai-harness-policy": {
       ...(enabled === undefined ? {} : { enabled }),
       PreToolUse: [
         {
@@ -80,7 +80,7 @@ function writeGlobalHook(
   writeFileSync(
     hooksPath,
     JSON.stringify({
-      "dai-nexus-policy": {
+      "dai-harness-policy": {
         PreToolUse: [
           {
             matcher: "*",
@@ -166,7 +166,7 @@ describe("Agy worker adapter", () => {
     [
       "wrong matcher",
       {
-        "dai-nexus-policy": {
+        "dai-harness-policy": {
           enabled: true,
           PreToolUse: [
             {
@@ -184,7 +184,7 @@ describe("Agy worker adapter", () => {
     [
       "command wrapper that can override the gate result",
       {
-        "dai-nexus-policy": {
+        "dai-harness-policy": {
           PreToolUse: [
             {
               matcher: "*",
@@ -208,7 +208,7 @@ describe("Agy worker adapter", () => {
     }
     expect(() =>
       findValidAgyPolicyHook(workspace.root, dirname(workspace.contractPath)),
-    ).toThrow(/(?:AGY policy hook|dai-nexus-policy PreToolUse hook)/);
+    ).toThrow(/(?:AGY policy hook|dai-harness-policy PreToolUse hook)/);
   });
 
   it("spawns exactly agy with shell disabled after policy validation", async () => {
@@ -246,7 +246,7 @@ describe("Agy worker adapter", () => {
         cwd: dirname(realpathSync(workspace.contractPath)),
         env: {
           ...process.env,
-          DAINEXUS_WORKSPACE: realpathSync(workspace.root),
+          DAIHARNESS_WORKSPACE: realpathSync(workspace.root),
         },
         shell: false,
         stdio: ["ignore", "inherit", "inherit"],
@@ -276,7 +276,7 @@ describe("Agy worker adapter", () => {
         homeDirectory: workspace.root,
         model: "model",
       }),
-    ).rejects.toThrow("global dai-nexus-policy hook");
+    ).rejects.toThrow("global dai-harness-policy hook");
     expect(spawnMock).not.toHaveBeenCalled();
   });
 

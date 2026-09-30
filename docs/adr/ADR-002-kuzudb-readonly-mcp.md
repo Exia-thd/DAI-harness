@@ -4,15 +4,15 @@
 Accepted
 
 ## Context
-DAI Nexus Node uses KuzuDB as its graph database backend. The MCP server (read-only queries) and the analyze CLI (read-write indexing) were both opening the database in read-write mode, causing lock conflicts when both processes ran simultaneously.
+DAI Harness Node uses KuzuDB as its graph database backend. The MCP server (read-only queries) and the analyze CLI (read-write indexing) were both opening the database in read-write mode, causing lock conflicts when both processes ran simultaneously.
 
 This manifested as:
 ```
-[DAI Nexus Node] ⚠️ KuzuDB lock conflict: MCP server is likely running.
+[DAI Harness Node] ⚠️ KuzuDB lock conflict: MCP server is likely running.
 Could not set lock on file : .dai/
 ```
 
-Multiple DAI Nexus Node MCP servers run concurrently across projects, making this a common race condition.
+Multiple DAI Harness Node MCP servers run concurrently across projects, making this a common race condition.
 
 ## Decision
 Introduce a `readOnly` flag on the `ForgeDB` constructor:

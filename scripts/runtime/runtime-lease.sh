@@ -67,7 +67,7 @@ cmd_acquire() {
 
   [ -n "$port" ] || port="$(rlg_port_for "$project" "$role")" || return 1
   [ -n "$session" ] || session="$(rlg_session_id)"
-  [ -n "$ttl" ] || ttl="${DAINEXUS_RLG_TTL:-7200}"
+  [ -n "$ttl" ] || ttl="${DAIHARNESS_RLG_TTL:-7200}"
   [ -n "$cmd" ] || cmd="$(rlg_cmd_of "$pid")"
   pgid="$(rlg_pgid_of "$pid")"
 

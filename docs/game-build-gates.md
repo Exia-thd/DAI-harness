@@ -60,7 +60,7 @@
 
 ### Checklist
 
-- [ ] **Versioned Style DNA contract:** `.dainexus/art-direction/game-art-contract.json` declares `schema_version: game-art-contract/v2`
+- [ ] **Versioned Style DNA contract:** `.daiharness/art-direction/game-art-contract.json` declares `schema_version: game-art-contract/v2`
 - [ ] **Reference roles separated:** STYLE references define appearance; TARGET references define content/layout; CHARACTER references define identity
 - [ ] **Visual pillars defined:** 3-5 keywords describing visual identity
 - [ ] **Color palette approved:** Primary, secondary, accent colors with hex codes
@@ -74,7 +74,7 @@
 - [ ] **Performance budget:** Estimated draw calls, texture memory for target style
 - [ ] **Confidence resolved:** Every populated `style.confidence` dimension is `>= 0.75`
 - [ ] **Generation approval recorded:** `approval.status` is `approved` with approver and timestamp
-- [ ] **Mechanical validation passes:** `python3 scripts/art-direction/style-contract.py validate .dainexus/art-direction/game-art-contract.json --stage generation`
+- [ ] **Mechanical validation passes:** `python3 scripts/art-direction/style-contract.py validate .daiharness/art-direction/game-art-contract.json --stage generation`
 
 ### Exit Criteria
 
@@ -111,7 +111,7 @@
 | | | |
 
 ### Style DNA Contract
-- Path: `.dainexus/art-direction/game-art-contract.json`
+- Path: `.daiharness/art-direction/game-art-contract.json`
 - Schema: `game-art-contract/v2`
 - Validation: [ ] PASS
 - Low-confidence fields remaining: [ ] None

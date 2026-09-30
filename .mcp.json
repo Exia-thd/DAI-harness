@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "dai-nexus": {
+    "dai-harness": {
       "command": "py",
       "args": ["-3", "mcp/server.py"]
     }

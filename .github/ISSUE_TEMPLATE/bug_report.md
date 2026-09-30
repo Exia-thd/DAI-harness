@@ -28,7 +28,7 @@ What actually happened.
 
 - OS: [e.g. macOS 14, Ubuntu 22.04]
 - Node.js version: [e.g. 22.x]
-- DAI Nexus version: [e.g. 7.7.0]
+- DAI Harness version: [e.g. 7.7.0]
 
 ## Relevant Log Output
 

@@ -10,7 +10,7 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Target spreadsheet and data processing dependencies are installed | `cat requirements.txt \|\| cat pyproject.toml` | ... | run the check command and paste output |
-| Project-specific tech stack and baseline profile configurations are active | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project-specific tech stack and baseline profile configurations are active | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Xlsx Engineer Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
@@ -28,7 +28,7 @@ Format: `n. ACTION | TARGET | CHECK`
 ### Step 1: Ground the active Python environment and check for spreadsheet libraries
 ```bash
 cat requirements.txt | grep -E "(openpyxl|pandas)"
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 ```
 
 ### Step 2: Implement an automated, formatted Excel workbook builder in `scripts/build-report.py`

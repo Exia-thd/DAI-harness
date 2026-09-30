@@ -1,6 +1,6 @@
 # Pipeline Reference
 
-DAI Nexus uses six canonical delivery phases:
+DAI Harness uses six canonical delivery phases:
 
 `INTERPRET → DEFINE → BUILD → HARDEN → SHIP → SUSTAIN`
 
@@ -92,7 +92,7 @@ Code-change completion is fail-closed and exact-turn correlated:
    stored argv with a bounded timeout and reduced environment. The observed
    exit code must be zero and the full-worktree fingerprint must remain
    unchanged, so hand-authored PASS records and mutating checks fail closed.
-   When a hook provides no DAI Nexus evidence turn, discovery considers only
+   When a hook provides no DAI Harness evidence turn, discovery considers only
    structurally valid, fresh, current-workspace/current-tree schema-v2 final
    records; newer review, RED, mutation, malformed, stale, wrong-workspace, or
    legacy JSON cannot shadow the completion record. A Codex platform-native
@@ -113,8 +113,8 @@ Code-change completion is fail-closed and exact-turn correlated:
    separate signed `review-2` using OpenSSH Ed25519.
 7. `review-2` must bind the canonical SHA-256 digest of final evidence, exact
    final tree, turn, acceptance IDs, and `negative_path_bindings`. Trust comes
-   only from external `DAINEXUS_REVIEW_ALLOWED_SIGNERS`, or fallback
-   `~/.dainexus/reviewers.allowed_signers`; review-1/self-authored JSON is
+   only from external `DAIHARNESS_REVIEW_ALLOWED_SIGNERS`, or fallback
+   `~/.daiharness/reviewers.allowed_signers`; review-1/self-authored JSON is
    `UNVERIFIED`.
 
 ## Requirement-locked test oracles
@@ -140,9 +140,9 @@ Local-first/provider-neutral operation is the default. Keep private keys and
 other secrets outside the workspace. Attest a final record with:
 
 ```sh
-DAINEXUS_REVIEW_ALLOWED_SIGNERS=/absolute/path/reviewers.allowed_signers \
+DAIHARNESS_REVIEW_ALLOWED_SIGNERS=/absolute/path/reviewers.allowed_signers \
 python3 scripts/lite/review_attest.py sign \
-  --evidence .dainexus/verify/<turn>.json \
+  --evidence .daiharness/verify/<turn>.json \
   --private-key /absolute/path/reviewer_ed25519
 ```
 

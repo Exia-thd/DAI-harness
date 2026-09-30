@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "product": {
-    "name": "DAI Nexus",
+    "name": "DAI Harness",
     "version": "8.7.0"
   },
   "pipeline": {

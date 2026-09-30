@@ -1,8 +1,8 @@
 ---
-description: Show the canonical DAI Nexus pipeline, effort classes, modes, and routing rules
+description: Show the canonical DAI Harness pipeline, effort classes, modes, and routing rules
 ---
 
-# DAI Nexus Pipeline Reference
+# DAI Harness Pipeline Reference
 
 Canonical pipeline:
 

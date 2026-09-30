@@ -1,6 +1,6 @@
-# DAI Nexus — Hướng Dẫn Cài Đặt cho Claude CLI
+# DAI Harness — Hướng Dẫn Cài Đặt cho Claude CLI
 
-> **Mục tiêu:** Biến DAI Nexus thành một bộ công cụ sản xuất phần mềm chuyên nghiệp tích hợp vào Claude CLI, với 56 kỹ năng AI, pipeline 6 pha, và 4 cấp độ power tùy nhu cầu.
+> **Mục tiêu:** Biến DAI Harness thành một bộ công cụ sản xuất phần mềm chuyên nghiệp tích hợp vào Claude CLI, với 56 kỹ năng AI, pipeline 6 pha, và 4 cấp độ power tùy nhu cầu.
 
 ## Mục Lục
 
@@ -19,9 +19,9 @@
 
 ## Tổng Quan
 
-**DAI Nexus là gì?**
+**DAI Harness là gì?**
 
-DAI Nexus là một orchestrator (người điều phối) với 56 kỹ năng AI chuyên biệt, bao phủ toàn bộ vòng đời phát triển phần mềm:
+DAI Harness là một orchestrator (người điều phối) với 56 kỹ năng AI chuyên biệt, bao phủ toàn bộ vòng đời phát triển phần mềm:
 
 | Nhóm Kỹ Năng | Số Lượng | Ví Dụ |
 |---------------|----------|--------|
@@ -48,7 +48,7 @@ Chọn cấp độ phù hợp với nhu cầu của bạn:
 │     ✓ Mặc định khi cài đặt                              │
 ├─────────────────────────────────────────────────────────┤
 │  ⚡⚡ Level 2 — Thông Minh                               │
-│     + Code Intelligence (DAI Nexus Node)                    │
+│     + Code Intelligence (DAI Harness Node)                    │
 │     + Phân tích blast radius tự động                    │
 │     + Tra cứu code tức thì                              │
 │     Yêu cầu: Node.js 18+                               │
@@ -59,7 +59,7 @@ Chọn cấp độ phù hợp với nhu cầu của bạn:
 │     Yêu cầu: Python 3.8+                               │
 ├─────────────────────────────────────────────────────────┤
 │  ⚡⚡⚡⚡ Level 4 — Toàn Diện                             │
-│     + 12 DAI Nexus Node tools trong chat                    │
+│     + 12 DAI Harness Node tools trong chat                    │
 │     + MCP server tùy chỉnh theo project                │
 │     + Query, context, impact, rename, cypher           │
 │     Yêu cầu: MCP server                                │
@@ -74,15 +74,15 @@ Chọn cấp độ phù hợp với nhu cầu của bạn:
 
 ```bash
 # 1. Thêm submodule
-git submodule add -b main https://github.com/Exia-thd/DAI-nexus dai-nexus
+git submodule add -b main https://github.com/Exia-thd/DAI-harness dai-harness
 
 # 2. Copy 2 file bắt buộc vào thư mục gốc project
-cp dai-nexus/AGENTS.md .
-cp dai-nexus/CLAUDE.md .
+cp dai-harness/AGENTS.md .
+cp dai-harness/CLAUDE.md .
 
 # 3. Commit
-git add .gitmodules dai-nexus AGENTS.md CLAUDE.md
-git commit -m "feat: add dai-nexus"
+git add .gitmodules dai-harness AGENTS.md CLAUDE.md
+git commit -m "feat: add dai-harness"
 
 # 4. Khởi tạo submodule
 git submodule update --init --recursive
@@ -92,8 +92,8 @@ git submodule update --init --recursive
 
 ```bash
 # Clone repo
-git clone https://github.com/Exia-thd/DAI-nexus
-cd dai-nexus
+git clone https://github.com/Exia-thd/DAI-harness
+cd dai-harness
 
 # Mở Claude CLI và paste đường dẫn vào config
 # (xem phần "Kích hoạt" bên dưới)
@@ -138,7 +138,7 @@ Sau đó, phân tích codebase:
 
 ```bash
 # Từ thư mục project của bạn
-npx --yes dainexus-node analyze "$(pwd)"
+npx --yes daiharness-node analyze "$(pwd)"
 
 # Lần đầu mất 1-2 phút. Các lần sau nhanh hơn nhờ incremental indexing.
 ```
@@ -150,15 +150,15 @@ npx --yes dainexus-node analyze "$(pwd)"
 ```
 # Trước khi sửa bất kỳ function nào, hỏi:
 "What does validateUser affect?" 
-→ DAI Nexus Node trả lời: d=1 WILL BREAK (4 direct callers), d=2 LIKELY AFFECTED (12 indirect deps)
+→ DAI Harness Node trả lời: d=1 WILL BREAK (4 direct callers), d=2 LIKELY AFFECTED (12 indirect deps)
 
 # Tra cứu code theo ý tưởng:
 "How does the auth flow work?"
-→ DAI Nexus Node trả lời: execution flow với 8 bước, các file liên quan
+→ DAI Harness Node trả lời: execution flow với 8 bước, các file liên quan
 
 # Trước khi commit:
 "Check what changes affect this PR"
-→ DAI Nexus Node warn: HIGH risk — 3 direct callers sẽ break nếu đổi API này
+→ DAI Harness Node warn: HIGH risk — 3 direct callers sẽ break nếu đổi API này
 ```
 
 ---
@@ -181,10 +181,10 @@ Khởi tạo bộ nhớ:
 
 ```bash
 # Cài engine (một lần, cài ra ngoài repo)
-python3 dai-nexus/scripts/lite/dai_memory.py install
+python3 dai-harness/scripts/lite/dai_memory.py install
 
 # Từ thư mục project của bạn: tạo kho + code graph
-node "$(python3 dai-nexus/scripts/lite/dai_memory.py where)/bin/dai-memory.mjs" init
+node "$(python3 dai-harness/scripts/lite/dai_memory.py where)/bin/dai-memory.mjs" init
 ```
 
 **Kết quả:** Thư mục `.memory/` được tạo (code graph + bộ nhớ dự án).
@@ -202,12 +202,12 @@ Tạo MCP server tùy chỉnh theo project:
 
 ```bash
 # Từ thư mục project của bạn
-bash dai-nexus/scripts/mcp-generate.sh
+bash dai-harness/scripts/mcp-generate.sh
 ```
 
 Script này:
 1. Đọc `project-profile.json` (chạy `/onboard` nếu chưa có)
-2. Tạo `.dainexus/mcp-server/` với TypeScript server
+2. Tạo `.daiharness/mcp-server/` với TypeScript server
 3. Cài đặt dependencies
 4. In ra hướng dẫn kết nối
 
@@ -226,9 +226,9 @@ Thêm vào `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "dai-nexus": {
+    "dai-harness": {
       "command": "npx",
-      "args": ["tsx", "/path/to/dai-nexus/.dainexus/mcp-server/server.ts"]
+      "args": ["tsx", "/path/to/dai-harness/.daiharness/mcp-server/server.ts"]
     }
   }
 }
@@ -241,7 +241,7 @@ Thêm vào `claude_desktop_config.json`:
   "mcpServers": {
     "my-project": {
       "command": "npx",
-      "args": ["tsx", ".dainexus/mcp-server/server.ts"]
+      "args": ["tsx", ".daiharness/mcp-server/server.ts"]
     }
   }
 }
@@ -256,18 +256,18 @@ Khởi động lại Claude CLI.
 Chạy script xác minh:
 
 ```bash
-bash dai-nexus/scripts/dai-validate.sh
+bash dai-harness/scripts/dai-validate.sh
 ```
 
 Hoặc kiểm tra thủ công:
 
 ```bash
-echo "=== DAI Nexus Verification ==="
+echo "=== DAI Harness Verification ==="
 echo "CLAUDE.md:       $([ -f CLAUDE.md ] && echo 'OK' || echo 'MISSING')"
 echo "AGENTS.md:       $([ -f AGENTS.md ] && echo 'OK' || echo 'MISSING')"
-echo "Skills count:    $(ls dai-nexus/skills/*/SKILL.md 2>/dev/null | wc -l | tr -d ' ')"
-echo "MCP:             $([ -d dai-nexus/.dainexus/mcp-server ] && echo 'OK' || echo 'MISSING')"
-echo "Memory:          $([ -f .dainexus/memory.jsonl ] && echo 'OK' || echo 'MISSING')"
+echo "Skills count:    $(ls dai-harness/skills/*/SKILL.md 2>/dev/null | wc -l | tr -d ' ')"
+echo "MCP:             $([ -d dai-harness/.daiharness/mcp-server ] && echo 'OK' || echo 'MISSING')"
+echo "Memory:          $([ -f .daiharness/memory.jsonl ] && echo 'OK' || echo 'MISSING')"
 ```
 
 ---
@@ -276,7 +276,7 @@ echo "Memory:          $([ -f .dainexus/memory.jsonl ] && echo 'OK' || echo 'MIS
 
 | Vấn Đề | Giải Pháp |
 |--------|-----------|
-| `dainexus-node: command not found` | Dùng `dai-memory ingest` thay vì `dainexus-node` |
+| `daiharness-node: command not found` | Dùng `dai-memory ingest` thay vì `daiharness-node` |
 | `npm install` thất bại trong submodule | Kiểm tra `node --version` (cần 18+) |
 | Không thấy MCP tools | Khởi động lại Claude CLI sau khi đổi config |
 | Index cũ | Chạy `dai-memory ingest` để cập nhật |
@@ -284,7 +284,7 @@ echo "Memory:          $([ -f .dainexus/memory.jsonl ] && echo 'OK' || echo 'MIS
 | `realpath` không tìm thấy (macOS) | `brew install coreutils` |
 | `python3` không tìm thấy | Cài Python 3.8+ cho tính năng memory |
 | Windows: `bash` không tìm thấy | Dùng lệnh PowerShell tương đương |
-| Windows: Lỗi đường dẫn DAI memory hoặc TSX (`ERR_MODULE_NOT_FOUND`) | **1. DAI memory**: Sử dụng `"command": "node"` và file `bin/dai-memory.mjs` trong thư mục `python3 scripts/lite/dai_memory.py where` in ra, kèm `"serve"`. <br/> **2. TSX (dai-nexus)**: Tránh gọi trực tiếp `/c/Users/...`, hãy đổi cấu hình chạy sang `"command": "npx"` và `"args": ["tsx", "C:/Users/<Username>/.dainexus/mcp-server/src/index.ts"]`. |
+| Windows: Lỗi đường dẫn DAI memory hoặc TSX (`ERR_MODULE_NOT_FOUND`) | **1. DAI memory**: Sử dụng `"command": "node"` và file `bin/dai-memory.mjs` trong thư mục `python3 scripts/lite/dai_memory.py where` in ra, kèm `"serve"`. <br/> **2. TSX (dai-harness)**: Tránh gọi trực tiếp `/c/Users/...`, hãy đổi cấu hình chạy sang `"command": "npx"` và `"args": ["tsx", "C:/Users/<Username>/.daiharness/mcp-server/src/index.ts"]`. |
 | Windows: Claude Code Hook không chạy | Thêm tiền tố `bash` trước đường dẫn script hook (Ví dụ: `"PostMessage": "bash D:/path/to/script.sh tick"`). |
 
 ---
@@ -293,12 +293,12 @@ echo "Memory:          $([ -f .dainexus/memory.jsonl ] && echo 'OK' || echo 'MIS
 
 ```bash
 # Từ thư mục project
-cd dai-nexus
+cd dai-harness
 git pull origin main
 
 # Commit thay đổi
 git add .
-git commit -m "chore: update dai-nexus submodule"
+git commit -m "chore: update dai-harness submodule"
 ```
 
 ---
@@ -319,27 +319,27 @@ Khi đang trong Claude CLI:
 
 ## Nâng Cao (Tùy Chọn)
 
-### DAI Nexus Node cho Multi-Repo
+### DAI Harness Node cho Multi-Repo
 
 ```bash
 # Tạo nhóm repos để query đồng thời
-dainexus-node group create my-team
-dainexus-node group add repo1
-dainexus-node group add repo2
+daiharness-node group create my-team
+daiharness-node group add repo1
+daiharness-node group add repo2
 
 # Query cross-repo
-dainexus-node group query my-team "authentication"
+daiharness-node group query my-team "authentication"
 ```
 
 ### GitHub Actions (Enterprise)
 
 ```yaml
-# .github/workflows/dai-nexus.yml
-- name: DAI Nexus Node Analyze
-  uses: Exia-thd/dai-nexus-actions/analyze@main
+# .github/workflows/dai-harness.yml
+- name: DAI Harness Node Analyze
+  uses: Exia-thd/dai-harness-actions/analyze@main
 
 - name: PR Blast Radius
-  uses: Exia-thd/dai-nexus-actions/pr-review@main
+  uses: Exia-thd/dai-harness-actions/pr-review@main
   with:
     base: main
     head: ${{ github.event.pull_request.head.ref }}
@@ -349,7 +349,7 @@ dainexus-node group query my-team "authentication"
 
 ```bash
 # Auto-reindex sau mỗi commit
-cp dai-nexus/.claude/hooks/post-tool-use.ts ~/.claude/hooks/
+cp dai-harness/.claude/hooks/post-tool-use.ts ~/.claude/hooks/
 ```
 
 ---

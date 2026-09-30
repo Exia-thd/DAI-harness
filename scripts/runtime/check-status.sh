@@ -2,7 +2,7 @@
 # MCP & Tool Status Checker
 
 echo "=========================================="
-echo "   DAI Nexus Environment Status"
+echo "   DAI Harness Environment Status"
 echo "=========================================="
 echo ""
 
@@ -28,10 +28,10 @@ else
 fi
 echo ""
 
-# 2. DAI Nexus MCP
-echo "🛠️  DAI Nexus MCP Server"
+# 2. DAI Harness MCP
+echo "🛠️  DAI Harness MCP Server"
 echo "-----------------------------------"
-if ls ~/.cursor/projects/*/mcps/user-dai-nexus/*.json 2>/dev/null | head -1 > /dev/null; then
+if ls ~/.cursor/projects/*/mcps/user-dai-harness/*.json 2>/dev/null | head -1 > /dev/null; then
     echo "  Config: ✅ Found"
 else
     echo "  Config: ⚠️  Missing"

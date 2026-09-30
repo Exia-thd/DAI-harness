@@ -3,7 +3,7 @@
 
 The hook is intentionally local-only and fail-open. It reads the canonical
 manifest and Markdown sources, emits one host-shaped JSON object, and stores a
-small metadata-only receipt beneath ``.dainexus/runtime``. No source or
+small metadata-only receipt beneath ``.daiharness/runtime``. No source or
 generated instruction file is modified by this script.
 """
 
@@ -22,7 +22,7 @@ from typing import Any
 
 SCRIPT_ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_RELATIVE = Path("kernel/rule-manifest.json")
-RUNTIME_RELATIVE = Path(".dainexus/runtime/rule-context")
+RUNTIME_RELATIVE = Path(".daiharness/runtime/rule-context")
 DEFAULT_MAX_CONTEXT_CHARS = 6000
 MAX_CONTEXT_CHARS = 16000
 MIN_CONTEXT_CHARS = 512
@@ -57,8 +57,8 @@ def _sha256_bytes(value: bytes) -> str:
 def _workspace_root(requested: str | Path | None = None) -> Path:
     if requested is not None and str(requested).strip():
         value = str(requested).strip()
-    elif os.environ.get("DAINEXUS_WORKSPACE", "").strip():
-        value = os.environ["DAINEXUS_WORKSPACE"].strip()
+    elif os.environ.get("DAIHARNESS_WORKSPACE", "").strip():
+        value = os.environ["DAIHARNESS_WORKSPACE"].strip()
     else:
         return SCRIPT_ROOT
     candidate = Path(value).expanduser().resolve()
@@ -221,7 +221,7 @@ def validate_manifest(manifest: Any, root: Path) -> dict[str, Any]:
             }
         )
         rules.append(normalized)
-    inventory_floor = len("[DAI Nexus rule inventory]\n") + sum(
+    inventory_floor = len("[DAI Harness rule inventory]\n") + sum(
         len(rule["id"]) + 1 + len(rule["source"]) + 1 + len("sha256:" + ("0" * 64)) + 1
         for rule in rules
     )
@@ -292,7 +292,7 @@ def build_context(
         metadata = {"id": rule["id"], "source": rule["source"], "sha256": digest}
         records.append((metadata, raw))
 
-    inventory = ["[DAI Nexus rule inventory]"]
+    inventory = ["[DAI Harness rule inventory]"]
     inventory.extend(
         f"{metadata['id']}\t{metadata['source']}\tsha256:{metadata['sha256']}"
         for metadata, _ in records
@@ -313,7 +313,7 @@ def build_context(
         # the entire context before later active canonical rules are visible.
         budget = remaining // len(records)
         for metadata, raw in records:
-            header = f"--- DAI Nexus rule excerpt: {metadata['id']} ({metadata['source']}) ---\n"
+            header = f"--- DAI Harness rule excerpt: {metadata['id']} ({metadata['source']}) ---\n"
             available = budget - len(header) - 1
             if available <= 0:
                 omitted.append(dict(metadata, reason="excerpt_budget"))
@@ -601,7 +601,7 @@ def native_response(platform: str, event: str, context: str = "") -> dict[str, A
 
 
 def _mode() -> str:
-    mode = os.environ.get("DAINEXUS_RULE_HOOK_MODE", "observe").strip().lower()
+    mode = os.environ.get("DAIHARNESS_RULE_HOOK_MODE", "observe").strip().lower()
     return mode if mode in {"off", "observe", "enforce"} else "observe"
 
 
@@ -624,7 +624,7 @@ def _serialize_native_response(platform: str, event: str, context: str = "") -> 
         return serialized
 
     marker = "\n...[bounded]"
-    excerpt_boundary = context.find("\n--- DAI Nexus rule excerpt:")
+    excerpt_boundary = context.find("\n--- DAI Harness rule excerpt:")
     inventory = context if excerpt_boundary < 0 else context[:excerpt_boundary]
     inventory_only = encode(inventory)
     if len(inventory_only.encode("utf-8")) + 1 > MAX_SERIALIZED_OUTPUT_BYTES:

@@ -137,7 +137,7 @@ async function handleStatus(useJson: boolean): Promise<void> {
     budget: readBudgetFile(projectRoot),
     last7Days: summary,
     sources: {
-      daiNexusUsageDir: existsSync(getDefaultUsageDir(projectRoot)),
+      daiHarnessUsageDir: existsSync(getDefaultUsageDir(projectRoot)),
       claudeTelemetry: existsSync(join(homedir(), ".claude", "telemetry")),
       codexConfig: existsSync(join(homedir(), ".codex")),
     },
@@ -256,10 +256,10 @@ async function handleDashboard(options: {
 
   if (
     authRequired &&
-    !process.env.DAINEXUS_TOKEN_DASHBOARD_AUTH_TOKEN?.trim()
+    !process.env.DAIHARNESS_TOKEN_DASHBOARD_AUTH_TOKEN?.trim()
   ) {
     fail(
-      "Non-loopback dashboard binding requires DAINEXUS_TOKEN_DASHBOARD_AUTH_TOKEN.",
+      "Non-loopback dashboard binding requires DAIHARNESS_TOKEN_DASHBOARD_AUTH_TOKEN.",
       useJson,
       EXIT_CODES.USAGE_ERROR,
     );

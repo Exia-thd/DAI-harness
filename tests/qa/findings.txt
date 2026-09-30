@@ -3,11 +3,11 @@
 ## Critical Issues
 
 ### 1. Coverage Reporter Bug — `minimatch` Conflict (Severity: MEDIUM)
-- **Location:** `dainexus-node/vitest.config.ts` + `dainexus-node/package.json`
+- **Location:** `daiharness-node/vitest.config.ts` + `daiharness-node/package.json`
 - **Problem:** `@vitest/coverage-v8` depends on `test-exclude` which uses `minimatch`, but the `minimatch` version in the dependency tree is incompatible with the exported API.
 - **Impact:** Coverage data is collected but cannot be reported. CI will fail at the coverage gate even though tests pass.
 - **Root Cause:** npm overrides conflicting with vitest's expected `minimatch` version.
-- **Fix Applied:** Removed `minimatch: ^9.0.5` override from `dainexus-node/package.json` overrides.
+- **Fix Applied:** Removed `minimatch: ^9.0.5` override from `daiharness-node/package.json` overrides.
 - **Remaining:** Still broken — need to investigate `test-exclude` version or use alternative coverage provider.
 - **Recommendation:** Either (a) pin `test-exclude` to compatible version, (b) switch to `v8` provider with custom excludes, or (c) use `c8` instead.
 
@@ -24,7 +24,7 @@
 
 ### 3. MCP `pipeline-manager` Tests Need State Cleanup (Severity: LOW)
 - **Location:** `mcp/src/state/pipeline-manager.test.ts`
-- **Problem:** Tests write to `.dainexus/pipeline-state.json` in the actual workspace. If tests crash, state file may be left behind.
+- **Problem:** Tests write to `.daiharness/pipeline-state.json` in the actual workspace. If tests crash, state file may be left behind.
 - **Impact:** Could affect subsequent test runs or actual pipeline state.
 - **Fix Applied:** Added `beforeEach`/`afterEach` cleanup to remove state file.
 - **Recommendation:** Use temp directory or isolated test workspace root.
@@ -35,9 +35,9 @@
 
 | Issue | Status | Resolution |
 |-------|--------|------------|
-| CI only running mcp tests | ✅ Fixed | Added `dainexus-node-lint`, `dainexus-node-typecheck`, `dainexus-node-test`, `dainexus-node-coverage` jobs |
-| CI paths only watching `mcp/**` | ✅ Fixed | Added `dainexus-node/**` to trigger paths |
-| No dainexus-node coverage config | ✅ Fixed | Added `test:coverage` script + dainexus-node-coverage job |
+| CI only running mcp tests | ✅ Fixed | Added `daiharness-node-lint`, `daiharness-node-typecheck`, `daiharness-node-test`, `daiharness-node-coverage` jobs |
+| CI paths only watching `mcp/**` | ✅ Fixed | Added `daiharness-node/**` to trigger paths |
+| No daiharness-node coverage config | ✅ Fixed | Added `test:coverage` script + daiharness-node-coverage job |
 | Missing unit tests for agents | ✅ Fixed | Added 4 new test files (127 new tests total) |
 | Missing unit tests for graph | ✅ Fixed | Added `graph.test.ts` with 22 tests |
 | Missing unit tests for scanner | ✅ Fixed | Added `scanner.test.ts` with 29 tests |
@@ -57,7 +57,7 @@
 ## Recommendations
 
 ### High Priority
-1. Fix coverage reporter for dainexus-node — unblocks CI coverage gate
+1. Fix coverage reporter for daiharness-node — unblocks CI coverage gate
 2. Add E2E test suite for full pipeline flow
 
 ### Medium Priority
@@ -68,4 +68,4 @@
 ### Low Priority
 6. Add CLI unit tests (need stub setup)
 7. Add performance benchmarks (measure index time, query latency)
-8. Add contract tests between dainexus-node and mcp packages
+8. Add contract tests between daiharness-node and mcp packages

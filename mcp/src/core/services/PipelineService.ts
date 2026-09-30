@@ -77,7 +77,7 @@ export class PipelineService {
       state.phases = initializeDefaultPhases(1, 'IN_PROGRESS');
       return state;
     });
-    return `Successfully started pipeline in ${mode} mode. You are now at Phase 1: Research & Discovery. Follow the DAI Nexus orchestrator instructions.`;
+    return `Successfully started pipeline in ${mode} mode. You are now at Phase 1: Research & Discovery. Follow the DAI Harness orchestrator instructions.`;
   }
 
   async advancePhase(): Promise<string> {
@@ -117,7 +117,7 @@ export class PipelineService {
       const newPhaseState = state.phases.find((p) => p.key === PHASE_KEYS[state.currentPhase]);
       if (newPhaseState)
         Object.assign(newPhaseState, { status: 'running', startedAt: now, progress: 0.0 });
-      result = `Successfully advanced to ${phaseName}. Check the DAI Nexus instructions for roles required in this phase.`;
+      result = `Successfully advanced to ${phaseName}. Check the DAI Harness instructions for roles required in this phase.`;
       return state;
     });
     return result;

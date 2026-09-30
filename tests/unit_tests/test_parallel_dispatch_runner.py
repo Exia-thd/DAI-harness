@@ -151,7 +151,7 @@ def run_runner(
     ):
         home = manifest.parent / ".test-home"
         gate = (
-            home / ".dainexus" / "scripts" / "lite" / "antigravity-pre-tool-gate.sh"
+            home / ".daiharness" / "scripts" / "lite" / "antigravity-pre-tool-gate.sh"
         )
         gate.parent.mkdir(parents=True, exist_ok=True)
         gate.write_text("#!/usr/bin/env bash\n", encoding="utf-8")
@@ -160,7 +160,7 @@ def run_runner(
         hooks.write_text(
             json.dumps(
                 {
-                    "dai-nexus-policy": {
+                    "dai-harness-policy": {
                         "PreToolUse": [
                             {
                                 "matcher": "*",
@@ -490,7 +490,7 @@ def test_runner_uses_allowlisted_environment_and_trusted_agy(tmp_path: Path) -> 
         "--execute",
         "--allow-external-code-sharing",
         env={
-            "DAINEXUS_WORKSPACE": str(tmp_path / "attacker-workspace"),
+            "DAIHARNESS_WORKSPACE": str(tmp_path / "attacker-workspace"),
             "LEAKED_SECRET": "do-not-forward",
             "PATH": str(tmp_path / "attacker-bin"),
         },
@@ -501,8 +501,7 @@ def test_runner_uses_allowlisted_environment_and_trusted_agy(tmp_path: Path) -> 
     ]
     assert len(calls) == 2
     assert all(
-        call["env"]["DAINEXUS_WORKSPACE"] == str(tmp_path.resolve())
-        for call in calls
+        call["env"]["DAIHARNESS_WORKSPACE"] == str(tmp_path.resolve()) for call in calls
     )
     expected_path = os.pathsep.join(
         [
@@ -710,7 +709,7 @@ def test_runner_anchors_cwd_to_manifest_workspace_from_another_cwd(
     agy_script = (
         "#!/usr/bin/env python3\n"
         "import os\n"
-        f"open({str(capture)!r}, 'w').write(os.getcwd() + '\\n' + os.environ.get('DAINEXUS_WORKSPACE', ''))\n"
+        f"open({str(capture)!r}, 'w').write(os.getcwd() + '\\n' + os.environ.get('DAIHARNESS_WORKSPACE', ''))\n"
     )
     request = base_request(
         task_size="medium",
@@ -768,7 +767,7 @@ def test_runner_fails_closed_without_runtime_loaded_global_hook(tmp_path: Path) 
 
 def test_runner_rejects_global_hook_command_wrapper(tmp_path: Path) -> None:
     home = tmp_path / "home"
-    gate = home / ".dainexus" / "scripts" / "lite" / "antigravity-pre-tool-gate.sh"
+    gate = home / ".daiharness" / "scripts" / "lite" / "antigravity-pre-tool-gate.sh"
     gate.parent.mkdir(parents=True)
     gate.write_text("#!/usr/bin/env bash\n", encoding="utf-8")
     hooks = home / ".gemini" / "config" / "hooks.json"
@@ -776,7 +775,7 @@ def test_runner_rejects_global_hook_command_wrapper(tmp_path: Path) -> None:
     hooks.write_text(
         json.dumps(
             {
-                "dai-nexus-policy": {
+                "dai-harness-policy": {
                     "PreToolUse": [
                         {
                             "matcher": "*",
@@ -856,7 +855,7 @@ def _reviewer_fixture(tmp_path: Path, *, reviewer_exit: int = 0) -> tuple[Path, 
         "    f.write(json.dumps({'argv': sys.argv[1:], 'cwd': os.getcwd()}) + '\\n')\n"
         "print('token=super-secret WORKER_REASONING_PRIVATE ' + ('X' * 500))\n"
         "print('password: hidden-value ' + ('Y' * 500), file=sys.stderr)\n"
-        f"sys.exit({reviewer_exit} if '[DAI Nexus independent reviewer]' in prompt else 0)\n"
+        f"sys.exit({reviewer_exit} if '[DAI Harness independent reviewer]' in prompt else 0)\n"
     )
     request = base_request(
         task_size="medium",
@@ -915,8 +914,8 @@ def test_results_are_bounded_redacted_and_reviewer_executes_with_isolated_prompt
     assert all("--dangerously-skip-permissions" not in call["argv"] for call in calls)
     worker_prompt = calls[0]["argv"][-1]
     reviewer_prompt = calls[1]["argv"][-1]
-    assert "[DAI Nexus independent reviewer]" not in worker_prompt
-    assert "[DAI Nexus independent reviewer]" in reviewer_prompt
+    assert "[DAI Harness independent reviewer]" not in worker_prompt
+    assert "[DAI Harness independent reviewer]" in reviewer_prompt
     assert "IMMUTABLE_REQUIREMENTS" in reviewer_prompt
     assert "IMMUTABLE_DIFF" in reviewer_prompt
     assert "IMMUTABLE_RAW_EVIDENCE" in reviewer_prompt

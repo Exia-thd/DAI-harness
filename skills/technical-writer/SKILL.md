@@ -20,7 +20,7 @@ version: 2.1.0
 !`cat skills/_shared/protocols/input-validation.md 2>/dev/null || true`
 !`cat skills/_shared/protocols/tool-efficiency.md 2>/dev/null || true`
 !`cat .production-grade.yaml 2>/dev/null || echo "No config — using defaults"`
-!`cat .dainexus/codebase-context.md 2>/dev/null || true`
+!`cat .daiharness/codebase-context.md 2>/dev/null || true`
 
 ---
 
@@ -441,7 +441,7 @@ components:
 
 ### Endpoint Documentation Template
 
-```markdown
+````markdown
 # [Endpoint Name]
 
 > **Endpoint**: `METHOD /path`
@@ -517,6 +517,7 @@ response = requests.post(
 )
 data = response.json()
 ```
+````
 
 ---
 
@@ -524,7 +525,7 @@ data = response.json()
 
 ### Quickstart Template
 
-```markdown
+````markdown
 # Quickstart
 
 Get up and running with [Project Name] in 5 minutes.
@@ -586,11 +587,11 @@ console.log(`Created: ${project.id}`);
 ---
 
 > **Need help?** Join our [Discord](https://discord.gg/example) or email support@example.com
-```
+````
 
 ### Local Development Setup
 
-```markdown
+````markdown
 # Local Development
 
 This guide covers setting up a complete local development environment.
@@ -694,11 +695,11 @@ pnpm install --force
 - [Testing Guide](testing.md) — Write and run tests
 - [Code Style](code-style.md) — Linting and formatting
 - [Contributing](../CONTRIBUTING.md) — Submit your first PR
-```
+````
 
 ### Contributing Guide Template
 
-```markdown
+````markdown
 # Contributing to [Project]
 
 Thank you for contributing! This guide covers everything you need to know.
@@ -803,7 +804,7 @@ Open a Pull Request with:
 - **Issues**: Open a GitHub issue
 - **Discord**: [Join our server](https://discord.gg/example)
 - **Email**: dev@example.com
-```
+````
 
 ---
 
@@ -811,7 +812,7 @@ Open a Pull Request with:
 
 ### Architecture Overview Template
 
-```markdown
+````markdown
 # Architecture Overview
 
 ## System Diagram
@@ -929,7 +930,7 @@ sequenceDiagram
 | [ADR-001](decisions/0001-use-postgres.md) | Use PostgreSQL over MySQL | Accepted |
 | [ADR-002](decisions/0002-redis-sessions.md) | Redis for session storage | Accepted |
 | [ADR-003](decisions/0003-kong-gateway.md) | Kong as API gateway | Proposed |
-```
+````
 
 ### ADR Template
 

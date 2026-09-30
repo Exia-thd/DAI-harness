@@ -1,17 +1,17 @@
-# DAI Nexus
+# DAI Harness
 
 **One sentence of intent → one shipped application, with the evidence to show it.**
 
-DAI Nexus is an operating harness for AI coding agents: a fixed kernel loaded every
+DAI Harness is an operating harness for AI coding agents: a fixed kernel loaded every
 session, a library of specialist skills loaded on demand, and a dependency-free Python
 runtime that enforces evidence — an agent may not say "done" without a record the
 machine wrote itself.
 
 ## Three layers
 
-> **An AI harness that records failures and reuses verified lessons.** DAI Nexus is designed to reduce repeated failure patterns; recurrence is measured rather than assumed away.
+> **An AI harness that records failures and reuses verified lessons.** DAI Harness is designed to reduce repeated failure patterns; recurrence is measured rather than assumed away.
 
-DAI Nexus is an open-source engineering harness that adds evidence-gated delivery workflows around the model provider and tools you configure. It coordinates definition, building, hardening, and shipping while keeping provider-specific execution inside that provider's native ecosystem.
+DAI Harness is an open-source engineering harness that adds evidence-gated delivery workflows around the model provider and tools you configure. It coordinates definition, building, hardening, and shipping while keeping provider-specific execution inside that provider's native ecosystem.
 
 ---
 
@@ -58,16 +58,16 @@ a continuously refreshed, local-first HTML control center:
   active rule in `kernel/rule-manifest.json`. They default to advisory
   `observe`, preserve the existing Stop/security gates, and fail open on
   missing runtimes, malformed payloads, invalid manifests, or timeouts. Set
-  `DAINEXUS_RULE_HOOK_MODE=off` for the immediate kill switch.
+  `DAIHARNESS_RULE_HOOK_MODE=off` for the immediate kill switch.
 
-The generated site is written to `.dainexus/docs-hub/site/`; open
-`.dainexus/docs-hub/site/index.html` for the project overview or
-`.dainexus/docs-hub/site/projects/<project-id>/flows.html` for the Mermaid
+The generated site is written to `.daiharness/docs-hub/site/`; open
+`.daiharness/docs-hub/site/index.html` for the project overview or
+`.daiharness/docs-hub/site/projects/<project-id>/flows.html` for the Mermaid
 flow control view. Generated HTML is inspectable output, never source truth.
 
 The Stop lifecycle performs only a read-only Docs Hub continuity check. Its
 default `observe` mode reports stale or missing HTML evidence as `UNVERIFIED`
-without blocking; optional `DAINEXUS_DOCS_CONTINUITY_MODE=enforce` may ask
+without blocking; optional `DAIHARNESS_DOCS_CONTINUITY_MODE=enforce` may ask
 for one refresh when a present receipt is provably stale, then always allows
 the next pass to prevent retry storms. Use `off` to disable this check.
 
@@ -78,7 +78,7 @@ the next pass to prevent retry storms. Use `off` to disable this check.
 
 ## Pipeline Flow
 
-DAI Nexus separates delivery phases from the runtime controls that prove and
+DAI Harness separates delivery phases from the runtime controls that prove and
 close a task. Small local work may compress irrelevant phases; HARD work expands
 the same boundaries.
 
@@ -111,7 +111,7 @@ flowchart LR
 | Verification | Schema-v2 evidence binds acceptance IDs, exact argv, negative paths, output digest, and exact worktree | A Stop event replays the canonical evidence command at most once |
 | Stop re-entry | At most two distinct invalid attempts are recorded per session/turn/tree scope; identical re-entry or exhausted budget terminates the host interaction | Termination never upgrades `completion_state`; suppressed retries remain `unverified` |
 | Runtime lifecycle | MCP instances reconcile prior leases at startup and hold owner-token leases bound to PID start, PGID, parent identity, command digest, session, TTL, and version | Only the positive PID of an exact owned lease may receive TERM/KILL; dead leases close without a signal, while reused, rotated, unowned, or in-flight processes are preserved |
-| Context continuity | Material events write project/session-scoped `dai-nexus-continuity/v1` checkpoints whose head binds the complete prior-hash chain | Checkpoints are context-only; head/chain/tree/ledger mismatch requires fresh grounding and cannot authorize tools or completion |
+| Context continuity | Material events write project/session-scoped `dai-harness-continuity/v1` checkpoints whose head binds the complete prior-hash chain | Checkpoints are context-only; head/chain/tree/ledger mismatch requires fresh grounding and cannot authorize tools or completion |
 
 The current local upgrade completes the Stop/replay boundary, the
 `HarnessAdapter v1` contract, MCP ownership leases, and event-driven continuity.
@@ -122,9 +122,9 @@ The design choices and their primary-source evidence are recorded in the
 
 ---
 
-## Why DAI Nexus / Who It Is For
+## Why DAI Harness / Who It Is For
 
-Raw language models are only a small part of a functional AI coding agent. Without a disciplined framework, agents hallucinate, lose context, and repeat errors. DAI Nexus wraps AI execution in an uncompromising delivery harness designed for professional engineering teams.
+Raw language models are only a small part of a functional AI coding agent. Without a disciplined framework, agents hallucinate, lose context, and repeat errors. DAI Harness wraps AI execution in an uncompromising delivery harness designed for professional engineering teams.
 
 ### Key Outcomes
 
@@ -146,12 +146,12 @@ Raw language models are only a small part of a functional AI coding agent. Witho
 
 ## 30-Second Example
 
-DAI Nexus takes abstract prompts and manages the complete lifecycle autonomously.
+DAI Harness takes abstract prompts and manages the complete lifecycle autonomously.
 
 ```text
 You: "Build a React login form with JWT auth"
 
-DAI Nexus responds:
+DAI Harness responds:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🤔 INTERPRETING...
    Intent: Feature request
@@ -179,19 +179,19 @@ DAI Nexus responds:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-For supported, configured paths, DAI Nexus can create files, run configured tests, and record verifier output. Whether a particular task uses those paths depends on the selected runtime and available tools; see the [canonical-runtime ADR](docs/adr/0001-canonical-production-runtime.md).
+For supported, configured paths, DAI Harness can create files, run configured tests, and record verifier output. Whether a particular task uses those paths depends on the selected runtime and available tools; see the [canonical-runtime ADR](docs/adr/0001-canonical-production-runtime.md).
 
 ---
 
 ## Prerequisites and Quick Start
 
-DAI Nexus is designed to run locally alongside your preferred IDE and development stack. It operates primarily as a Model Context Protocol (MCP) server, integrating seamlessly into modern AI-assisted editors.
+DAI Harness is designed to run locally alongside your preferred IDE and development stack. It operates primarily as a Model Context Protocol (MCP) server, integrating seamlessly into modern AI-assisted editors.
 
 ### Prerequisites
 
 Please ensure the following dependencies are installed and available in your system path:
 
-- **Node.js**: v22.x or higher for supported DAI Nexus runtime and CLI usage; CI validates Node.js 24 LTS with a Node.js 22 compatibility lane.
+- **Node.js**: v22.x or higher for supported DAI Harness runtime and CLI usage; CI validates Node.js 24 LTS with a Node.js 22 compatibility lane.
 - **Git**: v2.30+ (required for repository management and history tracking).
 - **Python**: v3.8+ (harness scripts and gates; memory itself is the DAI memory layer on Node.js).
 
@@ -201,21 +201,21 @@ Please ensure the following dependencies are installed and available in your sys
 
 ### Verified Install Paths for Supported IDEs
 
-For the best experience, we recommend using DAI Nexus in **Cursor** or **Claude Desktop** via the Model Context Protocol (MCP). The following setup flow integrates DAI Nexus directly into your target repository as a submodule. This allows it to track your project's unique configuration securely and persistently across different developer machines.
+For the best experience, we recommend using DAI Harness in **Cursor** or **Claude Desktop** via the Model Context Protocol (MCP). The following setup flow integrates DAI Harness directly into your target repository as a submodule. This allows it to track your project's unique configuration securely and persistently across different developer machines.
 
-#### Step 1: Clone DAI Nexus as a Git Submodule
+#### Step 1: Clone DAI Harness as a Git Submodule
 
-Integrating DAI Nexus directly into your target repository allows it to maintain a project-specific memory bank and execution context. Open your terminal, navigate to the root of your project repository, and execute the following commands:
+Integrating DAI Harness directly into your target repository allows it to maintain a project-specific memory bank and execution context. Open your terminal, navigate to the root of your project repository, and execute the following commands:
 
 ```bash
 cd /path/to/your-project
-git submodule add -b main https://github.com/Exia-thd/DAI-harness.git dai-nexus
+git submodule add -b main https://github.com/Exia-thd/DAI-harness.git dai-harness
 git submodule update --init --recursive
 ```
 
 #### Step 2: Install the Memory layer
 
-The memory layer is DAI Nexus's code intelligence and its project memory: it
+The memory layer is DAI Harness's code intelligence and its project memory: it
 records why decisions were made, and indexes what each file declares and what
 those declarations do to each other, so the agent can answer questions about a
 codebase without reading all of it into context.
@@ -234,19 +234,19 @@ the index was built at and whether the working tree has moved past it.
 
 #### Step 3: Run the MCP Setup Script
 
-The MCP setup script automatically configures your local environment to recognize DAI Nexus's capabilities. It modifies the necessary configuration files for Claude Desktop, Cursor, Antigravity, and Codex CLI.
+The MCP setup script automatically configures your local environment to recognize DAI Harness's capabilities. It modifies the necessary configuration files for Claude Desktop, Cursor, Antigravity, and Codex CLI.
 
 ```bash
-bash dainexus/scripts/dainexus-mcp-setup.sh
+bash daiharness/scripts/daiharness-mcp-setup.sh
 ```
 
 #### Step 4: Initialize the Required Rules and Constraints
 
-DAI Nexus relies on strict system prompts to maintain its behavioral constraints. You must copy these rule files to the root of your project so that your IDE's AI assistant can read them automatically upon initialization.
+DAI Harness relies on strict system prompts to maintain its behavioral constraints. You must copy these rule files to the root of your project so that your IDE's AI assistant can read them automatically upon initialization.
 
 ```bash
-cp dainexus/AGENTS.md .
-cp dainexus/CLAUDE.md .
+cp daiharness/AGENTS.md .
+cp daiharness/CLAUDE.md .
 ```
 
 *Final Step:*
@@ -258,43 +258,43 @@ Every developer or CI machine that uses `agy` must install the machine-level
 Antigravity hook and the parent repository's update hooks once:
 
 ```bash
-bash dainexus/scripts/dainexus-install.sh --profile minimal --yes
-bash dainexus/scripts/dainexus-hook-doctor.sh --quick --fix
-bash dainexus/scripts/lite/install-submodule-update-hooks.sh "$PWD"
+bash daiharness/scripts/daiharness-install.sh --profile minimal --yes
+bash daiharness/scripts/daiharness-hook-doctor.sh --quick --fix
+bash daiharness/scripts/lite/install-submodule-update-hooks.sh "$PWD"
 ```
 
 The installer adds the native named `PreToolUse` policy hook to
 `~/.gemini/config/hooks.json`. This is Antigravity CLI configuration and is
 separate from Gemini CLI's `.gemini/settings.json`. Setup and `doctor --fix`
-also seed `.dainexus/execution-policy.yaml` into the parent workspace when
+also seed `.daiharness/execution-policy.yaml` into the parent workspace when
 it is missing; an existing file or symlink is always preserved. Confirm the installation:
 
 ```bash
-bash dainexus/scripts/dainexus-hook-doctor.sh --quick
+bash daiharness/scripts/daiharness-hook-doctor.sh --quick
 ```
 
 After this one-time setup, `post-merge` and `post-checkout` in the parent
 repository automatically check `origin/main`. When the submodule is clean and
-can be fast-forwarded, DAI Nexus updates it and refreshes the installed
+can be fast-forwarded, DAI Harness updates it and refreshes the installed
 Antigravity hook runtime, doctor checks, and MCP configuration. Local submodule
 changes or divergent history are never overwritten. Opening `agy` itself does
 not fetch Git; the automatic update happens during the preceding parent Git
 pull, merge, or checkout.
 
-Use DAI Nexus-managed delegation, escalation, benchmark, or parallel-dispatch
+Use DAI Harness-managed delegation, escalation, benchmark, or parallel-dispatch
 commands whenever possible. These paths invoke the real `agy` binary with an
 explicit sandbox and mode, validate the global policy hook, and provide the
-canonical workspace through `DAINEXUS_WORKSPACE`.
+canonical workspace through `DAIHARNESS_WORKSPACE`.
 
 If you intentionally invoke `agy` directly from a project root, provide the
 workspace and select a mode explicitly:
 
 ```bash
-DAINEXUS_WORKSPACE="$PWD" agy --sandbox --mode accept-edits
+DAIHARNESS_WORKSPACE="$PWD" agy --sandbox --mode accept-edits
 ```
 
 Current `agy 1.1.2 --print` builds may send an empty `workspacePaths` hook
-field. Without `DAINEXUS_WORKSPACE`, the DAI Nexus hook therefore fails
+field. Without `DAIHARNESS_WORKSPACE`, the DAI Harness hook therefore fails
 closed and can deny otherwise safe tool calls. The checked-in
 `.agents/hooks.json` is retained for project portability, but the tested runtime
 loaded the global registry; do not remove the global hook.
@@ -303,7 +303,7 @@ loaded the global registry; do not remove the global hook.
 
 ## Four Operating Levels
 
-DAI Nexus adapts to the scale of your project, offering different tiers of autonomy and intelligence based on the complexity of your requirements. You can start small and progressively enable more advanced features as your project matures.
+DAI Harness adapts to the scale of your project, offering different tiers of autonomy and intelligence based on the complexity of your requirements. You can start small and progressively enable more advanced features as your project matures.
 
 | Level | Features | Setup Required | Best For |
 | --- | --- | --- | --- |
@@ -316,7 +316,7 @@ DAI Nexus adapts to the scale of your project, offering different tiers of auton
 
 #### Level 1: Zero Setup
 
-By default, executing DAI Nexus places you in Level 1. The agent will rely primarily on its base instructions and standard conversational abilities, using standard MCP tools for basic file reads and writes.
+By default, executing DAI Harness places you in Level 1. The agent will rely primarily on its base instructions and standard conversational abilities, using standard MCP tools for basic file reads and writes.
 
 #### Level 2: Code Intelligence
 
@@ -326,7 +326,7 @@ To utilize Level 2 Code Intelligence, install the memory layer and index the pro
 
 Level 3 requires Python 3.8+ and can add a local SQLite retrieval index. Durable
 resume state is stored separately as project/session-scoped continuity
-checkpoints under `.dainexus/runtime/`; retrieved memory is re-grounded
+checkpoints under `.daiharness/runtime/`; retrieved memory is re-grounded
 against current files and cannot authorize execution or verification.
 
 #### Level 4: Full Power
@@ -337,16 +337,16 @@ Level 4 unlocks the Parallel Dispatch workflows and the complete multi-agent pip
 
 ## Core Capabilities
 
-DAI Nexus bundles advanced software engineering workflows into focused, accessible tools that run directly inside your local environment.
+DAI Harness bundles advanced software engineering workflows into focused, accessible tools that run directly inside your local environment.
 
 ### 1. Code Intelligence (memory layer)
 
-DAI Nexus builds a structural graph of a supported codebase with the memory layer, and records the reasoning behind it in the same store. The kernel requires impact analysis before symbol edits; compatibility paths and user overrides are not universally enforced. Graph queries supplement rather than replace text search, every answer states what it could not see, and an index older than the working tree says so rather than answering from stale positions.
+DAI Harness builds a structural graph of a supported codebase with the memory layer, and records the reasoning behind it in the same store. The kernel requires impact analysis before symbol edits; compatibility paths and user overrides are not universally enforced. Graph queries supplement rather than replace text search, every answer states what it could not see, and an index older than the working tree says so rather than answering from stale positions.
 **[Read the Memory layer Guide ➔](docs/guides/dai-memory.md)**
 
 ### 2. Autonomous Testing Stack
 
-Automated shifting-left test logic can integrate Property-Based Testing (PBT), mutation testing, and Appium/Maestro where configured. Behavioral test oracles are requirement-locked: a red suite or the current implementation is not authority to rewrite assertions, expected outputs, snapshots/goldens, eval labels, skips, or scenarios. When expected behavior is missing or contradictory, DAI Nexus must ask the user/product owner; behavioral tests change only after an explicit current requirement/acceptance change. Test-runner and setup/teardown plumbing may be repaired independently only when the behavioral oracle and coverage remain unchanged. The checks that run are recorded as evidence; this repository does not claim that every runtime writes tests first or blocks every coverage decrease.
+Automated shifting-left test logic can integrate Property-Based Testing (PBT), mutation testing, and Appium/Maestro where configured. Behavioral test oracles are requirement-locked: a red suite or the current implementation is not authority to rewrite assertions, expected outputs, snapshots/goldens, eval labels, skips, or scenarios. When expected behavior is missing or contradictory, DAI Harness must ask the user/product owner; behavioral tests change only after an explicit current requirement/acceptance change. Test-runner and setup/teardown plumbing may be repaired independently only when the behavioral oracle and coverage remain unchanged. The checks that run are recorded as evidence; this repository does not claim that every runtime writes tests first or blocks every coverage decrease.
 **[Read the Testing Stack Guide ➔](docs/guides/testing-stack.md)**
 
 ### 3. Persistent Cognitive Memory (memory layer)
@@ -391,14 +391,14 @@ Agent sessions start dev servers, game editors, emulators and watchers — and f
 - **Every long-running process holds a lease.** The reaper may only ever signal a process that has one; anything it did not start is out of bounds by construction, and infrastructure ports are allowlisted at install time.
 - **Reclaim by TTL.** A throttled sweep on the `Stop` hook reclaims expired leases — including those left behind by a session that crashed.
 - **Disk budgets and artifact TTLs** report per-project footprint and age out the pipeline's own evidence files.
-- **Reversible by design.** Observe mode by default, dry-run defaults on anything destructive, and a three-tier kill switch (`DAINEXUS_RLG=off`, a `DISABLED` file, a per-project opt-out).
+- **Reversible by design.** Observe mode by default, dry-run defaults on anything destructive, and a three-tier kill switch (`DAIHARNESS_RLG=off`, a `DISABLED` file, a per-project opt-out).
 
 ```bash
 bash scripts/runtime/dev-run.sh --role web-dev --ttl 2h -- npm run dev   # sanctioned launch
 bash scripts/runtime/runtime-inventory.sh --all                          # what is running, machine-wide
 bash scripts/runtime/runtime-reap.sh                                     # dry-run: what would be reclaimed
 bash scripts/runtime/disk-budget.sh                                      # footprint vs budget
-touch ~/.dainexus/runtime/DISABLED                                    # stop the guard, instantly
+touch ~/.daiharness/runtime/DISABLED                                    # stop the guard, instantly
 ```
 ```text
 LAYER 1 - KERNEL (always loaded, inside the 7k-token budget sync-kernel.py enforces)
@@ -479,7 +479,7 @@ the source of truth for gates, role lanes, model-aware dispatch, and evidence.
 
 ## Architecture and Safety Model
 
-The DAI Nexus pipeline revolves around predictable constraint enforcement. The phases remain canonical, but execution is right-sized: irrelevant phases are skipped rather than converted into make-work.
+The DAI Harness pipeline revolves around predictable constraint enforcement. The phases remain canonical, but execution is right-sized: irrelevant phases are skipped rather than converted into make-work.
 `INTERPRET → DEFINE → BUILD → HARDEN → SHIP → SUSTAIN`
 
 ### Verification and Safety Layers
@@ -499,7 +499,7 @@ The DAI Nexus pipeline revolves around predictable constraint enforcement. The p
 
 ## Common Workflows
 
-DAI Nexus automates extensive routine workflows via slash commands and integrated CLI tools.
+DAI Harness automates extensive routine workflows via slash commands and integrated CLI tools.
 
 ### Generate a Project Profile
 
@@ -509,7 +509,7 @@ Once setup is complete, run the onboarding workflow to establish a baseline. In 
 /onboard
 ```
 
-*Creates a `.dainexus/project-profile.json` detailing your stack, coding conventions, and existing tech debt.*
+*Creates a `.daiharness/project-profile.json` detailing your stack, coding conventions, and existing tech debt.*
 
 For a deterministic, model-free CLI path, use `forge --json init .` followed by `forge --json onboard .`. The [CLI init/onboard golden-path guide](docs/guides/forge-init-onboard.md) documents idempotency, overwrite behavior, recorded facts, and the required under-ten-minute test.
 
@@ -555,7 +555,7 @@ forge docs build .
 
 Use `forge docs build --all` for every registered project and
 `forge docs export obsidian --all` when an optional Obsidian vault is needed.
-The older `dainexus-wiki-sync*.sh` entry points remain legacy compatibility
+The older `daiharness-wiki-sync*.sh` entry points remain legacy compatibility
 tools; new workflows should use the source-preserving Docs Hub.
 For material changes, `forge docs gate` is mandatory; it verifies the
 project-owned Markdown/JSON and canonical project state before accepting
@@ -578,7 +578,7 @@ python -m http.server 8000 --directory docs
 ### MCP server not responding in Cursor/Claude
 
 - Restart your IDE completely. Ensure no background zombie node processes are locking the socket.
-- Run `bash scripts/dainexus-mcp-setup.sh --force` to regenerate configuration files.
+- Run `bash scripts/daiharness-mcp-setup.sh --force` to regenerate configuration files.
 - Verify Node v22+ is installed via `node -v` and accessible in your default path.
 
 ### The index is stale / Impact analysis fails
@@ -639,9 +639,9 @@ runs that check, so a stale page is a failing check rather than a quiet inaccura
 
 ## MCP tools (already registered in `.mcp.json`)
 
-`dn_start_pipeline` · `dn_get_state` · `dn_advance_phase` (refused until the gate is
-approved) · `dn_request_gate_approval` · `dn_approve_gate` · `dn_fail_pipeline` ·
-`dn_memory_add` · `dn_memory_search`
+`dh_start_pipeline` · `dh_get_state` · `dh_advance_phase` (refused until the gate is
+approved) · `dh_request_gate_approval` · `dh_approve_gate` · `dh_fail_pipeline` ·
+`dh_memory_add` · `dh_memory_search`
 
 The two memory tools go through `scripts/lite/dai_memory.py` into the pinned plugin, so
 what an agent records here and what the CLI records are the same store.
@@ -667,7 +667,7 @@ These are the real edges of the thing, not a disclaimer section:
 ## Roadmap
 
 1. **ASIP** — a self-improving loop: take the lesson out of a failure, evolve the skill.
-2. **Dashboard** — a view over `.dainexus/pipeline-state.json` through MCP.
+2. **Dashboard** — a view over `.daiharness/pipeline-state.json` through MCP.
 3. **Reviewer attestation.** `scripts/lite/review_attest.py` verifies an OpenSSH Ed25519
    signature against an allowed-signers file, but the verify gate still reports HARD
    completion — signed `review-2`, the RED->GREEN chain, the mutation backcheck — as

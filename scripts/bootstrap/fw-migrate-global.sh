@@ -3,7 +3,7 @@
 # fw-migrate-global — Migrate Existing Projects to Global Setup
 #
 # Migrates projects from per-project setup to global setup.
-# Removes .antigravity/mcp-manifest.json and .dainexus/mcp-server/
+# Removes .antigravity/mcp-manifest.json and .daiharness/mcp-server/
 # from each project, moving to global configuration.
 #
 # USAGE:
@@ -36,23 +36,23 @@ log_info()  { echo -e "  $1"; }
 # ─── Paths ─────────────────────────────────────────────────────────────────
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DAINEXUS_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd -P)"
-GLOBAL_CONFIG_DIR="${HOME}/.config/dai-nexus"
-BACKUP_DIR="${HOME}/.config/dai-nexus/migrations"
+DAIHARNESS_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd -P)"
+GLOBAL_CONFIG_DIR="${HOME}/.config/dai-harness"
+BACKUP_DIR="${HOME}/.config/dai-harness/migrations"
 MIGRATION_LOG="${BACKUP_DIR}/migration-log.json"
 
 # ─── Help ─────────────────────────────────────────────────────────────────
 
 show_help() {
     cat << 'EOF'
-fw-migrate-global — Migrate to Global DAI Nexus MCP Setup
+fw-migrate-global — Migrate to Global DAI Harness MCP Setup
 
 SYNOPSIS
     fw-migrate-global.sh [OPTIONS] [project_path]
 
 DESCRIPTION
     Migrates existing projects from per-project setup to global setup.
-    Removes .antigravity/mcp-manifest.json and .dainexus/mcp-server/
+    Removes .antigravity/mcp-manifest.json and .daiharness/mcp-server/
     from projects, using global configuration instead.
 
 OPTIONS
@@ -81,13 +81,13 @@ EXAMPLES
 
 WHAT GETS REMOVED (per project)
     .antigravity/mcp-manifest.json
-    .dainexus/mcp-server/
-    .dainexus/mcp-server
+    .daiharness/mcp-server/
+    .daiharness/mcp-server
 
 WHAT GETS PRESERVED
-    .dainexus/settings.env (project-specific settings)
-    .dainexus/project-profile.json (project intelligence)
-    .dainexus/code-conventions.md (code patterns)
+    .daiharness/settings.env (project-specific settings)
+    .daiharness/project-profile.json (project intelligence)
+    .daiharness/code-conventions.md (code patterns)
     .antigravity/ (other directories)
 
 EOF
@@ -160,7 +160,7 @@ scan_projects() {
                 if [[ -n "$project" ]] && [[ -d "$project" ]]; then
                     # Check if needs migration
                     if [[ -f "$project/.antigravity/mcp-manifest.json" ]] || \
-                       [[ -d "$project/.dainexus/mcp-server" ]]; then
+                       [[ -d "$project/.daiharness/mcp-server" ]]; then
                         found+=("$project")
                     fi
                 fi
@@ -169,12 +169,12 @@ scan_projects() {
     done
     
     # Also check registry
-    local registry="${HOME}/.config/dai-nexus/registry.json"
+    local registry="${HOME}/.config/dai-harness/registry.json"
     if [[ -f "$registry" ]]; then
         while IFS= read -r project; do
             if [[ -n "$project" ]] && [[ -d "$project" ]]; then
                 if [[ -f "$project/.antigravity/mcp-manifest.json" ]] || \
-                   [[ -d "$project/.dainexus/mcp-server" ]]; then
+                   [[ -d "$project/.daiharness/mcp-server" ]]; then
                     # Check if already in found
                     local already_found=false
                     for f in "${found[@]}"; do
@@ -218,8 +218,8 @@ try {
         if [[ -f "$project/.antigravity/mcp-manifest.json" ]]; then
             echo "    - .antigravity/mcp-manifest.json"
         fi
-        if [[ -d "$project/.dainexus/mcp-server" ]]; then
-            echo "    - .dainexus/mcp-server/"
+        if [[ -d "$project/.daiharness/mcp-server" ]]; then
+            echo "    - .daiharness/mcp-server/"
         fi
         echo ""
     done
@@ -260,12 +260,12 @@ try {
         log_info "  Workspace: $workspace"
     fi
     
-    if [[ -d "$project/.dainexus/mcp-server" ]]; then
-        log_step "Found: .dainexus/mcp-server/"
+    if [[ -d "$project/.daiharness/mcp-server" ]]; then
+        log_step "Found: .daiharness/mcp-server/"
         needs_migration=true
         
         local size
-        size=$(du -sh "$project/.dainexus/mcp-server" 2>/dev/null | cut -f1)
+        size=$(du -sh "$project/.daiharness/mcp-server" 2>/dev/null | cut -f1)
         log_info "  Size: $size"
     fi
     
@@ -273,14 +273,14 @@ try {
     echo ""
     log_info "Preserved (project-specific):"
     
-    if [[ -f "$project/.dainexus/settings.env" ]]; then
-        log_ok "  - .dainexus/settings.env"
+    if [[ -f "$project/.daiharness/settings.env" ]]; then
+        log_ok "  - .daiharness/settings.env"
     fi
-    if [[ -f "$project/.dainexus/project-profile.json" ]]; then
-        log_ok "  - .dainexus/project-profile.json"
+    if [[ -f "$project/.daiharness/project-profile.json" ]]; then
+        log_ok "  - .daiharness/project-profile.json"
     fi
-    if [[ -f "$project/.dainexus/code-conventions.md" ]]; then
-        log_ok "  - .dainexus/code-conventions.md"
+    if [[ -f "$project/.daiharness/code-conventions.md" ]]; then
+        log_ok "  - .daiharness/code-conventions.md"
     fi
     
     # Check .antigravity/ subdirs
@@ -315,7 +315,7 @@ migrate_project() {
     
     # Check if migration needed
     if [[ ! -f "$project/.antigravity/mcp-manifest.json" ]] && \
-       [[ ! -d "$project/.dainexus/mcp-server" ]]; then
+       [[ ! -d "$project/.daiharness/mcp-server" ]]; then
         log_info "No migration needed for this project"
         return 0
     fi
@@ -356,18 +356,18 @@ migrate_project() {
         migrated_files+=("antigravity-mcp-manifest.json")
     fi
     
-    # Backup and remove .dainexus/mcp-server/
-    if [[ -d "$project/.dainexus/mcp-server" ]]; then
-        local backup="${BACKUP_DIR}/$(basename "$project")-dai-nexus-mcp-server.tar.gz"
+    # Backup and remove .daiharness/mcp-server/
+    if [[ -d "$project/.daiharness/mcp-server" ]]; then
+        local backup="${BACKUP_DIR}/$(basename "$project")-dai-harness-mcp-server.tar.gz"
         mkdir -p "$BACKUP_DIR"
-        tar -czf "$backup" -C "$project/.dainexus" mcp-server 2>/dev/null || {
+        tar -czf "$backup" -C "$project/.daiharness" mcp-server 2>/dev/null || {
             # Fallback if tar fails
-            cp -r "$project/.dainexus/mcp-server" "${BACKUP_DIR}/$(basename "$project")-mcp-server"
+            cp -r "$project/.daiharness/mcp-server" "${BACKUP_DIR}/$(basename "$project")-mcp-server"
         }
-        rm -rf "$project/.dainexus/mcp-server"
-        log_ok "Removed: .dainexus/mcp-server/"
+        rm -rf "$project/.daiharness/mcp-server"
+        log_ok "Removed: .daiharness/mcp-server/"
         log_info "  Backed up to: $backup"
-        migrated_files+=("dai-nexus-mcp-server")
+        migrated_files+=("dai-harness-mcp-server")
     fi
     
     # Log migration
@@ -403,12 +403,12 @@ migrate_all() {
     local found=()
     
     # Scan from registry
-    local registry="${HOME}/.config/dai-nexus/registry.json"
+    local registry="${HOME}/.config/dai-harness/registry.json"
     if [[ -f "$registry" ]]; then
         while IFS= read -r project; do
             if [[ -n "$project" ]] && [[ -d "$project" ]]; then
                 if [[ -f "$project/.antigravity/mcp-manifest.json" ]] || \
-                   [[ -d "$project/.dainexus/mcp-server" ]]; then
+                   [[ -d "$project/.daiharness/mcp-server" ]]; then
                     found+=("$project")
                 fi
             fi
@@ -434,7 +434,7 @@ try {
             while IFS= read -r project; do
                 if [[ -n "$project" ]] && [[ -d "$project" ]]; then
                     if [[ -f "$project/.antigravity/mcp-manifest.json" ]] || \
-                       [[ -d "$project/.dainexus/mcp-server" ]]; then
+                       [[ -d "$project/.daiharness/mcp-server" ]]; then
                         # Check if already in found
                         local already_found=false
                         for f in "${found[@]}"; do
@@ -574,16 +574,16 @@ process.stdin.on('end', () => {
     fi
     
     # Restore mcp-server
-    if [[ -f "${BACKUP_DIR}/${project_name}-dai-nexus-mcp-server.tar.gz" ]]; then
-        tar -xzf "${BACKUP_DIR}/${project_name}-dai-nexus-mcp-server.tar.gz" \
-                 -C "$project/.dainexus" 2>/dev/null || {
+    if [[ -f "${BACKUP_DIR}/${project_name}-dai-harness-mcp-server.tar.gz" ]]; then
+        tar -xzf "${BACKUP_DIR}/${project_name}-dai-harness-mcp-server.tar.gz" \
+                 -C "$project/.daiharness" 2>/dev/null || {
             # Fallback if tar fails
             if [[ -d "${BACKUP_DIR}/${project_name}-mcp-server" ]]; then
                 cp -r "${BACKUP_DIR}/${project_name}-mcp-server" \
-                      "$project/.dainexus/mcp-server"
+                      "$project/.daiharness/mcp-server"
             fi
         }
-        log_ok "Restored: .dainexus/mcp-server/"
+        log_ok "Restored: .daiharness/mcp-server/"
     fi
     
     # Mark as rolled back in log
@@ -627,7 +627,7 @@ main() {
     done
     
     echo ""
-    echo -e "${CYAN}⚡ DAI Nexus Global Migration Tool${NC}"
+    echo -e "${CYAN}⚡ DAI Harness Global Migration Tool${NC}"
     echo ""
     
     init_migration_log

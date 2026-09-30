@@ -69,7 +69,7 @@ expertMode:
 
 token_tracking:
   enabled: false
-  log_dir: "~/.dainexus/usage"
+  log_dir: "~/.daiharness/usage"
   export_format: jsonl
 ```
 
@@ -91,7 +91,7 @@ Use expert CLI only when `expertMode.enabled: true`.
 Every expert-mode routing decision should be logged to:
 
 ```text
-.dainexus/expert-cli-decisions.jsonl
+.daiharness/expert-cli-decisions.jsonl
 ```
 
 Recommended fields:
@@ -110,7 +110,7 @@ Recommended fields:
 
 ## Token Tracking
 
-`dai token on` enables local token tracking for DAI Nexus logs and expert CLI decision accounting. It does not delete or modify existing usage data. `dai token off` only disables future tracking.
+`dai token on` enables local token tracking for DAI Harness logs and expert CLI decision accounting. It does not delete or modify existing usage data. `dai token off` only disables future tracking.
 
 When expert mode is enabled with `--track-tokens`, run the equivalent of:
 

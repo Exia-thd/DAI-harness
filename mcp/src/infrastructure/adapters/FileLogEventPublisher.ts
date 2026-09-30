@@ -6,7 +6,7 @@ export class FileLogEventPublisher implements IEventPublisher {
   private readonly eventLogFile: string;
 
   constructor(workspacePath: string) {
-    this.eventLogFile = path.join(workspacePath, '.dainexus', 'events.log');
+    this.eventLogFile = path.join(workspacePath, '.daiharness', 'events.log');
   }
 
   publish(eventName: string, payload: unknown): void {

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # scripts/lite/rule-refresh.sh
-# DAI Nexus Phase 3 — Rule Refresh
+# DAI Harness Phase 3 — Rule Refresh
 
 set -euo pipefail
 

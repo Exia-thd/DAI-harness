@@ -1,6 +1,6 @@
-# DAI Nexus Shared Protocols
+# DAI Harness Shared Protocols
 
-> **Purpose:** Single source of truth for core DAI Nexus concepts shared across all platforms.
+> **Purpose:** Single source of truth for core DAI Harness concepts shared across all platforms.
 
 ## Files in this Directory
 

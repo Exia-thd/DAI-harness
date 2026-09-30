@@ -16,7 +16,7 @@ afterEach(() => {
 });
 
 function fixture() {
-  const root = mkdtempSync(join(tmpdir(), 'dainexus-lease-'));
+  const root = mkdtempSync(join(tmpdir(), 'daiharness-lease-'));
   roots.push(root);
   let identity: ProcessIdentity | null = {
     pid: 901,
@@ -107,7 +107,7 @@ describe('MCP lifecycle ownership lease', () => {
   });
 
   it('refuses a selection-to-signal race when identity changes before TERM', async () => {
-    const root = mkdtempSync(join(tmpdir(), 'dainexus-lease-race-'));
+    const root = mkdtempSync(join(tmpdir(), 'daiharness-lease-race-'));
     roots.push(root);
     const identity: ProcessIdentity = {
       pid: 902,

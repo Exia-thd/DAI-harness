@@ -9,13 +9,13 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-GOAL_FILE = ".dainexus/active-goal.json"
+GOAL_FILE = ".daiharness/active-goal.json"
 
 
 def get_goal_dir():
-    """Ensure .dainexus directory exists."""
-    Path(".dainexus").mkdir(exist_ok=True)
-    return Path(".dainexus")
+    """Ensure .daiharness directory exists."""
+    Path(".daiharness").mkdir(exist_ok=True)
+    return Path(".daiharness")
 
 
 def create_goal(condition: str, created_by: str = "user") -> dict:

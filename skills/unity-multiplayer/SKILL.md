@@ -6,7 +6,7 @@ description: >
   compensation, and matchmaking integration.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [unity, multiplayer, netcode, networking, relay, lobby, prediction, replication]
 ---
 
@@ -1262,7 +1262,7 @@ public class PlayerReconnectHandler : NetworkBehaviour
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ 1. Create NetworkManager (DAI Nexus)                          │
+│ 1. Create NetworkManager (DAI Harness)                          │
 │    └── Write NetworkManagerSetup.cs                             │
 └─────────────────────────────────────────────────────────────────┘
                               ↓

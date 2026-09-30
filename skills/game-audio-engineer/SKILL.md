@@ -6,7 +6,7 @@ description: >
   and mix management. Creates immersive soundscapes that reinforce gameplay.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [audio, sound-design, music, wwise, fmod, spatial-audio, adaptive-music, mix, game-audio]
 ---
 
@@ -82,7 +82,7 @@ QA → Audio Quality Verification
 
 ## Engagement Mode
 
-!`cat .dainexus/settings.md 2>/dev/null || echo "No settings — using Standard"`
+!`cat .daiharness/settings.md 2>/dev/null || echo "No settings — using Standard"`
 
 | Mode | Behavior |
 |------|----------|
@@ -173,7 +173,7 @@ public class AudioManager : MonoBehaviour
 ## Output Structure
 
 ```
-.dainexus/game-audio-engineer/
+.daiharness/game-audio-engineer/
 ├── audio-design-document.md         # Complete audio vision
 ├── sfx/
 │   ├── sfx-catalog.md               # All sound effects with triggers
@@ -313,7 +313,7 @@ Audio must reinforce the **game's core pillars**. Ask: "What feeling does the ga
 
 ### SFX Variation Rules
 
-```markdown
+````markdown
 ## Variation Implementation
 
 ### Round-Robin (No Repeat)
@@ -351,6 +351,7 @@ public float RandomVolume(float baseVolume = 1.0f, float variationDb = 0.5f)
     return baseVolume * variation;
 }
 ```
+````
 
 ### Layered Sound Design
 ```markdown
@@ -371,7 +372,7 @@ public float RandomVolume(float baseVolume = 1.0f, float variationDb = 0.5f)
 
 ### Distance Falloff Rules
 
-```markdown
+````markdown
 ## 3D Distance Models
 
 ### Outdoor (Open Environment)
@@ -395,6 +396,7 @@ source.minDistance = 0.5f;
 source.maxDistance = 20f;
 source.dopplerLevel = 0.5f; // Subtle doppler
 ```
+````
 
 ---
 
@@ -711,4 +713,4 @@ Master (0dB)
 - [ ] Ducking rules for dialogue, combat, cinematics
 - [ ] Voice pipeline defined (if applicable)
 - [ ] Platform-specific mix adjustments documented
-- [ ] All audio outputs written to `.dainexus/game-audio-engineer/`
+- [ ] All audio outputs written to `.daiharness/game-audio-engineer/`

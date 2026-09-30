@@ -1,7 +1,7 @@
 // Unity Balance Test Template
 // Ref: GDD/Sections/09_Balance.md
 
-namespace DaiNexus.GameTest.Unity.Balance
+namespace DaiHarness.GameTest.Unity.Balance
 {
     /// <summary>
     /// Balance test matrix. Validates economy, XP curves, difficulty scaling

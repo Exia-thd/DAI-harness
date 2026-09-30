@@ -3,7 +3,7 @@ name: software-engineer-go
 extends: software-engineer
 language: go
 version: 1.0.0
-author: dai-nexus
+author: dai-harness
 tags: [go, golang, backend, api, services, clean-architecture, tdd]
 file_patterns: ["*.go", "go.mod", "go.sum", "Makefile"]
 linter: golangci-lint

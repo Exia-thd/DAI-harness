@@ -153,12 +153,12 @@ ai:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `DAINEXUS_WORKSPACE` | Project workspace path | Current directory |
-| `DAINEXUS_SKIP_MEMORY` | Skip memory initialization | 0 |
-| `DAINEXUS_LOCAL_MEMORY` | Use local memory | 1 |
-| `DAINEXUS_DEBUG` | Enable debug logging | 0 |
-| `DAINEXUS_MAX_RETRIES` | Max retry attempts | 3 |
-| `DAINEXUS_TIMEOUT` | Skill timeout (seconds) | 600 |
+| `DAIHARNESS_WORKSPACE` | Project workspace path | Current directory |
+| `DAIHARNESS_SKIP_MEMORY` | Skip memory initialization | 0 |
+| `DAIHARNESS_LOCAL_MEMORY` | Use local memory | 1 |
+| `DAIHARNESS_DEBUG` | Enable debug logging | 0 |
+| `DAIHARNESS_MAX_RETRIES` | Max retry attempts | 3 |
+| `DAIHARNESS_TIMEOUT` | Skill timeout (seconds) | 600 |
 
 ### Emergency Procedures
 
@@ -189,7 +189,7 @@ Skills communicate through structured artifacts:
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │
 │ Each skill writes artifacts to:                                     │
-│ .dainexus/<skill-name>/<artifact-name>.json                      │
+│ .daiharness/<skill-name>/<artifact-name>.json                      │
 │                                                                     │
 │ Artifact structure:                                                 │
 │ {                                                                   │

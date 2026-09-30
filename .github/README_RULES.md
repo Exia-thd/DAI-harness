@@ -1,11 +1,11 @@
-# DAI Nexus README Structure & Commit Checklist
+# DAI Harness README Structure & Commit Checklist
 
 ## 📋 Required Sections
 
 Every README update should include all sections below. Check off when verified.
 
 ### 1. Project Identity (Top of file)
-- [ ] Title: "DAI Nexus — AI Orchestrator That Actually Learns"
+- [ ] Title: "DAI Harness — AI Orchestrator That Actually Learns"
 - [ ] Badges: Stars, Forks, Version, Skills count, License
 - [ ] One-liner value proposition
 - [ ] ASCII demo showing the workflow
@@ -143,7 +143,7 @@ Update README when:
 ## 📝 Section Templates
 
 ### New Feature Section
-```markdown
+````markdown
 ## Feature Name — One-line description
 
 Brief paragraph explaining the feature.
@@ -168,7 +168,7 @@ output
 ```yaml
 # example config
 ```
-```
+````
 
 ---
 

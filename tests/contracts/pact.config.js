@@ -1,7 +1,7 @@
 /**
  * Pact Broker / Standalone Configuration
  * Configure for Pact Broker integration or standalone mode
- * For dai-nexus project
+ * For dai-harness project
  */
 module.exports = {
   // Standalone mode (default)
@@ -23,7 +23,7 @@ module.exports = {
 
   // Provider verification settings
   provider: {
-    name: 'dai-nexus-api',
+    name: 'dai-harness-api',
     port: 3000,
     baseUrl: process.env.PROVIDER_BASE_URL || 'http://localhost:3000',
   },

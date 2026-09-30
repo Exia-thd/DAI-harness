@@ -1,4 +1,4 @@
-# DAI Nexus Active Roadmap
+# DAI Harness Active Roadmap
 
 > **North star:** cost per verified, accepted engineering task.
 > **Scope:** the core engineering loop first; game, XR, research, and growth remain optional capability packs until the core loop has production evidence.
@@ -6,7 +6,7 @@
 
 ## Product Goal
 
-DAI Nexus turns a base model into a reliable engineering execution system. It should understand the repository before editing, route work by measured risk, prove changed behavior mechanically, preserve useful project memory within a bounded context budget, and involve a human only at strategic or authority gates.
+DAI Harness turns a base model into a reliable engineering execution system. It should understand the repository before editing, route work by measured risk, prove changed behavior mechanically, preserve useful project memory within a bounded context budget, and involve a human only at strategic or authority gates.
 
 The product promise is:
 
@@ -41,7 +41,7 @@ The product promise is:
 
 ## Provider-Native Routing Policy
 
-DAI Nexus exposes one provider-neutral Scout/Builder/Expert contract. Each run selects exactly one provider adapter; that adapter discovers the provider's available models, maps capabilities to tiers, resolves snapshots, performs calls and verification, and records provider-native usage/cost receipts. Model IDs are never assumed portable between providers.
+DAI Harness exposes one provider-neutral Scout/Builder/Expert contract. Each run selects exactly one provider adapter; that adapter discovers the provider's available models, maps capabilities to tiers, resolves snapshots, performs calls and verification, and records provider-native usage/cost receipts. Model IDs are never assumed portable between providers.
 
 | Tier | Default responsibility | Provider-native selection | Escalation rule |
 |---|---|---|---|
@@ -158,7 +158,7 @@ evaluator for resumed long-running work.
 | ID | Deliverable | Dependencies | Exit evidence |
 |---|---|---|---|
 | H0 | Roadmap truth reset: independent completion axes, exact executable verifier contracts, and cross-document status alignment | None | Manifest v2 contract passes; all declared verifier argv replay green; Docs Hub gate passes; independent diff/evidence review approves the exact tree |
-| H1 | `HarnessAdapter v1` with explicit `dainexus-owned-loop` and `native-host-loop` modes plus typed start/resume/fork/steer/interrupt capability negotiation | H0 | Contract tests reject unsupported lifecycle operations and prevent provider-specific model IDs from leaking into the core contract |
+| H1 | `HarnessAdapter v1` with explicit `daiharness-owned-loop` and `native-host-loop` modes plus typed start/resume/fork/steer/interrupt capability negotiation | H0 | Contract tests reject unsupported lifecycle operations and prevent provider-specific model IDs from leaking into the core contract |
 | H2 | Canonical append-only `TrajectoryLedger` plus reversible lifecycle/disposers, cancellation propagation, and quiescence receipts | H1 | Deterministic reconstruction, disposer idempotency, cancellation, timeout, and no-post-terminal-event tests pass |
 | H3 | Execution containment and trust boundary: retain output filtering as a named firewall, add real filesystem/network containment, production identity/policy hooks, and explicit trust gates | H1, H2 | Escape, unauthorized tool, network-deny, filesystem-deny, and trust-boundary negative tests pass on the canonical path |
 | H4 | Record → normalize → replay the real agent loop without provider keys, with strict consumption checks | H2, H3 | Full-loop fixture replay reproduces lifecycle/model/tool/approval/evidence events and fails on missing, extra, or reordered events |

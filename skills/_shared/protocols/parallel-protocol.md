@@ -227,10 +227,10 @@ Before starting the next wave:
 | Integration fail | Workers build against stale API | Medium | Shared frozen API snapshot |
 | Resource exhaustion | 4+ concurrent processes | Low | MAX_WORKERS cap |
 
-## Integration with DAI Nexus
+## Integration with DAI Harness
 
 This protocol is automatically used when:
-1. `execution: parallel` in `.dainexus/settings.md`
+1. `execution: parallel` in `.daiharness/settings.md`
 2. Phase has 2+ independent tasks
 3. Using parallel-dispatch skill
 

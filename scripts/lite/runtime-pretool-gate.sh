@@ -25,7 +25,7 @@
 # Deliberately NOT sourcing runtime-common.sh: parsing a 250-line library on
 # every tool call is exactly the cost this hook must not add.
 #
-# Kill-switch: DAINEXUS_RLG=off · $RLG_HOME/DISABLED · <proj>/.dainexus/rlg-optout
+# Kill-switch: DAIHARNESS_RLG=off · $RLG_HOME/DISABLED · <proj>/.daiharness/rlg-optout
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # No `set -e`: this hook must never abort mid-way.
@@ -53,11 +53,11 @@ allow_and_exit() {
 }
 
 # ── tier 1 kill-switch: env, zero cost ───────────────────────────────────────
-case "${DAINEXUS_RLG:-}" in
+case "${DAIHARNESS_RLG:-}" in
   off|OFF|0|false|disabled) allow_and_exit ;;
 esac
 
-RLG_HOME="${DAINEXUS_RLG_HOME:-$HOME/.dainexus/runtime}"
+RLG_HOME="${DAIHARNESS_RLG_HOME:-$HOME/.daiharness/runtime}"
 
 # ── tier 2 kill-switch: file ─────────────────────────────────────────────────
 [ -e "$RLG_HOME/DISABLED" ] && allow_and_exit
@@ -139,7 +139,7 @@ case "$PAYLOAD" in
   *'"workspacePaths"'*)
     rest="${PAYLOAD#*\"workspacePaths\"}"; rest="${rest#*\"}"; CWD="${rest%%\"*}" ;;
 esac
-[ -n "$CWD" ] && [ -e "$CWD/.dainexus/rlg-optout" ] && allow_and_exit
+[ -n "$CWD" ] && [ -e "$CWD/.daiharness/rlg-optout" ] && allow_and_exit
 
 # Trim the command out of the payload — needed both for the resolve step and
 # for the log line. Best effort, never fatal.

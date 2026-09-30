@@ -27,7 +27,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground the active React Native workspace configurations
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 find scripts/ -name "*emulator*"
 ```
 ```
@@ -36,11 +36,11 @@ scripts/setup-local-emulators.sh
 
 ### Step 2: Implement a safe, local Maestro E2E test script in `.maestro/login-flow.yaml`
 ```yaml
-appId: com.dainexus.mobileclient
+appId: com.daiharness.mobileclient
 ---
 - clearState
 - launchApp
-- assertVisible: "Welcome to DAI Nexus"
+- assertVisible: "Welcome to DAI Harness"
 - tapOn: "alex@company.com"
 - assertVisible: "Authorized Session"
 ```

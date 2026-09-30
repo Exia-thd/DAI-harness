@@ -11,17 +11,17 @@ Run silently BEFORE any execution (all modes) to ensure project intelligence is 
 1. Check if `.antigravity/mcp-manifest.json` exists and is current in the project root.
 2. **If missing or stale**, run ONE command to set up everything:
 
-   **Detect dai-nexus path first**, then run:
+   **Detect dai-harness path first**, then run:
 
    ```bash
-   # If dai-nexus is a submodule in the project:
-   bash <project-root>/dai-nexus/scripts/dainexus-mcp-setup.sh
+   # If dai-harness is a submodule in the project:
+   bash <project-root>/dai-harness/scripts/daiharness-mcp-setup.sh
 
-   # If dai-nexus IS the project:
-   bash scripts/dainexus-mcp-setup.sh
+   # If dai-harness IS the project:
+   bash scripts/daiharness-mcp-setup.sh
 
    # For Antigravity plugin users (universal, works from any project):
-   bash <dai-nexus>/.antigravity/plugins/production-grade/scripts/dainexus-mcp-setup.sh
+   bash <dai-harness>/.antigravity/plugins/production-grade/scripts/daiharness-mcp-setup.sh
    ```
 
    This single command:
@@ -43,7 +43,7 @@ Run silently BEFORE any execution (all modes) to ensure project intelligence is 
 
 **Step 0.2 — System Requirements + Power Level Check (required):**
 
-DAI Nexus requires **Node.js 22+** (DAI memory layer, MCP runtime) and **Python 3** (harness scripts). Power level determines which tools are needed.
+DAI Harness requires **Node.js 22+** (DAI memory layer, MCP runtime) and **Python 3** (harness scripts). Power level determines which tools are needed.
 
 **Step 0.2.1 — System Requirements Check:**
 
@@ -52,8 +52,8 @@ Run these in parallel:
 ```
 node_check:  node --version 2>/dev/null | grep -oE '[0-9]+' | head -1
 python_check: python3 --version 2>/dev/null
-memory_check:  [ -d .dainexus/memory_db ] && echo "ready" || echo "setup"
-settings_check: [ -f .dainexus/settings.md ] && echo "exists" || echo "missing"
+memory_check:  [ -d .daiharness/memory_db ] && echo "ready" || echo "setup"
+settings_check: [ -f .daiharness/settings.md ] && echo "exists" || echo "missing"
 ```
 
 **Decision matrix:**
@@ -69,7 +69,7 @@ settings_check: [ -f .dainexus/settings.md ] && echo "exists" || echo "missing"
 **If Node.js or Python missing (blocking):**
 ```
 notify_user:
-  "⚠️ Missing required tools for DAI Nexus:
+  "⚠️ Missing required tools for DAI Harness:
 
    Node.js 22+ required for: DAI memory (code graph + project memory), MCP server
    Python 3.8+ required for: harness scripts and gates
@@ -88,10 +88,10 @@ notify_user:
 **If memory needs setup (non-blocking):**
 ```
 # Run silently
-python3 <path-to-dai-nexus>/scripts/lite/dai_memory.py install 2>/dev/null
+python3 <path-to-dai-harness>/scripts/lite/dai_memory.py install 2>/dev/null
 
 # If failed (no python3)
-Log: "⚠️ Memory init failed — install Python 3 first. Forcing: DAINEXUS_SKIP_MEMORY=1"
+Log: "⚠️ Memory init failed — install Python 3 first. Forcing: DAIHARNESS_SKIP_MEMORY=1"
 # CI/headless exemption auto-applied
 ```
 
@@ -106,7 +106,7 @@ Log: "✓ System requirements verified:
 **Step 0.2.2 — Power Level Check:**
 
 ```
-IF .dainexus/settings.md exists:
+IF .daiharness/settings.md exists:
   Read engagement + execution from settings
   Log: "✓ Power level loaded: [level]"
   Continue to Step 0.3
@@ -118,7 +118,7 @@ ELSE:
 **Prompt for power level (only if settings missing):**
 ```
 notify_user:
-  "DAI Nexus has 5 power levels. Choose based on how much capability you need:
+  "DAI Harness has 5 power levels. Choose based on how much capability you need:
 
   ⚡ Basic       — manifest-driven skill registry + proportional pipeline (Node.js only)
   ⚡⚡ Smart     — + code graph blast-radius analysis (DAI memory, Node.js only)
@@ -206,8 +206,8 @@ IF Basic:
 **Write settings file:**
 
 ```bash
-mkdir -p .dainexus production
-cat > .dainexus/settings.md << 'EOF'
+mkdir -p .daiharness production
+cat > .daiharness/settings.md << 'EOF'
 # Pipeline Settings
 Power_Level: [selected]
 Engagement: [express/standard/thorough/meticulous — default: standard]
@@ -238,7 +238,7 @@ Log: "✓ System init complete:
   - Memory: [ready] ✓
   - Power level: [level] ✓
   - Review mode: [mode] ✓
-  - Settings: written to .dainexus/settings.md"
+  - Settings: written to .daiharness/settings.md"
 ```
 
 ## Auto-Update Check
@@ -248,7 +248,7 @@ Run BEFORE any execution (all modes). Silent if current. One prompt max if updat
 **Step 0 — version check:**
 
 1. Check current version from plugin metadata
-2. Use `read_url_content` to fetch `https://raw.githubusercontent.com/Exia-thd/dai-nexus/main/VERSION` → read the version string (this is the remote version)
+2. Use `read_url_content` to fetch `https://raw.githubusercontent.com/Exia-thd/dai-harness/main/VERSION` → read the version string (this is the remote version)
 3. **If fetch fails** (offline, timeout, 404) → silently continue. Never block the pipeline over an update check.
 4. **If remote ≤ local** → continue silently (user sees nothing)
 5. **If remote > local** → prompt via notify_user:
@@ -279,28 +279,28 @@ Run AFTER update check, BEFORE mode classification. Follows `skills/_shared/prot
 **Step 0.5 — session start:**
 
 1. **Load project profile:**
-   - If `.dainexus/project-profile.json` exists and is fresh (<24h) → load context, skip re-onboarding
+   - If `.daiharness/project-profile.json` exists and is fresh (<24h) → load context, skip re-onboarding
    - If stale → re-run health check only (project-onboarding Phase 2)
    - If missing → run full project onboarding (see `skills/_shared/protocols/project-onboarding.md`)
 
 2. **Load last session state:**
-   - If `.dainexus/session-log.json` exists with interrupted session → offer resume via notify_user
+   - If `.daiharness/session-log.json` exists with interrupted session → offer resume via notify_user
    - If last session completed → log summary, continue to new request
    - If first session → continue normally
 
 3. **Load memory context (required for Persistent power level — Step 0.2):**
-   - Run `python3 <path-to-dai-nexus>/scripts/lite/dai_memory.py search "<project-name> <user-request-keywords>" --limit 5`
+   - Run `python3 <path-to-dai-harness>/scripts/lite/dai_memory.py search "<project-name> <user-request-keywords>" --limit 5`
    - Also load:
-     - `.dainexus/subagent-context/CONVERSATION_SUMMARY.md`
-     - `.dainexus/memory-bank/activeContext.md`
-     - `.dainexus/business-analyst/handoff/ba-package.md` (if exists)
+     - `.daiharness/subagent-context/CONVERSATION_SUMMARY.md`
+     - `.daiharness/memory-bank/activeContext.md`
+     - `.daiharness/business-analyst/handoff/ba-package.md` (if exists)
 
 4. **Detect manual changes:**
    - If git available → check commits since last session
    - If structural changes detected → re-run onboarding fingerprint + patterns
 
 5. **Display quality trend** (if history exists):
-   - Read `.dainexus/quality-history.json` → show trend of last 5 sessions
+   - Read `.daiharness/quality-history.json` → show trend of last 5 sessions
 
 Log: `✓ Session context loaded — [project name], last session: [summary or "first session"]`
 
@@ -310,39 +310,39 @@ Run AFTER session context is loaded, AFTER chat-interpreter (Step -1), BEFORE an
 
 1. **Ensure subagent context directory exists:**
    ```
-   mkdir -p .dainexus/subagent-context/
+   mkdir -p .daiharness/subagent-context/
    ```
 
 2. **Read chat-interpreter output when present:**
    ```
-   Read .dainexus/subagent-context/INTERPRETED_REQUEST.md
+   Read .daiharness/subagent-context/INTERPRETED_REQUEST.md
    → Treat it as a bounded derived handoff/cache.
    → The latest user instruction remains authoritative for intent; current workspace/runtime evidence remains authoritative for project state.
    → If the cache conflicts with either, re-interpret and refresh it before delegating.
    ```
 
 3. **Write PIPELINE_SUMMARY.md** (refresh for each new phase):
-   - Read `.dainexus/project-profile.json` if exists
-   - Read current phase status from `.dainexus/task.md`
+   - Read `.daiharness/project-profile.json` if exists
+   - Read current phase status from `.daiharness/task.md`
    - Read approved architecture from `docs/architecture/` (if exists)
    - Read BRD summary from `product-manager/BRD/` (if exists)
    - Compress to ≤ 2,000 tokens
-   - Write to `.dainexus/subagent-context/PIPELINE_SUMMARY.md`
+   - Write to `.daiharness/subagent-context/PIPELINE_SUMMARY.md`
 
 4. **Write REVIEWER_CONTRACT.md** (per-review, generated dynamically):
    ```
    For each review task, write:
    - REVIEWER_CONTRACT.md with scope, acceptance criteria, forbidden paths
-   - Reference: .dainexus/subagent-context/REVIEWER_CONTRACT_TEMPLATE.md
+   - Reference: .daiharness/subagent-context/REVIEWER_CONTRACT_TEMPLATE.md
    ```
 
 5. **Update SECURITY_STANDARDS.md** (refresh for HARDEN phase):
    - Run security-engineer skill output through SECURITY_STANDARDS template
-   - Write to `.dainexus/subagent-context/SECURITY_STANDARDS.md`
+   - Write to `.daiharness/subagent-context/SECURITY_STANDARDS.md`
 
 6. **Log:**
    ```
-   ✓ Subagent context prepared — [N] files in .dainexus/subagent-context/
+   ✓ Subagent context prepared — [N] files in .daiharness/subagent-context/
    ```
 
 **Cursor Subagent Invocation Convention:**

@@ -1,7 +1,7 @@
 {
-  "name": "@dai-nexus/testing",
+  "name": "@dai-harness/testing",
   "version": "1.0.0",
-  "description": "Autonomous Testing & Self-Healing Infrastructure for DAI Nexus",
+  "description": "Autonomous Testing & Self-Healing Infrastructure for DAI Harness",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {

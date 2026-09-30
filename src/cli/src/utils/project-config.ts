@@ -3,7 +3,7 @@ import { basename, dirname, join, resolve } from "path";
 
 export function findProjectRoot(startDir = process.cwd()): string {
   const explicitRoot =
-    process.env.DAINEXUS_WORKSPACE || process.env.AGENTS_WORKSPACE;
+    process.env.DAIHARNESS_WORKSPACE || process.env.AGENTS_WORKSPACE;
   if (explicitRoot) {
     return resolve(explicitRoot);
   }
@@ -12,7 +12,7 @@ export function findProjectRoot(startDir = process.cwd()): string {
 
   while (true) {
     if (
-      existsSync(join(current, ".dainexus")) ||
+      existsSync(join(current, ".daiharness")) ||
       existsSync(join(current, ".git"))
     ) {
       return current;

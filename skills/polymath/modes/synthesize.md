@@ -7,12 +7,12 @@ Load this mode when the user wants to understand the big picture of what was bui
 Read broadly before presenting — parallel reads across the entire workspace:
 
 ```
-Read(".dainexus/product-manager/BRD/brd.md")
-Read(".dainexus/solution-architect/working-notes.md")
-Read(".dainexus/qa-engineer/test-plan.md")
-Read(".dainexus/security-engineer/...")
-Read(".dainexus/code-reviewer/review-report.md")
-Read(".dainexus/sre/...")
+Read(".daiharness/product-manager/BRD/brd.md")
+Read(".daiharness/solution-architect/working-notes.md")
+Read(".daiharness/qa-engineer/test-plan.md")
+Read(".daiharness/security-engineer/...")
+Read(".daiharness/code-reviewer/review-report.md")
+Read(".daiharness/sre/...")
 Glob("services/**/*")
 Glob("frontend/**/*")
 Glob("docs/**/*")
@@ -20,8 +20,8 @@ Glob("docs/**/*")
 
 Also read polymath's own context:
 ```
-Read(".dainexus/polymath/context/decisions.md")
-Read(".dainexus/polymath/context/domain-research.md")
+Read(".daiharness/polymath/context/decisions.md")
+Read(".daiharness/polymath/context/domain-research.md")
 ```
 
 ## Synthesis Frameworks

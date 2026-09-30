@@ -5,7 +5,7 @@ import { sharedConfig } from './k6-config.js';
 /**
  * Load Test Scenarios
  * Simulates sustained normal traffic patterns
- * For dai-nexus project
+ * For dai-harness project
  */
 export const options = {
   stages: [

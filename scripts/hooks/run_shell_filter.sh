@@ -5,9 +5,9 @@
 #   source run_shell_filter.sh        # Source for use in scripts
 #   echo "output" | bash run_shell_filter.sh [cmd] [args...]  # Pipe mode
 #
-# Priority: rtk > chop > snip > ctx > tkill > dai-nexus-shell-filter
+# Priority: rtk > chop > snip > ctx > tkill > dai-harness-shell-filter
 #
-# This script reads settings from .dainexus/settings.env if available,
+# This script reads settings from .daiharness/settings.env if available,
 # otherwise auto-detects available compressors.
 
 # ── Detection ────────────────────────────────────────────────────────────────
@@ -20,7 +20,7 @@ detect_compressor() {
     fi
 
     # Check settings.env if exists
-    local settings_file="${DAINEXUS_DIR:-.}/.dainexus/settings.env"
+    local settings_file="${DAIHARNESS_DIR:-.}/.daiharness/settings.env"
     if [[ -f "$settings_file" ]]; then
         # shellcheck source=/dev/null
         source "$settings_file" 2>/dev/null || true
@@ -42,7 +42,7 @@ detect_compressor() {
     elif command -v tkill &>/dev/null; then
         echo "tkill"
     else
-        echo "dai-nexus-shell-filter"
+        echo "dai-harness-shell-filter"
     fi
 }
 
@@ -88,8 +88,8 @@ run_shell_filter() {
                 tkill "$@"
             fi
             ;;
-        dai-nexus-shell-filter|*)
-            local filter_path="${DAINEXUS_DIR:-.}/scripts/dainexus-shell-filter.sh"
+        dai-harness-shell-filter|*)
+            local filter_path="${DAIHARNESS_DIR:-.}/scripts/daiharness-shell-filter.sh"
             if [[ -f "$filter_path" ]]; then
                 if [[ $# -eq 0 ]]; then
                     bash "$filter_path"

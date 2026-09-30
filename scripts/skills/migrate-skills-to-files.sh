@@ -6,8 +6,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DAINEXUS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-SKILLS_DIR="$DAINEXUS_DIR/skills"
+DAIHARNESS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+SKILLS_DIR="$DAIHARNESS_DIR/skills"
 PROMPTS_DIR="prompts"
 DRY_RUN=false
 TARGET_SKILL=""
@@ -155,7 +155,7 @@ main() {
     echo "  Skill Prompt Migration Tool"
     echo "========================================"
     echo ""
-    echo "DAI Nexus: $DAINEXUS_DIR"
+    echo "DAI Harness: $DAIHARNESS_DIR"
     echo "Skills dir: $SKILLS_DIR"
     echo ""
 

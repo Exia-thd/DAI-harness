@@ -1,6 +1,6 @@
 {
   "$id": "game-art-inventory/v1",
-  "title": "DAI Nexus Game Art Inventory v1",
+  "title": "DAI Harness Game Art Inventory v1",
   "description": "Append-only logical asset versions bound to approved Style DNA contract hashes.",
   "required_top_level": [
     "schema_version",

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * DAI Nexus Global MCP Server
+ * DAI Harness Global MCP Server
  *
  * Works across ALL projects. The server:
- * - Loads skills from the DAI Nexus skills/ directory
- * - Stores per-project state in {workspace}/.dainexus/
+ * - Loads skills from the DAI Harness skills/ directory
+ * - Stores per-project state in {workspace}/.daiharness/
  * - Detects the current workspace dynamically
  */
 
@@ -19,7 +19,7 @@ import { setMcpServer } from './state/rpc-client.js';
 
 const server = new Server(
   {
-    name: 'dai-nexus-mcp-global',
+    name: 'dai-harness-mcp-global',
     version: '1.0.0',
   },
   {
@@ -47,7 +47,7 @@ function workspaceId(): string {
 
 function sessionId(): string {
   return (
-    process.env.DAINEXUS_SESSION_ID ?? process.env.CODEX_THREAD_ID ?? `mcp-process-${process.pid}`
+    process.env.DAIHARNESS_SESSION_ID ?? process.env.CODEX_THREAD_ID ?? `mcp-process-${process.pid}`
   );
 }
 
@@ -59,7 +59,7 @@ async function shutdown(reason: string): Promise<void> {
     if (lease !== null) {
       const result = await leaseStore.release(lease.leaseId, lease.ownerToken, lease.version);
       if (result !== 'released' && result !== 'closed') {
-        console.error(`[DAI Nexus Global MCP] Lease close refused: ${result} (${reason})`);
+        console.error(`[DAI Harness Global MCP] Lease close refused: ${result} (${reason})`);
       }
     }
     await server.close().catch(() => undefined);
@@ -82,14 +82,14 @@ async function run() {
   for (const result of reconciled) {
     if (result.result === 'identity_mismatch' || result.result === 'reconcile_error') {
       console.error(
-        `[DAI Nexus Global MCP] Lease reconciliation refused: ${result.result} (${result.leaseId})`,
+        `[DAI Harness Global MCP] Lease reconciliation refused: ${result.result} (${result.leaseId})`,
       );
     }
   }
   const identity = await leaseStore.inspectCurrent();
-  const ttlMs = Number.parseInt(process.env.DAINEXUS_MCP_LEASE_TTL_MS ?? '86400000', 10);
+  const ttlMs = Number.parseInt(process.env.DAIHARNESS_MCP_LEASE_TTL_MS ?? '86400000', 10);
   if (!Number.isSafeInteger(ttlMs) || ttlMs <= 0) {
-    throw new Error('DAINEXUS_MCP_LEASE_TTL_MS must be a positive integer');
+    throw new Error('DAIHARNESS_MCP_LEASE_TTL_MS must be a positive integer');
   }
   activeLease = await leaseStore.acquire({
     workspaceId: workspaceId(),
@@ -102,7 +102,7 @@ async function run() {
   try {
     await server.connect(transport);
     console.error(
-      `[DAI Nexus Global MCP] Running — workspace: ${process.cwd()} lease: ${activeLease.leaseId}`,
+      `[DAI Harness Global MCP] Running — workspace: ${process.cwd()} lease: ${activeLease.leaseId}`,
     );
   } catch (error) {
     await shutdown('connect-failed');
@@ -111,6 +111,6 @@ async function run() {
 }
 
 run().catch((error) => {
-  console.error('[DAI Nexus Global MCP] Fatal error:', error);
+  console.error('[DAI Harness Global MCP] Fatal error:', error);
   void shutdown('fatal').finally(() => process.exit(1));
 });

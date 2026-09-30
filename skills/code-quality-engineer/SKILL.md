@@ -6,7 +6,7 @@ description: >
   test strategy, and bug reporting. Ensures every feature meets quality bar.
   Combines: debugger + code-reviewer + qa-engineer
 version: 1.0.0
-author: dai-nexus
+author: dai-harness
 tags: [quality, debugging, code-review, testing, tdd, regression, bug-reporting]
 consolidated_from:
   - debugger

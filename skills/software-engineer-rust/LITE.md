@@ -10,7 +10,7 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Target Cargo manifest file exists and defines target compiler edition | `cat Cargo.toml` | ... | run the check command and paste output |
-| Project-specific tech stack and baseline profile are active | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project-specific tech stack and baseline profile are active | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 | The DAI memory code graph is loaded and ready for impact analysis | `dai-memory status` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Software Engineer Rust Domain Slots)

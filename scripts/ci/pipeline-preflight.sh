@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-STATE_FILE="$PROJECT_ROOT/.dainexus/pipeline-state.json"
+STATE_FILE="$PROJECT_ROOT/.daiharness/pipeline-state.json"
 MANIFEST_FILE="$PROJECT_ROOT/.antigravity/mcp-manifest.json"
 STRICT=false
 JSON_ONLY=false
@@ -12,7 +12,7 @@ CHECK_SESSION=false
 
 usage() {
   cat <<'EOF'
-pipeline-preflight.sh — verify DAI Nexus pipeline activation controls
+pipeline-preflight.sh — verify DAI Harness pipeline activation controls
 
 Usage:
   bash scripts/pipeline-preflight.sh [--strict] [--json-only] [--max-state-age-minutes N] [--check-session]
@@ -104,11 +104,11 @@ if [[ -f "$MANIFEST_FILE" ]]; then
     add_check "Antigravity manifest workspace" "fail" "mismatch"
   fi
 
-  if node -e "const fs=require('fs'); const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8')); const s=(m.servers||[]).find(x=>x.type==='dai-nexus-mcp-server'); process.exit(s && s.auto_start === true && s.enabled !== false ? 0 : 1)" "$MANIFEST_FILE"; then
-    add_check "DAI Nexus MCP manifest server" "pass" "auto_start enabled"
+  if node -e "const fs=require('fs'); const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8')); const s=(m.servers||[]).find(x=>x.type==='dai-harness-mcp-server'); process.exit(s && s.auto_start === true && s.enabled !== false ? 0 : 1)" "$MANIFEST_FILE"; then
+    add_check "DAI Harness MCP manifest server" "pass" "auto_start enabled"
   else
-    add_issue "DAI Nexus MCP manifest server missing auto_start/enabled configuration"
-    add_check "DAI Nexus MCP manifest server" "fail" "invalid"
+    add_issue "DAI Harness MCP manifest server missing auto_start/enabled configuration"
+    add_check "DAI Harness MCP manifest server" "fail" "invalid"
   fi
 else
   add_issue "Antigravity MCP manifest missing"
@@ -133,8 +133,8 @@ else
 fi
 
 if [[ "$CHECK_SESSION" == true ]]; then
-  if { [[ -f "$PROJECT_ROOT/.dainexus/memory/nodes.jsonl" ]] && grep -q '"id": "plan-quality"' "$PROJECT_ROOT/.dainexus/memory/nodes.jsonl"; } \
-    || [[ -f "$PROJECT_ROOT/.dainexus/subagent-context/INTERPRETED_REQUEST.md" ]]; then
+  if { [[ -f "$PROJECT_ROOT/.daiharness/memory/nodes.jsonl" ]] && grep -q '"id": "plan-quality"' "$PROJECT_ROOT/.daiharness/memory/nodes.jsonl"; } \
+    || [[ -f "$PROJECT_ROOT/.daiharness/subagent-context/INTERPRETED_REQUEST.md" ]]; then
     add_check "Session planning evidence" "pass" "planning/request evidence exists"
   else
     add_issue "Session planning evidence missing"

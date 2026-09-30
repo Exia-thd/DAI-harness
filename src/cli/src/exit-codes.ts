@@ -1,5 +1,5 @@
 /**
- * Exit codes for DAI Nexus CLI
+ * Exit codes for DAI Harness CLI
  * Standardized for AI agent compatibility
  */
 

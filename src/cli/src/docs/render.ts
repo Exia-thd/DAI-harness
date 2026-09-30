@@ -207,7 +207,7 @@ function page(
   body: string,
   currentRoute = "index.html",
 ): string {
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>${escape(title)} · DAI Nexus Docs Hub</title><link rel="stylesheet" href="${escape(href(currentRoute, "style.css"))}"></head><body><a class="skip-link" href="#main">Skip to content</a><div class="shell"><aside class="sidebar"><strong>DAI Nexus Docs Hub</strong><nav aria-label="Primary"><p><a href="${escape(href(currentRoute, "index.html"))}">All projects</a></p><p><a href="${escape(href(currentRoute, "search.html"))}">Search</a></p><p><a href="${escape(href(currentRoute, "traceability.html"))}">Traceability</a></p><p><a href="${escape(href(currentRoute, "diagnostics.html"))}">Diagnostics</a></p></nav></aside><main class="main" id="main"><div class="content">${body}</div></main></div></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>${escape(title)} · DAI Harness Docs Hub</title><link rel="stylesheet" href="${escape(href(currentRoute, "style.css"))}"></head><body><a class="skip-link" href="#main">Skip to content</a><div class="shell"><aside class="sidebar"><strong>DAI Harness Docs Hub</strong><nav aria-label="Primary"><p><a href="${escape(href(currentRoute, "index.html"))}">All projects</a></p><p><a href="${escape(href(currentRoute, "search.html"))}">Search</a></p><p><a href="${escape(href(currentRoute, "traceability.html"))}">Traceability</a></p><p><a href="${escape(href(currentRoute, "diagnostics.html"))}">Diagnostics</a></p></nav></aside><main class="main" id="main"><div class="content">${body}</div></main></div></body></html>`;
 }
 function escape(value: string): string {
   return value
@@ -732,7 +732,7 @@ export function renderStaticSite(
     files.push(safePath);
   };
   const ownershipMetadata = {
-    schema: "dai-nexus-docs-hub",
+    schema: "dai-harness-docs-hub",
     schema_version: 1,
     source_fingerprints: orderedCatalogs.map((catalog) => ({
       project_id: catalog.project.id,
@@ -740,7 +740,7 @@ export function renderStaticSite(
     })),
   };
   write(
-    join(outputDir, ".dainexus-docs-hub"),
+    join(outputDir, ".daiharness-docs-hub"),
     `${JSON.stringify(ownershipMetadata, null, 2)}\n`,
   );
   write(join(outputDir, "style.css"), CSS);
@@ -960,7 +960,7 @@ export function buildDocsHub(
 ): DocsBuildResult {
   const finalOutput = resolve(outputDir);
   const stagingOutput = `${finalOutput}.staging-${process.pid}`;
-  const ownershipMarker = join(finalOutput, ".dainexus-docs-hub");
+  const ownershipMarker = join(finalOutput, ".daiharness-docs-hub");
   if (existsSync(finalOutput) && !existsSync(ownershipMarker)) {
     throw new Error(
       `Refusing to replace an unowned output directory: ${finalOutput}`,

@@ -1,5 +1,5 @@
 #!/bin/bash
-# DAI Nexus Asset Validation Hook
+# DAI Harness Asset Validation Hook
 # Inspired by CCGS validate-assets.sh
 #
 # Purpose: Validate asset files when they are created or modified
@@ -46,7 +46,7 @@ if ! echo "$TARGET_FILE" | grep -qE '^assets/'; then
     exit 0
 fi
 
-echo "=== DAI Nexus Asset Validation ===" >&2
+echo "=== DAI Harness Asset Validation ===" >&2
 echo "Validating: $TARGET_FILE" >&2
 
 WARNINGS=""

@@ -13,7 +13,7 @@ def test_docs_manifest_schema_accepts_minimal_allowlist_manifest() -> None:
     jsonschema.validate(
         {
             "schema_version": 1,
-            "project": {"id": "dai-nexus", "title": "DAI Nexus"},
+            "project": {"id": "dai-harness", "title": "DAI Harness"},
             "sources": [{"path": "docs", "type": "documentation"}],
             "truth": ["README.md"],
             "privacy": {"mode": "allowlist", "allow": ["docs", "README.md"]},
@@ -26,7 +26,7 @@ def test_docs_manifest_schema_accepts_project_docs_contract() -> None:
     jsonschema.validate(
         {
             "schema_version": 1,
-            "project": {"id": "dai-nexus", "title": "DAI Nexus"},
+            "project": {"id": "dai-harness", "title": "DAI Harness"},
             "sources": [{"path": "docs", "type": "documentation"}],
             "project_docs": {
                 "schema_version": 1,
@@ -61,7 +61,7 @@ def test_docs_manifest_schema_rejects_invalid_project_docs(project_docs: dict) -
         jsonschema.validate(
             {
                 "schema_version": 1,
-                "project": {"id": "dai-nexus", "title": "DAI Nexus"},
+                "project": {"id": "dai-harness", "title": "DAI Harness"},
                 "sources": [{"path": "docs", "type": "documentation"}],
                 "project_docs": project_docs,
                 "privacy": {"mode": "allowlist"},
@@ -85,7 +85,7 @@ def test_docs_manifest_schema_rejects_escaping_paths(path: str) -> None:
         jsonschema.validate(
             {
                 "schema_version": 1,
-                "project": {"id": "dai-nexus", "title": "DAI Nexus"},
+                "project": {"id": "dai-harness", "title": "DAI Harness"},
                 "sources": [{"path": path, "type": "documentation"}],
                 "privacy": {"mode": "allowlist"},
             },

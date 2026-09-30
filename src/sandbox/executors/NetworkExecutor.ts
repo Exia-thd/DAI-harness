@@ -118,7 +118,7 @@ export class NetworkExecutor {
       const response = await fetch(operation.url, {
         method: operation.method || "GET",
         headers: {
-          "User-Agent": "DAI Nexus-Sandbox/1.0",
+          "User-Agent": "DAI Harness-Sandbox/1.0",
           ...operation.headers,
         },
         body: operation.body,

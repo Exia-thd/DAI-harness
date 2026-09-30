@@ -21,7 +21,7 @@
 
 - Must maintain backward compatibility
 - All changes are documentation/skill updates only
-- No C# code changes to Unity-MCP or DAI Nexus
+- No C# code changes to Unity-MCP or DAI Harness
 
 ## Deliverables
 

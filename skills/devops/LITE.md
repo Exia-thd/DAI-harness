@@ -12,7 +12,7 @@ The project-owned automation under `scripts/ci/` is the source of truth. GitHub 
 ## SOLVE Step 2: GROUND
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Project stack/profile is known | `cat .dainexus/project-profile.json` | ... | capture the current project profile |
+| Project stack/profile is known | `cat .daiharness/project-profile.json` | ... | capture the current project profile |
 | Canonical automation is discoverable | `find scripts/ci/ -maxdepth 2 -type f` | ... | capture the local scripts and entrypoints |
 | Container/deploy surface is known | `find . -maxdepth 3 \( -name 'Dockerfile*' -o -name 'docker-compose*.yml' -o -name 'docker-compose*.yaml' \)` | ... | capture the existing deployment artifacts |
 

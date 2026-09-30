@@ -1,6 +1,6 @@
 # Documentation Guidelines
 
-> Hướng dẫn cách viết documentation cho DAI Nexus.
+> Hướng dẫn cách viết documentation cho DAI Harness.
 
 ## Documentation Types
 

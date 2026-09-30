@@ -44,8 +44,8 @@ and checkout are always HARD/DEEP, regardless of file count.
 HARD approval is valid only as a separate, signed `review-2` using OpenSSH
 Ed25519. The review must include the canonical final-evidence digest and exact
 tree, turn, acceptance IDs, and negative bindings, verified against external
-`DAINEXUS_REVIEW_ALLOWED_SIGNERS` or
-`~/.dainexus/reviewers.allowed_signers`. Review-1 and self-authored JSON are
+`DAIHARNESS_REVIEW_ALLOWED_SIGNERS` or
+`~/.daiharness/reviewers.allowed_signers`. Review-1 and self-authored JSON are
 `UNVERIFIED`. Keep the workflow local-first/provider-neutral; never store
 secrets or private keys in the workspace.
 
@@ -121,9 +121,9 @@ proportional to the verified fact/artifact.
 Example local attestation (both paths are external to the workspace):
 
 ```sh
-DAINEXUS_REVIEW_ALLOWED_SIGNERS=/absolute/path/reviewers.allowed_signers \
+DAIHARNESS_REVIEW_ALLOWED_SIGNERS=/absolute/path/reviewers.allowed_signers \
 python3 scripts/lite/review_attest.py sign \
-  --evidence .dainexus/verify/<turn>.json \
+  --evidence .daiharness/verify/<turn>.json \
   --private-key /absolute/path/reviewer_ed25519
 ```
 

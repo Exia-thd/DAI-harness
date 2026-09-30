@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================================
-# DAI Nexus — Mobile Test Setup Script
+# DAI Harness — Mobile Test Setup Script
 # Auto-detects environment and installs everything needed for AI-powered
 # mobile testing on Android (ADB + Midscene) and iOS (WDA + Midscene).
 #
@@ -65,7 +65,7 @@ get_status() {
 print_report() {
   echo ""
   echo -e "${BOLD}${CYAN}╔══════════════════════════════════════════════════════════╗${NC}"
-  echo -e "${BOLD}${CYAN}║  ${PHONE} DAI Nexus Mobile Test Setup — Status Report         ║${NC}"
+  echo -e "${BOLD}${CYAN}║  ${PHONE} DAI Harness Mobile Test Setup — Status Report         ║${NC}"
   echo -e "${BOLD}${CYAN}╠══════════════════════════════════════════════════════════╣${NC}"
 
   local items="Node.js|npm|Appium|Maestro CLI|ADB|ANDROID_HOME|Android Device|Appium uiautomator2|Xcode CLI|WebDriverAgent|iOS Simulator|Appium xcuitest|@midscene/android|@midscene/ios|WebdriverIO|API Key (.env)|Test Directory"
@@ -110,7 +110,7 @@ IS_MACOS=false
 [[ "$OS" == "Darwin" ]] && IS_MACOS=true
 
 echo ""
-echo -e "${BOLD}${ROCKET} DAI Nexus Mobile Test Setup${NC}"
+echo -e "${BOLD}${ROCKET} DAI Harness Mobile Test Setup${NC}"
 echo -e "${DIM}Platform: $OS ($ARCH) | $(date '+%Y-%m-%d %H:%M:%S')${NC}"
 if $CHECK_ONLY; then
   echo -e "${YELLOW}Mode: CHECK ONLY (no changes will be made)${NC}"
@@ -492,7 +492,7 @@ else
     info "Creating $ENV_FILE template..."
     cat > "$ENV_FILE" << 'ENVEOF'
 # ============================================================================
-# DAI Nexus — Midscene Mobile Testing Configuration
+# DAI Harness — Midscene Mobile Testing Configuration
 # ============================================================================
 # Get your API key from: https://aistudio.google.com/apikey
 # Cost: ~$0.001 per vision call (Gemini Flash)
@@ -576,7 +576,7 @@ WDIOOF
   if $ANDROID_ONLY && [[ ! -f "$TEST_DIR/android/demo.test.ts" ]]; then
     cat > "$TEST_DIR/android/demo.test.ts" << 'ATEST'
 /**
- * DAI Nexus — Android Demo Test (Midscene + ADB)
+ * DAI Harness — Android Demo Test (Midscene + ADB)
  *
  * Prerequisites:
  *   1. Android device connected via USB with USB Debugging enabled
@@ -624,7 +624,7 @@ async function main() {
   await sleep(3000);
 
   console.log('📝 Searching...');
-  await agent.aiAction('type "DAI Nexus mobile testing" in the search box and press Enter');
+  await agent.aiAction('type "DAI Harness mobile testing" in the search box and press Enter');
   await sleep(5000);
 
   // ── Assert results ─────────────────────────────────────────────────────
@@ -654,7 +654,7 @@ ATEST
   if $ANDROID_ONLY && [[ ! -f "$TEST_DIR/android/appium-demo.test.ts" ]]; then
     cat > "$TEST_DIR/android/appium-demo.test.ts" << 'AATEST'
 /**
- * DAI Nexus — Android Appium WebdriverIO Demo
+ * DAI Harness — Android Appium WebdriverIO Demo
  * Deterministic testing for the HARDEN phase.
  * Run with: npx wdio wdio.conf.ts
  */
@@ -673,7 +673,7 @@ AATEST
   if $IOS_ONLY && $IS_MACOS && [[ ! -f "$TEST_DIR/ios/demo.test.ts" ]]; then
     cat > "$TEST_DIR/ios/demo.test.ts" << 'ITEST'
 /**
- * DAI Nexus — iOS Demo Test (Midscene + WebDriverAgent)
+ * DAI Harness — iOS Demo Test (Midscene + WebDriverAgent)
  *
  * Prerequisites:
  *   1. macOS with Xcode installed
@@ -706,7 +706,7 @@ async function main() {
   await sleep(3000);
 
   console.log('📝 Searching...');
-  await agent.aiAction('type "DAI Nexus iOS testing" in the search box and press search');
+  await agent.aiAction('type "DAI Harness iOS testing" in the search box and press search');
   await sleep(5000);
 
   // ── Assert ─────────────────────────────────────────────────────────────
@@ -730,7 +730,7 @@ ITEST
   if $IOS_ONLY && $IS_MACOS && [[ ! -f "$TEST_DIR/ios/appium-demo.test.ts" ]]; then
     cat > "$TEST_DIR/ios/appium-demo.test.ts" << 'IATEST'
 /**
- * DAI Nexus — iOS Appium WebdriverIO Demo
+ * DAI Harness — iOS Appium WebdriverIO Demo
  * Deterministic testing for the HARDEN phase.
  * Run with: npx wdio wdio.conf.ts
  */
@@ -771,7 +771,7 @@ TSCONF
 
   if [[ ! -f "$TEST_DIR/maestro/config.yaml" ]]; then
     cat > "$TEST_DIR/maestro/config.yaml" << 'MCONF'
-# DAI Nexus — Maestro E2E Configuration
+# DAI Harness — Maestro E2E Configuration
 # Documented at: https://docs.maestro.dev/
 
 appId: com.example.app # Replace with your local App Bundle ID (e.g. com.myapp)
@@ -781,7 +781,7 @@ MCONF
 
   if [[ ! -f "$TEST_DIR/maestro/sample-flow.yaml" ]]; then
     cat > "$TEST_DIR/maestro/sample-flow.yaml" << 'MFLOW'
-# DAI Nexus — Maestro E2E Demo Flow
+# DAI Harness — Maestro E2E Demo Flow
 # Run locally with: maestro test tests/e2e/mobile/maestro/sample-flow.yaml
 
 appId: ${appId}
@@ -834,4 +834,4 @@ fi
 echo -e "  ${GREEN}▸${NC} View visual reports after test run:"
 echo -e "     ${CYAN}open ./midscene_run/report/index.html${NC}"
 echo ""
-echo -e "${DIM}─── DAI Nexus Mobile Test Setup Complete ───${NC}"
+echo -e "${DIM}─── DAI Harness Mobile Test Setup Complete ───${NC}"

@@ -1,7 +1,7 @@
 {
-  "name": "dai-nexus-mcp-global",
+  "name": "dai-harness-mcp-global",
   "version": "1.0.0",
-  "description": "Global MCP Server for DAI Nexus — works across all projects",
+  "description": "Global MCP Server for DAI Harness — works across all projects",
   "type": "module",
   "main": "build/index.js",
   "engines": {

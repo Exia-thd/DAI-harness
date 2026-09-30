@@ -6,7 +6,7 @@ description: >
   scaling patterns, and multi-database architecture.
   Routed via the production-grade orchestrator.
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [database, postgresql, mysql, mongodb, redis, schema, indexing, migration, scaling]
 ---
 
@@ -32,7 +32,7 @@ tags: [database, postgresql, mysql, mongodb, redis, schema, indexing, migration,
 !`cat skills/_shared/protocols/input-validation.md 2>/dev/null || true`
 !`cat skills/_shared/protocols/tool-efficiency.md 2>/dev/null || true`
 !`cat .production-grade.yaml 2>/dev/null || echo "No config — using defaults"`
-!`cat .dainexus/codebase-context.md 2>/dev/null || true`
+!`cat .daiharness/codebase-context.md 2>/dev/null || true`
 
 **Fallback:** Use notify_user with options. Work continuously. Print progress. Validate inputs.
 
@@ -63,7 +63,7 @@ Software Engineer → Data access code (repositories)
 
 ## Engagement Mode
 
-!`cat .dainexus/settings.md 2>/dev/null || echo "No settings — using Standard"`
+!`cat .daiharness/settings.md 2>/dev/null || echo "No settings — using Standard"`
 
 | Mode | Behavior |
 |------|----------|
@@ -76,7 +76,7 @@ Software Engineer → Data access code (repositories)
 
 ## Brownfield Awareness
 
-If `.dainexus/codebase-context.md` exists and mode is `brownfield`:
+If `.daiharness/codebase-context.md` exists and mode is `brownfield`:
 
 - **READ existing schema first** — understand tables, indexes, constraints, naming
 - **MATCH existing patterns** — if `snake_case`, don't switch to `camelCase`
@@ -495,7 +495,7 @@ COMMIT;
 
 ### Zero-Downtime Migration Patterns
 
-```markdown
+````markdown
 ## Safe Migration Patterns
 
 | Change | Safe Approach |
@@ -560,6 +560,7 @@ ALTER TABLE orders ALTER COLUMN new_status SET NOT NULL;
 -- Phase 5: Remove old column
 ALTER TABLE orders DROP COLUMN old_status;
 ```
+````
 
 ---
 
@@ -709,7 +710,7 @@ schemas/
 │   └── seed.sql              # Development seed data
 └── data-dictionary.md       # Column-level documentation
 
-.dainexus/database-engineer/
+.daiharness/database-engineer/
 ├── data-analysis.md          # Access patterns, volume estimates
 ├── schema-design.md          # Design decisions, normalization rationale
 ├── optimization-report.md     # Query analysis, index recommendations

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://dai-nexus.dev/schemas/concept-packet.schema.json",
-  "title": "DAI Nexus Concept Packet",
+  "$id": "https://dai-harness.dev/schemas/concept-packet.schema.json",
+  "title": "DAI Harness Concept Packet",
   "type": "object",
   "additionalProperties": false,
   "required": [

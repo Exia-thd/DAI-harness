@@ -180,7 +180,7 @@ credible drift; do not paste generic negative-prompt lists.
 For versioned game-art production, use the repository contracts and scripts:
 
 ```bash
-python3 scripts/art-direction/style-contract.py validate .dainexus/art-direction/game-art-contract.json
+python3 scripts/art-direction/style-contract.py validate .daiharness/art-direction/game-art-contract.json
 python3 scripts/art-direction/asset-lifecycle.py --help
 bash scripts/art-direction/art-pipeline.sh --help
 bash scripts/art-direction/vision-review.sh --help

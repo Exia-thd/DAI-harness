@@ -1,5 +1,5 @@
 /**
- * DAI Nexus CLI Tool Registry
+ * DAI Harness CLI Tool Registry
  *
  * Provides discoverable tool specifications for AI agents
  */
@@ -29,7 +29,7 @@ export const TOOL_REGISTRY: readonly ToolSpec[] = [
   // Orchestration
   {
     name: "orchestrator.execute",
-    description: "Execute the DAI Nexus orchestration pipeline",
+    description: "Execute the DAI Harness orchestration pipeline",
     category: TOOL_CATEGORIES.ORCHESTRATION,
     inputSchema: {
       mode: {
@@ -58,7 +58,7 @@ export const TOOL_REGISTRY: readonly ToolSpec[] = [
   // Skills
   {
     name: "skills.list",
-    description: "List all available DAI Nexus skills",
+    description: "List all available DAI Harness skills",
     category: TOOL_CATEGORIES.ORCHESTRATION,
     inputSchema: {
       category: {
@@ -98,7 +98,7 @@ export const TOOL_REGISTRY: readonly ToolSpec[] = [
   // Validate
   {
     name: "validate.quality",
-    description: "Run DAI Nexus quality gate validation",
+    description: "Run DAI Harness quality gate validation",
     category: TOOL_CATEGORIES.ORCHESTRATION,
     inputSchema: {
       level: {

@@ -9,14 +9,14 @@ version: 1.0.0
 ## SOLVE Step 2: GROUND (Project Manager Domain Slots)
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Project tech stack and onboarding status profile are established | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project tech stack and onboarding status profile are established | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 | Task boards or target execution files exist in standard directories | `find docs/ -name "*tasks*" -o -name "*roadmap*" -o -name "*milestones*"` | ... | run the check command and paste output |
 | Standardized product specification templates are onboarded | `cat docs/01-product/TEMPLATE-FEATURE-SPEC.md` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Project Manager Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
 
-1. INITIALIZE | Auto-detect environment tech stack and run project onboarding queries | Verify that `.dainexus/project-profile.json` generates cleanly with zero validation errors.
+1. INITIALIZE | Auto-detect environment tech stack and run project onboarding queries | Verify that `.daiharness/project-profile.json` generates cleanly with zero validation errors.
 2. DECOMPOSE | Break down high-level milestones into sequential, BDD-compliant task files | Ensure subtasks are assigned to target directories under `docs/` with testable acceptance criteria.
 3. TRACK | Read and update active status checklists to reflect completed execution steps | Verify checkboxes (`- [ ]`, `- [/]`, `- [x]`) correspond accurately to build and test statuses.
 
@@ -24,7 +24,7 @@ Format: `n. ACTION | TARGET | CHECK`
 - **Unverified Task Completion**: Marking checklist items as completed without verifying that the associated build compilation or test suite passes.
 - **Vague Acceptance Criteria**: Specifying tickets or task cards with non-executable criteria instead of explicit behavioral expectations (BDD) matching TEMPLATE-FEATURE-SPEC.
 - **No-Verification Path Execution**: Proceeding to heavy architectural builds or refactorings without conducting Step 2 (Ground) verification scans.
-- **Context Overload (Missing Truncation)**: Attempting to print massive task logs or absolute project structures directly inside active chat contexts instead of offloading to `.dainexus/offload/`.
+- **Context Overload (Missing Truncation)**: Attempting to print massive task logs or absolute project structures directly inside active chat contexts instead of offloading to `.daiharness/offload/`.
 - **Non-Compliant File Names**: Storing task checklists, schedules, or sprint reports under `docs/` using CamelCase, spaces, or absolute paths instead of lowercase kebab-case naming.
 
 ### Step 1: Execute project-onboarding command to establish baseline context

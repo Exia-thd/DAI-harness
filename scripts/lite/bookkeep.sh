@@ -23,12 +23,12 @@ cd "$PROJECT_ROOT"
 
 # Ensure essential scripts are present
 MEMORY_SESSION="scripts/memory-session.sh"
-SESSION_TRACKER="scripts/dainexus-session-tracker.sh"
+SESSION_TRACKER="scripts/daiharness-session-tracker.sh"
 
 run_bg() {
   # Run a command in the background (fire-and-forget)
   # Redirecting output to a central bookkeeping log
-  local log_file=".dainexus/bookkeep.log"
+  local log_file=".daiharness/bookkeep.log"
   mkdir -p "$(dirname "$log_file")"
   
   (
@@ -48,7 +48,7 @@ create_git_baseline_snapshot() {
   if [[ -n "$(git status --porcelain)" ]]; then
     log_info "Repo is dirty on boot. Generating git baseline snapshot..."
     
-    local snapshot_file=".dainexus/git-baseline.json"
+    local snapshot_file=".daiharness/git-baseline.json"
     mkdir -p "$(dirname "$snapshot_file")"
     
     local commit_hash; commit_hash=$(git rev-parse HEAD 2>/dev/null || echo "none")
@@ -127,7 +127,7 @@ cmd_end() {
 cmd_status() {
   # Run in foreground so the user sees it
   echo "=========================================="
-  echo "       DAI Nexus Bookkeep Status"
+  echo "       DAI Harness Bookkeep Status"
   echo "=========================================="
   if [[ -f "$SESSION_TRACKER" ]]; then
     bash "$SESSION_TRACKER" status
@@ -167,10 +167,10 @@ try:
     mode = sys.argv[7]
 
     home = os.path.expanduser('~')
-    project_name = 'dai-nexus'
+    project_name = 'dai-harness'
     project_path = '$PROJECT_ROOT'
     
-    usage_dir = Path(home) / '.dainexus' / 'usage' / project_name
+    usage_dir = Path(home) / '.daiharness' / 'usage' / project_name
     usage_dir.mkdir(parents=True, exist_ok=True)
     
     date_str = datetime.datetime.now().strftime('%Y-%m-%d')

@@ -1,5 +1,5 @@
 # Game Development Prompt Configuration
-# Template library for game-dev category in DAI Nexus
+# Template library for game-dev category in DAI Harness
 
 model: gpt-4o
 temperature: 0.7
@@ -20,7 +20,7 @@ variants:
 metadata:
   domain: game-dev
   contributors:
-    - name: DAI Nexus Team
+    - name: DAI Harness Team
       role: Primary author
   source_prompts_count: 0  # No game-related prompts found in prompts.chat database
   created_date: "2026-06-02"

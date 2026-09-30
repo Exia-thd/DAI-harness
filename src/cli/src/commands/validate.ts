@@ -451,7 +451,7 @@ async function runStandardsChecks(): Promise<{
 
   // Check conventions (5 points)
   const conventionFile = [
-    ".dainexus/code-conventions.md",
+    ".daiharness/code-conventions.md",
     "skills/_shared/protocols/pipeline-activation.md",
     "AGENTS.md",
   ].find((file) => existsSync(file));
@@ -472,7 +472,7 @@ async function runStandardsChecks(): Promise<{
       maxScore: 5,
       message: "No code conventions file",
     });
-    warnings.push("No .dainexus/code-conventions.md");
+    warnings.push("No .daiharness/code-conventions.md");
     score -= 5;
   }
 
@@ -513,7 +513,7 @@ async function runTraceabilityChecks(): Promise<{
   let score = 0;
   const maxScore = 25;
 
-  if (existsSync(".dainexus/product-manager/BRD")) {
+  if (existsSync(".daiharness/product-manager/BRD")) {
     checks.push({
       name: "Requirement Mapping",
       status: "pass",
@@ -572,13 +572,13 @@ async function runTraceabilityChecks(): Promise<{
     warnings.push("Could not inspect test files");
   }
 
-  if (existsSync(".dainexus")) {
+  if (existsSync(".daiharness")) {
     checks.push({
       name: "Workspace Artifacts",
       status: "pass",
       score: 5,
       maxScore: 5,
-      message: ".dainexus workspace exists",
+      message: ".daiharness workspace exists",
     });
     score += 5;
   } else {
@@ -587,17 +587,20 @@ async function runTraceabilityChecks(): Promise<{
       status: "warning",
       score: 0,
       maxScore: 5,
-      message: "No .dainexus workspace artifacts found",
+      message: "No .daiharness workspace artifacts found",
     });
-    warnings.push("No .dainexus workspace artifacts found");
+    warnings.push("No .daiharness workspace artifacts found");
   }
 
   if (existsSync("scripts/pipeline-preflight.sh")) {
     try {
-      execSync("bash scripts/pipeline-preflight.sh --max-state-age-minutes 240 --json-only", {
-        stdio: "pipe",
-        timeout: 15000,
-      });
+      execSync(
+        "bash scripts/pipeline-preflight.sh --max-state-age-minutes 240 --json-only",
+        {
+          stdio: "pipe",
+          timeout: 15000,
+        },
+      );
       checks.push({
         name: "Pipeline Activation",
         status: "pass",
@@ -633,7 +636,7 @@ async function runTraceabilityChecks(): Promise<{
 function generateTextReport(result: ValidationResult): string {
   const lines: string[] = [];
 
-  lines.push("=== DAI Nexus Quality Gate Report ===");
+  lines.push("=== DAI Harness Quality Gate Report ===");
   lines.push(`Level: ${result.level}`);
   lines.push(`Score: ${result.score}/${result.maxScore} (${result.grade})`);
   lines.push("");

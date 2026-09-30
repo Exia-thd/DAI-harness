@@ -6,7 +6,7 @@ description: >
   produces design documents consumed by Unity/Unreal/Godot engineers.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [game-design, gdd, gameplay-loop, economy, mechanics, balancing, progression]
 ---
 
@@ -300,7 +300,7 @@ Design the typical session flow:
 
 ### Step 3.2: Economy Balance Rules
 
-```markdown
+````markdown
 ## Economy Balance Rules
 
 ### Rule 1: Source-Sink Parity
@@ -328,11 +328,11 @@ High-value items must be time-gated:
 | Casual | Cosmetics, convenience |
 | Mid-core | Progression, collection |
 | Hardcore | Prestige, leaderboard |
-```
+````
 
 ### Step 3.3: Balance Tables
 
-```markdown
+````markdown
 ## Character Balance Table Template
 
 ### Base Stats (Level 1)
@@ -395,6 +395,7 @@ Example (exponent 1.7, base 100):
 
 Each phase should introduce 1-2 new mechanics while testing mastery of previous ones.
 ```
+````
 ---
 
 ## Phase 4 — Mechanic Specifications
@@ -403,7 +404,7 @@ Each phase should introduce 1-2 new mechanics while testing mastery of previous 
 
 ### Step 4.1: Mechanic Spec Template
 
-```markdown
+````markdown
 ## [Mechanic Name] Specification
 
 ### Overview
@@ -458,11 +459,11 @@ What the player DOES: [Move / Shoot / Build / Trade / etc.]
 |--------|--------|-------|--------|
 | [Action 1] | [VFX] | [SFX] | [Haptic] |
 | [Action 2] | [VFX] | [SFX] | [Haptic] |
-```
+````
 
 ### Step 4.2: Combat System Example
 
-```markdown
+````markdown
 ## Combat System Specification
 
 ### Overview
@@ -495,7 +496,7 @@ Idle → Attack1 → Attack2 → Attack3 → Recovery → Idle
 - Hit during dodge i-frames: no damage, no hitstun
 - Ability on cooldown: show feedback (flash icon, SFX), don't queue
 - Input buffer: 0.1s buffer for inputs during recovery
-```
+````
 
 ### Step 4.3: Progression System Design
 
@@ -617,7 +618,7 @@ When designing game interfaces, apply Fagerholt & Lorentzon's 4-part taxonomy:
 
 ### Step 6.1: IAP Structure
 
-```markdown
+````markdown
 ## Free-to-Play Monetization
 
 ### Design Principles
@@ -654,6 +655,7 @@ When designing game interfaces, apply Fagerholt & Lorentzon's 4-part taxonomy:
 - Daily login bonus
 - Season-exclusive cosmetics (FOMO)
 ```
+````
 
 ### Step 6.2: Conversion Funnel
 
@@ -851,7 +853,7 @@ Every GDD must include a **Visual Feedback Table**:
 ## Output Structure
 
 ```
-.dainexus/game-designer/
+.daiharness/game-designer/
 ├── game-design-document.md          # Complete GDD
 ├── core-loop/
 │   ├── gameplay-loop.md             # Second-to-second, minute-to-minute

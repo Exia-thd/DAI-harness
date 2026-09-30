@@ -9,7 +9,7 @@
 **Status:** P0 + P0.5 **ĐÃ IMPLEMENT & CÀI ĐẶT** (2026-07-26) · P1–P4 còn là proposal
 **Chế độ hiện tại:** `observe` — chưa gắn hook nào vào `~/.claude/settings.json`, chưa có gì bị kill.
 **Ngày:** 2026-07-26
-**Phạm vi:** **GLOBAL** — áp dụng cho mọi project trên máy (chốt bởi user 2026-07-26), không chỉ repo dai-nexus.
+**Phạm vi:** **GLOBAL** — áp dụng cho mọi project trên máy (chốt bởi user 2026-07-26), không chỉ repo dai-harness.
 **Vấn đề:** Project game/web bị spam mở app & port, quên đóng → RAM phình, disk phình.
 
 ---
@@ -22,7 +22,7 @@
 | R2 | Port **cấp phát ngẫu nhiên / tự tăng** (3000 → 3001 → 3002…) | Mỗi lần fail là 1 port mới bị chiếm, không ai thu hồi |
 | R3 | Process spawn **không có owner, không có PGID riêng** | Không biết của session nào → không dám kill → để mãi |
 | R4 | **Không có bước reclaim khi kết thúc turn/session** | Process sống qua nhiều session, tích lũy |
-| R5 | Log/artifact/build cache **không có TTL và size cap** | `.next`, `dist`, `Library/`, `playwright-report`, `.dainexus/verify/*.json` phình vô hạn |
+| R5 | Log/artifact/build cache **không có TTL và size cap** | `.next`, `dist`, `Library/`, `playwright-report`, `.daiharness/verify/*.json` phình vô hạn |
 | R6 | Không có **evidence bắt buộc** về runtime trong VERIFY | Không ai phát hiện leak tại thời điểm gây ra |
 
 Nguyên tắc thiết kế: **fix R1–R4 ở lớp spawn (phòng), fix R5 ở lớp housekeeping (chữa), fix R6 ở lớp gate (bắt).**
@@ -51,7 +51,7 @@ orphan dev-server: 0 tại thời điểm đo
                     └───────────────┬──────────────────┘
                                     ↓ ghi
                     ┌──────────────────────────────────┐
-                    │ .dainexus/runtime/leases.jsonl│  ← nguồn sự thật duy nhất
+                    │ .daiharness/runtime/leases.jsonl│  ← nguồn sự thật duy nhất
                     └───────────────┬──────────────────┘
         ┌───────────────────────────┼───────────────────────────┐
         ↓                           ↓                           ↓
@@ -70,10 +70,10 @@ Chốt global làm thay đổi 8 điểm so với bản repo-only. Đây là ph�
 
 ### G1 — State nằm ở home, không nằm trong repo
 
-Lease xuyên project ⇒ nguồn sự thật phải là **`~/.dainexus/runtime/`**:
+Lease xuyên project ⇒ nguồn sự thật phải là **`~/.daiharness/runtime/`**:
 
 ```
-~/.dainexus/runtime/
+~/.daiharness/runtime/
   leases.jsonl          # registry duy nhất, toàn máy
   projects.index        # project_root → port band (ổn định vĩnh viễn)
   port-allowlist.txt    # port hạ tầng cấm đụng
@@ -81,22 +81,22 @@ Lease xuyên project ⇒ nguồn sự thật phải là **`~/.dainexus/runtime/`
   DISABLED              # tồn tại = tắt toàn bộ RLG (kill-switch)
 ```
 
-`.dainexus/runtime/` trong từng repo **không dùng** (chỉ chứa file opt-out nếu cần).
+`.daiharness/runtime/` trong từng repo **không dùng** (chỉ chứa file opt-out nếu cần).
 
 ### G2 — Cài bằng symlink, tuyệt đối không copy
 
-**Bằng chứng đo được:** `~/.dainexus/scripts/` hiện là bản **copy**, và đã drift:
+**Bằng chứng đo được:** `~/.daiharness/scripts/` hiện là bản **copy**, và đã drift:
 
 ```
-global: ~/.dainexus/scripts/cleanup.sh          May 18 11:56  7280B
+global: ~/.daiharness/scripts/cleanup.sh          May 18 11:56  7280B
 repo:   scripts/utilities/cleanup.sh              Jul  9 16:05  7283B   >>> DRIFTED
 ```
 
 Nếu RLG cài theo cùng cách, **reaper chạy ở hook global sẽ là code cũ** — một script có quyền kill process mà không khớp source trong repo là không chấp nhận được.
 
 ⇒ `scripts/runtime/runtime-install.sh --link`:
-- tạo symlink `~/.dainexus/scripts/runtime/*` → `<repo>/scripts/runtime/*`
-- ghi `~/.dainexus/runtime/INSTALLED_FROM` (đường dẫn repo + git SHA)
+- tạo symlink `~/.daiharness/scripts/runtime/*` → `<repo>/scripts/runtime/*`
+- ghi `~/.daiharness/runtime/INSTALLED_FROM` (đường dẫn repo + git SHA)
 - `--verify` so sánh SHA hiện tại, cảnh báo nếu repo đã đổi mà chưa reload
 - **fail-closed riêng ở đây**: nếu symlink hỏng/trỏ sai → hook tự vô hiệu hoá, không chạy code lạ.
 
@@ -113,16 +113,16 @@ Sửa settings qua skill `update-config`, không sửa tay. Không đụng vào 
 
 ### G4 — Blast radius: hook chạy ở MỌI project trên máy
 
-Kể cả repo không phải dai-nexus, kể cả lệnh không liên quan. Ràng buộc cứng:
+Kể cả repo không phải dai-harness, kể cả lệnh không liên quan. Ràng buộc cứng:
 
 1. **Fail-open tuyệt đối** — mọi lỗi nội bộ ⇒ `exit 0`, không bao giờ chặn công việc.
 2. **Ngân sách < 100ms** (chặt hơn bản repo-only): chỉ regex trên chuỗi lệnh + đọc 1 file index. Không gọi `lsof`/`git` trong đường nóng của gate.
-3. **Kill-switch 3 tầng**: env `DAINEXUS_RLG=off` → file `~/.dainexus/runtime/DISABLED` → opt-out từng project bằng `.dainexus/rlg-optout`.
+3. **Kill-switch 3 tầng**: env `DAIHARNESS_RLG=off` → file `~/.daiharness/runtime/DISABLED` → opt-out từng project bằng `.daiharness/rlg-optout`.
 4. **Chế độ mặc định khi mới cài = `observe`**, không phải `enforce`.
 
 ### G5 — Không dựa vào registry global hiện có
 
-`~/.dainexus/config/registry.json` **không tồn tại** (thư mục `config/` rỗng) dù `fw-global-registry.sh` có tham chiếu tới. ⇒ RLG tự duy trì `projects.index`, ghi lần đầu khi thấy một project root mới. Không sửa/bootstrap registry.json (ngoài phạm vi).
+`~/.daiharness/config/registry.json` **không tồn tại** (thư mục `config/` rỗng) dù `fw-global-registry.sh` có tham chiếu tới. ⇒ RLG tự duy trì `projects.index`, ghi lần đầu khi thấy một project root mới. Không sửa/bootstrap registry.json (ngoài phạm vi).
 
 ### G6 — Ownership theo session, không theo cwd
 
@@ -140,11 +140,11 @@ Reclaim ở phạm vi global có thể chạm process của bất kỳ project n
 
 ## 3. Thành phần & file cần tạo
 
-> Đường dẫn dưới đây là **source trong repo**; bản chạy thật là symlink tại `~/.dainexus/scripts/runtime/` (xem G2).
+> Đường dẫn dưới đây là **source trong repo**; bản chạy thật là symlink tại `~/.daiharness/scripts/runtime/` (xem G2).
 
 ### 3.1 Lease registry — `scripts/runtime/runtime-lease.sh`
 
-State: `~/.dainexus/runtime/leases.jsonl` (append-only, mỗi dòng 1 record)
+State: `~/.daiharness/runtime/leases.jsonl` (append-only, mỗi dòng 1 record)
 
 ```json
 {
@@ -155,7 +155,7 @@ State: `~/.dainexus/runtime/leases.jsonl` (append-only, mỗi dòng 1 record)
   "pid": 15167, "pgid": 15167,
   "port": 3040,
   "cmd": "npm run dev",
-  "log": ".dainexus/runtime/logs/01f0-….log",
+  "log": ".daiharness/runtime/logs/01f0-….log",
   "started_at": "2026-07-26T10:00:00Z",
   "ttl_sec": 7200,
   "policy": "reap|keep",
@@ -169,8 +169,8 @@ Sub-commands: `acquire | release | list | status | reap | prune | adopt`.
 
 - Port band **tất định theo project**: `base = 20000 + (crc32(project_path) % 400) * 10`, mỗi project 10 port cho 10 role. Hết random drift.
 - `alloc <project> <role>` → nếu port đã LISTEN **và** lease còn sống với cùng cmd → trả `REUSE` + PID (không spawn mới). Đây là fix trực tiếp cho "spam mở app".
-- Allowlist port hạ tầng không đụng tới: `5432 postgres`, `5000 ControlCenter`, `3040 aurora`, `8085` → file `~/.dainexus/runtime/port-allowlist.txt` (xem G7).
-- Band lưu vĩnh viễn trong `~/.dainexus/runtime/projects.index` để một project luôn nhận cùng dải port qua mọi session.
+- Allowlist port hạ tầng không đụng tới: `5432 postgres`, `5000 ControlCenter`, `3040 aurora`, `8085` → file `~/.daiharness/runtime/port-allowlist.txt` (xem G7).
+- Band lưu vĩnh viễn trong `~/.daiharness/runtime/projects.index` để một project luôn nhận cùng dải port qua mọi session.
 
 ### 3.3 Wrapper — `scripts/runtime/dev-run.sh`
 
@@ -180,7 +180,7 @@ Cách duy nhất được phép khởi động thứ gì chạy lâu:
 bash scripts/runtime/dev-run.sh --role web-dev --ttl 2h -- npm run dev
 ```
 
-Làm: alloc port → `setsid` (process group riêng, kill sạch cả cây con) → log ra `~/.dainexus/runtime/logs/<lease_id>.log` **có size cap 10MB + rotate 3** → health-probe port tới khi ready hoặc timeout → in JSON `{lease_id, port, pid, url}` → ghi lease.
+Làm: alloc port → `setsid` (process group riêng, kill sạch cả cây con) → log ra `~/.daiharness/runtime/logs/<lease_id>.log` **có size cap 10MB + rotate 3** → health-probe port tới khi ready hoặc timeout → in JSON `{lease_id, port, pid, url}` → ghi lease.
 
 ### 3.4 Pre-spawn gate — `scripts/lite/runtime-pretool-gate.sh` (hook `PreToolUse: Bash`)
 
@@ -204,9 +204,9 @@ Chạy **nền, không chặn** (hook Claude Code timeout 10s) — bắn `runtim
 
 ### 3.6 Disk budget — `scripts/runtime/disk-budget.sh` + mở rộng `scripts/utilities/cleanup.sh --runtime`
 
-Đo & áp ngưỡng cho: `node_modules`, `.next`, `dist`, `build`, `Library/` (Unity), `.godot`, `.import`, `playwright-report`, `test-results`, `.dainexus/runtime/logs`, `.dainexus/verify`, `.dainexus/reports`.
+Đo & áp ngưỡng cho: `node_modules`, `.next`, `dist`, `build`, `Library/` (Unity), `.godot`, `.import`, `playwright-report`, `test-results`, `.daiharness/runtime/logs`, `.daiharness/verify`, `.daiharness/reports`.
 
-Ngưỡng khai báo trong `~/.dainexus/runtime/budget.yaml` (global default), cho phép từng project override bằng `.dainexus/budget.yaml` — file này đã tồn tại trong repo dai-nexus với block `budget:` cho token, RLG thêm block riêng nên không xung đột:
+Ngưỡng khai báo trong `~/.daiharness/runtime/budget.yaml` (global default), cho phép từng project override bằng `.daiharness/budget.yaml` — file này đã tồn tại trong repo dai-harness với block `budget:` cho token, RLG thêm block riêng nên không xung đột:
 
 ```yaml
 runtime:
@@ -215,7 +215,7 @@ runtime:
   default_ttl_sec: 7200
   log_max_mb: 10
 disk:
-  artifact_ttl_days: 7        # .dainexus/verify, reports, logs
+  artifact_ttl_days: 7        # .daiharness/verify, reports, logs
   warn_project_gb: 5
   block_project_gb: 15
 ```
@@ -292,7 +292,7 @@ Gate giữa các phase:
 4. `disk-budget.sh` báo mọi project dưới `warn_project_gb`.
 5. `run-required-checks.sh` xanh với check mới.
 6. **[G]** `runtime-install.sh --verify` xanh; sửa 1 script trong repo → `--verify` phát hiện ngay (chống drift).
-7. **[G]** `touch ~/.dainexus/runtime/DISABLED` → mọi hook trở thành no-op, đo được bằng lệnh Bash bất kỳ.
+7. **[G]** `touch ~/.daiharness/runtime/DISABLED` → mọi hook trở thành no-op, đo được bằng lệnh Bash bất kỳ.
 8. **[G]** Overhead gate đo bằng `time` trên 100 lệnh Bash: p95 < 100ms.
 9. **[G]** Reaper chạy ở project A không đụng lease của project B trong cùng thời điểm.
 
@@ -327,8 +327,8 @@ Bug 5 chính là loại lỗi mà RLG sinh ra để chặn, xuất hiện ngay t
 
 - 19 listening port, **0 unaccounted** (mọi thứ đang chạy đều được seed vào allowlist = hạ tầng có trước guard).
 - Trong 19 port có 1 Android emulator (`qemu-system` ×6 port, `adb`, `netsimd`) — đúng nhóm process nặng mà pipeline cần quản lý.
-- Disk 31 project: **2914 MB** trong các thư mục nặng; tập trung ở `jigsawsolite/mobile/node_modules` 2044 MB và `dai-nexus_ide/node_modules`.
-- Lưu ý: `dai-nexus_ide` đang có `npm install` chạy từ một phiên Claude Code khác lúc đo, nên số của project đó là mục tiêu di động.
+- Disk 31 project: **2914 MB** trong các thư mục nặng; tập trung ở `jigsawsolite/mobile/node_modules` 2044 MB và `dai-harness_ide/node_modules`.
+- Lưu ý: `dai-harness_ide` đang có `npm install` chạy từ một phiên Claude Code khác lúc đo, nên số của project đó là mục tiêu di động.
 
 ### Lệnh dùng hằng ngày
 
@@ -337,7 +337,7 @@ bash scripts/runtime/runtime-inventory.sh --all          # báo cáo toàn máy
 bash scripts/runtime/runtime-install.sh  --status        # trạng thái guard
 bash scripts/runtime/runtime-install.sh  --verify        # chống drift
 bash scripts/runtime/runtime-lease.sh    status          # lease đang mở
-touch ~/.dainexus/runtime/DISABLED                    # tắt khẩn cấp
+touch ~/.daiharness/runtime/DISABLED                    # tắt khẩn cấp
 ```
 
 ---
@@ -378,7 +378,7 @@ Ba CLI lưu hook ở ba nơi, ba định dạng, **ba contract khác nhau**:
 
 Điểm nguy hiểm nhất: với AGY, **không in gì bị hiểu là từ chối**. Nên gate phải in allow trên *mọi* nhánh thoát — kể cả khi kill-switch đang tắt guard, kể cả payload rỗng. Nếu bỏ sót, việc "tắt guard" sẽ chặn đứng mọi tool call của AGY. Có 5 test riêng cho đúng chuyện này.
 
-Installer đảm bảo: idempotent (chạy 4 lần vẫn 1 hook), không phá hook sẵn có (`gitnexus`, `dai-nexus-policy`), backup trước mỗi lần ghi, `--dry-run`, và `--uninstall` trả file về đúng hình dạng ban đầu. Test chạy trên **bản sao config thật** để đối mặt cấu trúc thật thay vì file đồ chơi.
+Installer đảm bảo: idempotent (chạy 4 lần vẫn 1 hook), không phá hook sẵn có (`gitnexus`, `dai-harness-policy`), backup trước mỗi lần ghi, `--dry-run`, và `--uninstall` trả file về đúng hình dạng ban đầu. Test chạy trên **bản sao config thật** để đối mặt cấu trúc thật thay vì file đồ chơi.
 
 ```bash
 bash scripts/runtime/runtime-hooks-install.sh --install [--platform all|claude|codex|agy] [--dry-run]
@@ -387,7 +387,7 @@ bash scripts/runtime/runtime-hooks-install.sh --verify | --uninstall | --status
 
 Trạng thái hiện tại: đã wired cả 3, `--verify` xanh, gate **đang chạy live** ở Claude Code (xác nhận bằng gate.log tăng đúng khi lệnh khớp pattern và đứng yên khi không khớp).
 
-Tắt bất cứ lúc nào: `touch ~/.dainexus/runtime/DISABLED` — hoặc gỡ hẳn bằng `--uninstall`.
+Tắt bất cứ lúc nào: `touch ~/.daiharness/runtime/DISABLED` — hoặc gỡ hẳn bằng `--uninstall`.
 
 ### Một lưu ý về false positive
 
@@ -501,8 +501,8 @@ Số socket lắng nghe giảm 19→13 trong phiên **không phải** do RLG: em
 ### Tắt
 
 ```bash
-touch ~/.dainexus/runtime/DISABLED                      # dừng tức thì, mọi CLI
-printf 'observe\n' > ~/.dainexus/runtime/MODE           # quay lại chỉ quan sát
+touch ~/.daiharness/runtime/DISABLED                      # dừng tức thì, mọi CLI
+printf 'observe\n' > ~/.daiharness/runtime/MODE           # quay lại chỉ quan sát
 bash scripts/runtime/runtime-hooks-install.sh --uninstall  # gỡ hook khỏi 3 config
 ```
 
@@ -516,11 +516,11 @@ bash scripts/runtime/runtime-hooks-install.sh --uninstall  # gỡ hook khỏi 3 
 |---|---|
 | `scripts/runtime/disk-budget.sh` | Đo footprint từng project theo `budget.yaml`, verdict `OK/WARN/BLOCK`, exit 2 khi vượt block |
 | `scripts/runtime/runtime-gc.sh` | Xoá artifact quá hạn — **dry-run mặc định** |
-| `~/.dainexus/runtime/budget.yaml` | Ngưỡng global; project override bằng `.dainexus/budget.yaml` |
+| `~/.daiharness/runtime/budget.yaml` | Ngưỡng global; project override bằng `.daiharness/budget.yaml` |
 
-Xoá là nửa nguy hiểm của P3 nên `runtime-gc.sh` cố ý hẹp: chỉ đụng **allowlist thư mục** mà chính pipeline sinh ra (`$RLG_HOME/logs`, `.dainexus/{verify,reports,escalations}`), chỉ file thường, chỉ quá TTL, không bao giờ quét cây project tìm thứ "trông có vẻ bỏ đi". Log của lease **đang mở** không bao giờ bị xoá dù bao nhiêu tuổi.
+Xoá là nửa nguy hiểm của P3 nên `runtime-gc.sh` cố ý hẹp: chỉ đụng **allowlist thư mục** mà chính pipeline sinh ra (`$RLG_HOME/logs`, `.daiharness/{verify,reports,escalations}`), chỉ file thường, chỉ quá TTL, không bao giờ quét cây project tìm thứ "trông có vẻ bỏ đi". Log của lease **đang mở** không bao giờ bị xoá dù bao nhiêu tuổi.
 
-Số đo thật: 31 project, jigsawsolite **4667 MB** (sát ngưỡng cảnh báo 5 GB — `mobile/node_modules` 4.5 G), dai-nexus_ide 981 MB, còn lại dưới 10 MB.
+Số đo thật: 31 project, jigsawsolite **4667 MB** (sát ngưỡng cảnh báo 5 GB — `mobile/node_modules` 4.5 G), dai-harness_ide 981 MB, còn lại dưới 10 MB.
 
 ### P4 — biến quy tắc thành thứ bắt buộc
 

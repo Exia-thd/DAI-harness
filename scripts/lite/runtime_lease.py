@@ -4,7 +4,7 @@ scripts/lite/runtime_lease.py
 Minimal Runtime Lifecycle Guard. Tracks every long-running process the agent starts so nothing
 leaks: a dev server left behind is invisible to tests but eats the machine.
 
-Registry: .dainexus/leases.json
+Registry: .daiharness/leases.json
 
 Usage:
     python scripts/lite/runtime_lease.py run --role <role> [--policy keep] -- <cmd> [args...]
@@ -30,11 +30,12 @@ import time
 import uuid
 from pathlib import Path
 
-LEASE_FILE = Path(".dainexus") / "leases.json"
+LEASE_FILE = Path(".daiharness") / "leases.json"
 
 
 # ── PID liveness / termination (cross-platform; os.kill(pid,0) is unsafe on
 # Windows — any non-signal value calls TerminateProcess) ──────────────────────
+
 
 def pid_alive(pid: int) -> bool:
     if pid <= 0:
@@ -42,7 +43,9 @@ def pid_alive(pid: int) -> bool:
     if os.name == "nt":
         r = subprocess.run(
             ["tasklist", "/FI", f"PID eq {pid}", "/NH", "/FO", "CSV"],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         return f'"{pid}"' in r.stdout
     try:
@@ -58,11 +61,14 @@ def pid_kill(pid: int) -> bool:
     if os.name == "nt":
         r = subprocess.run(
             ["taskkill", "/PID", str(pid), "/T", "/F"],
-            capture_output=True, text=True, timeout=15,
+            capture_output=True,
+            text=True,
+            timeout=15,
         )
         return r.returncode == 0
     try:
         import signal
+
         os.kill(pid, signal.SIGTERM)
         return True
     except OSError:
@@ -70,6 +76,7 @@ def pid_kill(pid: int) -> bool:
 
 
 # ── registry ──────────────────────────────────────────────────────────────────
+
 
 def load_leases() -> list[dict]:
     if LEASE_FILE.is_file():
@@ -87,13 +94,15 @@ def save_leases(leases: list[dict]) -> None:
     os.replace(tmp, LEASE_FILE)
 
 
-def new_lease(role: str, pid: int, port: int | None, policy: str, cmd: str = "") -> dict:
+def new_lease(
+    role: str, pid: int, port: int | None, policy: str, cmd: str = ""
+) -> dict:
     return {
         "lease_id": f"{role}-{uuid.uuid4().hex[:8]}",
         "role": role,
         "pid": pid,
         "port": port,
-        "policy": policy,          # reap | keep
+        "policy": policy,  # reap | keep
         "cmd": cmd[:200],
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
@@ -101,27 +110,36 @@ def new_lease(role: str, pid: int, port: int | None, policy: str, cmd: str = "")
 
 # ── commands ──────────────────────────────────────────────────────────────────
 
+
 def cmd_run(args) -> int:
     leases = load_leases()
     for lease in leases:
         if lease["role"] == args.role and pid_alive(lease["pid"]):
-            print(f"[lease] REUSE existing '{args.role}': {lease['lease_id']} pid={lease['pid']}")
+            print(
+                f"[lease] REUSE existing '{args.role}': {lease['lease_id']} pid={lease['pid']}"
+            )
             return 0
     if not args.cmd_list:
         print("[lease] ERROR: no command after '--'", file=sys.stderr)
         return 3
     kwargs: dict = {}
     if os.name == "nt":
-        kwargs["creationflags"] = 0x00000208  # DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP
+        kwargs["creationflags"] = (
+            0x00000208  # DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP
+        )
     else:
         kwargs["start_new_session"] = True
     proc = subprocess.Popen(
         args.cmd_list, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, **kwargs
     )
-    lease = new_lease(args.role, proc.pid, args.port, args.policy, " ".join(args.cmd_list))
+    lease = new_lease(
+        args.role, proc.pid, args.port, args.policy, " ".join(args.cmd_list)
+    )
     leases.append(lease)
     save_leases(leases)
-    print(f"[lease] OPENED {lease['lease_id']} role={args.role} pid={proc.pid} policy={args.policy}")
+    print(
+        f"[lease] OPENED {lease['lease_id']} role={args.role} pid={proc.pid} policy={args.policy}"
+    )
     return 0
 
 
@@ -143,16 +161,21 @@ def cmd_status(_args) -> int:
     for lease in leases:
         alive = pid_alive(lease["pid"])
         state = "LIVE" if alive else "DEAD"
-        print(f"  {lease['lease_id']:<24} role={lease['role']:<12} pid={lease['pid']:<8} "
-              f"policy={lease['policy']:<5} [{state}]")
+        print(
+            f"  {lease['lease_id']:<24} role={lease['role']:<12} pid={lease['pid']:<8} "
+            f"policy={lease['policy']:<5} [{state}]"
+        )
         if alive and lease["policy"] != "keep":
             leaked.append(lease["lease_id"])
     if leaked:
         print(f"VERDICT: LEAKED — live non-keep lease(s): {', '.join(leaked)}")
         print("Run: python scripts/lite/runtime_lease.py reap")
         return 1
-    print("VERDICT: CLEAN (live leases are all policy=keep)" if any(
-        pid_alive(le["pid"]) for le in leases) else "VERDICT: CLEAN")
+    print(
+        "VERDICT: CLEAN (live leases are all policy=keep)"
+        if any(pid_alive(le["pid"]) for le in leases)
+        else "VERDICT: CLEAN"
+    )
     return 0
 
 
@@ -186,7 +209,9 @@ def cmd_reap(_args) -> int:
         else:
             dropped.append(lease["lease_id"])
     save_leases(kept)
-    print(f"[lease] reaped={reaped or 'none'} dropped-dead={dropped or 'none'} kept={len(kept)}")
+    print(
+        f"[lease] reaped={reaped or 'none'} dropped-dead={dropped or 'none'} kept={len(kept)}"
+    )
     return 0
 
 
@@ -204,9 +229,9 @@ def main() -> None:
     cmd_args: list[str] = []
     if "--" in argv:
         split = argv.index("--")
-        argv, cmd_args = argv[:split], argv[split + 1:]
+        argv, cmd_args = argv[:split], argv[split + 1 :]
 
-    p = argparse.ArgumentParser(description="DAI Nexus runtime lease guard")
+    p = argparse.ArgumentParser(description="DAI Harness runtime lease guard")
     sub = p.add_subparsers(dest="cmd", required=True)
     sp = sub.add_parser("run")
     sp.add_argument("--role", required=True)
@@ -224,8 +249,15 @@ def main() -> None:
 
     args = p.parse_args(argv)
     args.cmd_list = cmd_args
-    sys.exit({"run": cmd_run, "register": cmd_register, "status": cmd_status,
-              "release": cmd_release, "reap": cmd_reap}[args.cmd](args))
+    sys.exit(
+        {
+            "run": cmd_run,
+            "register": cmd_register,
+            "status": cmd_status,
+            "release": cmd_release,
+            "reap": cmd_reap,
+        }[args.cmd](args)
+    )
 
 
 if __name__ == "__main__":

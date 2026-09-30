@@ -1,6 +1,6 @@
 {
   "$id": "game-art-engine-import/v1",
-  "title": "DAI Nexus Game Art Engine Import Manifest v1",
+  "title": "DAI Harness Game Art Engine Import Manifest v1",
   "description": "Provider-neutral, deterministic handoff manifest for approved and drift-free assets.",
   "required_top_level": [
     "schema_version",

@@ -1,5 +1,5 @@
 /**
- * Shared types for the DAI Nexus middleware chain.
+ * Shared types for the DAI Harness middleware chain.
  * These define the core interfaces used across all middleware.
  */
 

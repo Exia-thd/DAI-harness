@@ -10,7 +10,7 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Target Cargo manifest file exists and specifies dependencies | `cat Cargo.toml` | ... | run the check command and paste output |
-| Project-specific tech stack and profile configurations are active | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project-specific tech stack and profile configurations are active | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Code Reviewer Rust Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
@@ -27,11 +27,11 @@ Format: `n. ACTION | TARGET | CHECK`
 ### Step 1: Ground the active Rust workspace and verify project settings
 ```bash
 cat Cargo.toml | grep -E "(edition|dependencies)" -A 3
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 ```
 ```json
 {
-  "project_name": "dai-nexus-rust-service",
+  "project_name": "dai-harness-rust-service",
   "tech_stack": ["Rust", "Tokio"],
   "health_status": "PASS"
 }

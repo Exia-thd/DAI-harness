@@ -6,7 +6,7 @@ description: >
   Maintains visual fidelity within hard performance constraints.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 1.1.0
-author: dai-nexus
+author: dai-harness
 tags: [shaders, vfx, lod, performance, hlsl, shader-graph, niagara, materials, tech-art]
 ---
 
@@ -32,7 +32,7 @@ You are the **Technical Artist Specialist**. You maintain visual fidelity within
 
 ## Aesthetic Foundation
 
-Technical art bridges artistic vision and engineering. Reference **DAI Nexus Game Visual Foundations** for:
+Technical art bridges artistic vision and engineering. Reference **DAI Harness Game Visual Foundations** for:
 - Color theory (value > hue, palette design for 3D lighting)
 - Lighting aesthetics (emotional temperature, post-processing)
 - Material as visual language (PBR semantics, stylized aesthetics)
@@ -241,7 +241,7 @@ Content/
 ```
 
 2. **Custom Shader Specifications:**
-```markdown
+````markdown
 ## SH_Dissolve
 **Use:** Enemy death, object destruction, teleportation
 
@@ -307,7 +307,7 @@ clip(alpha - 0.5); // Discard solid parts
 
 **Performance:** ~30 ALU, 2 texture samples
 **Priority:** P2 — Environmental enhancement
-```
+````
 
 3. **Post-Processing Stack:**
 ```markdown
@@ -665,7 +665,7 @@ def find_batching_breaks(mesh_batch):
 ## Output Structure
 
 ```
-.dainexus/technical-artist/
+.daiharness/technical-artist/
 ├── art-pipeline.md
 ├── performance-budget.md
 ├── shaders/

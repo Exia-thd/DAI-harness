@@ -26,7 +26,7 @@
 
 - Quality scorecard per skill
 - Aggregate scorecard at each gate
-- Machine-readable: `.dainexus/quality-report-{session}.json`
+- Machine-readable: `.daiharness/quality-report-{session}.json`
 
 ## Note
 

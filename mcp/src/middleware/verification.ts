@@ -42,7 +42,7 @@ const DEFAULT_CONFIG = {
   enabled: true,
   enforce_evidence_first: true,
   require_audit_ref: false,
-  metrics_file: '.dainexus/verification-events.jsonl',
+  metrics_file: '.daiharness/verification-events.jsonl',
 };
 
 function resultText(result: ToolResult): string {

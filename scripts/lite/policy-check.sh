@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # scripts/lite/policy-check.sh
-# DAI Nexus Phase 4 — execution policy gate.
-# Reads .dainexus/execution-policy.yaml and checks tool arguments against
+# DAI Harness Phase 4 — execution policy gate.
+# Reads .daiharness/execution-policy.yaml and checks tool arguments against
 # deny_patterns. Designed to be called from guard middleware ④ before a tool
 # call executes. See kernel/POLICY.md.
 #
@@ -33,19 +33,19 @@ log_error() { echo -e "${RED}[POLICY] ERROR:${NC} $*" >&2; }
 # Find project root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-if [[ -n "${DAINEXUS_WORKSPACE:-}" ]]; then
-  if [[ ! -d "$DAINEXUS_WORKSPACE" ]]; then
-    log_error "DAINEXUS_WORKSPACE is not a readable directory; DENY (fail-closed)."
+if [[ -n "${DAIHARNESS_WORKSPACE:-}" ]]; then
+  if [[ ! -d "$DAIHARNESS_WORKSPACE" ]]; then
+    log_error "DAIHARNESS_WORKSPACE is not a readable directory; DENY (fail-closed)."
     exit 1
   fi
-  PROJECT_ROOT="$(cd "$DAINEXUS_WORKSPACE" 2>/dev/null && pwd -P)" || {
-    log_error "DAINEXUS_WORKSPACE cannot be resolved; DENY (fail-closed)."
+  PROJECT_ROOT="$(cd "$DAIHARNESS_WORKSPACE" 2>/dev/null && pwd -P)" || {
+    log_error "DAIHARNESS_WORKSPACE cannot be resolved; DENY (fail-closed)."
     exit 1
   }
 fi
 cd "$PROJECT_ROOT"
 
-POLICY_FILE="${DAINEXUS_POLICY_FILE:-.dainexus/execution-policy.yaml}"
+POLICY_FILE="${DAIHARNESS_POLICY_FILE:-.daiharness/execution-policy.yaml}"
 TELEMETRY_SH="${SCRIPT_DIR}/telemetry.sh"
 
 usage() {

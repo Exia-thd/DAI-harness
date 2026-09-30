@@ -1,23 +1,23 @@
 #!/bin/bash
 # ============================================================================
-# DAI Nexus Global Setup — Link any project to the global DAI Nexus repo
+# DAI Harness Global Setup — Link any project to the global DAI Harness repo
 #
-# This script sets up DAI Nexus in ANY project WITHOUT needing a git submodule.
-# It links to the global DAI Nexus repo at a fixed path.
+# This script sets up DAI Harness in ANY project WITHOUT needing a git submodule.
+# It links to the global DAI Harness repo at a fixed path.
 #
 # Usage:
-#   ./dai-nexus/scripts/setup-project.sh           # Setup current directory
-#   ./dai-nexus/scripts/setup-project.sh /path/to/project  # Setup specific project
+#   ./dai-harness/scripts/setup-project.sh           # Setup current directory
+#   ./dai-harness/scripts/setup-project.sh /path/to/project  # Setup specific project
 #
 # What it does:
-#   1. Creates .dainexus/ directory in the target project
-#   2. Seeds the project policy (.dainexus/)
+#   1. Creates .daiharness/ directory in the target project
+#   2. Seeds the project policy (.daiharness/)
 #   3. Detects tech stack and generates project-profile.json
 #   4. Installs the memory layer and indexes the project
 #   5. Prints the Cursor MCP config snippet (add to ~/.cursor/mcp.json)
 #
 # Requirements:
-#   - Global DAI Nexus repo must exist at DAINEXUS_PATH (see below)
+#   - Global DAI Harness repo must exist at DAIHARNESS_PATH (see below)
 #   - Node.js >= 20.11 (for the memory layer)
 #   - Git repository (memory is scoped to one)
 # ============================================================================
@@ -25,8 +25,8 @@
 set -euo pipefail
 
 # ─── Configuration ──────────────────────────────────────────────────────
-# Auto-detect DAI Nexus root from script location (supports any clone path)
-DAINEXUS_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# Auto-detect DAI Harness root from script location (supports any clone path)
+DAIHARNESS_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 # ─────────────────────────────────────────────────────────────────────────
 
 # Colors
@@ -46,7 +46,7 @@ log_error() { echo -e "${RED}✗${NC} $1"; }
 print_header() {
     echo ""
     echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}║${NC}  DAI Nexus — Global Project Setup                      ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  DAI Harness — Global Project Setup                      ${CYAN}║${NC}"
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════╝${NC}"
     echo ""
 }
@@ -70,20 +70,20 @@ check_prerequisites() {
     log_info "Target project: ${TARGET_PROJECT}"
     echo ""
 
-    # Check DAI Nexus exists
-    if [ ! -d "$DAINEXUS_PATH" ]; then
-        log_error "DAI Nexus repo not found at: ${DAINEXUS_PATH}"
-        log_info "Edit DAINEXUS_PATH in this script to point to your DAI Nexus repo."
+    # Check DAI Harness exists
+    if [ ! -d "$DAIHARNESS_PATH" ]; then
+        log_error "DAI Harness repo not found at: ${DAIHARNESS_PATH}"
+        log_info "Edit DAIHARNESS_PATH in this script to point to your DAI Harness repo."
         exit 1
     fi
-    log_ok "DAI Nexus repo found"
+    log_ok "DAI Harness repo found"
 
     # Check skills directory
-    if [ ! -d "$DAINEXUS_PATH/skills" ]; then
-        log_error "DAI Nexus skills directory not found."
+    if [ ! -d "$DAIHARNESS_PATH/skills" ]; then
+        log_error "DAI Harness skills directory not found."
         exit 1
     fi
-    log_ok "Skills directory found ($(find "$DAINEXUS_PATH/skills" -maxdepth 1 -type d | tail -n +2 | wc -l | tr -d '[:space:]') skills)"
+    log_ok "Skills directory found ($(find "$DAIHARNESS_PATH/skills" -maxdepth 1 -type d | tail -n +2 | wc -l | tr -d '[:space:]') skills)"
 
     # Check git repo
     if ! git -C "$TARGET_PROJECT" rev-parse --is-inside-work-tree > /dev/null 2>&1; then
@@ -161,18 +161,18 @@ detect_tech_stack() {
     echo "$lang $framework"
 }
 
-# ─── Create .dainexus Directory ──────────────────────────────────────
+# ─── Create .daiharness Directory ──────────────────────────────────────
 
-create_dai_nexus_dir() {
-    local fw_dir="$TARGET_PROJECT/.dainexus"
+create_dai_harness_dir() {
+    local fw_dir="$TARGET_PROJECT/.daiharness"
     
     if [ -d "$fw_dir" ]; then
-        log_warn ".dainexus/ already exists in this project"
+        log_warn ".daiharness/ already exists in this project"
         log_info "Skipping profile generation."
         return
     fi
 
-    log_info "Creating .dainexus/ directory..."
+    log_info "Creating .daiharness/ directory..."
     mkdir -p "$fw_dir"
 
     # Detect tech stack
@@ -189,31 +189,31 @@ create_dai_nexus_dir() {
   "language": "$lang",
   "framework": "$framework",
   "projectRoot": "$TARGET_PROJECT",
-  "dai-nexusRepo": "$DAINEXUS_PATH",
+  "dai-harnessRepo": "$DAIHARNESS_PATH",
   "generatedAt": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "dai-nexusVersion": "$(cat "$DAINEXUS_PATH/VERSION" 2>/dev/null || echo "unknown")"
+  "dai-harnessVersion": "$(cat "$DAIHARNESS_PATH/VERSION" 2>/dev/null || echo "unknown")"
 }
 EOF
 
-    log_ok "Generated .dainexus/project-profile.json"
+    log_ok "Generated .daiharness/project-profile.json"
 }
 
 ensure_project_policy() {
-    local policy_seeder="${DAINEXUS_PATH}/scripts/lite/ensure-project-policy.sh"
+    local policy_seeder="${DAIHARNESS_PATH}/scripts/lite/ensure-project-policy.sh"
     local policy_result
 
     if [[ ! -x "$policy_seeder" ]]; then
         log_error "Execution-policy seeder not found: $policy_seeder"
         exit 1
     fi
-    if ! policy_result=$(bash "$policy_seeder" "$DAINEXUS_PATH" "$TARGET_PROJECT"); then
+    if ! policy_result=$(bash "$policy_seeder" "$DAIHARNESS_PATH" "$TARGET_PROJECT"); then
         log_error "Could not seed the project execution policy."
         exit 1
     fi
 
     case "$policy_result" in
-        created:*) log_ok "Seeded .dainexus/execution-policy.yaml" ;;
-        preserved:*) log_info "Preserved existing .dainexus/execution-policy.yaml" ;;
+        created:*) log_ok "Seeded .daiharness/execution-policy.yaml" ;;
+        preserved:*) log_info "Preserved existing .daiharness/execution-policy.yaml" ;;
         *) log_error "Unexpected policy-seeder result: $policy_result"; exit 1 ;;
     esac
 }
@@ -233,9 +233,9 @@ run_memory_index() {
 
     # The engine is installed outside the repository, one directory per pinned
     # version, so the resolver is asked rather than a path guessed.
-    local resolver="${DAINEXUS_PATH}/scripts/lite/dai_memory.py"
+    local resolver="${DAIHARNESS_PATH}/scripts/lite/dai_memory.py"
     if [[ ! -f "$resolver" ]]; then
-        log_warn "No scripts/lite/dai_memory.py in ${DAINEXUS_PATH} — skipping indexing."
+        log_warn "No scripts/lite/dai_memory.py in ${DAIHARNESS_PATH} — skipping indexing."
         return
     fi
 
@@ -277,10 +277,10 @@ print_cursor_config() {
     echo -e " ${YELLOW}Cursor MCP Config${NC}"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
-    echo "  Your global dai-nexus MCP is already configured at:"
+    echo "  Your global dai-harness MCP is already configured at:"
     echo "  ${CYAN}~/.cursor/mcp.json${NC}"
     echo ""
-    echo "  MCP server path: ${DAINEXUS_PATH}/mcp/build/index.js"
+    echo "  MCP server path: ${DAIHARNESS_PATH}/mcp/build/index.js"
     echo ""
     echo "  ⚠️  Restart Cursor for MCP changes to take effect."
     echo ""
@@ -297,17 +297,17 @@ update_gitignore() {
         touch "$gitignore_file"
     fi
 
-    # Append DAI Nexus if not present
+    # Append DAI Harness if not present
     if ! grep -q "memory.db\*" "$gitignore_file" 2>/dev/null; then
         echo "" >> "$gitignore_file"
-        echo "# DAI Nexus local state and binary memory databases" >> "$gitignore_file"
-        echo ".dainexus/memory.db*" >> "$gitignore_file"
-        echo ".dainexus/session-log.json" >> "$gitignore_file"
-        echo ".dainexus/quality-history.json" >> "$gitignore_file"
-        echo ".dainexus/quality-report-*.json" >> "$gitignore_file"
-        echo ".dainexus/baseline-*.json" >> "$gitignore_file"
-        echo ".dainexus/change-manifest-*.json" >> "$gitignore_file"
-        log_ok "Added DAI Nexus local state and memory files to target project's .gitignore"
+        echo "# DAI Harness local state and binary memory databases" >> "$gitignore_file"
+        echo ".daiharness/memory.db*" >> "$gitignore_file"
+        echo ".daiharness/session-log.json" >> "$gitignore_file"
+        echo ".daiharness/quality-history.json" >> "$gitignore_file"
+        echo ".daiharness/quality-report-*.json" >> "$gitignore_file"
+        echo ".daiharness/baseline-*.json" >> "$gitignore_file"
+        echo ".daiharness/change-manifest-*.json" >> "$gitignore_file"
+        log_ok "Added DAI Harness local state and memory files to target project's .gitignore"
     fi
 
     # The memory layer's store. It holds the index and what people recorded;
@@ -326,10 +326,10 @@ setup_llm_wiki_integration() {
     local target_scripts_dir="${TARGET_PROJECT}/scripts"
     mkdir -p "$target_scripts_dir"
     
-    # 1. Copy dainexus-wiki-sync.sh to target project scripts
-    cp "${DAINEXUS_PATH}/scripts/dainexus-wiki-sync.sh" "${target_scripts_dir}/dainexus-wiki-sync.sh"
-    chmod +x "${target_scripts_dir}/dainexus-wiki-sync.sh"
-    log_ok "Copied dainexus-wiki-sync.sh to target project"
+    # 1. Copy daiharness-wiki-sync.sh to target project scripts
+    cp "${DAIHARNESS_PATH}/scripts/daiharness-wiki-sync.sh" "${target_scripts_dir}/daiharness-wiki-sync.sh"
+    chmod +x "${target_scripts_dir}/daiharness-wiki-sync.sh"
+    log_ok "Copied daiharness-wiki-sync.sh to target project"
     
     # 2. Setup Git Hook (Husky or standard git)
     if [ -d "${TARGET_PROJECT}/.husky" ]; then
@@ -340,16 +340,16 @@ setup_llm_wiki_integration() {
 . "$(dirname "$0")/_/husky.sh"
 
 # Kiểm tra xem commit vừa rồi có thay đổi tài liệu không
-if git diff-tree --no-commit-id --name-only -r HEAD | grep -q -E '^(docs/|README\.md|README\.vi\.md|TASKS\.md|\.dainexus/project-profile\.json|\.dainexus/code-conventions\.md)'; then
-  echo "📄 [DAI Nexus] Phát hiện thay đổi tài liệu. Đang tự động đồng bộ sang llm_wiki..."
-  if [ -x "./scripts/dainexus-wiki-sync.sh" ]; then
-    ./scripts/dainexus-wiki-sync.sh
+if git diff-tree --no-commit-id --name-only -r HEAD | grep -q -E '^(docs/|README\.md|README\.vi\.md|TASKS\.md|\.daiharness/project-profile\.json|\.daiharness/code-conventions\.md)'; then
+  echo "📄 [DAI Harness] Phát hiện thay đổi tài liệu. Đang tự động đồng bộ sang llm_wiki..."
+  if [ -x "./scripts/daiharness-wiki-sync.sh" ]; then
+    ./scripts/daiharness-wiki-sync.sh
   fi
 fi
 
 # Code changed: re-read it into the memory layer, then refresh the sequence flow.
 if git diff-tree --no-commit-id --name-only -r HEAD | grep -E '^(src/|mcp/|scripts/).*\.(ts|py|js|cs|gd|go|rs)$' | grep -v -E '(test|spec)' > /dev/null; then
-  echo "🔍 [DAI Nexus] Code changed. Re-indexing with the memory layer..."
+  echo "🔍 [DAI Harness] Code changed. Re-indexing with the memory layer..."
   ENGINE="$(py -3 ./scripts/lite/dai_memory.py where 2>/dev/null || python3 ./scripts/lite/dai_memory.py where 2>/dev/null || true)"
   if [ -n "$ENGINE" ]; then
     node "$ENGINE/bin/dai-memory.mjs" ingest --quiet
@@ -368,19 +368,19 @@ EOF
         log_info "Standard Git detected. Adding post-commit hook..."
         cat > "$git_hook" <<'EOF'
 #!/bin/sh
-# Auto-generated by DAI Nexus Setup
+# Auto-generated by DAI Harness Setup
 
 # Kiểm tra xem commit vừa rồi có thay đổi tài liệu không
-if git diff-tree --no-commit-id --name-only -r HEAD | grep -q -E '^(docs/|README\.md|README\.vi\.md|TASKS\.md|\.dainexus/project-profile\.json|\.dainexus/code-conventions\.md)'; then
-  echo "📄 [DAI Nexus] Phát hiện thay đổi tài liệu. Đang tự động đồng bộ sang llm_wiki..."
-  if [ -x "./scripts/dainexus-wiki-sync.sh" ]; then
-    ./scripts/dainexus-wiki-sync.sh
+if git diff-tree --no-commit-id --name-only -r HEAD | grep -q -E '^(docs/|README\.md|README\.vi\.md|TASKS\.md|\.daiharness/project-profile\.json|\.daiharness/code-conventions\.md)'; then
+  echo "📄 [DAI Harness] Phát hiện thay đổi tài liệu. Đang tự động đồng bộ sang llm_wiki..."
+  if [ -x "./scripts/daiharness-wiki-sync.sh" ]; then
+    ./scripts/daiharness-wiki-sync.sh
   fi
 fi
 
 # Code changed: re-read it into the memory layer, then refresh the sequence flow.
 if git diff-tree --no-commit-id --name-only -r HEAD | grep -E '^(src/|mcp/|scripts/).*\.(ts|py|js|cs|gd|go|rs)$' | grep -v -E '(test|spec)' > /dev/null; then
-  echo "🔍 [DAI Nexus] Code changed. Re-indexing with the memory layer..."
+  echo "🔍 [DAI Harness] Code changed. Re-indexing with the memory layer..."
   ENGINE="$(py -3 ./scripts/lite/dai_memory.py where 2>/dev/null || python3 ./scripts/lite/dai_memory.py where 2>/dev/null || true)"
   if [ -n "$ENGINE" ]; then
     node "$ENGINE/bin/dai-memory.mjs" ingest --quiet
@@ -401,7 +401,7 @@ EOF
 
 setup_submodule_auto_update() {
     log_info "Setting up submodule auto-update hooks..."
-    local hook_installer="${DAINEXUS_PATH}/scripts/lite/install-submodule-update-hooks.sh"
+    local hook_installer="${DAIHARNESS_PATH}/scripts/lite/install-submodule-update-hooks.sh"
     if [[ ! -x "$hook_installer" ]]; then
         log_warn "Submodule hook installer not found: $hook_installer"
     elif [[ ! -f "${TARGET_PROJECT}/.gitmodules" ]]; then
@@ -415,7 +415,7 @@ setup_submodule_auto_update() {
 
 main() {
     check_prerequisites
-    create_dai_nexus_dir
+    create_dai_harness_dir
     ensure_project_policy
     update_gitignore
     setup_llm_wiki_integration
@@ -428,7 +428,7 @@ main() {
     echo ""
     echo -e "  ${BOLD}Next steps:${NC}"
     echo -e "  1. Restart Cursor (required for MCP server)"
-    echo -e "  2. Type '${CYAN}/dai-nexus${NC}' in Cursor chat to activate the skill"
+    echo -e "  2. Type '${CYAN}/dai-harness${NC}' in Cursor chat to activate the skill"
     echo -e "  3. Say '${CYAN}Build a production-grade SaaS for [your idea]${NC}'"
     echo ""
     echo -e "  ${BOLD}For code intelligence (DAI memory):${NC}"

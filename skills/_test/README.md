@@ -1,4 +1,4 @@
-# DAI Nexus Skill Testing Framework
+# DAI Harness Skill Testing Framework
 
 > **Purpose:** Validate deterministic skill-test contracts in CI and optionally run
 > behavioral tests through an explicitly configured live adapter.
@@ -104,7 +104,7 @@ and never claims behavioral skill execution.
 
 ### Run Live Behavioral Tests
 
-Set `DAINEXUS_SKILL_TEST_ADAPTER` or pass `--adapter-command`. The command is
+Set `DAIHARNESS_SKILL_TEST_ADAPTER` or pass `--adapter-command`. The command is
 executed directly without a shell. It receives one JSON request on stdin and
 must return one JSON object on stdout:
 
@@ -120,7 +120,7 @@ must return one JSON object on stdout:
 ```
 
 ```bash
-DAINEXUS_SKILL_TEST_ADAPTER="./tools/live-skill-adapter" \
+DAIHARNESS_SKILL_TEST_ADAPTER="./tools/live-skill-adapter" \
   bash scripts/testing/test-runner.sh --all --require-live
 ```
 
@@ -134,7 +134,7 @@ explicit path is provided:
 
 ```bash
 bash scripts/testing/test-runner.sh --all --contract-only \
-  --report /tmp/dai-nexus-skill-contracts.json
+  --report /tmp/dai-harness-skill-contracts.json
 ```
 
 ```json

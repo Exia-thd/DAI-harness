@@ -12,7 +12,7 @@ MODULE_PATH = ROOT / "scripts" / "ci" / "local-ci.py"
 
 
 def _module():
-    spec = importlib.util.spec_from_file_location("dai_nexus_local_ci", MODULE_PATH)
+    spec = importlib.util.spec_from_file_location("dai_harness_local_ci", MODULE_PATH)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
@@ -54,7 +54,7 @@ def test_local_ci_dry_run_can_plan_without_hosted_provider() -> None:
     assert "GITHUB_OUTPUT" not in text
     assert "GITHUB_TOKEN" not in text
     assert "gitlab-ci" not in text.lower()
-    assert "dai-nexus-local-ci/v1" in text
+    assert "dai-harness-local-ci/v1" in text
 
 
 def test_precommit_runs_mandatory_docs_continuity_gate() -> None:
@@ -146,9 +146,9 @@ def test_effective_env_deduplicates_workspace_bins_in_deterministic_order(
         (node_modules / ".bin").mkdir(parents=True)
 
     monkeypatch.setattr(module, "ROOT", workspace)
-    monkeypatch.setenv("DAINEXUS_ROOT_NODE_MODULES", str(root_modules))
-    monkeypatch.setenv("DAINEXUS_MCP_NODE_MODULES", str(mcp_modules))
-    monkeypatch.setenv("DAINEXUS_CLI_NODE_MODULES", str(cli_modules))
+    monkeypatch.setenv("DAIHARNESS_ROOT_NODE_MODULES", str(root_modules))
+    monkeypatch.setenv("DAIHARNESS_MCP_NODE_MODULES", str(mcp_modules))
+    monkeypatch.setenv("DAIHARNESS_CLI_NODE_MODULES", str(cli_modules))
     parent_path = [str(tmp_path / "parent-bin"), str(tmp_path / "parent-other")]
     monkeypatch.setenv("PATH", os.pathsep.join(parent_path))
 
@@ -166,7 +166,7 @@ def test_effective_env_deduplicates_workspace_bins_in_deterministic_order(
 
     assert path_parts == local_prefix + parent_path
     assert len(local_prefix) == len(set(local_prefix))
-    assert env["DAINEXUS_EFFECTIVE_NODE_BIN"] == runner.primary_node
+    assert env["DAIHARNESS_EFFECTIVE_NODE_BIN"] == runner.primary_node
 
 
 @pytest.mark.skipif(
@@ -179,10 +179,10 @@ def test_effective_env_omits_absent_local_bins_and_primary_node(
     module = _module()
     monkeypatch.setattr(module, "ROOT", tmp_path / "workspace")
     for variable in (
-        "DAINEXUS_ROOT_NODE_MODULES",
-        "DAINEXUS_MCP_NODE_MODULES",
-        "DAINEXUS_CLI_NODE_MODULES",
-        "DAINEXUS_EFFECTIVE_NODE_BIN",
+        "DAIHARNESS_ROOT_NODE_MODULES",
+        "DAIHARNESS_MCP_NODE_MODULES",
+        "DAIHARNESS_CLI_NODE_MODULES",
+        "DAIHARNESS_EFFECTIVE_NODE_BIN",
     ):
         monkeypatch.delenv(variable, raising=False)
     parent_path = str(tmp_path / "parent-bin")
@@ -195,4 +195,4 @@ def test_effective_env_omits_absent_local_bins_and_primary_node(
         str(Path(runner.python).resolve().parent),
         parent_path,
     ]
-    assert "DAINEXUS_EFFECTIVE_NODE_BIN" not in env
+    assert "DAIHARNESS_EFFECTIVE_NODE_BIN" not in env

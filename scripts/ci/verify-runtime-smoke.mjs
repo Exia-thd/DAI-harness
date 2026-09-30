@@ -11,7 +11,7 @@ const evidenceIndex = process.argv.indexOf('--evidence');
 const evidencePath = evidenceIndex === -1 ? undefined : process.argv[evidenceIndex + 1];
 const live = args.has('--live');
 const mcpOnly = args.has('--mcp-only');
-const marker = 'DAINEXUS_LIVE_SMOKE_OK';
+const marker = 'DAIHARNESS_LIVE_SMOKE_OK';
 const maxOutputBytes = 64 * 1024;
 const timeoutMs = 15_000;
 
@@ -40,7 +40,7 @@ async function runGeminiApiSmoke() {
   if (!key) throw new Error('GEMINI_API_KEY is required for the live provider smoke');
   const headers = { 'content-type': 'application/json', 'x-goog-api-key': key };
   const catalog = await fetchJson('https://generativelanguage.googleapis.com/v1beta/models', { headers });
-  const configured = process.env.DAINEXUS_LIVE_SMOKE_MODEL;
+  const configured = process.env.DAIHARNESS_LIVE_SMOKE_MODEL;
   const model = configured
     ? catalog.models?.find((candidate) => candidate.name === `models/${configured}`)
     : catalog.models?.find((candidate) => candidate.supportedGenerationMethods?.includes('generateContent') && /flash/i.test(candidate.name));
@@ -55,8 +55,8 @@ async function runGeminiApiSmoke() {
 }
 
 async function runCodexSmoke() {
-  const model = process.env.DAINEXUS_LIVE_SMOKE_MODEL ?? 'gpt-5.6-terra';
-  const directory = mkdtempSync(join(tmpdir(), 'dai-nexus-codex-smoke-'));
+  const model = process.env.DAIHARNESS_LIVE_SMOKE_MODEL ?? 'gpt-5.6-terra';
+  const directory = mkdtempSync(join(tmpdir(), 'dai-harness-codex-smoke-'));
   const outputPath = join(directory, 'final.txt');
   try {
     await new Promise((resolve, reject) => {
@@ -82,7 +82,7 @@ async function runCodexSmoke() {
 
 async function runMcpSmoke() {
   const build = join(root, 'mcp', 'build', 'index.js');
-  const workspace = mkdtempSync(join(tmpdir(), 'dai-nexus-mcp-smoke-'));
+  const workspace = mkdtempSync(join(tmpdir(), 'dai-harness-mcp-smoke-'));
   const child = spawn(process.execPath, [build], { cwd: workspace, stdio: ['pipe', 'pipe', 'pipe'] });
   let stderr = '';
   const pending = new Map();
@@ -106,7 +106,7 @@ async function runMcpSmoke() {
     child.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', id, method, params })}\n`);
   });
   try {
-    const initialized = await call('initialize', { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'dai-nexus-runtime-smoke', version: '1' } });
+    const initialized = await call('initialize', { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'dai-harness-runtime-smoke', version: '1' } });
     child.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized', params: {} })}\n`);
     const tools = await call('tools/list', {});
     const current = await call('tools/call', { name: 'fw_get_current_phase', arguments: {} });
@@ -125,8 +125,8 @@ async function main() {
   const mcp = await runMcpSmoke();
   const receipt = { schemaVersion: 1, status: 'pass', mcp };
   if (live) {
-    if (process.env.DAINEXUS_LIVE_SMOKE !== '1') throw new Error('set DAINEXUS_LIVE_SMOKE=1 to authorize a live provider call');
-    const provider = process.env.DAINEXUS_LIVE_SMOKE_PROVIDER ?? 'codex';
+    if (process.env.DAIHARNESS_LIVE_SMOKE !== '1') throw new Error('set DAIHARNESS_LIVE_SMOKE=1 to authorize a live provider call');
+    const provider = process.env.DAIHARNESS_LIVE_SMOKE_PROVIDER ?? 'codex';
     if (provider === 'codex') receipt.provider = await runCodexSmoke();
     else if (provider === 'gemini-api') receipt.provider = await runGeminiApiSmoke();
     else throw new Error(`unsupported live smoke provider: ${provider}`);

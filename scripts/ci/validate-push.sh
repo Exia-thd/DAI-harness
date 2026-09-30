@@ -1,5 +1,5 @@
 #!/bin/bash
-# DAI Nexus Pre-Push Validation Hook
+# DAI Harness Pre-Push Validation Hook
 # Inspired by CCGS validate-push.sh
 #
 # Purpose: Validate git push commands
@@ -45,7 +45,7 @@ if ! echo "$COMMAND" | grep -qE '^git[[:space:]]+push'; then
     exit 0
 fi
 
-echo "=== DAI Nexus Push Validation ===" >&2
+echo "=== DAI Harness Push Validation ===" >&2
 
 WARNINGS=""
 BLOCKS=""

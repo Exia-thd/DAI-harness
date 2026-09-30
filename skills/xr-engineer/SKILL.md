@@ -6,7 +6,7 @@ description: >
   and cross-platform XR (Quest, Vision Pro, WebXR, PCVR).
   Routed via the production-grade orchestrator (Game Build mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [xr, vr, ar, mr, spatial-computing, hand-tracking, visionos, quest, webxr, openxr, unity, unreal]
 ---
 
@@ -26,7 +26,7 @@ tags: [xr, vr, ar, mr, spatial-computing, hand-tracking, visionos, quest, webxr,
 
 ## Aesthetic Foundation
 
-XR introduces unique visual challenges — spatial UI, comfort, and presence. This skill references **DAI Nexus Game Visual Foundations** (`skills/_shared/game-visual-foundations.md`) for:
+XR introduces unique visual challenges — spatial UI, comfort, and presence. This skill references **DAI Harness Game Visual Foundations** (`skills/_shared/game-visual-foundations.md`) for:
 
 - **Spatial UI aesthetics** (UI in 3D space, depth, readability at virtual distances)
 - **XR accessibility** (text size, contrast, motion comfort)

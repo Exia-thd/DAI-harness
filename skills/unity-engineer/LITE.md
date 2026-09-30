@@ -9,7 +9,7 @@ version: 1.0.0
 ## SOLVE Step 2: GROUND (Unity Engineer Domain Slots)
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Project tech stack matches Unity and C# guidelines | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project tech stack matches Unity and C# guidelines | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 | Active C# solution or assembly definition files exist | `find . -name "*.sln" -o -name "*.asmdef"` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Unity Engineer Domain Slots)
@@ -27,14 +27,14 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground the active development platform
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 ```
 
 ### Step 2: Implement a clean, garbage-recycled player controller in `src/scripts/PlayerController.cs`
 ```csharp
 using UnityEngine;
 
-namespace DAI Nexus.Core
+namespace DAI Harness.Core
 {
     public class PlayerController : MonoBehaviour
     {

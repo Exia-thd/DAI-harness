@@ -37,10 +37,10 @@ VALID_POLICIES = ("reap", "keep")
 
 
 def rlg_home() -> Path:
-    env = os.environ.get("DAINEXUS_RLG_HOME")
+    env = os.environ.get("DAIHARNESS_RLG_HOME")
     if env:
         return Path(env)
-    return Path.home() / ".dainexus" / "runtime"
+    return Path.home() / ".daiharness" / "runtime"
 
 
 def leases_path() -> Path:

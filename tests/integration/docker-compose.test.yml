@@ -1,20 +1,20 @@
 version: '3.9'
 
 services:
-  # ── DAI Nexus Node Integration Tests ──────────────────────────────────
-  postgres-dainexus-node:
+  # ── DAI Harness Node Integration Tests ──────────────────────────────────
+  postgres-daiharness-node:
     image: postgres:16-alpine
-    container_name: dai-nexus-dainexus-node-postgres
+    container_name: dai-harness-daiharness-node-postgres
     environment:
-      POSTGRES_DB: dainexus_node_test
+      POSTGRES_DB: daiharness_node_test
       POSTGRES_USER: testuser
       POSTGRES_PASSWORD: testpass
     ports:
       - "5433:5432"
     volumes:
-      - postgres_dainexus_node_data:/var/lib/postgresql/data
+      - postgres_daiharness_node_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U testuser -d dainexus_node_test"]
+      test: ["CMD-SHELL", "pg_isready -U testuser -d daiharness_node_test"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -23,7 +23,7 @@ services:
   # ── MCP Integration Tests ─────────────────────────────────────────
   postgres-mcp:
     image: postgres:16-alpine
-    container_name: dai-nexus-mcp-postgres
+    container_name: dai-harness-mcp-postgres
     environment:
       POSTGRES_DB: mcp_test
       POSTGRES_USER: testuser
@@ -40,5 +40,5 @@ services:
       start_period: 10s
 
 volumes:
-  postgres_dainexus_node_data:
+  postgres_daiharness_node_data:
   postgres_mcp_data:

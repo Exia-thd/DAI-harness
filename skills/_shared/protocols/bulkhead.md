@@ -17,7 +17,7 @@ superseded_by: null
 
 ## Concept
 
-A bulkhead divides a system into isolated compartments. If one compartment floods, the others remain intact. In DAI Nexus:
+A bulkhead divides a system into isolated compartments. If one compartment floods, the others remain intact. In DAI Harness:
 
 - Each parallel worker is a **compartment**
 - Worker failure is **flooding**

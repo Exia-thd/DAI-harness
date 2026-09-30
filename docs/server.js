@@ -52,5 +52,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`DAI Nexus Landing running at http://localhost:${PORT}`);
+  console.log(`DAI Harness Landing running at http://localhost:${PORT}`);
 });

@@ -9,7 +9,7 @@ version: 1.0.0
 ## SOLVE Step 2: GROUND (Fullstack Engineer Domain Slots)
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Project tech stack and language alignments are fully onboarded | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project tech stack and language alignments are fully onboarded | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 | Active database schema, migrations, or model directories exist | `find src/ -name "schema*" -o -name "*.prisma" -o -name "models"` | ... | run the check command and paste output |
 | The DAI memory code graph is indexed and active for symbol graph analysis | `dai-memory status` | ... | run the check command and paste output |
 
@@ -24,7 +24,7 @@ Format: `n. ACTION | TARGET | CHECK`
 ## Common Mistakes Checklist
 - **Unverified Schema Changes**: Editing shared database schemas or endpoints without running `dai-memory impact` first, causing breakages in distant client-side components.
 - **Credential Leaks**: Hardcoding server connection strings, API tokens, or secrets directly in front-end files instead of utilizing local `.env` variables filtered by the Middleware ④c Sandbox.
-- **Context Overload**: Printing massive raw database JSON dumps in standard terminal stdout, triggering token bloat instead of storing files under `.dainexus/offload/`.
+- **Context Overload**: Printing massive raw database JSON dumps in standard terminal stdout, triggering token bloat instead of storing files under `.daiharness/offload/`.
 - **Disorganized File Structure**: Placing source code outside designated client-server directories, violating modular project-profile blueprints.
 
 ### Step 1: Execute dai-memory impact analysis on the shared user model

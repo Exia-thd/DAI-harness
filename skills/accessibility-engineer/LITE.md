@@ -25,7 +25,7 @@ Format: `n. ACTION | TARGET | CHECK`
 - **Div-Soup Controls**: Creating interactive clickable objects using `<div>` or `<span>` without assigning a `role="button"`, `tabindex="0"`, and keyboard handlers (Enter/Space).
 - **Non-Compliant File Names**: Writing audits or reports using camelCase, capital letters, or spaces instead of strictly lowercase kebab-case (e.g., `accessibility-compliance-report.md`) under `docs/04-testing/`.
 - **Contrast Ratio Under-spec**: Applying background-foreground color schemas that fall below WCAG AA thresholds (4.5:1 for standard text, 3:1 for large text).
-- **Verbose Tool Output Bloat**: Appending raw, multi-megabyte axe-core JSON logs directly into the chat session instead of offloading logs to `.dainexus/offload/`.
+- **Verbose Tool Output Bloat**: Appending raw, multi-megabyte axe-core JSON logs directly into the chat session instead of offloading logs to `.daiharness/offload/`.
 
 ### Step 1: Check testing environment dependencies and template guidelines
 ```bash

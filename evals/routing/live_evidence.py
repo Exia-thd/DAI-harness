@@ -301,9 +301,9 @@ def main() -> int:
     parser.add_argument("--attester-command-json", required=True)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
-    if os.environ.get("DAINEXUS_LIVE_ROUTING") != "1":
-        parser.error("set DAINEXUS_LIVE_ROUTING=1 to authorize live routing calls")
-    if os.environ.get("DAINEXUS_ROUTING_EVIDENCE_KEY") is not None:
+    if os.environ.get("DAIHARNESS_LIVE_ROUTING") != "1":
+        parser.error("set DAIHARNESS_LIVE_ROUTING=1 to authorize live routing calls")
+    if os.environ.get("DAIHARNESS_ROUTING_EVIDENCE_KEY") is not None:
         parser.error("live producer must not receive the gatekeeper verification key")
     try:
         evidence = build_evidence(

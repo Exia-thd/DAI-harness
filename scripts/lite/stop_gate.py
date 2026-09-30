@@ -65,7 +65,7 @@ _SUPPORTS_DIR_FD = all(
     for name in ("open", "replace", "unlink")
 )
 
-SCHEMA = "dai-nexus-stop-decision/v1"
+SCHEMA = "dai-harness-stop-decision/v1"
 MAX_PAYLOAD_BYTES = 1024 * 1024
 MAX_DIAGNOSTIC_BYTES = 64 * 1024
 MAX_RETRY_STATE_BYTES = 64 * 1024
@@ -74,7 +74,7 @@ MAX_ATTEMPTS_PER_SCOPE = 2
 VALID_PLATFORMS = {"CLAUDE", "GEMINI", "CURSOR", "CODEX", ""}
 SKIP_SUFFIXES = {".md", ".txt"}
 SKIP_NAMES = {".gitignore", ".gitattributes", ".memignore", ".cursorignore"}
-SKIP_PREFIXES = (".dainexus/", ".gitnexus/", ".memory/", ".dainexus-node/")
+SKIP_PREFIXES = (".daiharness/", ".gitnexus/", ".memory/", ".daiharness-node/")
 DOCS_SOURCE_EXTENSIONS = {
     ".md",
     ".markdown",
@@ -107,7 +107,7 @@ def _canonical_hash(value: Any) -> str:
 
 
 def _project_root() -> Path:
-    requested = os.environ.get("DAINEXUS_WORKSPACE", "").strip()
+    requested = os.environ.get("DAIHARNESS_WORKSPACE", "").strip()
     if requested:
         candidate = Path(requested).expanduser().resolve()
         if candidate.is_dir():
@@ -142,7 +142,7 @@ def _mapped_evidence(root: Path, selector: str) -> tuple[bool, bool]:
     """Return (path exists in any form, exact passing final record)."""
     if not selector:
         return False, False
-    candidate = root / ".dainexus" / "verify" / f"{selector}.json"
+    candidate = root / ".daiharness" / "verify" / f"{selector}.json"
     mapped = candidate.exists() or candidate.is_symlink()
     if not mapped:
         return False, False
@@ -205,7 +205,7 @@ def _is_docs_continuity_path(value: str, material_paths: tuple[str, ...] = ()) -
     """Recognize validated Docs Hub sources without exempting actual code."""
 
     normalized = value.removeprefix("./").replace("\\", "/")
-    if normalized == ".dainexus/docs-manifest.json":
+    if normalized == ".daiharness/docs-manifest.json":
         return True
     if Path(normalized).suffix.lower() not in DOCS_SOURCE_EXTENSIONS:
         return False
@@ -234,7 +234,7 @@ def _has_verify_marker(payload: dict[str, Any]) -> bool:
 def _evidence_digest(root: Path, turn: str) -> str:
     if not turn:
         return "missing"
-    candidate = root / ".dainexus" / "verify" / f"{turn}.json"
+    candidate = root / ".daiharness" / "verify" / f"{turn}.json"
     try:
         # Evidence is untrusted input.  Keep the digest path anchored to the
         # project verify directory and use the shared descriptor-anchored,
@@ -358,11 +358,11 @@ def _read_bounded_regular(path: Path, limit: int) -> bytes | None:
 
 
 def _state_dir(root: Path) -> Path | None:
-    configured = os.environ.get("DAINEXUS_STOP_STATE_DIR", "").strip()
+    configured = os.environ.get("DAIHARNESS_STOP_STATE_DIR", "").strip()
     raw = (
         Path(configured).expanduser()
         if configured
-        else Path(".dainexus") / "runtime" / "stop-attempts"
+        else Path(".daiharness") / "runtime" / "stop-attempts"
     )
     candidate = raw if raw.is_absolute() else root / raw
     if _has_symlink_component(root, candidate):
@@ -655,7 +655,7 @@ def _emit_allow(
     if platform == "CODEX":
         payload: dict[str, Any] = {"continue": True}
         if typed:
-            payload["dai-nexus"] = decision
+            payload["dai-harness"] = decision
         print(json.dumps(payload, sort_keys=True))
     return 0
 
@@ -671,7 +671,7 @@ def _emit_block(
     if platform == "CODEX":
         payload: dict[str, Any] = {"decision": "block", "reason": reason[:512]}
         if typed:
-            payload["dai-nexus"] = decision
+            payload["dai-harness"] = decision
         print(json.dumps(payload, sort_keys=True))
         return 0
     print(
@@ -708,8 +708,8 @@ def _validator_once(root: Path, payload: dict[str, Any]) -> tuple[bool, str]:
     validator = Path(__file__).resolve().parent / "rule-validator.py"
     environment = {
         **os.environ,
-        "DAINEXUS_WORKSPACE": str(root),
-        "DAINEXUS_TURN": str(payload.get("turn", "")),
+        "DAIHARNESS_WORKSPACE": str(root),
+        "DAIHARNESS_TURN": str(payload.get("turn", "")),
     }
     result = subprocess.run(
         [sys.executable, str(validator), "--runtime"],
@@ -718,7 +718,7 @@ def _validator_once(root: Path, payload: dict[str, Any]) -> tuple[bool, str]:
         input=json.dumps(payload, ensure_ascii=False),
         text=True,
         capture_output=True,
-        timeout=float(os.environ.get("DAINEXUS_STOP_VALIDATION_TIMEOUT", "320")),
+        timeout=float(os.environ.get("DAIHARNESS_STOP_VALIDATION_TIMEOUT", "320")),
         check=False,
     )
     diagnostic = result.stderr.encode("utf-8", errors="replace")[
@@ -726,7 +726,7 @@ def _validator_once(root: Path, payload: dict[str, Any]) -> tuple[bool, str]:
     ].decode("utf-8", errors="replace")
     if result.returncode == 0:
         return True, diagnostic
-    return False, "DAI Nexus rule validator rejected the response payload."
+    return False, "DAI Harness rule validator rejected the response payload."
 
 
 def main() -> int:
@@ -751,7 +751,7 @@ def main() -> int:
         return _emit_block(
             platform,
             args.typed_stop_decision,
-            "DAI Nexus stop payload exceeds 1 MiB.",
+            "DAI Harness stop payload exceeds 1 MiB.",
         )
     root = _project_root()
     payload = _normalize_payload(root, _parse_payload(raw))
@@ -814,7 +814,7 @@ def main() -> int:
         except (OSError, subprocess.SubprocessError, ValueError) as error:
             valid, reason = (
                 False,
-                f"DAI Nexus validation failed safely: {type(error).__name__}.",
+                f"DAI Harness validation failed safely: {type(error).__name__}.",
             )
     if valid:
         if not args.typed_stop_decision:

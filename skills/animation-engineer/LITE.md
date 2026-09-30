@@ -27,7 +27,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Verify the project environment and animation libraries
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 cat package.json | grep -E "(gsap|framer-motion)"
 ```
 ```json

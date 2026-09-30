@@ -15,7 +15,7 @@ superseded_by: null
 
 **Ownership:** this is a control-plane/pipeline protocol. The orchestrator applies it before specialist dispatch and writes the result into `PIPELINE_CONTEXT`. Individual skills consume that result; they do not each rerun the generic radar.
 
-DAI Nexus is not an order-taking code generator. The pipeline understands the requested output, identifies the actual outcome, recommends the smallest safe scope, and surfaces material omissions before they become defects.
+DAI Harness is not an order-taking code generator. The pipeline understands the requested output, identifies the actual outcome, recommends the smallest safe scope, and surfaces material omissions before they become defects.
 
 ## 1. Intent Model
 

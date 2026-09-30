@@ -1,4 +1,4 @@
-# Fish shell completion for DAI Nexus CLI
+# Fish shell completion for DAI Harness CLI
 # Install: copy to ~/.config/fish/completions/dai.fish
 
 complete -c dai -n '__fish_use_subcommand' -a 'tools' -d 'Tool registry management'

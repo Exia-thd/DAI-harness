@@ -35,14 +35,14 @@ export interface ErrorContext {
   [key: string]: unknown;
 }
 
-export class DaiNexusError extends Error {
+export class DaiHarnessError extends Error {
   public readonly code: ErrorCode;
   public readonly recoverable: boolean;
   public readonly context: ErrorContext;
 
   constructor(code: ErrorCode, message: string, context: ErrorContext = {}, recoverable = true) {
     super(message);
-    this.name = 'DaiNexusError';
+    this.name = 'DaiHarnessError';
     this.code = code;
     this.recoverable = recoverable;
     this.context = context;
@@ -67,28 +67,28 @@ export class DaiNexusError extends Error {
 
 // ─── Specialized Errors ──────────────────────────────────────────────
 
-export class StateError extends DaiNexusError {
+export class StateError extends DaiHarnessError {
   constructor(code: ErrorCode, message: string, context: ErrorContext = {}, recoverable = true) {
     super(code, message, context, recoverable);
     this.name = 'StateError';
   }
 }
 
-export class PipelineError extends DaiNexusError {
+export class PipelineError extends DaiHarnessError {
   constructor(code: ErrorCode, message: string, context: ErrorContext = {}, recoverable = false) {
     super(code, message, context, recoverable);
     this.name = 'PipelineError';
   }
 }
 
-export class ToolError extends DaiNexusError {
+export class ToolError extends DaiHarnessError {
   constructor(code: ErrorCode, message: string, context: ErrorContext = {}, recoverable = false) {
     super(code, message, context, recoverable);
     this.name = 'ToolError';
   }
 }
 
-export class SkillError extends DaiNexusError {
+export class SkillError extends DaiHarnessError {
   constructor(code: ErrorCode, message: string, context: ErrorContext = {}, recoverable = true) {
     super(code, message, context, recoverable);
     this.name = 'SkillError';
@@ -97,12 +97,12 @@ export class SkillError extends DaiNexusError {
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
-export function isDaiNexusError(value: unknown): value is DaiNexusError {
-  return value instanceof DaiNexusError;
+export function isDaiHarnessError(value: unknown): value is DaiHarnessError {
+  return value instanceof DaiHarnessError;
 }
 
 export function getErrorMessage(error: unknown): string {
-  if (isDaiNexusError(error)) {
+  if (isDaiHarnessError(error)) {
     return error.toString();
   }
   if (error instanceof Error) {

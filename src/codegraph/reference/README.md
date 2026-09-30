@@ -5,7 +5,7 @@ repository, plus a differ that scores any other engine against it.
 
 ## Why this exists
 
-DAI Nexus is dropping GitNexus: it is PolyForm Noncommercial, and this project
+DAI Harness is dropping GitNexus: it is PolyForm Noncommercial, and this project
 intends to be commercial. The replacement is planned on tree-sitter and
 LadybugDB, both MIT — the same two components GitNexus itself stands on, and the
 same two the earlier in-house engine (ForgeNexus, on KuzuDB) stood on before

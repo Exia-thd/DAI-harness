@@ -9,8 +9,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 UPDATER = ROOT / "scripts" / "lite" / "submodule-auto-update.sh"
 HOOK_INSTALLER = ROOT / "scripts" / "lite" / "install-submodule-update-hooks.sh"
-LEGACY_SHIM = ROOT / "scripts" / "dainexus-submodule-check.sh"
-BATCH_UPDATER = ROOT / "scripts" / "runtime" / "dainexus-batch-update.sh"
+LEGACY_SHIM = ROOT / "scripts" / "daiharness-submodule-check.sh"
+BATCH_UPDATER = ROOT / "scripts" / "runtime" / "daiharness-batch-update.sh"
 GIT_LOCAL_ENV_VARS = subprocess.run(
     ("git", "rev-parse", "--local-env-vars"),
     cwd=ROOT,
@@ -51,9 +51,9 @@ def configure_repo(path: Path) -> None:
 def write_stub(path: Path, label: str, *, record_cwd: bool = False) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     log_line = (
-        f'printf \'{label}:%s\\n\' "$PWD" >> "$DAINEXUS_TEST_LOG"\n'
+        f'printf \'{label}:%s\\n\' "$PWD" >> "$DAIHARNESS_TEST_LOG"\n'
         if record_cwd
-        else f'printf \'{label}:%s\\n\' "$*" >> "$DAINEXUS_TEST_LOG"\n'
+        else f'printf \'{label}:%s\\n\' "$*" >> "$DAIHARNESS_TEST_LOG"\n'
     )
     path.write_text(
         "#!/usr/bin/env bash\nset -euo pipefail\n" + log_line,
@@ -70,7 +70,7 @@ def test_parent_hooks_update_submodule_and_refresh_installed_runtime(
     assert LEGACY_SHIM.is_file()
     assert BATCH_UPDATER.is_file()
 
-    remote = tmp_path / "dai-nexus.git"
+    remote = tmp_path / "dai-harness.git"
     git(tmp_path, "init", "--bare", str(remote))
 
     seed = tmp_path / "seed"
@@ -81,9 +81,9 @@ def test_parent_hooks_update_submodule_and_refresh_installed_runtime(
     shutil.copy2(UPDATER, seed / "scripts" / "lite" / UPDATER.name)
     shutil.copy2(HOOK_INSTALLER, seed / "scripts" / "lite" / HOOK_INSTALLER.name)
     shutil.copy2(LEGACY_SHIM, seed / "scripts" / LEGACY_SHIM.name)
-    write_stub(seed / "scripts" / "dainexus-install.sh", "install")
-    write_stub(seed / "scripts" / "dainexus-hook-doctor.sh", "doctor")
-    write_stub(seed / "scripts" / "dainexus-mcp-setup.sh", "mcp", record_cwd=True)
+    write_stub(seed / "scripts" / "daiharness-install.sh", "install")
+    write_stub(seed / "scripts" / "daiharness-hook-doctor.sh", "doctor")
+    write_stub(seed / "scripts" / "daiharness-mcp-setup.sh", "mcp", record_cwd=True)
     (seed / "VERSION").write_text("one\n", encoding="utf-8")
     git(seed, "add", ".")
     git(seed, "commit", "-m", "initial")
@@ -103,7 +103,7 @@ def test_parent_hooks_update_submodule_and_refresh_installed_runtime(
         str(remote),
         "vendor/fw core",
     )
-    git(parent, "commit", "-am", "add dai-nexus")
+    git(parent, "commit", "-am", "add dai-harness")
 
     post_merge = Path(git(parent, "rev-parse", "--git-path", "hooks")) / "post-merge"
     if not post_merge.is_absolute():
@@ -125,13 +125,13 @@ def test_parent_hooks_update_submodule_and_refresh_installed_runtime(
     assert "keep-existing-hook" in post_merge.read_text(encoding="utf-8")
     assert (
         post_merge.read_text(encoding="utf-8").count(
-            "# DAI Nexus managed submodule auto-update\n"
+            "# DAI Harness managed submodule auto-update\n"
         )
         == 1
     )
     assert (
         post_checkout.read_text(encoding="utf-8").count(
-            "# DAI Nexus managed submodule auto-update\n"
+            "# DAI Harness managed submodule auto-update\n"
         )
         == 1
     )
@@ -147,7 +147,7 @@ def test_parent_hooks_update_submodule_and_refresh_installed_runtime(
         "bash",
         str(post_merge),
         cwd=parent,
-        env={"DAINEXUS_TEST_LOG": str(log)},
+        env={"DAIHARNESS_TEST_LOG": str(log)},
     )
     assert hook_result.returncode == 0, hook_result.stderr
 
@@ -175,7 +175,7 @@ def test_parent_hooks_update_submodule_and_refresh_installed_runtime(
         "bash",
         str(post_checkout),
         cwd=parent,
-        env={"DAINEXUS_TEST_LOG": str(log)},
+        env={"DAIHARNESS_TEST_LOG": str(log)},
     )
     assert dirty_result.returncode == 0, dirty_result.stderr
     assert "thay đổi cục bộ" in dirty_result.stderr
@@ -187,7 +187,7 @@ def test_parent_hooks_update_submodule_and_refresh_installed_runtime(
     # A dead process must not leave a permanent lock that disables updates.
     (submodule / "LOCAL_CHANGE").unlink()
     lock_file = Path(
-        git(submodule, "rev-parse", "--git-path", "dai-nexus-auto-update.lock")
+        git(submodule, "rev-parse", "--git-path", "dai-harness-auto-update.lock")
     )
     if not lock_file.is_absolute():
         lock_file = submodule / lock_file
@@ -197,7 +197,7 @@ def test_parent_hooks_update_submodule_and_refresh_installed_runtime(
         "bash",
         str(post_checkout),
         cwd=parent,
-        env={"DAINEXUS_TEST_LOG": str(log)},
+        env={"DAIHARNESS_TEST_LOG": str(log)},
     )
     assert stale_lock_result.returncode == 0, stale_lock_result.stderr
     assert "stale lock" in stale_lock_result.stderr

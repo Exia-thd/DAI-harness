@@ -64,7 +64,7 @@ def test_governance_is_wired_into_agent_pipeline_and_guardrail():
 
 
 def test_canonical_catalog_and_state_track_the_governance_rule():
-    manifest = json.loads(read(".dainexus/docs-manifest.json"))
+    manifest = json.loads(read(".daiharness/docs-manifest.json"))
     rule_path = "skills/_shared/protocols/documentation-governance.md"
     assert rule_path in {source["path"] for source in manifest["sources"]}
     assert rule_path in manifest["privacy"]["allow"]

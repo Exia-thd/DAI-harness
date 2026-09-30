@@ -1,6 +1,6 @@
 #!/bin/bash
 #===============================================================================
-# DAI Nexus Skill Health Checker
+# DAI Harness Skill Health Checker
 #===============================================================================
 # Purpose: Automated validation of skill integrity
 # Version: 1.1.0 (bash 3.2 compatible)
@@ -16,7 +16,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 SKILLS_DIR="${PROJECT_DIR}/skills"
 PROTOCOLS_DIR="${SKILLS_DIR}/_shared/protocols"
-METRICS_DIR="${PROJECT_DIR}/.dainexus/metrics"
+METRICS_DIR="${PROJECT_DIR}/.daiharness/metrics"
 HEALTH_REPORT="${METRICS_DIR}/health-report-$(date +%Y%m%d).json"
 HEALTH_HISTORY="${METRICS_DIR}/health-history.jsonl"
 
@@ -589,7 +589,7 @@ This skill handles $skill-related tasks.
 
 ## Usage
 
-This skill is invoked through the DAI Nexus orchestrator.
+This skill is invoked through the DAI Harness orchestrator.
 
 ## Dependencies
 
@@ -613,7 +613,7 @@ EOF
 
 usage() {
     cat <<EOF
-DAI Nexus Skill Health Checker v1.1.0
+DAI Harness Skill Health Checker v1.1.0
 
 USAGE:
     $0 [command] [options]

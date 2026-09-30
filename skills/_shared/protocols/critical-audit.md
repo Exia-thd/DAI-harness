@@ -93,7 +93,7 @@ superseded_by: null
 
 When AUDIT discovers a reusable gap, improve the **project’s future execution** without silently rewriting the framework:
 1. Fix the current deliverable and re-run the failed evidence.
-2. If the pattern has reuse value, record it in project-local `.dainexus/execution-lessons.md` (or the established project decision/lesson store):
+2. If the pattern has reuse value, record it in project-local `.daiharness/execution-lessons.md` (or the established project decision/lesson store):
    ```markdown
    ### [Date] — Audit Gap: [Brief Description]
    - **Problem / Context:** [What was missing or contradictory]
@@ -103,7 +103,7 @@ When AUDIT discovers a reusable gap, improve the **project’s future execution*
    - **Verifier / Source:** [Command, test, or authoritative source]
    ```
 3. On later similar work, retrieve and test the lesson against current workspace evidence before reuse; stale project lessons are hints, not authority.
-4. Do **not** auto-promote a session lesson into shared `SKILL.md`. Shared-framework promotion is allowed only in an explicit DAI Nexus-development task (such as this repository’s own skill improvement) with regression tests, contradiction/cross-entry audit, and review.
+4. Do **not** auto-promote a session lesson into shared `SKILL.md`. Shared-framework promotion is allowed only in an explicit DAI Harness-development task (such as this repository’s own skill improvement) with regression tests, contradiction/cross-entry audit, and review.
 
 ---
 

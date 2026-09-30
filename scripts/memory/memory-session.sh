@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #────────────────────────────────────────────────────────────────────────────
-# DAI Nexus Memory Session Manager
+# DAI Harness Memory Session Manager
 #────────────────────────────────────────────────────────────────────────────
 # Purpose: Automatic memory checkpoint system that works across all AI IDEs
 # Triggers: Every N messages OR at token threshold
@@ -19,9 +19,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MEMORY_DB_DIR="${HOME}/.dainexus/sessions"
+MEMORY_DB_DIR="${HOME}/.daiharness/sessions"
 SESSION_FILE="${MEMORY_DB_DIR}/current-session.json"
-SUMMARY_FILE=".dainexus/subagent-context/CONVERSATION_SUMMARY.md"
+SUMMARY_FILE=".daiharness/subagent-context/CONVERSATION_SUMMARY.md"
 
 # Defaults
 CHECKPOINT_INTERVAL="${MEMORY_CHECKPOINT_INTERVAL:-3}"

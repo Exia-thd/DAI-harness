@@ -179,6 +179,27 @@ func test_jump_height_formula():
 
 ```csharp
 // Unity: Combat State Machine Tests
+[Test] public void CombatStateMachine_IdleToAttack1_Valid()
+{
+    fsm.SetState<IdleState>();
+    fsm.ReceiveInput(InputType.Attack);
+    Assert.IsInstanceOfType(fsm.CurrentState, typeof(Attack1State));
+}
+
+[Test] public void CombatStateMachine_Attack2CancelIntoDodge()
+{
+    fsm.SetState<Attack2State>();
+    fsm.AdvanceTime(0.1f); // Within cancel window
+    fsm.ReceiveInput(InputType.Dodge);
+    Assert.IsInstanceOfType(fsm.CurrentState, typeof(DodgeRollState));
+}
+
+[Test] public void CombatStateMachine_RecoveryBlocksInput()
+{
+    fsm.SetState<RecoveryState>();
+    fsm.ReceiveInput(InputType.Attack);
+    Assert.IsInstanceOfType(fsm.CurrentState, typeof(RecoveryState)); // Still recovering
+}
 ```
 
 ### Phaser 3 Mechanics Tests
@@ -284,28 +305,6 @@ describe('MovementSystem', () => {
     });
 });
 ```
-[Test] public void CombatStateMachine_IdleToAttack1_Valid()
-{
-    fsm.SetState<IdleState>();
-    fsm.ReceiveInput(InputType.Attack);
-    Assert.IsInstanceOfType(fsm.CurrentState, typeof(Attack1State));
-}
-
-[Test] public void CombatStateMachine_Attack2CancelIntoDodge()
-{
-    fsm.SetState<Attack2State>();
-    fsm.AdvanceTime(0.1f); // Within cancel window
-    fsm.ReceiveInput(InputType.Dodge);
-    Assert.IsInstanceOfType(fsm.CurrentState, typeof(DodgeRollState));
-}
-
-[Test] public void CombatStateMachine_RecoveryBlocksInput()
-{
-    fsm.SetState<RecoveryState>();
-    fsm.ReceiveInput(InputType.Attack);
-    Assert.IsInstanceOfType(fsm.CurrentState, typeof(RecoveryState)); // Still recovering
-}
-```
 
 ### Category 4 — Performance Validation
 
@@ -328,6 +327,25 @@ describe('MovementSystem', () => {
 
 ```csharp
 // Unity: Performance Tests
+[Test] public void Performance_60FPS_OnMainMenu()
+{
+    StartProfiling();
+    LoadScene("MainMenu");
+    Wait(2f); // Let scene settle
+    float avgFPS = GetAverageFPS();
+    StopProfiling();
+    Assert.IsTrue(avgFPS >= 58f, $"FPS dropped to {avgFPS}");
+}
+
+[Test] public void Performance_MemoryUnder_2GB_PC()
+{
+    var initialMemory = GetTotalAllocatedMemoryMB();
+    LoadAllGameScenes();
+    var peakMemory = GetPeakAllocatedMemoryMB();
+    Assert.IsTrue(peakMemory - initialMemory < 2000f,
+        $"Memory exceeded 2GB: {peakMemory - initialMemory}MB");
+}
+```
 
 ### Phaser 3 Performance Tests
 
@@ -417,25 +435,6 @@ describe('ObjectPool', () => {
     });
 });
 ```
-[Test] public void Performance_60FPS_OnMainMenu()
-{
-    StartProfiling();
-    LoadScene("MainMenu");
-    Wait(2f); // Let scene settle
-    float avgFPS = GetAverageFPS();
-    StopProfiling();
-    Assert.IsTrue(avgFPS >= 58f, $"FPS dropped to {avgFPS}");
-}
-
-[Test] public void Performance_MemoryUnder_2GB_PC()
-{
-    var initialMemory = GetTotalAllocatedMemoryMB();
-    LoadAllGameScenes();
-    var peakMemory = GetPeakAllocatedMemoryMB();
-    Assert.IsTrue(peakMemory - initialMemory < 2000f,
-        $"Memory exceeded 2GB: {peakMemory - initialMemory}MB");
-}
-```
 
 ### Category 5 — Build Verification
 
@@ -454,6 +453,30 @@ describe('ObjectPool', () => {
 
 ```csharp
 // Unity: Build Validation Tests
+[Test] public void Build_NoMissingReferences()
+{
+    var guids = AssetDatabase.FindAssets("t:Object");
+    int missingCount = 0;
+    foreach (var guid in guids)
+    {
+        var path = AssetDatabase.GUIDToAssetPath(guid);
+        var obj = AssetDatabase.LoadAssetAtPath<Object>(path);
+        if (obj == null) missingCount++;
+    }
+    Assert.AreEqual(0, missingCount, "Found missing references");
+}
+
+[Test] public void Build_AllScenesLoadable()
+{
+    var scenes = EditorBuildSettings.scenes;
+    foreach (var scene in scenes)
+    {
+        var result = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene);
+        var loadResult = EditorSceneManager.LoadSceneInPlayMode(scene.path);
+        Assert.IsTrue(loadResult.Result == null, $"Failed to load: {scene.path}");
+    }
+}
+```
 
 ### Phaser 3 Build Tests
 
@@ -521,30 +544,6 @@ describe('Build Verification', () => {
         expect(compressed.length).toBeGreaterThan(0);
     });
 });
-```
-[Test] public void Build_NoMissingReferences()
-{
-    var guids = AssetDatabase.FindAssets("t:Object");
-    int missingCount = 0;
-    foreach (var guid in guids)
-    {
-        var path = AssetDatabase.GUIDToAssetPath(guid);
-        var obj = AssetDatabase.LoadAssetAtPath<Object>(path);
-        if (obj == null) missingCount++;
-    }
-    Assert.AreEqual(0, missingCount, "Found missing references");
-}
-
-[Test] public void Build_AllScenesLoadable()
-{
-    var scenes = EditorBuildSettings.scenes;
-    foreach (var scene in scenes)
-    {
-        var result = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene);
-        var loadResult = EditorSceneManager.LoadSceneInPlayMode(scene.path);
-        Assert.IsTrue(loadResult.Result == null, $"Failed to load: {scene.path}");
-    }
-}
 ```
 
 ### Category 6 — Integration/Regression Validation
@@ -731,7 +730,7 @@ After all workers complete:
 
 ### Game Test Report Format
 
-After each game test run, produce a report at `.dainexus/game-tests/report-{timestamp}.json`:
+After each game test run, produce a report at `.daiharness/game-tests/report-{timestamp}.json`:
 
 ```json
 {

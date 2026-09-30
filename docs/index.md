@@ -1,8 +1,8 @@
-# DAI Nexus Documentation
+# DAI Harness Documentation
 
-> **Central documentation index for DAI Nexus**
+> **Central documentation index for DAI Harness**
 
-Welcome to DAI Nexus — an adaptive orchestrator with 84 AI skills covering the full software development lifecycle.
+Welcome to DAI Harness — an adaptive orchestrator with 84 AI skills covering the full software development lifecycle.
 
 ## Quick Navigation
 
@@ -14,9 +14,9 @@ Welcome to DAI Nexus — an adaptive orchestrator with 84 AI skills covering the
 ## By Category
 
 ### Getting Started
-- **[Quickstart Guide](quickstart.md)** — Get up and running with DAI Nexus in 5 minutes
+- **[Quickstart Guide](quickstart.md)** — Get up and running with DAI Harness in 5 minutes
 - **[Setup Guide](SETUP.md)** — Detailed installation instructions
-- **[Configuration Guide](SETUP-REFERENCE.md)** — Configure DAI Nexus for your project
+- **[Configuration Guide](SETUP-REFERENCE.md)** — Configure DAI Harness for your project
 - **[CLI Init/Onboard Golden Path](guides/dai-init-onboard.md)** — Deterministic project initialization and profiling workflow
 - **[Docs Hub](guides/docs-hub.md)** — Build a privacy-safe multi-project HTML/CSS documentation portal
 - **[Peer Collaboration Guide](guides/peer-collaboration.md)** — Use bounded, parent-mediated advisory feedback safely
@@ -44,7 +44,7 @@ Welcome to DAI Nexus — an adaptive orchestrator with 84 AI skills covering the
 | **Skill Health Check** | `bash scripts/skill-health.sh check` — validates all 84 canonical skills |
 | **Dependency Graph** | `bash scripts/dep-graph.sh` — detects cycles, generates DOT/Mermaid exports |
 | **Skill Versioning** | `bash scripts/skill-rollback.sh` — rollback skills to previous versions |
-| **Session Tracker** | `bash scripts/dainexus-session-tracker.sh` — tracks consecutive plan failures |
+| **Session Tracker** | `bash scripts/daiharness-session-tracker.sh` — tracks consecutive plan failures |
 
 ## By Role
 

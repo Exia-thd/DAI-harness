@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * DAI Nexus Studio - Standalone Server
+ * DAI Harness Studio - Standalone Server
  *
  * Real-time pipeline monitoring WebSocket server
  *
@@ -47,7 +47,7 @@ try {
 } catch (err) {
   if (err.code === "EADDRINUSE") {
     console.log(`\n⚠️  Port ${PORT} is already in use.`);
-    console.log(`    The DAI Nexus extension may have started Studio automatically.`);
+    console.log(`    The DAI Harness extension may have started Studio automatically.`);
     console.log(`    Or use: node src/studio/run.js --port ${PORT === 7892 ? 7893 : 7892}\n`);
     process.exit(1);
   }
@@ -56,7 +56,7 @@ try {
 
 console.log(`
 ╔══════════════════════════════════════════════════════════════╗
-║                   DAI Nexus Studio                         ║
+║                   DAI Harness Studio                         ║
 ╠══════════════════════════════════════════════════════════════╣
 ║                                                              ║
 ║  🎯 WebSocket: ws://localhost:${PORT.toString().padEnd(27)}║

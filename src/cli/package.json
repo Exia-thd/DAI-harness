@@ -1,7 +1,7 @@
 {
-  "name": "@dai-nexus/cli",
+  "name": "@dai-harness/cli",
   "version": "0.1.0",
-  "description": "DAI Nexus CLI - Agent-First Command Line Interface",
+  "description": "DAI Harness CLI - Agent-First Command Line Interface",
   "type": "module",
   "bin": {
     "dai": "./dist/index.js"
@@ -44,10 +44,10 @@
   },
   "keywords": [
     "cli",
-    "dai-nexus",
+    "dai-harness",
     "ai",
     "agent"
   ],
-  "author": "dai-nexus",
+  "author": "dai-harness",
   "license": "MIT"
 }

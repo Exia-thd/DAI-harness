@@ -1,6 +1,6 @@
 #!/bin/bash
 # skill-rollback.sh — Rollback skill to a previous version
-# Part of DAI Nexus Phase 2.3 Skill Versioning
+# Part of DAI Harness Phase 2.3 Skill Versioning
 # Created: 2026-05-29
 
 set -euo pipefail
@@ -15,7 +15,7 @@ NC='\033[0m'
 SKILL_NAME="${1:-}"
 TARGET_VERSION="${2:-previous}"
 SKILLS_DIR="skills"
-BACKUP_DIR=".dainexus/backups/skills"
+BACKUP_DIR=".daiharness/backups/skills"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 # Print colored output

@@ -1,6 +1,6 @@
 # Peer Collaboration Guide
 
-DAI Nexus peer collaboration is a **bounded advisory review**, not a swarm
+DAI Harness peer collaboration is a **bounded advisory review**, not a swarm
 and not a shared editor. Use it only when the parent pipeline explicitly adds a
 `PIPELINE_CONTEXT.collaboration` block.
 
@@ -102,7 +102,7 @@ late results.
 
 The v1 runtime is strict: `InProcessBroker`, parent-private capability-bound
 publication, and a parent-owned bounded JSONL log at
-`.dainexus/collaboration/<session>/events.jsonl`. The log is append-only,
+`.daiharness/collaboration/<session>/events.jsonl`. The log is append-only,
 fsync'd, size/event bounded, and hash chained. There is no external AGY peer
 transport and no token, cost, or goal quota.
 

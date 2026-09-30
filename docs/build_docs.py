@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 docs/build_docs.py
-Generate the DAI Nexus documentation site from the repository itself.
+Generate the DAI Harness documentation site from the repository itself.
 
 Every number, file list, and code excerpt on the rendered pages is read from
 the working tree at build time. Nothing is transcribed by hand, so the docs
@@ -109,7 +109,7 @@ def facts() -> dict:
     if not reject_reasons:
         raise SystemExit("[docs] rejection reasons not found in verify_gate.py")
     policy_patterns = re.findall(
-        r'^\s*- "(.+)"$', read(".dainexus/execution-policy.yaml"), re.MULTILINE
+        r'^\s*- "(.+)"$', read(".daiharness/execution-policy.yaml"), re.MULTILINE
     )
     # Deliberately no commit hash and no build date. Both made the output a
     # function of *when* it was built rather than of what it was built from, so
@@ -171,7 +171,7 @@ def nav(current: str) -> str:
         for f, t in PAGES
     )
     return f"""<nav class="nav"><div class="nav-inner">
-  <a href="./index.html" class="nav-brand"><span class="dot"></span> DAI Nexus <small>docs</small></a>
+  <a href="./index.html" class="nav-brand"><span class="dot"></span> DAI Harness <small>docs</small></a>
   <div class="nav-links">{links}</div>
 </div></nav>"""
 
@@ -183,7 +183,7 @@ def page(filename: str, title: str, body: str, f: dict) -> str:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{esc(title)} — DAI Nexus</title>
+<title>{esc(title)} — DAI Harness</title>
 <link rel="stylesheet" href="./style.css">
 </head>
 <body>
@@ -192,7 +192,7 @@ def page(filename: str, title: str, body: str, f: dict) -> str:
 {body}
 </main>
 <footer>
-  <div><strong>DAI Nexus docs</strong> · sinh tự động từ source bằng <code>docs/build_docs.py</code></div>
+  <div><strong>DAI Harness docs</strong> · sinh tự động từ source bằng <code>docs/build_docs.py</code></div>
   <div>v{f["version"]} · generated from source</div>
 </footer>
 </body>
@@ -259,7 +259,7 @@ WIDE = 78
 
 REJECT_VI = {
     "MISSING": "Không có file evidence nào",
-    "STALE": "Evidence quá cũ (mặc định &gt;1 giờ, đổi qua <code>DAINEXUS_STALENESS_SECS</code>)",
+    "STALE": "Evidence quá cũ (mặc định &gt;1 giờ, đổi qua <code>DAIHARNESS_STALENESS_SECS</code>)",
     "MISMATCH": "Workspace hoặc tree-sha đã đổi từ lúc ghi — tức là code bị sửa <em>sau</em> khi test chạy",
     "FAILED": "<code>exit_code</code> ≠ 0 — lệnh kiểm chứng thật sự trượt",
     "FORGED": "Sai schema, command rỗng, hoặc output khớp mẫu bịa (<code>placeholder</code>, <code>TODO</code>, <code>&lt;output&gt;</code>)",
@@ -304,7 +304,7 @@ def page_index(f: dict) -> str:
     return f"""
 <section class="hero">
   <span class="tag">TÀI LIỆU SINH TỪ SOURCE · v{f["version"]}</span>
-  <h1>DAI Nexus — <span class="accent">hệ điều hành cho AI coding agent</span></h1>
+  <h1>DAI Harness — <span class="accent">hệ điều hành cho AI coding agent</span></h1>
   <p class="lead">
     Không phải một tập prompt. Đây là một <strong>bộ luật + runtime</strong>: kernel bất biến nạp mỗi phiên,
     thư viện {
@@ -337,7 +337,7 @@ def page_index(f: dict) -> str:
 <p>
   Một LLM viết code giỏi vẫn thất bại ở ba chỗ: <strong>nói dối về kết quả</strong> ("đã sửa xong" mà chưa chạy thử),
   <strong>quên bối cảnh</strong> giữa các phiên, và <strong>làm bừa</strong> những thao tác không thể hoàn tác.
-  DAI Nexus xử lý cả ba bằng cơ chế máy móc, không bằng lời khuyên trong prompt.
+  DAI Harness xử lý cả ba bằng cơ chế máy móc, không bằng lời khuyên trong prompt.
 </p>
 <div class="grid cols-3">
   <div class="card"><h4 class="mt-0">🧾 Bằng chứng, không phải lời hứa</h4>
@@ -517,7 +517,7 @@ def page_kernel(f: dict) -> str:
 <h2><span class="num">02</span> Boot sequence</h2>
 <p>Mỗi phiên bắt đầu bằng đúng 5 bước, không hơn — giữ payload boot trong ngân sách token:</p>
 {code("kernel/ENTRY.md", r"^## Boot Sequence", 9)}
-<p>Bước 5.5 là thứ phân biệt DAI Nexus với một tập prompt thường: <strong>nạp memory là bắt buộc</strong>,
+<p>Bước 5.5 là thứ phân biệt DAI Harness với một tập prompt thường: <strong>nạp memory là bắt buộc</strong>,
 có trần token cho từng nguồn, và quy tắc cắt bớt rõ ràng thay vì "đọc nếu thấy cần".</p>
 {code("kernel/ENTRY.md", r"^## Boot Step 5\.5", 12)}
 
@@ -660,7 +660,7 @@ def page_evidence(f: dict) -> str:
 <section class="hero compact">
   <span class="tag">CƠ CHẾ LÕI</span>
   <h1>Chuỗi bằng chứng — <span class="accent">chống ảo giác bằng máy</span></h1>
-  <p class="lead">Đây là phần đáng mang đi nhất của DAI Nexus. Không phải lời nhắc "hãy trung thực",
+  <p class="lead">Đây là phần đáng mang đi nhất của DAI Harness. Không phải lời nhắc "hãy trung thực",
   mà là bốn cổng cơ học mà agent không thể nói vòng qua.</p>
 </section>
 
@@ -730,7 +730,7 @@ một evidence hợp lệ. {len(f["reject_reasons"])} phép kiểm tra độc l�
 
 <h2><span class="num">03</span> Lớp 3 — Execution policy fail-closed</h2>
 <p>Guardrail dạng văn bản là phán đoán; <code>policy_check.py</code> là thực thi.
-Deny-pattern hiện hành đọc từ <code>.dainexus/execution-policy.yaml</code>:</p>
+Deny-pattern hiện hành đọc từ <code>.daiharness/execution-policy.yaml</code>:</p>
 <ul class="rules">{patterns}</ul>
 <p>Điểm quan trọng là <strong>hướng fail</strong>: file policy thiếu, rỗng, hỏng, hay mode lạ đều
 <em>chặn</em> chứ không cho qua:</p>
@@ -833,20 +833,20 @@ def page_runtime(f: dict) -> str:
     tools = table(
         ["Tool", "Việc"],
         [
-            ["<code>dn_start_pipeline</code>", "Bắt đầu một lượt chạy, reset state"],
-            ["<code>dn_get_state</code>", "Đọc toàn bộ state: phase, gate, status"],
+            ["<code>dh_start_pipeline</code>", "Bắt đầu một lượt chạy, reset state"],
+            ["<code>dh_get_state</code>", "Đọc toàn bộ state: phase, gate, status"],
             [
-                "<code>dn_advance_phase</code>",
+                "<code>dh_advance_phase</code>",
                 "Sang phase kế — <strong>bị chặn nếu gate của phase hiện tại chưa được duyệt</strong>",
             ],
-            ["<code>dn_request_gate_approval</code>", "Đăng ký yêu cầu duyệt gate"],
+            ["<code>dh_request_gate_approval</code>", "Đăng ký yêu cầu duyệt gate"],
             [
-                "<code>dn_approve_gate</code>",
+                "<code>dh_approve_gate</code>",
                 "Ghi quyết định của người dùng (chỉ gọi SAU khi họ đã quyết)",
             ],
-            ["<code>dn_fail_pipeline</code>", "Đánh dấu thất bại kèm lý do"],
-            ["<code>dn_memory_add</code>", "Ghi quan sát vào memory dự án"],
-            ["<code>dn_memory_search</code>", "Tìm trong memory (BM25 + RRF)"],
+            ["<code>dh_fail_pipeline</code>", "Đánh dấu thất bại kèm lý do"],
+            ["<code>dh_memory_add</code>", "Ghi quan sát vào memory dự án"],
+            ["<code>dh_memory_search</code>", "Tìm trong memory (BM25 + RRF)"],
         ],
     )
     return f"""
@@ -1105,7 +1105,7 @@ def page_patterns(f: dict) -> str:
 <section class="hero compact">
   <span class="tag">TINH TÚY</span>
   <h1>{len(items)} pattern <span class="accent">đáng mang sang project khác</span></h1>
-  <p class="lead">Phần lớn giá trị của DAI Nexus không nằm ở lượng file, mà ở vài cơ chế nhỏ
+  <p class="lead">Phần lớn giá trị của DAI Harness không nằm ở lượng file, mà ở vài cơ chế nhỏ
   buộc một agent phải trung thực. Đây là danh sách rút gọn — mỗi cái đều đang chạy thật trong repo này.</p>
 </section>
 

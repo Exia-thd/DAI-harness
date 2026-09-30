@@ -4,7 +4,7 @@
 # Plan: docs/adr/ADR-010-runtime-lifecycle-guard.md  (P0.5 — INSTALL, §G2)
 #
 # WHY THIS EXISTS
-#   ~/.dainexus/scripts/ is populated by COPY, and it has already drifted
+#   ~/.daiharness/scripts/ is populated by COPY, and it has already drifted
 #   from the repo (cleanup.sh: global May 18 vs repo Jul 9). A copied reaper
 #   would mean the script holding kill authority does not match the source
 #   anyone reviews. So RLG installs by SYMLINK and verifies by checksum.
@@ -37,11 +37,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 RLG_FILES="runtime-common.sh runtime_registry.py runtime-lease.sh runtime-inventory.sh runtime-install.sh runtime-hooks-install.sh runtime-reap.sh runtime-sweep.sh disk-budget.sh runtime-gc.sh port-broker.sh dev-run.sh rlg_spawn.py"
 RLG_LITE_FILES="runtime-pretool-gate.sh"
 
-DEFAULT_TARGET="$HOME/.dainexus/scripts/runtime"
+DEFAULT_TARGET="$HOME/.daiharness/scripts/runtime"
 
 ACTION=""
 FROM_REPO=""
-TARGET="${DAINEXUS_RLG_TARGET:-$DEFAULT_TARGET}"
+TARGET="${DAIHARNESS_RLG_TARGET:-$DEFAULT_TARGET}"
 QUIET=0
 
 while [ $# -gt 0 ]; do
@@ -272,7 +272,7 @@ do_status() {
   echo
   bash "${SCRIPT_DIR}/runtime-lease.sh" status 2>/dev/null
   echo
-  echo "${RLG_DIM}kill-switch: DAINEXUS_RLG=off · touch $(rlg_disabled_file) · <project>/.dainexus/rlg-optout${RLG_NC}"
+  echo "${RLG_DIM}kill-switch: DAIHARNESS_RLG=off · touch $(rlg_disabled_file) · <project>/.daiharness/rlg-optout${RLG_NC}"
   return 0
 }
 

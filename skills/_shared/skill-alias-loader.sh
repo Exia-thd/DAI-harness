@@ -1,6 +1,6 @@
 #!/bin/bash
 # skill-alias-loader.sh — Backward compatibility layer for deprecated skill names
-# Part of DAI Nexus Phase 2.1 Skill Consolidation
+# Part of DAI Harness Phase 2.1 Skill Consolidation
 # Created: 2026-05-29
 
 set -euo pipefail

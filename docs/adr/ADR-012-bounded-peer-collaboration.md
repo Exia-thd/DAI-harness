@@ -5,7 +5,7 @@
 
 ## Context
 
-DAI Nexus has ordered specialist handoffs and parent-controlled parallel
+DAI Harness has ordered specialist handoffs and parent-controlled parallel
 dispatch, but some design questions benefit from a short review by the next
 discipline. Unbounded peer chat would blur authority, make evidence difficult
 to audit, and invite shared-state or prompt-injection failures. The repository
@@ -58,7 +58,7 @@ parent decides whether feedback changes the accepted direction.
 
 Version 1 uses a serial, thread-safe `InProcessBroker` and a parent-owned,
 fsync'd, hash-chained JSONL log at
-`.dainexus/collaboration/<session>/events.jsonl`. Artifact content is not
+`.daiharness/collaboration/<session>/events.jsonl`. Artifact content is not
 embedded; events carry strict `artifact://` URI, digest, media type, and optional
 schema metadata.
 

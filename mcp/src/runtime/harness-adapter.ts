@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto';
 
-export const HARNESS_ADAPTER_SCHEMA = 'dainexus-harness-adapter/v1' as const;
+export const HARNESS_ADAPTER_SCHEMA = 'daiharness-harness-adapter/v1' as const;
 
-export type HarnessLoopMode = 'dainexus-owned-loop' | 'native-host-loop';
+export type HarnessLoopMode = 'daiharness-owned-loop' | 'native-host-loop';
 export type LifecycleOperation = 'start' | 'resume' | 'fork' | 'steer' | 'interrupt' | 'checkpoint';
 export type PrecompactCapability = 'native' | 'material-event-fallback' | 'unsupported';
 
@@ -88,7 +88,7 @@ export function negotiateHarnessAdapter(
   if (adapter.schema !== HARNESS_ADAPTER_SCHEMA) {
     throw new HarnessCompatibilityError('unsupported_schema');
   }
-  if (adapter.mode !== 'dainexus-owned-loop' && adapter.mode !== 'native-host-loop') {
+  if (adapter.mode !== 'daiharness-owned-loop' && adapter.mode !== 'native-host-loop') {
     throw new HarnessCompatibilityError('invalid_loop_mode');
   }
   if (!PRECOMPACT_CAPABILITIES.has(adapter.capabilities.precompact)) {

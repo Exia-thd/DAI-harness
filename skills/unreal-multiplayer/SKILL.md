@@ -6,7 +6,7 @@ description: >
   and session management.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [unreal, multiplayer, replication, dedicated-server, networking, gas, prediction, steam, eos]
 ---
 
@@ -25,7 +25,7 @@ tags: [unreal, multiplayer, replication, dedicated-server, networking, gas, pred
 
 ## Aesthetic Foundation
 
-Multiplayer games need consistent visual language across all players. This skill references **DAI Nexus Game Visual Foundations** (`skills/_shared/game-visual-foundations.md`) for:
+Multiplayer games need consistent visual language across all players. This skill references **DAI Harness Game Visual Foundations** (`skills/_shared/game-visual-foundations.md`) for:
 
 - **Visual consistency** (same visual style across all connected clients)
 - **Networked VFX** (effects should look same on all clients)

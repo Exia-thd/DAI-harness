@@ -40,7 +40,7 @@ def test_canary_runner_produces_attested_gate_accepted_receipt(tmp_path: Path) -
     command = json.dumps([sys.executable, str(adapter)])
     env = {
         **os.environ,
-        "DAINEXUS_LIVE_ROUTING": "1",
+        "DAIHARNESS_LIVE_ROUTING": "1",
     }
     result = subprocess.run(
         [
@@ -77,7 +77,7 @@ def test_canary_runner_produces_attested_gate_accepted_receipt(tmp_path: Path) -
             str(output),
         ],
         cwd=ROOT,
-        env={**os.environ, "DAINEXUS_ROUTING_EVIDENCE_KEY": "x" * 32},
+        env={**os.environ, "DAIHARNESS_ROUTING_EVIDENCE_KEY": "x" * 32},
         capture_output=True,
         text=True,
         check=False,
@@ -107,13 +107,13 @@ def test_runner_is_opt_in_and_fails_closed_on_metadata_drift(tmp_path: Path) -> 
             str(tmp_path / "receipt.json"),
         ],
         cwd=ROOT,
-        env={**os.environ, "DAINEXUS_ROUTING_EVIDENCE_KEY": "x" * 32},
+        env={**os.environ, "DAIHARNESS_ROUTING_EVIDENCE_KEY": "x" * 32},
         capture_output=True,
         text=True,
         check=False,
     )
     assert result.returncode != 0
-    assert "DAINEXUS_LIVE_ROUTING=1" in result.stderr
+    assert "DAIHARNESS_LIVE_ROUTING=1" in result.stderr
 
 
 def test_adapter_stderr_cannot_leak_into_runner_error(tmp_path: Path) -> None:
@@ -140,7 +140,7 @@ def test_adapter_stderr_cannot_leak_into_runner_error(tmp_path: Path) -> None:
             str(tmp_path / "receipt.json"),
         ],
         cwd=ROOT,
-        env={**os.environ, "DAINEXUS_LIVE_ROUTING": "1"},
+        env={**os.environ, "DAIHARNESS_LIVE_ROUTING": "1"},
         capture_output=True,
         text=True,
         check=False,

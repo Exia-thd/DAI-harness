@@ -336,7 +336,7 @@ def main() -> int:
     parser.add_argument("evidence", type=Path)
     args = parser.parse_args()
     try:
-        key_value = os.environ.get("DAINEXUS_ROUTING_EVIDENCE_KEY")
+        key_value = os.environ.get("DAIHARNESS_ROUTING_EVIDENCE_KEY")
         key = key_value.encode("utf-8") if key_value is not None else None
         report = evaluate_control_plane(
             json.loads(args.evidence.read_text(encoding="utf-8")), key

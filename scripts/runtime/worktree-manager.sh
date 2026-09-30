@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Worktree Manager — Git worktree lifecycle for parallel dispatch
-# Part of DAI Nexus Production Grade Plugin
+# Part of DAI Harness Production Grade Plugin
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 set -euo pipefail
 
 WORKTREE_BASE=".worktrees"
 MAX_WORKERS="${MAX_WORKERS:-4}"
-LOG_FILE=".dainexus/worktree-log.md"
+LOG_FILE=".daiharness/worktree-log.md"
 
 # Colors
 RED='\033[0;31m'
@@ -314,9 +314,9 @@ cmd_bulkhead_limits() {
 
   log "Bulkhead limits applied: memory=${max_memory_mb}MB (watchdog), cpu=${max_cpu_percent}%, duration=${max_duration_minutes}m (ulimit -t)"
 
-  # Save to .dainexus for monitoring
-  mkdir -p ".dainexus"
-  cat > ".dainexus/bulkhead-config.json" <<EOF
+  # Save to .daiharness for monitoring
+  mkdir -p ".daiharness"
+  cat > ".daiharness/bulkhead-config.json" <<EOF
 {
   "max_memory_mb": $max_memory_mb,
   "max_cpu_percent": $max_cpu_percent,
@@ -363,9 +363,9 @@ cmd_bulkhead_status() {
   echo ""
 
   # Show config if exists
-  if [ -f ".dainexus/bulkhead-config.json" ]; then
+  if [ -f ".daiharness/bulkhead-config.json" ]; then
     echo "  Current limits:"
-    cat ".dainexus/bulkhead-config.json" | jq -r '. | "    Memory: \(.max_memory_mb)MB, Duration: \(.max_duration_minutes)m"'
+    cat ".daiharness/bulkhead-config.json" | jq -r '. | "    Memory: \(.max_memory_mb)MB, Duration: \(.max_duration_minutes)m"'
     echo ""
   fi
 
@@ -412,14 +412,14 @@ cmd_bulkhead_watchdog() {
     if [ "$mem" -gt "$max_mem_kb" ]; then
       kill -9 "$worker_pid" 2>/dev/null
       log "Worker ${task_id} exceeded memory limit: ${mem}KB > ${max_mem_kb}KB"
-      echo "[BULKHEAD] OOM_KILLED: ${task_id} (${mem}KB > ${max_mem_kb}KB)" >> ".dainexus/bulkhead-log.md"
+      echo "[BULKHEAD] OOM_KILLED: ${task_id} (${mem}KB > ${max_mem_kb}KB)" >> ".daiharness/bulkhead-log.md"
       return 1
     fi
 
     if [ "$elapsed" -gt "$max_seconds" ]; then
       kill -9 "$worker_pid" 2>/dev/null
       log "Worker ${task_id} exceeded timeout: ${elapsed}s > ${max_seconds}s"
-      echo "[BULKHEAD] TIMEOUT: ${task_id} (${elapsed}s > ${max_seconds}s)" >> ".dainexus/bulkhead-log.md"
+      echo "[BULKHEAD] TIMEOUT: ${task_id} (${elapsed}s > ${max_seconds}s)" >> ".daiharness/bulkhead-log.md"
       return 2
     fi
 

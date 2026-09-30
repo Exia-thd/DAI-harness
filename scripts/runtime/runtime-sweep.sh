@@ -38,7 +38,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 . "${SCRIPT_DIR}/runtime-common.sh" 2>/dev/null || exit 0
 
 REAPER="${SCRIPT_DIR}/runtime-reap.sh"
-INTERVAL="${DAINEXUS_RLG_SWEEP_INTERVAL:-300}"
+INTERVAL="${DAIHARNESS_RLG_SWEEP_INTERVAL:-300}"
 FORCE_NOW=0
 STATUS=0
 
@@ -88,7 +88,7 @@ rlg_init_dirs 2>/dev/null || exit 0
   printf '%s\n' "$out" >> "$(rlg_home)/sweep.log"
   case "$out" in
     *"REAP "*)
-      ledger="${DAINEXUS_ROOT:-$HOME/GitHub/dai-nexus}/scripts/lite/rule-ledger.sh"
+      ledger="${DAIHARNESS_ROOT:-$HOME/GitHub/dai-harness}/scripts/lite/rule-ledger.sh"
       [ -r "$ledger" ] && bash "$ledger" add RLG-01 violation \
         "leaked lease reclaimed by TTL sweep" >/dev/null 2>&1
       ;;

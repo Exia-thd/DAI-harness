@@ -1,6 +1,6 @@
 # Unity Performance Profiling Guide
 
-> **Purpose:** Comprehensive profiling guidance for Unity games built with DAI Nexus. Covers CPU, GPU, Memory, and platform-specific optimization.
+> **Purpose:** Comprehensive profiling guidance for Unity games built with DAI Harness. Covers CPU, GPU, Memory, and platform-specific optimization.
 
 ---
 

@@ -4,12 +4,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Runtime — DAI Nexus</title>
+<title>Runtime — DAI Harness</title>
 <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 <nav class="nav"><div class="nav-inner">
-  <a href="./index.html" class="nav-brand"><span class="dot"></span> DAI Nexus <small>docs</small></a>
+  <a href="./index.html" class="nav-brand"><span class="dot"></span> DAI Harness <small>docs</small></a>
   <div class="nav-links"><a href="./index.html">Tổng quan</a><a href="./kernel.html">Kernel</a><a href="./skills.html">Skills</a><a href="./evidence.html">Bằng chứng</a><a href="./runtime.html" class=current>Runtime</a><a href="./memory.html">Memory</a><a href="./patterns.html">Tinh túy</a></div>
 </div></nav>
 <main>
@@ -36,7 +36,7 @@
 </ul>
 <div class="code-block"><div class="code-head"><span class="file">scripts/lite/escalate.py:171</span></div><pre><code>def provider_timeout_seconds(cfg: dict) -&gt; int:
     """Provider wall-clock cap. Env wins over config; always clamped to [1, 3600]."""
-    raw = os.environ.get("DAINEXUS_ESCALATION_TIMEOUT_SECS")
+    raw = os.environ.get("DAIHARNESS_ESCALATION_TIMEOUT_SECS")
     try:
         value = int(raw) if raw is not None else int(cfg.get("providerTimeoutSeconds", 120))
     except (TypeError, ValueError):
@@ -65,8 +65,8 @@ glob được phép sửa và glob cấm. Merge arbiter từ chối mọi thứ 
     changed = _changed_files(path, contract["base_commit"])</code></pre></div>
 
 <h2><span class="num">04</span> MCP server</h2>
-<p>354 dòng, stdio JSON-RPC tự viết, không dùng SDK. Đăng ký sẵn trong <code>.mcp.json</code>.</p>
-<table><thead><tr><th>Tool</th><th>Việc</th></tr></thead><tbody><tr><td><code>dn_start_pipeline</code></td><td>Bắt đầu một lượt chạy, reset state</td></tr><tr><td><code>dn_get_state</code></td><td>Đọc toàn bộ state: phase, gate, status</td></tr><tr><td><code>dn_advance_phase</code></td><td>Sang phase kế — <strong>bị chặn nếu gate của phase hiện tại chưa được duyệt</strong></td></tr><tr><td><code>dn_request_gate_approval</code></td><td>Đăng ký yêu cầu duyệt gate</td></tr><tr><td><code>dn_approve_gate</code></td><td>Ghi quyết định của người dùng (chỉ gọi SAU khi họ đã quyết)</td></tr><tr><td><code>dn_fail_pipeline</code></td><td>Đánh dấu thất bại kèm lý do</td></tr><tr><td><code>dn_memory_add</code></td><td>Ghi quan sát vào memory dự án</td></tr><tr><td><code>dn_memory_search</code></td><td>Tìm trong memory (BM25 + RRF)</td></tr></tbody></table>
+<p>360 dòng, stdio JSON-RPC tự viết, không dùng SDK. Đăng ký sẵn trong <code>.mcp.json</code>.</p>
+<table><thead><tr><th>Tool</th><th>Việc</th></tr></thead><tbody><tr><td><code>dh_start_pipeline</code></td><td>Bắt đầu một lượt chạy, reset state</td></tr><tr><td><code>dh_get_state</code></td><td>Đọc toàn bộ state: phase, gate, status</td></tr><tr><td><code>dh_advance_phase</code></td><td>Sang phase kế — <strong>bị chặn nếu gate của phase hiện tại chưa được duyệt</strong></td></tr><tr><td><code>dh_request_gate_approval</code></td><td>Đăng ký yêu cầu duyệt gate</td></tr><tr><td><code>dh_approve_gate</code></td><td>Ghi quyết định của người dùng (chỉ gọi SAU khi họ đã quyết)</td></tr><tr><td><code>dh_fail_pipeline</code></td><td>Đánh dấu thất bại kèm lý do</td></tr><tr><td><code>dh_memory_add</code></td><td>Ghi quan sát vào memory dự án</td></tr><tr><td><code>dh_memory_search</code></td><td>Tìm trong memory (BM25 + RRF)</td></tr></tbody></table>
 <p>Kỷ luật gate được cưỡng bức ngay trong state machine — không phải bằng lời nhắc:</p>
 <div class="code-block"><div class="code-head"><span class="file">mcp/server.py:94</span></div><pre><code>def tool_advance_phase(_args: dict) -&gt; dict:
     state = load_state()
@@ -81,13 +81,13 @@ glob được phép sửa và glob cấm. Merge arbiter từ chối mọi thứ 
             state["pending_gate"] = gate
             save_state(state)
             return {
-                "error": f"gate '{gate}' not approved — call dn_request_gate_approval first"
+                "error": f"gate '{gate}' not approved — call dh_request_gate_approval first"
             }
     state["phases"][idx]["status"] = "passed"</code></pre></div>
 
 </main>
 <footer>
-  <div><strong>DAI Nexus docs</strong> · sinh tự động từ source bằng <code>docs/build_docs.py</code></div>
+  <div><strong>DAI Harness docs</strong> · sinh tự động từ source bằng <code>docs/build_docs.py</code></div>
   <div>v0.9.4 · generated from source</div>
 </footer>
 </body>

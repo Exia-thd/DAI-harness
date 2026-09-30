@@ -1,6 +1,6 @@
 src/
 coverage/
-.dainexus/
+.daiharness/
 build/**/*.test.js
 build/**/*.test.js.map
 *.config.cjs

@@ -6,7 +6,7 @@
 # Runs entirely against COPIES of the real config files in a temp dir. The
 # user's actual ~/.claude, ~/.codex and ~/.gemini are never touched — copies
 # are used precisely so the tests exercise real-world content (existing
-# gitnexus hooks, existing dai-nexus-policy entries) rather than a toy.
+# gitnexus hooks, existing dai-harness-policy entries) rather than a toy.
 #
 # Usage: bash tests/runtime/test_runtime_hooks.sh
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -18,9 +18,9 @@ INSTALLER="$REPO_ROOT/scripts/runtime/runtime-hooks-install.sh"
 GATE="$REPO_ROOT/scripts/lite/runtime-pretool-gate.sh"
 
 SANDBOX="$(mktemp -d "${TMPDIR:-/tmp}/rlg-hooks.XXXXXX")"
-export DAINEXUS_RLG_HOME="$SANDBOX/rlg-home"
+export DAIHARNESS_RLG_HOME="$SANDBOX/rlg-home"
 export NO_COLOR=1
-mkdir -p "$DAINEXUS_RLG_HOME"
+mkdir -p "$DAIHARNESS_RLG_HOME"
 trap 'rm -rf "$SANDBOX"' EXIT
 
 C_JSON="$SANDBOX/claude-settings.json"
@@ -33,7 +33,7 @@ else printf '{"hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command
 if [ -f "$HOME/.codex/config.toml" ]; then cp "$HOME/.codex/config.toml" "$X_TOML"
 else printf '[hooks]\nenabled = true\n' > "$X_TOML"; fi
 if [ -f "$HOME/.gemini/config/hooks.json" ]; then cp "$HOME/.gemini/config/hooks.json" "$A_JSON"
-else printf '{"dai-nexus-policy":{"PreToolUse":[]}}\n' > "$A_JSON"; fi
+else printf '{"dai-harness-policy":{"PreToolUse":[]}}\n' > "$A_JSON"; fi
 
 # Seed the preservation invariant explicitly instead of assuming the developer's
 # real Claude configuration already contains a GitNexus hook.
@@ -132,8 +132,8 @@ assert_rc "$?" "0" "pre-existing gitnexus hook survived"
 python3 -c '
 import json,sys
 d=json.load(open(sys.argv[1]))
-sys.exit(0 if "dai-nexus-policy" in d else 1)' "$A_JSON" 2>/dev/null
-assert_rc "$?" "0" "pre-existing dai-nexus-policy key survived"
+sys.exit(0 if "dai-harness-policy" in d else 1)' "$A_JSON" 2>/dev/null
+assert_rc "$?" "0" "pre-existing dai-harness-policy key survived"
 
 # Platform flag must be right per CLI — a Claude-shaped call into Antigravity
 # would be read as a refusal.
@@ -220,23 +220,23 @@ out="$(mk 'npm run dev' | bash "$GATE" --platform ANTIGRAVITY 2>/dev/null)"
 echo "$out" | python3 -c 'import json,sys;d=json.load(sys.stdin);sys.exit(0 if d.get("decision")=="allow" else 1)' 2>/dev/null
 assert_rc "$?" "0" "ANTIGRAVITY: matching command still emits decision=allow"
 
-out="$(mk 'npm run dev' | DAINEXUS_RLG=off bash "$GATE" --platform ANTIGRAVITY 2>/dev/null)"
+out="$(mk 'npm run dev' | DAIHARNESS_RLG=off bash "$GATE" --platform ANTIGRAVITY 2>/dev/null)"
 echo "$out" | python3 -c 'import json,sys;d=json.load(sys.stdin);sys.exit(0 if d.get("decision")=="allow" else 1)' 2>/dev/null
 assert_rc "$?" "0" "ANTIGRAVITY: kill-switch OFF still emits allow (disabling must not block tools)"
 
-touch "$DAINEXUS_RLG_HOME/DISABLED"
+touch "$DAIHARNESS_RLG_HOME/DISABLED"
 out="$(mk 'npm run dev' | bash "$GATE" --platform ANTIGRAVITY 2>/dev/null)"
 echo "$out" | python3 -c 'import json,sys;d=json.load(sys.stdin);sys.exit(0 if d.get("decision")=="allow" else 1)' 2>/dev/null
 assert_rc "$?" "0" "ANTIGRAVITY: DISABLED file still emits allow"
-rm -f "$DAINEXUS_RLG_HOME/DISABLED"
+rm -f "$DAIHARNESS_RLG_HOME/DISABLED"
 
 out="$(printf '' | bash "$GATE" --platform ANTIGRAVITY 2>/dev/null)"
 echo "$out" | python3 -c 'import json,sys;d=json.load(sys.stdin);sys.exit(0 if d.get("decision")=="allow" else 1)' 2>/dev/null
 assert_rc "$?" "0" "ANTIGRAVITY: empty payload still emits allow"
 
-: > "$DAINEXUS_RLG_HOME/gate.log"
+: > "$DAIHARNESS_RLG_HOME/gate.log"
 mk 'npm run dev' | bash "$GATE" --platform CODEX >/dev/null 2>&1
-grep -q "CODEX" "$DAINEXUS_RLG_HOME/gate.log" 2>/dev/null
+grep -q "CODEX" "$DAIHARNESS_RLG_HOME/gate.log" 2>/dev/null
 assert_rc "$?" "0" "gate.log records which platform the event came from"
 
 echo

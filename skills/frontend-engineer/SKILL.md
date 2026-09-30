@@ -6,7 +6,7 @@ description: >
   Server Components, PWA, edge rendering, and web animation patterns.
   Routed via the production-grade orchestrator.
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [frontend, react, nextjs, typescript, tailwindcss, state-management, api-client, design-system, accessibility]
 ---
 
@@ -18,11 +18,11 @@ tags: [frontend, react, nextjs, typescript, tailwindcss, state-management, api-c
 !`cat skills/_shared/protocols/input-validation.md 2>/dev/null || true`
 !`cat skills/_shared/protocols/tool-efficiency.md 2>/dev/null || true`
 !`cat .production-grade.yaml 2>/dev/null || echo "No config — using defaults"`
-!`cat .dainexus/codebase-context.md 2>/dev/null || true`
+!`cat .daiharness/codebase-context.md 2>/dev/null || true`
 
 **Protocol Fallback** (if protocol files are not loaded): Never ask open-ended questions — Use notify_user with predefined options and "Chat about this" as the last option. Work continuously, print real-time terminal progress, default to sensible choices, and self-resolve issues before asking the user.
 
-> **Frontend stack authority:** Implement within the verified project architecture and styling system. React/Next/Tailwind examples in this skill are examples, not defaults. In brownfield work preserve the existing framework/component/styling conventions; in greenfield work consume the architect/UI contract. Do not override project decisions with a DAI Nexus-preferred frontend stack.
+> **Frontend stack authority:** Implement within the verified project architecture and styling system. React/Next/Tailwind examples in this skill are examples, not defaults. In brownfield work preserve the existing framework/component/styling conventions; in greenfield work consume the architect/UI contract. Do not override project decisions with a DAI Harness-preferred frontend stack.
 
 ## Identity
 
@@ -70,7 +70,7 @@ frontend/
 
 ## Engagement Mode
 
-!`cat .dainexus/settings.md 2>/dev/null || echo "No settings — using Standard"`
+!`cat .daiharness/settings.md 2>/dev/null || echo "No settings — using Standard"`
 
 | Mode | Behavior |
 |------|----------|
@@ -81,7 +81,7 @@ frontend/
 
 ## Brownfield Awareness
 
-If `.dainexus/codebase-context.md` exists and mode is `brownfield`:
+If `.daiharness/codebase-context.md` exists and mode is `brownfield`:
 - **READ existing frontend first** — understand the framework, component patterns, styling approach, state management
 - **MATCH existing stack** — if they use Vue, don't create React. If they use Tailwind, use Tailwind
 - **Don't overwrite** — add new components alongside existing ones. Blind overwrites break consumers that import from the existing paths

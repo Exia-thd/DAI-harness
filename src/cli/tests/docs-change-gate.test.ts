@@ -89,9 +89,9 @@ function currentState(summary = "Current project status.") {
 }
 
 function createProject(name = "gate-project"): string {
-  const root = mkdtempSync(join(tmpdir(), `dai-nexus-${name}-`));
+  const root = mkdtempSync(join(tmpdir(), `dai-harness-${name}-`));
   roots.push(root);
-  mkdirSync(join(root, ".dainexus"), { recursive: true });
+  mkdirSync(join(root, ".daiharness"), { recursive: true });
   mkdirSync(join(root, "docs"), { recursive: true });
   mkdirSync(join(root, "src"), { recursive: true });
   mkdirSync(join(root, "tests"), { recursive: true });
@@ -100,7 +100,7 @@ function createProject(name = "gate-project"): string {
   writeFileSync(join(root, "src", "main.ts"), "export const value = 1;\n");
   writeFileSync(join(root, "tests", "main.test.ts"), "// baseline test\n");
   writeJson(join(root, "docs", "project-state.json"), currentState());
-  writeJson(join(root, ".dainexus", "docs-manifest.json"), {
+  writeJson(join(root, ".daiharness", "docs-manifest.json"), {
     schema_version: 1,
     project: { id: "gate-project", title: "Gate Project" },
     sources: [
@@ -172,7 +172,7 @@ describe("Docs Hub continuity gate", () => {
           "docs/Guide.md",
           "tests/main.test.ts",
           "package-lock.json",
-          ".dainexus/cache/docs-index.json",
+          ".daiharness/cache/docs-index.json",
           "skills/art-director/SKILL.md",
           "kernel/SOLVE.md",
           ".cursor/rules/guard.mdc",
@@ -363,7 +363,7 @@ describe("Docs Hub continuity gate", () => {
   });
 
   it("scopes nested projects relative to their own root and treats deletions as material", () => {
-    const repository = mkdtempSync(join(tmpdir(), "dai-nexus-monorepo-"));
+    const repository = mkdtempSync(join(tmpdir(), "dai-harness-monorepo-"));
     roots.push(repository);
     const project = join(repository, "packages", "game project");
     mkdirSync(project, { recursive: true });
@@ -412,28 +412,28 @@ describe("Docs Hub continuity gate", () => {
     expect(conflict.status).toBe("fail");
     expect(codes(conflict)).toContain("DOCS_GATE_OPTION_CONFLICT");
 
-    const notGit = mkdtempSync(join(tmpdir(), "dai-nexus-not-git-"));
+    const notGit = mkdtempSync(join(tmpdir(), "dai-harness-not-git-"));
     roots.push(notGit);
     const malformed = runDocsGate(notGit);
     expect(malformed.status).toBe("fail");
     expect(codes(malformed)).toContain("GIT_CHANGE_DISCOVERY_FAILED");
 
     const generatedRoot = createProject("generated");
-    mkdirSync(join(generatedRoot, ".dainexus", "docs-hub"), {
+    mkdirSync(join(generatedRoot, ".daiharness", "docs-hub"), {
       recursive: true,
     });
     writeFileSync(
-      join(generatedRoot, ".dainexus", "docs-hub", "index.html"),
+      join(generatedRoot, ".daiharness", "docs-hub", "index.html"),
       "generated baseline\n",
     );
     const generatedBaseline = runDocsGate(generatedRoot);
     expect(generatedBaseline.status, codes(generatedBaseline).join(",")).toBe(
       "pass",
     );
-    git(generatedRoot, "add", ".dainexus/docs-hub/index.html");
+    git(generatedRoot, "add", ".daiharness/docs-hub/index.html");
     git(generatedRoot, "commit", "-qm", "track generated fixture");
     writeFileSync(
-      join(generatedRoot, ".dainexus", "docs-hub", "index.html"),
+      join(generatedRoot, ".daiharness", "docs-hub", "index.html"),
       "manual edit\n",
     );
     const generated = runDocsGate(generatedRoot);
@@ -445,7 +445,10 @@ describe("Docs Hub continuity gate", () => {
     const root = createProject("no-mutation");
     writeFileSync(join(root, "docs", "Guide.md"), "# Fresh guide\n");
     const sourceBefore = readFileSync(join(root, "docs", "Guide.md"), "utf8");
-    const temporaryPrefixes = ["dai-nexus-docs-gate-", "dai-nexus-docs-view-"];
+    const temporaryPrefixes = [
+      "dai-harness-docs-gate-",
+      "dai-harness-docs-view-",
+    ];
     const temporaryBefore = new Set(
       readdirSync(tmpdir()).filter((name) =>
         temporaryPrefixes.some((prefix) => name.startsWith(prefix)),
@@ -464,7 +467,7 @@ describe("Docs Hub continuity gate", () => {
     expect(readFileSync(join(root, "docs", "Guide.md"), "utf8")).toBe(
       sourceBefore,
     );
-    expect(existsSync(join(root, ".dainexus", "cache"))).toBe(false);
-    expect(existsSync(join(root, ".dainexus", "docs-hub"))).toBe(false);
+    expect(existsSync(join(root, ".daiharness", "cache"))).toBe(false);
+    expect(existsSync(join(root, ".daiharness", "docs-hub"))).toBe(false);
   });
 });

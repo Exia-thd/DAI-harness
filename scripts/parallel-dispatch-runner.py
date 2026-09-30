@@ -145,21 +145,21 @@ def validate_global_antigravity_hook() -> Path:
         hooks_path = (home / ".gemini" / "config" / "hooks.json").resolve(strict=True)
     except OSError as error:
         raise ManifestError(
-            "global Antigravity dai-nexus-policy hook is missing"
+            "global Antigravity dai-harness-policy hook is missing"
         ) from error
     if not hooks_path.is_relative_to(home):
         raise ManifestError("Antigravity hook configuration escapes the home directory")
     try:
         document = json.loads(hooks_path.read_text(encoding="utf-8"))
-        groups = document["dai-nexus-policy"]["PreToolUse"]
+        groups = document["dai-harness-policy"]["PreToolUse"]
     except (KeyError, TypeError, json.JSONDecodeError, OSError) as error:
         raise ManifestError(
-            "invalid global Antigravity dai-nexus-policy hook"
+            "invalid global Antigravity dai-harness-policy hook"
         ) from error
-    if document["dai-nexus-policy"].get("enabled") is False or not isinstance(
+    if document["dai-harness-policy"].get("enabled") is False or not isinstance(
         groups, list
     ):
-        raise ManifestError("global Antigravity dai-nexus-policy hook is disabled")
+        raise ManifestError("global Antigravity dai-harness-policy hook is disabled")
 
     for group in groups:
         if not isinstance(group, dict) or group.get("matcher") != "*":
@@ -196,7 +196,7 @@ def validate_global_antigravity_hook() -> Path:
                 and gate.name == "antigravity-pre-tool-gate.sh"
             ):
                 return hooks_path
-    raise ManifestError("invalid global Antigravity dai-nexus-policy hook")
+    raise ManifestError("invalid global Antigravity dai-harness-policy hook")
 
 
 def load_manifest(path: Path) -> dict[str, Any]:
@@ -374,7 +374,7 @@ def _delegation_env(workspace: Path) -> dict[str, str]:
         [*(str(path) for path in TRUSTED_AGY_DIRECTORIES), os.defpath]
     )
     environment = {
-        "DAINEXUS_WORKSPACE": str(workspace.resolve(strict=True)),
+        "DAIHARNESS_WORKSPACE": str(workspace.resolve(strict=True)),
         "PATH": trusted_path,
     }
     for key in DELEGATION_ENV_KEYS:
@@ -441,7 +441,7 @@ def _worker_prompt(
     request: dict[str, Any], worker: dict[str, Any], stop: list[str]
 ) -> str:
     lines = [
-        "[DAI Nexus bounded parallel worker]",
+        "[DAI Harness bounded parallel worker]",
         f"Requirements: {request.get('requirements', '')}",
         f"Role tier: {worker['role']}",
         f"Scope: {worker['scope_id']}",
@@ -612,7 +612,7 @@ def _reviewer_prompt(reviewer: dict[str, Any]) -> str:
     packet = reviewer["packet"]
     return "\n".join(
         [
-            "[DAI Nexus independent reviewer]",
+            "[DAI Harness independent reviewer]",
             f"Requirements: {json.dumps(packet['requirements'], ensure_ascii=False)}",
             f"Diff: {json.dumps(packet['diff'], ensure_ascii=False)}",
             f"Raw evidence: {json.dumps(packet['raw_evidence'], ensure_ascii=False)}",
@@ -857,7 +857,9 @@ def _invoke_host_bounded(
             except queue.Full:
                 return
 
-    thread = threading.Thread(target=invoke, name="dai-nexus-trusted-host", daemon=True)
+    thread = threading.Thread(
+        target=invoke, name="dai-harness-trusted-host", daemon=True
+    )
     thread.start()
 
     # `Thread.join(timeout)` is not a hard wall-clock deadline on every host;
@@ -974,7 +976,7 @@ def _execute_collaboration(
         deadline = now + timedelta(seconds=policy.deadline_seconds)
         monotonic_deadline = time.monotonic() + policy.deadline_seconds
         event_log = JsonlEventLog(
-            workspace / ".dainexus",
+            workspace / ".daiharness",
             collaboration["session_id"],
             max_event_bytes=policy.max_event_bytes,
             max_total_bytes=policy.max_total_bytes,

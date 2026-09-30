@@ -5,10 +5,10 @@
 # Tests:
 #   1. Exact CLI argv emitted per configured activeCli (agy, claude, codex, gemini)
 #   2. Config parsing: expertMode.activeCli, fallbackCli, budget keys
-#   3. Packet evidence reads real .dainexus/verify files
+#   3. Packet evidence reads real .daiharness/verify files
 #   4. Redaction removes secrets before packet creation
 #   5. Budget refusal when maxExpertCallsPerRun is reached
-#   6. Output path: escalation records go to .dainexus/escalations/
+#   6. Output path: escalation records go to .daiharness/escalations/
 #
 # No paid CLI calls are made. All tests use --dry-run.
 # Exit code: 0 = all PASS, 1 = any FAIL.
@@ -143,14 +143,14 @@ assert_contains "config: activeCli=codex in argv" "'codex'" "$out"
 assert_contains "config: budget threshold shown" "7" "$out"
 
 # ---------------------------------------------------------------------------
-# Test 6: packet evidence reads .dainexus/verify files
+# Test 6: packet evidence reads .daiharness/verify files
 # ---------------------------------------------------------------------------
 echo ""
-echo "--- Test 6: evidence from .dainexus/verify ---"
+echo "--- Test 6: evidence from .daiharness/verify ---"
 t6=$(mktemp -d "$tmpdir/t6.XXXX")
 make_config "$t6" "agy"
-mkdir -p "$t6/.dainexus/verify"
-echo "unit-test output: 14 passed, 0 failed" > "$t6/.dainexus/verify/run-$(date +%s).txt"
+mkdir -p "$t6/.daiharness/verify"
+echo "unit-test output: 14 passed, 0 failed" > "$t6/.daiharness/verify/run-$(date +%s).txt"
 # Evidence: verify the evidence JSON slice content, not just any line in output
 # The git diff may legitimately contain removed placeholder text from old code;
 # assert that the VERIFY FILE content appears and that the evidence[] array
@@ -168,8 +168,8 @@ echo ""
 echo "--- Test 7: secret redaction ---"
 t7=$(mktemp -d "$tmpdir/t7.XXXX")
 make_config "$t7" "agy"
-mkdir -p "$t7/.dainexus/verify"
-echo "OPENAI_API_KEY=sk-abc123supersecretvalue999xyz" > "$t7/.dainexus/verify/env-check.txt"
+mkdir -p "$t7/.daiharness/verify"
+echo "OPENAI_API_KEY=sk-abc123supersecretvalue999xyz" > "$t7/.daiharness/verify/env-check.txt"
 out=$(run_dry "$t7" "check env")
 assert_not_contains "redaction: raw secret not in output" "sk-abc123supersecretvalue999xyz" "$out"
 assert_contains "redaction: REDACTED marker present" "REDACTED" "$out"
@@ -181,27 +181,27 @@ echo ""
 echo "--- Test 8: budget refusal ---"
 t8=$(mktemp -d "$tmpdir/t8.XXXX")
 make_config "$t8" "agy" "null" 2 1
-mkdir -p "$t8/.dainexus/escalations"
+mkdir -p "$t8/.daiharness/escalations"
 # Simulate 2 prior escalation records for this run
 RUN_ID="testrun99"
-touch "$t8/.dainexus/escalations/${RUN_ID}-111-task-a.json"
-touch "$t8/.dainexus/escalations/${RUN_ID}-222-task-b.json"
+touch "$t8/.daiharness/escalations/${RUN_ID}-111-task-a.json"
+touch "$t8/.daiharness/escalations/${RUN_ID}-222-task-b.json"
 set +e
-budget_out=$(DAINEXUS_RUN_ID="$RUN_ID" PROJECT_ROOT="$t8" bash "$ESCALATE" --dry-run "another task" 2>&1)
+budget_out=$(DAIHARNESS_RUN_ID="$RUN_ID" PROJECT_ROOT="$t8" bash "$ESCALATE" --dry-run "another task" 2>&1)
 budget_exit=$?
 set -e
 assert_exit "budget: exits non-zero when limit reached" "2" "$budget_exit"
 assert_contains "budget: BUDGET EXCEEDED message shown" "BUDGET EXCEEDED" "$budget_out"
 
 # ---------------------------------------------------------------------------
-# Test 9: escalation log written to .dainexus/escalations (path check)
+# Test 9: escalation log written to .daiharness/escalations (path check)
 # ---------------------------------------------------------------------------
 echo ""
 echo "--- Test 9: output path check ---"
 t9=$(mktemp -d "$tmpdir/t9.XXXX")
 make_config "$t9" "agy"
 out=$(run_dry "$t9" "some task")
-assert_contains "output path: .dainexus/escalations in dry-run output" ".dainexus/escalations" "$out"
+assert_contains "output path: .daiharness/escalations in dry-run output" ".daiharness/escalations" "$out"
 assert_not_contains "output path: no escalation_cost.log in cwd" "escalation_cost.log" "$out"
 
 # ---------------------------------------------------------------------------

@@ -10,7 +10,7 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Target game development libraries or frameworks are defined | `cat package.json \| jq '.dependencies["phaser"] // .dependencies["three"]'` | ... | run the check command and paste output |
-| Active project stack and health status profile are onboarded | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Active project stack and health status profile are onboarded | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Game Engineer Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
@@ -40,7 +40,7 @@ delegation.
 
 ### Step 1: Verify the game dev stack from the project profile
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 ```
 
 ### Step 2: Implement a high-performance, frame-independent entity updater in `src/game/projectile-manager.ts`

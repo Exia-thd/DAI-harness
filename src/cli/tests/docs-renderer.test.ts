@@ -275,7 +275,7 @@ describe("Docs Hub static presentation", () => {
     );
   });
   it("builds offline pages, search index, CSS and progressive JS", () => {
-    const root = mkdtempSync(join(tmpdir(), "dai-nexus-renderer-"));
+    const root = mkdtempSync(join(tmpdir(), "dai-harness-renderer-"));
     const output = join(root, "site");
     const result = renderStaticSite([catalog(root)], { outputDir: output });
     const apiResult = buildDocsHub([catalog(root)], join(root, "api-site"));
@@ -315,10 +315,10 @@ describe("Docs Hub static presentation", () => {
       "Page not found",
     );
     const ownership = JSON.parse(
-      readFileSync(join(output, ".dainexus-docs-hub"), "utf8"),
+      readFileSync(join(output, ".daiharness-docs-hub"), "utf8"),
     );
     expect(ownership).toEqual({
-      schema: "dai-nexus-docs-hub",
+      schema: "dai-harness-docs-hub",
       schema_version: 1,
       source_fingerprints: [{ project_id: "demo", fingerprint: "fingerprint" }],
     });
@@ -344,7 +344,7 @@ describe("Docs Hub static presentation", () => {
     expect(apiResult.filesWritten).toBeGreaterThan(5);
   });
   it("renders a concise control center plus complete project section pages", () => {
-    const root = mkdtempSync(join(tmpdir(), "dai-nexus-state-renderer-"));
+    const root = mkdtempSync(join(tmpdir(), "dai-harness-state-renderer-"));
     const output = join(root, "site");
     renderStaticSite([catalogWithState(root)], { outputDir: output });
     const project = readFileSync(
@@ -441,7 +441,7 @@ describe("Docs Hub static presentation", () => {
     expect(projects).toContain("2026-08-12T10:00:00+07:00");
   });
   it("renders explicit messages for empty project-state collections", () => {
-    const root = mkdtempSync(join(tmpdir(), "dai-nexus-state-empty-"));
+    const root = mkdtempSync(join(tmpdir(), "dai-harness-state-empty-"));
     const output = join(root, "site");
     renderStaticSite([catalogWithEmptyState(root)], { outputDir: output });
     const project = readFileSync(
@@ -474,7 +474,7 @@ describe("Docs Hub static presentation", () => {
     expect(project).toContain("Not scheduled");
   });
   it("renders unavailable state diagnostics and responsive deterministic safeguards", () => {
-    const root = mkdtempSync(join(tmpdir(), "dai-nexus-state-unavailable-"));
+    const root = mkdtempSync(join(tmpdir(), "dai-harness-state-unavailable-"));
     const output = join(root, "site");
     const value = catalog(root);
     value.diagnostics.push({
@@ -509,7 +509,7 @@ describe("Docs Hub static presentation", () => {
     expect(css).toContain("overflow-wrap: anywhere");
   });
   it("does not present a future project-state timestamp as current", () => {
-    const root = mkdtempSync(join(tmpdir(), "dai-nexus-state-future-"));
+    const root = mkdtempSync(join(tmpdir(), "dai-harness-state-future-"));
     const output = join(root, "site");
     const value = catalogWithState(root);
     value.diagnostics.push({
@@ -528,7 +528,7 @@ describe("Docs Hub static presentation", () => {
     expect(project).not.toContain("<dd>Current</dd>");
   });
   it("searches project-aware entries", () => {
-    const root = mkdtempSync(join(tmpdir(), "dai-nexus-search-"));
+    const root = mkdtempSync(join(tmpdir(), "dai-harness-search-"));
     const index = buildSearchIndex([catalog(root)]);
     expect(
       searchDocuments(index, "demo safe").map((entry) => entry.id),
@@ -543,7 +543,7 @@ describe("Docs Hub static presentation", () => {
     expect(index.documents[0]?.snippet).toContain("A safe guide");
   });
   itSymlink("exports outside roots without modifying source", () => {
-    const root = mkdtempSync(join(tmpdir(), "dai-nexus-obsidian-"));
+    const root = mkdtempSync(join(tmpdir(), "dai-harness-obsidian-"));
     const source = join(root, "Docs");
     require("node:fs").mkdirSync(source);
     writeFileSync(join(source, "Guide.md"), "# Source\n");
@@ -553,14 +553,14 @@ describe("Docs Hub static presentation", () => {
     const result = exportObsidianVault([sourceCatalog], vault);
     expect(
       readFileSync(join(vault, "demo", "Docs", "Guide.md"), "utf8"),
-    ).toContain("DAI Nexus Docs Hub");
+    ).toContain("DAI Harness Docs Hub");
     expect(result.filesWritten).toBeGreaterThan(1);
     expect(readFileSync(join(source, "Guide.md"), "utf8")).toBe("# Source\n");
     expect(() =>
       exportObsidianVault([sourceCatalog], join(root, "inside")),
     ).toThrow(/outside project root/);
     const symlinkParent = mkdtempSync(
-      join(tmpdir(), "dai-nexus-obsidian-symlink-"),
+      join(tmpdir(), "dai-harness-obsidian-symlink-"),
     );
     const symlinkOutput = join(symlinkParent, "vault");
     symlinkSync(source, symlinkOutput, "dir");
@@ -615,7 +615,7 @@ describe("Docs Hub static presentation", () => {
 
       for (const scenario of scenarios) {
         const root = mkdtempSync(
-          join(tmpdir(), `dai-nexus-renderer-${scenario.name}-`),
+          join(tmpdir(), `dai-harness-renderer-${scenario.name}-`),
         );
         const output = join(root, "site");
         const outside = join(root, "outside");
@@ -638,7 +638,7 @@ describe("Docs Hub static presentation", () => {
   );
 
   it("writes normal nested document and asset destinations", () => {
-    const root = mkdtempSync(join(tmpdir(), "dai-nexus-renderer-nested-"));
+    const root = mkdtempSync(join(tmpdir(), "dai-harness-renderer-nested-"));
     const output = join(root, "site");
     renderStaticSite([catalogWithAsset(root)], { outputDir: output });
 
@@ -693,7 +693,7 @@ describe("Docs Hub static presentation", () => {
 
       for (const scenario of scenarios) {
         const root = mkdtempSync(
-          join(tmpdir(), `dai-nexus-obsidian-${scenario.name}-`),
+          join(tmpdir(), `dai-harness-obsidian-${scenario.name}-`),
         );
         const output = join(
           resolve(root, ".."),
@@ -718,13 +718,13 @@ describe("Docs Hub static presentation", () => {
   );
 
   it("writes normal nested document and asset destinations to Obsidian", () => {
-    const root = mkdtempSync(join(tmpdir(), "dai-nexus-obsidian-nested-"));
+    const root = mkdtempSync(join(tmpdir(), "dai-harness-obsidian-nested-"));
     const output = join(resolve(root, ".."), `vault-nested-${Date.now()}`);
     exportObsidianVault([catalogWithAsset(root)], output);
 
     expect(
       readFileSync(join(output, "demo", "Docs", "Guide.md"), "utf8"),
-    ).toContain("DAI Nexus Docs Hub");
+    ).toContain("DAI Harness Docs Hub");
     expect(
       readFileSync(
         join(output, "demo", "Docs", "assets", "diagram.svg"),
@@ -734,7 +734,7 @@ describe("Docs Hub static presentation", () => {
   });
 
   it("refuses to replace an unowned output directory", () => {
-    const root = mkdtempSync(join(tmpdir(), "dai-nexus-owned-output-"));
+    const root = mkdtempSync(join(tmpdir(), "dai-harness-owned-output-"));
     const output = join(root, "site");
     mkdirSync(output);
     writeFileSync(join(output, "operator-note.txt"), "keep me\n");
@@ -744,7 +744,7 @@ describe("Docs Hub static presentation", () => {
   });
 
   it("recognizes and replaces an output directory with the JSON ownership marker", () => {
-    const root = mkdtempSync(join(tmpdir(), "dai-nexus-owned-json-"));
+    const root = mkdtempSync(join(tmpdir(), "dai-harness-owned-json-"));
     const output = join(root, "site");
     buildDocsHub([catalog(root)], output);
     writeFileSync(join(output, "obsolete.txt"), "replace me\n");
@@ -752,12 +752,12 @@ describe("Docs Hub static presentation", () => {
     expect(() => buildDocsHub([catalog(root)], output)).not.toThrow();
     expect(() => readFileSync(join(output, "obsolete.txt"), "utf8")).toThrow();
     expect(
-      JSON.parse(readFileSync(join(output, ".dainexus-docs-hub"), "utf8")),
-    ).toMatchObject({ schema: "dai-nexus-docs-hub", schema_version: 1 });
+      JSON.parse(readFileSync(join(output, ".daiharness-docs-hub"), "utf8")),
+    ).toMatchObject({ schema: "dai-harness-docs-hub", schema_version: 1 });
   });
 
   it("produces byte-equivalent multi-project output regardless of input order", () => {
-    const root = mkdtempSync(join(tmpdir(), "dai-nexus-determinism-"));
+    const root = mkdtempSync(join(tmpdir(), "dai-harness-determinism-"));
     const alpha = catalogWithId(root, "alpha", "Shared title");
     const beta = catalogWithId(root, "beta", "Shared title");
     const firstOutput = join(root, "first");

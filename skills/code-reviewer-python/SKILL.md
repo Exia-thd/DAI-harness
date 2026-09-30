@@ -3,7 +3,7 @@ name: code-reviewer-python
 extends: code-reviewer
 language: python
 version: 1.0.0
-author: dai-nexus
+author: dai-harness
 tags: [python, code-review, quality, patterns, anti-patterns, pythonic]
 file_patterns: ["*.py", "pyproject.toml", "requirements*.txt", "Pipfile", "setup.py"]
 linter: pylint

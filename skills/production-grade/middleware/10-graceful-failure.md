@@ -30,7 +30,7 @@
 
 5. Graceful exit format
    → Structured report with all context for next session
-   → Saved to .dainexus/session-log.json
+   → Saved to .daiharness/session-log.json
 ```
 
 ## Failure Categories

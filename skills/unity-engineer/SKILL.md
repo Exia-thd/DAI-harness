@@ -6,7 +6,7 @@ description: >
   Unity C# scripts, prefabs, scenes, and package configurations. Integrates with Unity Test Framework
   for automated testing and CI/CD pipelines.
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [unity, game-development, c-sharp, gameplay, unity-test-framework, ci-cd]
 ---
 
@@ -23,7 +23,7 @@ tags: [unity, game-development, c-sharp, gameplay, unity-test-framework, ci-cd]
 !`cat skills/_shared/protocols/quality-gate.md 2>/dev/null || true`
 !`cat skills/_shared/protocols/task-validator.md 2>/dev/null || true`
 !`cat .production-grade.yaml 2>/dev/null || echo "No config — using defaults"`
-!`cat .dainexus/codebase-context.md 2>/dev/null || true`
+!`cat .daiharness/codebase-context.md 2>/dev/null || true`
 
 **Unity Test Framework Integration:** For vibe coding workflow with automated testing, see `docs/unity/unity-test-integration.md` for:
 - Command-line test execution

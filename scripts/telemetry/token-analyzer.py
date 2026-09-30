@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Token Usage Analyzer CLI for DAI Nexus
+Token Usage Analyzer CLI for DAI Harness
 
 Analyze and report LLM token usage across projects.
 
 Usage:
-    python3 scripts/token-analyzer.py --project dai-nexus --period week
+    python3 scripts/token-analyzer.py --project dai-harness --period week
     python3 scripts/token-analyzer.py --list-projects
     python3 scripts/token-analyzer.py --dashboard
 """
@@ -70,7 +70,7 @@ class UsageRecord:
 class TokenAnalyzer:
     def __init__(self, project_path: str = None):
         self.home = os.path.expanduser("~")
-        self.base_path = Path(self.home) / ".dainexus" / "usage"
+        self.base_path = Path(self.home) / ".daiharness" / "usage"
 
         if project_path:
             self.project_name = Path(project_path).name
@@ -435,7 +435,7 @@ def print_summary(summary: dict, daily: list[dict]):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Token Usage Analyzer for DAI Nexus",
+        description="Token Usage Analyzer for DAI Harness",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
@@ -489,7 +489,7 @@ def main():
     if not analyzer.usage_dir.exists():
         print(f"⚠️  No usage data found for project: {analyzer.project_name}")
         print(f"    Data directory: {analyzer.usage_dir}")
-        print("\n💡 To start tracking, run DAI Nexus with token tracking enabled.")
+        print("\n💡 To start tracking, run DAI Harness with token tracking enabled.")
         return
 
     # Load records

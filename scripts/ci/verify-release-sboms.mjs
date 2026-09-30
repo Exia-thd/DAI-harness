@@ -13,6 +13,6 @@ const expected = new Map([
 for (const [file, workspaceName] of expected) {
   const sbom = JSON.parse(readFileSync(join(directory, file), 'utf8'));
   assertSbom(sbom, [workspaceName]);
-  if (sbom.metadata?.component?.name !== 'dai-nexus') throw new Error(`${file} has an unexpected root component ${sbom.metadata?.component?.name ?? 'none'}`);
+  if (sbom.metadata?.component?.name !== 'dai-harness') throw new Error(`${file} has an unexpected root component ${sbom.metadata?.component?.name ?? 'none'}`);
 }
 console.log(`release SBOMs: PASS (${[...expected.keys()].join(', ')})`);

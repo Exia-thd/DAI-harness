@@ -1,4 +1,4 @@
-# Scope: Agent-First CLI — DAI Nexus Integration
+# Scope: Agent-First CLI — DAI Harness Integration
 
 > **Parent:** [PLAN.md](./PLAN.md)
 > **Version:** 1.0
@@ -76,7 +76,7 @@
 ### What This Project Does NOT Do
 
 - Modifies skill implementations
-- Changes DAI Nexus Node internals
+- Changes DAI Harness Node internals
 - Refactors MCP server
 - Alters skill discovery mechanism
 

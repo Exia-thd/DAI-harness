@@ -1,8 +1,8 @@
 #!/bin/bash
 #===============================================================================
-# DAI Nexus Metrics Collector
+# DAI Harness Metrics Collector
 #===============================================================================
-# Purpose: Collect and track session metrics for DAI Nexus performance monitoring
+# Purpose: Collect and track session metrics for DAI Harness performance monitoring
 # Version: 1.0.0
 # Created: 2026-05-29
 # Phase: 3.2
@@ -13,7 +13,7 @@ set -euo pipefail
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-METRICS_DIR="${PROJECT_DIR}/.dainexus/metrics"
+METRICS_DIR="${PROJECT_DIR}/.daiharness/metrics"
 METRICS_FILE="${METRICS_DIR}/sessions.jsonl"
 DAILY_FILE="${METRICS_DIR}/daily-$(date +%Y-%m-%d).json"
 WEEKLY_FILE="${METRICS_DIR}/weekly-$(date +%G-W%V).json"
@@ -174,7 +174,7 @@ collect_skill_metrics() {
     
     cat <<EOF
 {
-    "metric": "dai-nexus",
+    "metric": "dai-harness",
     "skill_count": $skill_count,
     "script_count": $script_count,
     "protocol_count": $protocol_count,
@@ -321,16 +321,16 @@ show_dashboard() {
     
     echo ""
     echo "╔══════════════════════════════════════════════════════════════════════╗"
-    echo "║                    DAI-NEXUS METRICS DASHBOARD                      ║"
+    echo "║                    DAI-HARNESS METRICS DASHBOARD                      ║"
     echo "╠══════════════════════════════════════════════════════════════════════╣"
     
-    # DAI Nexus Stats
+    # DAI Harness Stats
     local skill_count script_count protocol_count
     skill_count=$(find "${SCRIPT_DIR}/skills" -maxdepth 1 -type d 2>/dev/null | wc -l | awk '{print $1-1}')
     script_count=$(find "${SCRIPT_DIR}/scripts" -maxdepth 1 -name '*.sh' 2>/dev/null | wc -l)
     protocol_count=$(find "${SCRIPT_DIR}/skills/_shared/protocols" -maxdepth 1 -name '*.md' 2>/dev/null | wc -l)
     
-    echo "║ DAI-NEXUS STATUS                                                     ║"
+    echo "║ DAI-HARNESS STATUS                                                     ║"
     echo "║   Skills: $skill_count  │  Scripts: $script_count  │  Protocols: $protocol_count         ║"
     
     # Session Stats
@@ -467,7 +467,7 @@ check_alerts() {
 
 usage() {
     cat <<EOF
-DAI Nexus Metrics Collector v1.0.0
+DAI Harness Metrics Collector v1.0.0
 
 USAGE:
     $0 <command> [options]
@@ -514,7 +514,7 @@ COMMANDS:
             quality      Quality metrics
             reliability  Reliability metrics
             asip         ASIP metrics
-            dai-nexus  DAI Nexus stats
+            dai-harness  DAI Harness stats
 
     help
         Show this help message
@@ -536,7 +536,7 @@ EXAMPLES:
     $0 alerts
 
 ENVIRONMENT:
-    METRICS_DIR     Override metrics directory (default: .dainexus/metrics)
+    METRICS_DIR     Override metrics directory (default: .daiharness/metrics)
     METRICS_FILE    Override sessions file (default: sessions.jsonl)
 
 EOF
@@ -597,7 +597,7 @@ main() {
                 quality) collect_quality_metrics ;;
                 reliability) collect_reliability_metrics ;;
                 asip) collect_asip_metrics ;;
-                dai-nexus) collect_skill_metrics ;;
+                dai-harness) collect_skill_metrics ;;
                 *) log_error "Unknown metric type: $type" ;;
             esac
             ;;

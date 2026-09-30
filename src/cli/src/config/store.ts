@@ -3,7 +3,7 @@
  *
  * Priority (highest to lowest):
  * 1. OS Environment variables (FORGE_*)
- * 2. User config (~/.config/dai-nexus/config.json)
+ * 2. User config (~/.config/dai-harness/config.json)
  * 3. Process environment (injected)
  * 4. .env files (.env, .env.local)
  * 5. Inline flags (lowest priority)
@@ -25,7 +25,7 @@ export const CONFIG_SOURCE_PRIORITY: Record<number, ConfigSource> = {
 
 export const SOURCE_LABELS: Record<ConfigSource, string> = {
   OS_ENV: "Environment Variable",
-  USER_CONFIG: "User Config (~/.config/dai-nexus)",
+  USER_CONFIG: "User Config (~/.config/dai-harness)",
   PROCESS_ENV: "Process Environment",
   DOTENV: ".env File",
   INLINE_FLAGS: "Inline Flag",
@@ -33,8 +33,8 @@ export const SOURCE_LABELS: Record<ConfigSource, string> = {
 
 // Config file locations
 export const CONFIG_PATHS = {
-  USER_CONFIG: join(homedir(), ".config", "dai-nexus", "config.json"),
-  LEGACY_CONFIG: join(homedir(), ".dainexus", "config.json"),
+  USER_CONFIG: join(homedir(), ".config", "dai-harness", "config.json"),
+  LEGACY_CONFIG: join(homedir(), ".daiharness", "config.json"),
   LOCAL_ENV: ".env",
   LOCAL_ENV_LOCAL: ".env.local",
   PROJECT_ENV: ".env",
@@ -62,7 +62,7 @@ export class ConfigStore {
     this.set("dai.quiet", false, "DEFAULT");
     this.set("dai.json", false, "DEFAULT");
     this.set("dai.color", true, "DEFAULT");
-    this.set("dai.apiUrl", "https://api.dainexus.io", "DEFAULT");
+    this.set("dai.apiUrl", "https://api.daiharness.io", "DEFAULT");
     this.set("dai.timeout", 30000, "DEFAULT");
   }
 

@@ -34,7 +34,7 @@ export async function waitForServices(): Promise<void> {
   const start = Date.now();
 
   await Promise.all([
-    waitForPostgres('5433', 'dainexus_node_test'),
+    waitForPostgres('5433', 'daiharness_node_test'),
     waitForPostgres('5434', 'mcp_test'),
   ]);
 
@@ -56,8 +56,8 @@ async function waitForPostgres(port: string, db: string): Promise<void> {
   throw new Error(`Postgres on port ${port} did not become ready in time`);
 }
 
-export function getDaiNexusDBUrl(): string {
-  return 'postgresql://testuser:testpass@localhost:5433/dainexus_node_test';
+export function getDaiHarnessDBUrl(): string {
+  return 'postgresql://testuser:testpass@localhost:5433/daiharness_node_test';
 }
 
 export function getMcpDBUrl(): string {

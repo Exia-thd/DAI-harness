@@ -1,7 +1,7 @@
 ---
 id: pipeline-activation
 title: Pipeline Activation Protocol
-summary: Proportional activation and state tracking across supported DAI Nexus clients.
+summary: Proportional activation and state tracking across supported DAI Harness clients.
 status: active
 version: 2.0.0
 owners: [core]
@@ -15,7 +15,7 @@ superseded_by: null
 
 <!-- source: skills/_shared/protocols/pipeline-activation.md -->
 
-This protocol defines how a request enters DAI Nexus across Antigravity, Codex, Claude Code, Cursor, Gemini CLI, and OpenCode. Activation must improve grounding and continuity without adding user-visible ceremony or work that the request does not need.
+This protocol defines how a request enters DAI Harness across Antigravity, Codex, Claude Code, Cursor, Gemini CLI, and OpenCode. Activation must improve grounding and continuity without adding user-visible ceremony or work that the request does not need.
 
 ## Activation Contract
 
@@ -27,7 +27,7 @@ For each new user request:
 4. Plan proportionally:
    - `QUICK` → `ACTION | TARGET | CHECK`, no numeric plan score.
    - `STANDARD` / `DEEP` → use the applicable complexity-scaled plan threshold.
-5. If DAI Nexus MCP/state tracking is available and the work is substantial enough to benefit from it, start/update pipeline state. Do not fail a trivial local task merely because telemetry/state tracking is unavailable.
+5. If DAI Harness MCP/state tracking is available and the work is substantial enough to benefit from it, start/update pipeline state. Do not fail a trivial local task merely because telemetry/state tracking is unavailable.
 6. Advance phases only when the work actually changes phase. Review/status/question tasks may never enter BUILD or SHIP.
 7. Before closing substantial work, verify acceptance and pipeline state consistency. Success claims still require the kernel `VERIFY` contract.
 
@@ -50,7 +50,7 @@ MCP setup drift or unavailable telemetry is reported as an observability/tooling
 
 ```bash
 bash scripts/pipeline-preflight.sh --strict
-bash scripts/dainexus-mcp-setup.sh --check
+bash scripts/daiharness-mcp-setup.sh --check
 bash scripts/verify-mcp-manifest.sh .
 ```
 

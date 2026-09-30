@@ -110,7 +110,7 @@ Lifecycle:
 1. Parent validates the Concept Packet, exact activation, repo-owned profile,
    and frozen artifact refs.
 2. The runner creates a serial, thread-safe `InProcessBroker` and a parent-owned
-   fsync'd JSONL log at `.dainexus/collaboration/<session>/events.jsonl`.
+   fsync'd JSONL log at `.daiharness/collaboration/<session>/events.jsonl`.
 3. Parent publishes `session.opened` and `assignment.sent`, then calls
    `TrustedParentHostAdapter.run_participant(assignment)` with data only.
 4. Each callback returns bounded untrusted event mappings. The runner discards

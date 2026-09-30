@@ -19,8 +19,8 @@ superseded_by: null
 
 Mọi công cụ CLI, AI Agent, hoặc scripts khi chạy đều phải lấy Webhook URL theo một trong hai cách:
 
-1. Đọc trực tiếp từ biến môi trường: `DAINEXUS_WEBHOOK_URL`
-2. Đọc dự phòng từ file tĩnh: `~/.dainexus-console/webhook.env` hoặc lấy port từ `~/.dainexus-console/webhook-port.txt`.
+1. Đọc trực tiếp từ biến môi trường: `DAIHARNESS_WEBHOOK_URL`
+2. Đọc dự phòng từ file tĩnh: `~/.daiharness-console/webhook.env` hoặc lấy port từ `~/.daiharness-console/webhook-port.txt`.
 
 *Lưu ý: Nếu không tìm thấy Webhook URL, các tiến trình được phép bỏ qua (graceful fail) mà không làm gián đoạn workflow chính.*
 
@@ -28,7 +28,7 @@ Mọi công cụ CLI, AI Agent, hoặc scripts khi chạy đều phải lấy We
 
 **KHÔNG** chờ người dùng yêu cầu, hệ thống / AI agent phải tự động bóc tách metrics (input/output tokens) từ response của LLM và gọi POST request ngay khi stream kết thúc.
 
-**Endpoint:** `POST {DAINEXUS_WEBHOOK_URL}/api/v1/telemetry`
+**Endpoint:** `POST {DAIHARNESS_WEBHOOK_URL}/api/v1/telemetry`
 
 **Payload:**
 ```json
@@ -45,7 +45,7 @@ Mọi công cụ CLI, AI Agent, hoặc scripts khi chạy đều phải lấy We
 
 **Ví dụ bằng cURL (tích hợp vào CLI/Bash):**
 ```bash
-curl -X POST "$DAINEXUS_WEBHOOK_URL/api/v1/telemetry" \
+curl -X POST "$DAIHARNESS_WEBHOOK_URL/api/v1/telemetry" \
   -H "Content-Type: application/json" \
   -d '{"workspacePath": "'"$PWD"'", "payload": {"model": "claude", "inputTokens": 100, "outputTokens": 50, "cost": 0.0}}'
 ```
@@ -54,7 +54,7 @@ curl -X POST "$DAINEXUS_WEBHOOK_URL/api/v1/telemetry" \
 
 **KHÔNG** in ra stdout bằng OSC `\033]1337;...`. AI phải sử dụng công cụ hoặc script gọi webhook để thông báo cho IDE Console về việc thay đổi trạng thái của Pipeline.
 
-**Endpoint:** `POST {DAINEXUS_WEBHOOK_URL}/api/v1/state`
+**Endpoint:** `POST {DAIHARNESS_WEBHOOK_URL}/api/v1/state`
 
 **Payload:**
 ```json
@@ -69,9 +69,9 @@ curl -X POST "$DAINEXUS_WEBHOOK_URL/api/v1/telemetry" \
 }
 ```
 
-## 4. Ràng buộc (Rule) cho DAI Nexus Orchestrator
+## 4. Ràng buộc (Rule) cho DAI Harness Orchestrator
 
-Mỗi khi DAI Nexus Orchestrator (hoặc bất kỳ Skill nào) quyết định điều phối công việc cho Sub-agent / Skill khác:
+Mỗi khi DAI Harness Orchestrator (hoặc bất kỳ Skill nào) quyết định điều phối công việc cho Sub-agent / Skill khác:
 1. **BẮT BUỘC** gọi `/api/v1/state` webhook với `status: "running"` và chỉ định rõ `phase` chuẩn bị diễn ra.
 2. **BẮT BUỘC** gọi `/api/v1/telemetry` webhook ngay lập tức để tổng kết lượng token đã tiêu thụ trong quá trình tư duy (reasoning) và lập kế hoạch vừa xong.
 3. Chỉ sau khi gọi xong 2 webhook trên thì mới tiến hành invoke (gọi) sub-agent/skill tiếp theo.

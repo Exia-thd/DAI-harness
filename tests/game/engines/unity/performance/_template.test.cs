@@ -1,7 +1,7 @@
 // Unity Performance Test Template
 // Ref: GDD/Sections/10_Performance.md
 
-namespace DaiNexus.GameTest.Unity.Performance
+namespace DaiHarness.GameTest.Unity.Performance
 {
     /// <summary>
     /// Performance validation. Ensures game meets targets per platform.

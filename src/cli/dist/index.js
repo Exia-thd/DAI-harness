@@ -28,7 +28,7 @@ var TOOL_REGISTRY = [
   // Orchestration
   {
     name: "orchestrator.execute",
-    description: "Execute the DAI Nexus orchestration pipeline",
+    description: "Execute the DAI Harness orchestration pipeline",
     category: TOOL_CATEGORIES.ORCHESTRATION,
     inputSchema: {
       mode: {
@@ -55,7 +55,7 @@ var TOOL_REGISTRY = [
   // Skills
   {
     name: "skills.list",
-    description: "List all available DAI Nexus skills",
+    description: "List all available DAI Harness skills",
     category: TOOL_CATEGORIES.ORCHESTRATION,
     inputSchema: {
       category: {
@@ -93,7 +93,7 @@ var TOOL_REGISTRY = [
   // Validate
   {
     name: "validate.quality",
-    description: "Run DAI Nexus quality gate validation",
+    description: "Run DAI Harness quality gate validation",
     category: TOOL_CATEGORIES.ORCHESTRATION,
     inputSchema: {
       level: {
@@ -537,7 +537,7 @@ function printHumanReadable(tools, category, search) {
     )
   );
   console.log(
-    headerColor("\u2551") + "              DAI Nexus Tool Registry".padEnd(62) + headerColor("\u2551")
+    headerColor("\u2551") + "              DAI Harness Tool Registry".padEnd(62) + headerColor("\u2551")
   );
   console.log(
     headerColor(
@@ -685,7 +685,7 @@ async function handleCategories(json) {
 }
 function printSkillsHumanReadable(skills, category, search) {
   console.log();
-  console.log(pc7.bold(`  DAI Nexus Skills`));
+  console.log(pc7.bold(`  DAI Harness Skills`));
   console.log(pc7.dim("  " + "\u2500".repeat(50)));
   if (category || search) {
     const filter = category ? `Category: ${category}` : `Search: "${search}"`;
@@ -831,14 +831,14 @@ function printHumanReadable2(toolName, result) {
 }
 var SOURCE_LABELS = {
   OS_ENV: "Environment Variable",
-  USER_CONFIG: "User Config (~/.config/dai-nexus)",
+  USER_CONFIG: "User Config (~/.config/dai-harness)",
   PROCESS_ENV: "Process Environment",
   DOTENV: ".env File",
   INLINE_FLAGS: "Inline Flag"
 };
 var CONFIG_PATHS = {
-  USER_CONFIG: join(homedir(), ".config", "dai-nexus", "config.json"),
-  LEGACY_CONFIG: join(homedir(), ".dainexus", "config.json"),
+  USER_CONFIG: join(homedir(), ".config", "dai-harness", "config.json"),
+  LEGACY_CONFIG: join(homedir(), ".daiharness", "config.json"),
   PROJECT_ENV: ".env",
   PROJECT_ENV_LOCAL: ".env.local"
 };
@@ -856,7 +856,7 @@ var ConfigStore = class {
     this.set("dai.quiet", false, "DEFAULT");
     this.set("dai.json", false, "DEFAULT");
     this.set("dai.color", true, "DEFAULT");
-    this.set("dai.apiUrl", "https://api.dainexus.io", "DEFAULT");
+    this.set("dai.apiUrl", "https://api.daiharness.io", "DEFAULT");
     this.set("dai.timeout", 3e4, "DEFAULT");
   }
   /**
@@ -1284,10 +1284,10 @@ async function handleDoctor(options) {
   const verbose = options.verbose;
   const checks = [];
   checks.push(checkNodeVersion());
-  checks.push(checkDaiNexus());
+  checks.push(checkDaiHarness());
   checks.push(checkConfig());
   checks.push(checkMemory());
-  checks.push(checkDaiNexusNode());
+  checks.push(checkDaiHarnessNode());
   const healthy = checks.filter((c) => c.status === "ok").length;
   const warnings = checks.filter((c) => c.status === "warning").length;
   const errors = checks.filter((c) => c.status === "error").length;
@@ -1353,26 +1353,26 @@ function checkNodeVersion() {
     message: version
   };
 }
-function checkDaiNexus() {
+function checkDaiHarness() {
   const cwd = process.cwd();
-  const daiNexusRoot = findDaiNexusRoot(cwd);
-  if (!daiNexusRoot) {
+  const daiHarnessRoot = findDaiHarnessRoot(cwd);
+  if (!daiHarnessRoot) {
     return {
-      name: "DAI Nexus Project",
+      name: "DAI Harness Project",
       status: "warning",
-      message: "Not in a DAI Nexus project",
+      message: "Not in a DAI Harness project",
       details: "Some features may not be available"
     };
   }
   return {
-    name: "DAI Nexus Project",
+    name: "DAI Harness Project",
     status: "ok",
-    message: `Found at ${daiNexusRoot}`
+    message: `Found at ${daiHarnessRoot}`
   };
 }
 function checkConfig() {
-  const userConfig = resolve(homedir(), ".config", "dai-nexus", "config.json");
-  const legacyConfig = resolve(homedir(), ".dainexus", "config.json");
+  const userConfig = resolve(homedir(), ".config", "dai-harness", "config.json");
+  const legacyConfig = resolve(homedir(), ".daiharness", "config.json");
   if (existsSync(userConfig)) {
     return {
       name: "User Configuration",
@@ -1397,7 +1397,7 @@ function checkConfig() {
   };
 }
 function checkMemory() {
-  const memoryPath = resolve(process.cwd(), ".dainexus", "memory.jsonl");
+  const memoryPath = resolve(process.cwd(), ".daiharness", "memory.jsonl");
   if (!existsSync(memoryPath)) {
     return {
       name: "Memory Store",
@@ -1413,10 +1413,10 @@ function checkMemory() {
     details: memoryPath
   };
 }
-function checkDaiNexusNode() {
+function checkDaiHarnessNode() {
   try {
     const result = execSync(
-      'npx dainexus-node --version 2>/dev/null || echo "not_found"',
+      'npx daiharness-node --version 2>/dev/null || echo "not_found"',
       {
         encoding: "utf-8",
         timeout: 5e3
@@ -1424,30 +1424,30 @@ function checkDaiNexusNode() {
     );
     if (result.trim() === "not_found") {
       return {
-        name: "DAI Nexus Node",
+        name: "DAI Harness Node",
         status: "warning",
-        message: "DAI Nexus Node not installed",
-        details: "Run: npm install -g dainexus-node"
+        message: "DAI Harness Node not installed",
+        details: "Run: npm install -g daiharness-node"
       };
     }
     return {
-      name: "DAI Nexus Node",
+      name: "DAI Harness Node",
       status: "ok",
       message: result.trim()
     };
   } catch {
     return {
-      name: "DAI Nexus Node",
+      name: "DAI Harness Node",
       status: "warning",
-      message: "Could not verify DAI Nexus Node",
-      details: "Run: npx dainexus-node --version"
+      message: "Could not verify DAI Harness Node",
+      details: "Run: npx daiharness-node --version"
     };
   }
 }
-function findDaiNexusRoot(cwd) {
+function findDaiHarnessRoot(cwd) {
   let current = cwd;
   while (current !== "/") {
-    const configPath = join(current, ".dainexus");
+    const configPath = join(current, ".daiharness");
     if (existsSync(configPath)) {
       return current;
     }
@@ -1465,7 +1465,7 @@ function printHumanReadable3(checks, _healthy, warnings, errors, verbose) {
     )
   );
   console.log(
-    pc7.bold("\u2551") + "              DAI Nexus Doctor".padEnd(62) + pc7.bold("\u2551")
+    pc7.bold("\u2551") + "              DAI Harness Doctor".padEnd(62) + pc7.bold("\u2551")
   );
   console.log(
     pc7.bold(
@@ -1833,7 +1833,7 @@ async function runStandardsChecks() {
     });
   }
   const conventionFile = [
-    ".dainexus/code-conventions.md",
+    ".daiharness/code-conventions.md",
     "skills/_shared/protocols/pipeline-activation.md",
     "AGENTS.md"
   ].find((file) => existsSync(file));
@@ -1853,7 +1853,7 @@ async function runStandardsChecks() {
       maxScore: 5,
       message: "No code conventions file"
     });
-    warnings.push("No .dainexus/code-conventions.md");
+    warnings.push("No .daiharness/code-conventions.md");
     score -= 5;
   }
   if (existsSync("README.md")) {
@@ -1883,7 +1883,7 @@ async function runTraceabilityChecks() {
   const warnings = [];
   let score = 0;
   const maxScore = 25;
-  if (existsSync(".dainexus/product-manager/BRD")) {
+  if (existsSync(".daiharness/product-manager/BRD")) {
     checks.push({
       name: "Requirement Mapping",
       status: "pass",
@@ -1935,13 +1935,13 @@ async function runTraceabilityChecks() {
     });
     warnings.push("Could not inspect test files");
   }
-  if (existsSync(".dainexus")) {
+  if (existsSync(".daiharness")) {
     checks.push({
       name: "Workspace Artifacts",
       status: "pass",
       score: 5,
       maxScore: 5,
-      message: ".dainexus workspace exists"
+      message: ".daiharness workspace exists"
     });
     score += 5;
   } else {
@@ -1950,9 +1950,9 @@ async function runTraceabilityChecks() {
       status: "warning",
       score: 0,
       maxScore: 5,
-      message: "No .dainexus workspace artifacts found"
+      message: "No .daiharness workspace artifacts found"
     });
-    warnings.push("No .dainexus workspace artifacts found");
+    warnings.push("No .daiharness workspace artifacts found");
   }
   if (existsSync("scripts/pipeline-preflight.sh")) {
     try {
@@ -1992,7 +1992,7 @@ async function runTraceabilityChecks() {
 }
 function generateTextReport(result) {
   const lines = [];
-  lines.push("=== DAI Nexus Quality Gate Report ===");
+  lines.push("=== DAI Harness Quality Gate Report ===");
   lines.push(`Level: ${result.level}`);
   lines.push(`Score: ${result.score}/${result.maxScore} (${result.grade})`);
   lines.push("");
@@ -2961,13 +2961,13 @@ async function fixTypeError(error) {
   return null;
 }
 function findProjectRoot(startDir = process.cwd()) {
-  const explicitRoot = process.env.DAINEXUS_WORKSPACE || process.env.AGENTS_WORKSPACE;
+  const explicitRoot = process.env.DAIHARNESS_WORKSPACE || process.env.AGENTS_WORKSPACE;
   if (explicitRoot) {
     return resolve(explicitRoot);
   }
   let current = resolve(startDir);
   while (true) {
-    if (existsSync(join(current, ".dainexus")) || existsSync(join(current, ".git"))) {
+    if (existsSync(join(current, ".daiharness")) || existsSync(join(current, ".git"))) {
       return current;
     }
     const parent = resolve(current, "..");
@@ -3087,10 +3087,10 @@ var DEFAULT_TOKEN_BUDGET = {
   monthly: 80
 };
 function getDefaultUsageDir(projectRoot) {
-  return join(homedir(), ".dainexus", "usage", getProjectName(projectRoot));
+  return join(homedir(), ".daiharness", "usage", getProjectName(projectRoot));
 }
 function getBudgetPath(projectRoot) {
-  return join(projectRoot, ".dainexus", "budget.yaml");
+  return join(projectRoot, ".daiharness", "budget.yaml");
 }
 function setTokenTrackingEnabled(projectRoot, enabled) {
   const content = readProductionConfig(projectRoot);
@@ -3125,7 +3125,7 @@ function ensureBudgetFile(projectRoot, budget = DEFAULT_TOKEN_BUDGET) {
 }
 function writeBudgetFile(projectRoot, budget) {
   const budgetPath = getBudgetPath(projectRoot);
-  mkdirSync(join(projectRoot, ".dainexus"), { recursive: true });
+  mkdirSync(join(projectRoot, ".daiharness"), { recursive: true });
   writeFileSync(
     budgetPath,
     [
@@ -3216,7 +3216,7 @@ function buildTokenTrackingBlock(enabled) {
   return [
     "token_tracking:",
     `  enabled: ${enabled ? "true" : "false"}`,
-    '  log_dir: "~/.dainexus/usage"',
+    '  log_dir: "~/.daiharness/usage"',
     "  export_format: jsonl"
   ].join("\n");
 }
@@ -3648,7 +3648,7 @@ async function handleStatus2(useJson2) {
     budget: readBudgetFile(projectRoot),
     last7Days: summary,
     sources: {
-      daiNexusUsageDir: existsSync(getDefaultUsageDir(projectRoot)),
+      daiHarnessUsageDir: existsSync(getDefaultUsageDir(projectRoot)),
       claudeTelemetry: existsSync(join(homedir(), ".claude", "telemetry")),
       codexConfig: existsSync(join(homedir(), ".codex"))
     }
@@ -3725,9 +3725,9 @@ async function handleDashboard(options) {
   const host = parseDashboardHost(options.host, useJson2);
   const port = parsePort(options.port, useJson2);
   const authRequired = !isLoopbackDashboardHost(host);
-  if (authRequired && !process.env.DAINEXUS_TOKEN_DASHBOARD_AUTH_TOKEN?.trim()) {
+  if (authRequired && !process.env.DAIHARNESS_TOKEN_DASHBOARD_AUTH_TOKEN?.trim()) {
     fail2(
-      "Non-loopback dashboard binding requires DAINEXUS_TOKEN_DASHBOARD_AUTH_TOKEN.",
+      "Non-loopback dashboard binding requires DAIHARNESS_TOKEN_DASHBOARD_AUTH_TOKEN.",
       useJson2,
       EXIT_CODES.USAGE_ERROR
     );
@@ -4080,7 +4080,7 @@ function commandPointsToGate(command, baseDirectory, containmentRoot) {
   }
 }
 function hasValidPolicyHook(document, baseDirectory, containmentRoot) {
-  const policy = readObject(document?.["dai-nexus-policy"]);
+  const policy = readObject(document?.["dai-harness-policy"]);
   const preToolUse = policy?.["PreToolUse"];
   return policy !== void 0 && policy["enabled"] !== false && Array.isArray(preToolUse) && preToolUse.some((groupValue) => {
     const group = readObject(groupValue);
@@ -4122,7 +4122,7 @@ function findValidAgyPolicyHook(workspaceRoot, contractDirectory) {
     current = dirname(current);
   }
   throw new Error(
-    "AGY delegation requires an enabled dai-nexus-policy PreToolUse hook"
+    "AGY delegation requires an enabled dai-harness-policy PreToolUse hook"
   );
 }
 function findValidAgyGlobalPolicyHook(homeDirectory = homedir()) {
@@ -4130,7 +4130,7 @@ function findValidAgyGlobalPolicyHook(homeDirectory = homedir()) {
   const hooksPath = join(resolvedHome, ".gemini", "config", "hooks.json");
   if (!existsSync(hooksPath)) {
     throw new Error(
-      "AGY delegation requires the global dai-nexus-policy hook"
+      "AGY delegation requires the global dai-harness-policy hook"
     );
   }
   try {
@@ -4175,7 +4175,7 @@ async function runAgyWorker(input) {
   return await new Promise((resolveResult, reject) => {
     const worker = spawn("agy", args, {
       cwd: worktreePath,
-      env: { ...process.env, DAINEXUS_WORKSPACE: resolvedRoot },
+      env: { ...process.env, DAIHARNESS_WORKSPACE: resolvedRoot },
       shell: false,
       stdio: ["ignore", "inherit", "inherit"]
     });
@@ -4532,7 +4532,7 @@ ${input.prompt}
         cwd: input.workspace,
         env: {
           ...process.env,
-          DAINEXUS_WORKSPACE: realpathSync(input.workspace)
+          DAIHARNESS_WORKSPACE: realpathSync(input.workspace)
         },
         shell: false,
         stdio: ["ignore", "pipe", "pipe"]
@@ -4786,7 +4786,7 @@ async function runBenchmarkSuite(suitePath, options) {
       let attemptWorkspace = resolvedWorkspace;
       let cleanupFn = () => {
       };
-      const projectTmpDir = join(tmpdir(), "dai-nexus-bench");
+      const projectTmpDir = join(tmpdir(), "dai-harness-bench");
       mkdirSync(projectTmpDir, { recursive: true });
       if (resolvedWorkspace && existsSync(resolvedWorkspace)) {
         const tempBase = join(projectTmpDir, `dai-bench-${task.id}-`);
@@ -4934,7 +4934,7 @@ Category: ${category.category}`);
     }
   );
 }
-var PROJECT_DIR = ".dainexus";
+var PROJECT_DIR = ".daiharness";
 var PROJECT_MANIFEST = "project.json";
 var PROJECT_PROFILE = "project-profile.json";
 var LOCKFILES = [
@@ -4945,7 +4945,7 @@ var LOCKFILES = [
   "yarn.lock"
 ];
 function registerProjectCommands(program) {
-  program.command("init [target]").description("Create a project-local DAI Nexus manifest").option("-f, --force", "Overwrite an existing manifest").option("-j, --json", "Output as JSON").action((target, options) => {
+  program.command("init [target]").description("Create a project-local DAI Harness manifest").option("-f, --force", "Overwrite an existing manifest").option("-j, --json", "Output as JSON").action((target, options) => {
     handleInit(target, options, Boolean(program.opts().json));
   });
   program.command("onboard [target]").description("Record deterministic filesystem facts for a project").option("-f, --force", "Overwrite an existing project profile").option("-j, --json", "Output as JSON").action((target, options) => {
@@ -5090,7 +5090,7 @@ var DENIED_SEGMENTS = /* @__PURE__ */ new Set([
   "keystore",
   "node_modules"
 ]);
-var DENIED_DAINEXUS_SEGMENTS = /* @__PURE__ */ new Set([
+var DENIED_DAIHARNESS_SEGMENTS = /* @__PURE__ */ new Set([
   "artifacts",
   "audit",
   "deliveries",
@@ -5105,11 +5105,11 @@ var DENIED_DAINEXUS_SEGMENTS = /* @__PURE__ */ new Set([
   "telemetry",
   "verify"
 ]);
-var ALLOWED_DAINEXUS_FILES = /* @__PURE__ */ new Set([
-  ".dainexus/docs-manifest.json",
-  ".dainexus/project-profile.json",
-  ".dainexus/project.json",
-  ".dainexus/code-conventions.md"
+var ALLOWED_DAIHARNESS_FILES = /* @__PURE__ */ new Set([
+  ".daiharness/docs-manifest.json",
+  ".daiharness/project-profile.json",
+  ".daiharness/project.json",
+  ".daiharness/code-conventions.md"
 ]);
 var DENIED_BASENAME_PATTERNS = [
   /^\.env(?:\.|$)/i,
@@ -5191,11 +5191,11 @@ function isSensitivePath(relativePath) {
   if (segments.some((segment) => DENIED_SEGMENTS.has(segment))) {
     return true;
   }
-  if (segments[0] === ".dainexus") {
-    if (ALLOWED_DAINEXUS_FILES.has(normalized.toLowerCase())) {
+  if (segments[0] === ".daiharness") {
+    if (ALLOWED_DAIHARNESS_FILES.has(normalized.toLowerCase())) {
       return false;
     }
-    if (segments.length > 1 && DENIED_DAINEXUS_SEGMENTS.has(segments[1])) {
+    if (segments.length > 1 && DENIED_DAIHARNESS_SEGMENTS.has(segments[1])) {
       return true;
     }
   }
@@ -5550,7 +5550,7 @@ function runGit(projectRoot, args) {
   return result.status === 0 ? result.stdout.trim() || null : null;
 }
 function readCuratedProfile(projectRoot) {
-  const path = join(projectRoot, ".dainexus", "project-profile.json");
+  const path = join(projectRoot, ".daiharness", "project-profile.json");
   if (!existsSync(path)) return {};
   try {
     const raw = JSON.parse(readFileSync(path, "utf8"));
@@ -5868,7 +5868,7 @@ function validateProjectState(input) {
   const parsed = docsProjectStateSchema.safeParse(input);
   if (!parsed.success) {
     throw new DocsProjectStateError(
-      "Invalid DAI Nexus project state.",
+      "Invalid DAI Harness project state.",
       parsed.error.issues.map(
         (issue) => `${issue.path.join(".") || "<root>"}: ${issue.message}`
       )
@@ -5882,7 +5882,7 @@ function slugify(input) {
 }
 function inferredRoots(projectRoot) {
   const candidates = readdirSync(projectRoot, { withFileTypes: true }).filter(
-    (entry) => entry.isDirectory() && entry.name !== ".dainexus" && !isSensitivePath(entry.name)
+    (entry) => entry.isDirectory() && entry.name !== ".daiharness" && !isSensitivePath(entry.name)
   ).map((entry) => entry.name).sort((left, right) => left.localeCompare(right));
   const usedIds = /* @__PURE__ */ new Set();
   const roots = candidates.map((path) => {
@@ -6071,7 +6071,7 @@ function safeLoadProjectState(projectRootInput, statePathInput) {
 }
 
 // src/docs/manifest.ts
-var DOCS_MANIFEST_PATH = join(".dainexus", "docs-manifest.json");
+var DOCS_MANIFEST_PATH = join(".daiharness", "docs-manifest.json");
 var relativePathSchema = z.string().min(1).refine((value) => !value.includes("\\"), "backslashes are not allowed").refine((value) => {
   try {
     normalizeRelativePath(value);
@@ -6175,9 +6175,9 @@ function discoverSources(projectRoot) {
       sources.push({ path: readme, type: "overview" });
     }
   }
-  if (existsSync(join(projectRoot, ".dainexus", "project-profile.json"))) {
+  if (existsSync(join(projectRoot, ".daiharness", "project-profile.json"))) {
     sources.push({
-      path: ".dainexus/project-profile.json",
+      path: ".daiharness/project-profile.json",
       type: "metadata"
     });
   }
@@ -6232,7 +6232,7 @@ function validateManifest(input) {
   const parsed = docsManifestSchema.safeParse(input);
   if (!parsed.success) {
     throw new DocsManifestError(
-      "Invalid DAI Nexus docs manifest.",
+      "Invalid DAI Harness docs manifest.",
       parsed.error.issues.map(
         (issue) => `${issue.path.join(".") || "<root>"}: ${issue.message}`
       )
@@ -6296,7 +6296,7 @@ function initManifest(projectRootInput, options = {}) {
     };
   }
   const manifest = createDefaultManifest(projectRoot);
-  mkdirSync(join(projectRoot, ".dainexus"), { recursive: true });
+  mkdirSync(join(projectRoot, ".daiharness"), { recursive: true });
   writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}
 `, "utf8");
   const statePath = join(projectRoot, manifest.project_docs.state);
@@ -6341,7 +6341,7 @@ function loadManifest(projectRootInput) {
       severity: "warning",
       code: "LEGACY_MANIFEST_FALLBACK",
       projectId: manifest.project.id,
-      message: "No .dainexus/docs-manifest.json was found; using safe legacy source discovery.",
+      message: "No .daiharness/docs-manifest.json was found; using safe legacy source discovery.",
       suggestion: "Run `dai docs init` to make the documentation contract explicit."
     }
   ];
@@ -6494,7 +6494,7 @@ function resolveCatalogLinks(catalogs) {
         }
         let targetProjectId = catalog.project.id;
         let rawTarget = link.target;
-        if (rawTarget.startsWith("dai-nexus://")) {
+        if (rawTarget.startsWith("dai-harness://")) {
           try {
             const url = new URL(rawTarget);
             targetProjectId = url.hostname;
@@ -6526,7 +6526,7 @@ function resolveCatalogLinks(catalogs) {
             severity: "error",
             code: "LINK_TRAVERSAL",
             message: `Link escapes the project root: "${link.target}" (line ${link.line}).`,
-            suggestion: "Use a contained relative link or a dai-nexus:// project link."
+            suggestion: "Use a contained relative link or a dai-harness:// project link."
           });
           continue;
         }
@@ -6926,7 +6926,7 @@ function refreshCatalogSummary(catalog) {
   );
   catalog.sourceFingerprint = hashContent(
     JSON.stringify({
-      manifest: catalog.project.manifestPath ? ".dainexus/docs-manifest.json" : "legacy",
+      manifest: catalog.project.manifestPath ? ".daiharness/docs-manifest.json" : "legacy",
       project: {
         id: catalog.project.id,
         title: catalog.project.title,
@@ -7088,7 +7088,7 @@ function scanProject(projectRootInput) {
 }
 function getCatalogPath(projectRootInput) {
   const projectRoot = canonicalProjectRoot(projectRootInput);
-  return join(projectRoot, ".dainexus", "cache", "docs-index.json");
+  return join(projectRoot, ".daiharness", "cache", "docs-index.json");
 }
 function writeCatalog(catalog) {
   const path = getCatalogPath(catalog.project.root);
@@ -7111,7 +7111,7 @@ function doctorCatalog(catalog, storedCatalog, options = {}) {
       severity: "warning",
       code: "STALE_DOCS_INDEX",
       projectId: catalog.project.id,
-      path: ".dainexus/cache/docs-index.json",
+      path: ".daiharness/cache/docs-index.json",
       message: "The stored normalized docs index is stale.",
       suggestion: "Run `dai docs scan` or `dai docs build`."
     });
@@ -7575,7 +7575,7 @@ function href(fromRoute, targetRoute) {
   return value || "./";
 }
 function page(title, body, currentRoute = "index.html") {
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>${escape(title)} \xB7 DAI Nexus Docs Hub</title><link rel="stylesheet" href="${escape(href(currentRoute, "style.css"))}"></head><body><a class="skip-link" href="#main">Skip to content</a><div class="shell"><aside class="sidebar"><strong>DAI Nexus Docs Hub</strong><nav aria-label="Primary"><p><a href="${escape(href(currentRoute, "index.html"))}">All projects</a></p><p><a href="${escape(href(currentRoute, "search.html"))}">Search</a></p><p><a href="${escape(href(currentRoute, "traceability.html"))}">Traceability</a></p><p><a href="${escape(href(currentRoute, "diagnostics.html"))}">Diagnostics</a></p></nav></aside><main class="main" id="main"><div class="content">${body}</div></main></div></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>${escape(title)} \xB7 DAI Harness Docs Hub</title><link rel="stylesheet" href="${escape(href(currentRoute, "style.css"))}"></head><body><a class="skip-link" href="#main">Skip to content</a><div class="shell"><aside class="sidebar"><strong>DAI Harness Docs Hub</strong><nav aria-label="Primary"><p><a href="${escape(href(currentRoute, "index.html"))}">All projects</a></p><p><a href="${escape(href(currentRoute, "search.html"))}">Search</a></p><p><a href="${escape(href(currentRoute, "traceability.html"))}">Traceability</a></p><p><a href="${escape(href(currentRoute, "diagnostics.html"))}">Diagnostics</a></p></nav></aside><main class="main" id="main"><div class="content">${body}</div></main></div></body></html>`;
 }
 function escape(value) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;");
@@ -7955,7 +7955,7 @@ function renderStaticSite(catalogs, options) {
     files.push(safePath);
   };
   const ownershipMetadata = {
-    schema: "dai-nexus-docs-hub",
+    schema: "dai-harness-docs-hub",
     schema_version: 1,
     source_fingerprints: orderedCatalogs.map((catalog) => ({
       project_id: catalog.project.id,
@@ -7963,7 +7963,7 @@ function renderStaticSite(catalogs, options) {
     }))
   };
   write(
-    join(outputDir, ".dainexus-docs-hub"),
+    join(outputDir, ".daiharness-docs-hub"),
     `${JSON.stringify(ownershipMetadata, null, 2)}
 `
   );
@@ -8160,7 +8160,7 @@ function renderStaticSite(catalogs, options) {
 function buildDocsHub(catalogs, outputDir) {
   const finalOutput = resolve(outputDir);
   const stagingOutput = `${finalOutput}.staging-${process.pid}`;
-  const ownershipMarker = join(finalOutput, ".dainexus-docs-hub");
+  const ownershipMarker = join(finalOutput, ".daiharness-docs-hub");
   if (existsSync(finalOutput) && !existsSync(ownershipMarker)) {
     throw new Error(
       `Refusing to replace an unowned output directory: ${finalOutput}`
@@ -8393,7 +8393,7 @@ function isTrackedPath(projectRoot, path) {
 }
 var GIT_QUERY_TIMEOUT_MS = 1e4;
 var GIT_SNAPSHOT_TIMEOUT_MS = Number.parseInt(
-  process.env.DAINEXUS_DOCS_GIT_SNAPSHOT_TIMEOUT_MS ?? "120000",
+  process.env.DAIHARNESS_DOCS_GIT_SNAPSHOT_TIMEOUT_MS ?? "120000",
   10
 );
 function runGitOutput(projectRoot, args, timeout = GIT_QUERY_TIMEOUT_MS) {
@@ -8488,7 +8488,7 @@ function selectedProjectView(projectRoot, mode) {
       "Project root is outside the Git repository selected for the docs gate."
     );
   }
-  const temporaryParent = mkdtempSync(join(tmpdir(), "dai-nexus-docs-view-"));
+  const temporaryParent = mkdtempSync(join(tmpdir(), "dai-harness-docs-view-"));
   try {
     const snapshotRoot = join(temporaryParent, "repository");
     runGitOutput(
@@ -8552,11 +8552,11 @@ function pathSegments(path) {
 function isIgnoredGeneratedPath(path) {
   const lower = path.toLowerCase();
   const segments = pathSegments(path);
-  return segments.includes(".git") || lower === ".dainexus/cache" || lower.startsWith(".dainexus/cache/") || isGeneratedDocsOutputPath(path) || segments.some((segment) => GENERATED_DIRECTORIES.has(segment));
+  return segments.includes(".git") || lower === ".daiharness/cache" || lower.startsWith(".daiharness/cache/") || isGeneratedDocsOutputPath(path) || segments.some((segment) => GENERATED_DIRECTORIES.has(segment));
 }
 function isGeneratedDocsOutputPath(path) {
   const lower = path.toLowerCase();
-  return lower === ".dainexus/docs-hub" || lower.startsWith(".dainexus/docs-hub/");
+  return lower === ".daiharness/docs-hub" || lower.startsWith(".daiharness/docs-hub/");
 }
 function isLockfile(path) {
   const basename5 = path.split("/").at(-1)?.toLowerCase() ?? "";
@@ -8575,7 +8575,7 @@ function isDocumentationOnlyPath(path) {
 }
 function isProjectConfigPath(path) {
   const basename5 = path.split("/").at(-1)?.toLowerCase() ?? "";
-  return path.toLowerCase() === ".dainexus/docs-manifest.json" || PROJECT_MANIFESTS.has(basename5) || /^(\.env|\.nvmrc|\.npmrc|\.tool-versions|tsconfig(?:\.|$)|jsconfig(?:\.|$)|vitest\.config\.|jest\.config\.|vite\.config\.|webpack\.config\.|rollup\.config\.|eslint\.config\.|\.eslintrc|\.prettierrc)/.test(
+  return path.toLowerCase() === ".daiharness/docs-manifest.json" || PROJECT_MANIFESTS.has(basename5) || /^(\.env|\.nvmrc|\.npmrc|\.tool-versions|tsconfig(?:\.|$)|jsconfig(?:\.|$)|vitest\.config\.|jest\.config\.|vite\.config\.|webpack\.config\.|rollup\.config\.|eslint\.config\.|\.eslintrc|\.prettierrc)/.test(
     basename5
   );
 }
@@ -8678,7 +8678,7 @@ function outputRelativePath(outputDir, candidate) {
 function verifyOutput(outputDir, catalog) {
   const projectRoot = `projects/${encodeURIComponent(catalog.project.id)}`;
   const required = [
-    ".dainexus-docs-hub",
+    ".daiharness-docs-hub",
     "index.html",
     "style.css",
     "app.js",
@@ -8711,7 +8711,7 @@ function verifyOutput(outputDir, catalog) {
   let ownership;
   try {
     ownership = JSON.parse(
-      readFileSync(resolve(outputDir, ".dainexus-docs-hub"), "utf8")
+      readFileSync(resolve(outputDir, ".daiharness-docs-hub"), "utf8")
     );
   } catch (error) {
     throw new DocsGateError(
@@ -8723,7 +8723,7 @@ function verifyOutput(outputDir, catalog) {
   const ownsCatalog = Array.isArray(fingerprints) && fingerprints.some(
     (item) => item && typeof item === "object" && item.project_id === catalog.project.id && item.fingerprint === catalog.sourceFingerprint
   );
-  if (!ownership || typeof ownership !== "object" || ownership.schema !== "dai-nexus-docs-hub" || ownership.schema_version !== 1 || !ownsCatalog) {
+  if (!ownership || typeof ownership !== "object" || ownership.schema !== "dai-harness-docs-hub" || ownership.schema_version !== 1 || !ownsCatalog) {
     throw new DocsGateError(
       "DOCS_GATE_MARKER_INVALID",
       "Generated ownership marker does not match the current project catalog."
@@ -8793,7 +8793,7 @@ function runDocsGate(projectRootInput, options = {}) {
       diagnostics: [...doctorReport.diagnostics]
     };
     if (doctorReport.status === "fail") return result;
-    const temporaryParent = mkdtempSync(join(tmpdir(), "dai-nexus-docs-gate-"));
+    const temporaryParent = mkdtempSync(join(tmpdir(), "dai-harness-docs-gate-"));
     try {
       const outputDir = join(temporaryParent, "site");
       buildDocsHub([catalog], outputDir);
@@ -8901,7 +8901,7 @@ function exportObsidianVault(catalogs, outputDirInput) {
   };
   write(
     join(outputDir, "README.md"),
-    `# DAI Nexus Docs Hub
+    `# DAI Harness Docs Hub
 
 ${orderedCatalogs.map((catalog) => `- [[${catalog.project.id}/index|${catalog.project.title}]]`).join("\n")}
 `
@@ -8924,7 +8924,7 @@ ${catalog.documents.map((document) => `- [[${document.sourcePath.replace(/\.md$/
       );
       let content = document.content;
       for (const link of document.links) {
-        if (link.resolvedDocumentId && link.target.startsWith("dai-nexus://")) {
+        if (link.resolvedDocumentId && link.target.startsWith("dai-harness://")) {
           const target = byId.get(link.resolvedDocumentId) ?? orderedCatalogs.flatMap((item) => item.documents).find((item) => item.id === link.resolvedDocumentId);
           if (target) {
             const original = `[${link.label}](${link.target})`;
@@ -8933,7 +8933,7 @@ ${catalog.documents.map((document) => `- [[${document.sourcePath.replace(/\.md$/
           }
         }
       }
-      const nav = `> [!info] DAI Nexus Docs Hub
+      const nav = `> [!info] DAI Harness Docs Hub
 > Project: [[${catalog.project.id}/index|${catalog.project.title}]] \xB7 Source: \`${document.sourcePath}\`
 
 `;
@@ -8975,8 +8975,8 @@ var registrySchema = z.object({
   )
 }).strict();
 function getDocsHubHome() {
-  const configured = process.env.DAINEXUS_HOME?.trim();
-  return configured ? resolve(configured) : join(homedir(), ".dainexus");
+  const configured = process.env.DAIHARNESS_HOME?.trim();
+  return configured ? resolve(configured) : join(homedir(), ".daiharness");
 }
 function getRegistryPath() {
   return join(getDocsHubHome(), "docs-hub", "projects.json");
@@ -9026,7 +9026,7 @@ function addRegistryProject(projectRootInput, path = getRegistryPath()) {
   );
   if (idIndex >= 0 && registry.projects[idIndex].root !== root) {
     throw new Error(
-      `Docs project id "${project.id}" is already registered for ${registry.projects[idIndex].root}. Choose a unique project.id in .dainexus/docs-manifest.json.`
+      `Docs project id "${project.id}" is already registered for ${registry.projects[idIndex].root}. Choose a unique project.id in .daiharness/docs-manifest.json.`
     );
   }
   const status = rootIndex >= 0 ? "updated" : "added";
@@ -9163,7 +9163,7 @@ function hasPrivacyBlock(catalog) {
   );
 }
 function defaultBuildOutput(roots, all) {
-  return all || roots.length !== 1 ? join(getDocsHubHome(), "docs-hub", "site") : join(roots[0], ".dainexus", "docs-hub", "site");
+  return all || roots.length !== 1 ? join(getDocsHubHome(), "docs-hub", "site") : join(roots[0], ".daiharness", "docs-hub", "site");
 }
 function executeDocsBuild(roots, output, options = {}) {
   const scanned = scanRoots(roots);
@@ -9491,7 +9491,7 @@ function registerDocsCommands(program) {
 }
 function buildProgram() {
   const program = new Command();
-  program.name("dai").description("DAI Nexus CLI - Agent-First Command Line Interface").version(VERSION, "-V, --version");
+  program.name("dai").description("DAI Harness CLI - Agent-First Command Line Interface").version(VERSION, "-V, --version");
   registerGlobalFlags(program);
   registerToolsCommands(program);
   registerSkillsCommands(program);

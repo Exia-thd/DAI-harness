@@ -9,7 +9,7 @@ version: 1.0.0
 ## SOLVE Step 2: GROUND (Narrative Designer Domain Slots)
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Project tech stack and game engine alignments are defined | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project tech stack and game engine alignments are defined | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 | Standardized narrative docs or world bibles are tracked in correct paths | `find docs/00-vision/ -name "*narrative*" -o -name "*story*"` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Narrative Designer Domain Slots)
@@ -26,7 +26,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Verify game engine profile and check target directories
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 find docs/00-vision/ -type f
 ```
 
@@ -39,7 +39,7 @@ cat << 'EOF' > docs/01-product/quest-introduction.md
 Provide interactive onboarding quest dialogue mapped to WebGL state flags.
 
 ## 2. Character Nodes
-- NPC: Blacksmith DAI Nexus
+- NPC: Blacksmith DAI Harness
 - Player: Newly arrived system engineer
 
 ## 3. Acceptance Criteria (BDD)

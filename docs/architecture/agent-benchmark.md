@@ -1,6 +1,6 @@
 # Agent Benchmark Foundation Architecture
 
-This document details the architecture, design choices, and fair-comparison guidelines for the DAI Nexus Agent Benchmark foundation. Comparisons are provider-neutral: concrete providers/models are resolved from the runtime and must be recorded exactly in benchmark evidence rather than hard-coded into the framework.
+This document details the architecture, design choices, and fair-comparison guidelines for the DAI Harness Agent Benchmark foundation. Comparisons are provider-neutral: concrete providers/models are resolved from the runtime and must be recorded exactly in benchmark evidence rather than hard-coded into the framework.
 
 ## Architecture Overview
 
@@ -58,7 +58,7 @@ Execution of agents (Agy and Codex) uses a clean process boundary without shell 
 
 ## Adversarial Weak-Model Rails
 
-Functional correctness alone is insufficient for a weak-model benchmark. `evals/adversarial-weak-model/` adds observable behavioral assertions over the workspace diff and final stdout to catch cases where an agent reaches a plausible result by violating DAI Nexus's execution contract.
+Functional correctness alone is insufficient for a weak-model benchmark. `evals/adversarial-weak-model/` adds observable behavioral assertions over the workspace diff and final stdout to catch cases where an agent reaches a plausible result by violating DAI Harness's execution contract.
 
 The deterministic CI self-test covers:
 

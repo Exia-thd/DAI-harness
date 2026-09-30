@@ -296,7 +296,7 @@ function runGit(projectRoot: string, args: string[]): string | null {
 }
 
 function readCuratedProfile(projectRoot: string): Record<string, unknown> {
-  const path = join(projectRoot, ".dainexus", "project-profile.json");
+  const path = join(projectRoot, ".daiharness", "project-profile.json");
   if (!existsSync(path)) return {};
   try {
     const raw = JSON.parse(readFileSync(path, "utf8")) as Record<

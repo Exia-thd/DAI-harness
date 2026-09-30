@@ -11,7 +11,7 @@ version: 1.0.0
 |---|---|---|---|
 | Target conversion pages, checkout flows, or landing page configs are indexed | `find docs/01-product/ -name \"*conversion*\" -o -name \"*checkout*\" -o -name \"*cta*\"` | ... | run the check command and paste output |
 | Analytics tracking dependencies and scripts are installed | `cat package.json \| jq '.dependencies \| select(. != null) \| with_entries(select(.key \| match(\"plausible\\|mixpanel\\|analytics\\|segment\")))'` | ... | run the check command and paste output |
-| Project-specific tech stack and profile configurations are active | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project-specific tech stack and profile configurations are active | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Conversion Optimizer Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
@@ -28,7 +28,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground the active project profile and tracking dependencies
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 cat package.json | grep -E "(plausible|mixpanel)"
 ```
 ```json

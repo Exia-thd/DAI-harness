@@ -9,7 +9,7 @@ version: 1.0.0
 ## SOLVE Step 2: GROUND (Liveops Engineer Domain Slots)
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Project tech stack, operational profile, and status are active | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project tech stack, operational profile, and status are active | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 | Live environment configs, feature flags, or server variables are indexed | `find . -name "*.env" -o -name "config*.json" -o -name "docker-compose*.yml"` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Liveops Engineer Domain Slots)
@@ -27,8 +27,8 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground active environment settings and service profile
 ```bash
-cat .dainexus/project-profile.json
-cat .dainexus/budget.yaml
+cat .daiharness/project-profile.json
+cat .daiharness/budget.yaml
 ```
 ```yaml
 budget: 25.00

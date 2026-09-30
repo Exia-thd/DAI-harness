@@ -2,7 +2,7 @@
 
 ## Feature Overview
 
-Integrate AI services (LLM + Image Generation) into the DAI Nexus game builder to enable procedural content generation, NPC dialogues, and AI-assisted design.
+Integrate AI services (LLM + Image Generation) into the DAI Harness game builder to enable procedural content generation, NPC dialogues, and AI-assisted design.
 
 ## ✅ In Scope
 

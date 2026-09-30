@@ -21,10 +21,10 @@ One orchestrator skill, mode-based. The kernel routing table selected your mode;
 ## Invariants (all modes)
 
 1. Every phase's claims end in `VERIFY` blocks backed by machine-written evidence:
-   `python scripts/lite/run_check.py -- <check-cmd>` → `.dainexus/verify/<turn>.json`
+   `python scripts/lite/run_check.py -- <check-cmd>` → `.daiharness/verify/<turn>.json`
 2. The completion gate `scripts/lite/verify_gate.py` blocks the turn if evidence is missing, stale, forged, or failing.
 3. Guardrail (`skills/_shared/protocols/guardrail.md`) pre-authorizes every tool call.
-4. Workspace artifacts (BRD, ADRs, task list, phase logs) live under `.dainexus/` — never mixed into product source.
+4. Workspace artifacts (BRD, ADRs, task list, phase logs) live under `.daiharness/` — never mixed into product source.
 5. A gate = present a concise summary + the artifact, then WAIT for explicit user approval. Never self-approve a gate.
 
 ## FULL_BUILD flow (the "1 REQ → app" path)

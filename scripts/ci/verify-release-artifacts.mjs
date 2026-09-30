@@ -10,11 +10,11 @@ const archives = readdirSync(directory).filter((file) => file.endsWith('.tgz')).
 if (archives.length !== 2) throw new Error(`expected exactly two package archives, found ${archives.length}`);
 
 const expected = new Map([
-  ['dai-nexus-mcp-global', 'build/index.js'],
-  ['@dai-nexus/cli', 'dist/index.js'],
+  ['dai-harness-mcp-global', 'build/index.js'],
+  ['@dai-harness/cli', 'dist/index.js'],
 ]);
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-const scratch = mkdtempSync(join(tmpdir(), 'dai-nexus-release-smoke-'));
+const scratch = mkdtempSync(join(tmpdir(), 'dai-harness-release-smoke-'));
 try {
   const observed = new Set();
   for (const archive of archives) {
@@ -27,7 +27,7 @@ try {
     if (!entrypoint) throw new Error(`unexpected release package ${metadata.name}`);
     observed.add(metadata.name);
     execFileSync(process.execPath, ['--check', join(packageRoot, entrypoint)], { stdio: 'pipe' });
-    if (metadata.name === '@dai-nexus/cli') {
+    if (metadata.name === '@dai-harness/cli') {
       execFileSync(npm, ['install', '--omit=dev', '--ignore-scripts', '--package-lock=false', '--no-audit', '--no-fund'], { cwd: packageRoot, stdio: 'pipe' });
       execFileSync(process.execPath, [join(packageRoot, entrypoint), '--help'], { stdio: 'pipe' });
     }

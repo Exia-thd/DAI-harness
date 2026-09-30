@@ -17,14 +17,14 @@ echo "Đang tải hệ điều hành Android 33..."
 $SDKMANAGER "system-images;android-33;google_apis;x86_64"
 
 # 3. Tạo thiết bị ảo
-echo "Đang tạo AVD tên 'DaiNexusTestDevice'..."
-echo "no" | $AVDMANAGER create avd -n DaiNexusTestDevice -k "system-images;android-33;google_apis;x86_64" --force
+echo "Đang tạo AVD tên 'DaiHarnessTestDevice'..."
+echo "no" | $AVDMANAGER create avd -n DaiHarnessTestDevice -k "system-images;android-33;google_apis;x86_64" --force
 
 # 4. Tạo script khởi chạy background
 cat << 'EOF' > scripts/start-emulator.sh
 #!/bin/bash
 echo "Khởi chạy máy ảo trong chế độ không hiển thị (headless)..."
-$ANDROID_HOME/emulator/emulator -avd DaiNexusTestDevice -no-window -no-audio -no-boot-anim -gpu off &
+$ANDROID_HOME/emulator/emulator -avd DaiHarnessTestDevice -no-window -no-audio -no-boot-anim -gpu off &
 EOF
 
 chmod +x scripts/start-emulator.sh

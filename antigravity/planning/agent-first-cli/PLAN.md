@@ -1,4 +1,4 @@
-# Plan: Agent-First CLI — DAI Nexus Integration
+# Plan: Agent-First CLI — DAI Harness Integration
 
 > **Version:** 1.0
 > **Created:** 2026-04-15
@@ -11,7 +11,7 @@
 
 ### Current State
 
-DAI Nexus hiện tại là một orchestration system mạnh mẽ với 55 skills, nhưng **thiếu AI-agent-friendly CLI**:
+DAI Harness hiện tại là một orchestration system mạnh mẽ với 55 skills, nhưng **thiếu AI-agent-friendly CLI**:
 
 | Gap | Current | Needed |
 |-----|---------|--------|
@@ -30,7 +30,7 @@ DAI Nexus hiện tại là một orchestration system mạnh mẽ với 55 skill
 
 ### Success Criteria
 
-1. AI agents có thể discover và invoke DAI Nexus tools tự động
+1. AI agents có thể discover và invoke DAI Harness tools tự động
 2. CLI output parseable cho automation scripts
 3. Error recovery qua standardized exit codes
 4. **Zero breaking changes** cho existing users
@@ -151,7 +151,7 @@ interface AgentEnvelope<T = unknown> {
 | Priority | Source | Example |
 |----------|--------|---------|
 | 1 (highest) | OS env | `FORGE_API_KEY=xxx` |
-| 2 | User config | `~/.config/dai-nexus/config.json` |
+| 2 | User config | `~/.config/dai-harness/config.json` |
 | 3 | process.env | Injected at runtime |
 | 4 | .env files | `.env`, `.env.local` in CWD |
 | 5 (lowest) | Inline flags | `--api-key=xxx` |
@@ -227,7 +227,7 @@ v3.0               → Legacy flags removed (if any)
 ### Migration Guide Structure
 
 ```markdown
-## Migrating to DAI Nexus CLI v2.0
+## Migrating to DAI Harness CLI v2.0
 
 ### For Human Users
 - No changes required
@@ -240,7 +240,7 @@ v3.0               → Legacy flags removed (if any)
 
 ### Config Changes
 - Existing `.production-grade.yaml` still works
-- New: `~/.config/dai-nexus/config.json`
+- New: `~/.config/dai-harness/config.json`
 - See "Config Layering" section for priority
 ```
 
@@ -388,10 +388,10 @@ dai validate --json | jq -e '.ok == true'
 ### CLI Reference Structure
 
 ```markdown
-# DAI Nexus CLI Reference
+# DAI Harness CLI Reference
 
 ## Installation
-npm i -g dai-nexus
+npm i -g dai-harness
 
 ## Quick Start
 dai --version
@@ -500,7 +500,7 @@ hyperfine --warmup 3 'dai tools list --json'
 
 ### Recommended Pilot (3-5 users)
 
-1. **Internal team** — Use for DAI Nexus development
+1. **Internal team** — Use for DAI Harness development
 2. **Early adopters** — 2-3 external users from Discord/community
 3. **AI agent testing** — Use with Claude Code, Cowork
 
@@ -568,7 +568,7 @@ hyperfine --warmup 3 'dai tools list --json'
 4. **Config layering** — `src/runtime/config.ts`
 5. **Input conventions** — Commands support URL, stdin, @path
 
-### DAI Nexus Existing Code
+### DAI Harness Existing Code
 
 - `scripts/dai-validate.sh` — Reference for CLI structure
 - `.production-grade.yaml` — Current config (extend, not replace)

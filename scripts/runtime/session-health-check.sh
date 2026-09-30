@@ -14,9 +14,9 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DAINEXUS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-SESSION_LOG="$DAINEXUS_DIR/.dainexus/session-log.json"
-MEMORY_BANK="$DAINEXUS_DIR/.dainexus/memory-bank"
+DAIHARNESS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+SESSION_LOG="$DAIHARNESS_DIR/.daiharness/session-log.json"
+MEMORY_BANK="$DAIHARNESS_DIR/.daiharness/memory-bank"
 PROGRESS_FILE="$MEMORY_BANK/progress.md"
 
 # Colors for output
@@ -136,7 +136,7 @@ check_memory_bank() {
 check_mcp_manifest() {
     log_info "Checking MCP manifest..."
     
-    MANIFEST="$DAINEXUS_DIR/.antigravity/mcp-manifest.json"
+    MANIFEST="$DAIHARNESS_DIR/.antigravity/mcp-manifest.json"
     
     if [ ! -f "$MANIFEST" ]; then
         log_warn "MCP manifest not found. Run /mcp to generate."
@@ -146,9 +146,9 @@ check_mcp_manifest() {
     # Check workspace path
     WORKSPACE=$(grep -o '"workspace": "[^"]*"' "$MANIFEST" | head -1 | cut -d'"' -f4 || echo "")
     
-    if [ -n "$WORKSPACE" ] && [ "$WORKSPACE" != "$DAINEXUS_DIR" ]; then
+    if [ -n "$WORKSPACE" ] && [ "$WORKSPACE" != "$DAIHARNESS_DIR" ]; then
         log_warn "MCP manifest has wrong workspace path: $WORKSPACE"
-        log_info "Expected: $DAINEXUS_DIR"
+        log_info "Expected: $DAIHARNESS_DIR"
         log_info "Run /mcp to regenerate"
     else
         log_info "MCP manifest is correct"
@@ -189,7 +189,7 @@ show_summary() {
 main() {
     echo ""
     log_info "=========================================="
-    log_info "  DAI Nexus Session Health Check"
+    log_info "  DAI Harness Session Health Check"
     log_info "=========================================="
     echo ""
     

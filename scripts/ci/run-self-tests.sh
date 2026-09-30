@@ -1,5 +1,5 @@
 #!/bin/bash
-# run-self-tests.sh — Run DAI Nexus self-test suite
+# run-self-tests.sh — Run DAI Harness self-test suite
 # Part of Phase 1 - Task 1.3
 
 set -uo pipefail
@@ -182,10 +182,10 @@ generate_junit_report() {
     
     cat > "$JUNIT_OUTPUT" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="DAI Nexus Self-Tests" tests="$TOTAL_TESTS" failures="$FAILED_TESTS" skipped="$SKIPPED_TESTS" timestamp="$(date -u +%Y-%m-%dT%H:%M:%SZ)">
+<testsuite name="DAI Harness Self-Tests" tests="$TOTAL_TESTS" failures="$FAILED_TESTS" skipped="$SKIPPED_TESTS" timestamp="$(date -u +%Y-%m-%dT%H:%M:%SZ)">
   <properties>
-    <property name="test.runner" value="DAI Nexus Self-Test Orchestrator"/>
-    <property name="project" value="DAI Nexus"/>
+    <property name="test.runner" value="DAI Harness Self-Test Orchestrator"/>
+    <property name="project" value="DAI Harness"/>
   </properties>
   <testcase classname="mode-classification" name="Mode Classification Tests" assertions="$PASSED_TESTS"/>
   <testcase classname="plan-quality" name="Plan Quality Tests" assertions="$PASSED_TESTS"/>
@@ -202,7 +202,7 @@ EOF
 main() {
     echo ""
     echo "╔══════════════════════════════════════════════════════════╗"
-    echo "║       DAI-NEXUS SELF-TEST SUITE (Phase 1 - Task 1.3)   ║"
+    echo "║       DAI-HARNESS SELF-TEST SUITE (Phase 1 - Task 1.3)   ║"
     echo "╠══════════════════════════════════════════════════════════╣"
     printf "║  Mode Classification: 24 modes    Plan Quality: 9 criteria ║\n"
     printf "║  Middleware Chain: 14 stages                              ║\n"

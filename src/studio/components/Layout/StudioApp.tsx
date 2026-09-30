@@ -1,5 +1,5 @@
 /**
- * StudioApp - Main DAI Nexus Studio application
+ * StudioApp - Main DAI Harness Studio application
  *
  * Features:
  * - Real-time pipeline monitoring
@@ -65,7 +65,7 @@ export function StudioApp({ sessionId, wsUrl = "ws://localhost:7891" }: StudioAp
             {!sidebarCollapsed && (
               <div>
                 <h1 className="font-bold text-[#f2f2f2]">Studio</h1>
-                <p className="text-xs text-[#8b949e]">DAI Nexus</p>
+                <p className="text-xs text-[#8b949e]">DAI Harness</p>
               </div>
             )}
           </div>

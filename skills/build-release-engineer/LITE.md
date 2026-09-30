@@ -9,7 +9,7 @@ version: 1.1.0
 ## SOLVE Step 2: GROUND
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Project profile exists | `cat .dainexus/project-profile.json` | ... | capture the current stack/runtime |
+| Project profile exists | `cat .daiharness/project-profile.json` | ... | capture the current stack/runtime |
 | Canonical local automation exists | `ls -la scripts/ci/` | ... | capture the local CI/release entrypoints |
 | Build commands are declared | inspect package/build manifests | ... | capture exact build/test/package commands |
 

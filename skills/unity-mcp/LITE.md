@@ -47,7 +47,7 @@ server.tool('get-component-schema', async () => {
     content: [{
       type: 'text',
       text: JSON.stringify({
-        component: "DAI Nexus.Core.PlayerController",
+        component: "DAI Harness.Core.PlayerController",
         serializedFields: [
           { name: "moveSpeed", type: "System.Single", tooltip: "Kinematic velocity multiplier" },
           { name: "rigidBody", type: "UnityEngine.Rigidbody", tooltip: "Cached physics context" }

@@ -30,7 +30,7 @@ Use the explicit skill files `skills/concept-artist/LITE.md` and
 `skills/ui-designer/LITE.md`, `skills/technical-artist/LITE.md`, or engine skill.
 For each creative/downstream dispatch, execute this repository-owned chain:
 
-1. `python3 scripts/runtime/skill_routing.py --mode "$MODE" --config .dainexus/skills-config.json`
+1. `python3 scripts/runtime/skill_routing.py --mode "$MODE" --config .daiharness/skills-config.json`
    returns ordered, verified skill paths.
 2. `python3 scripts/art-direction/creative-handoff.py validate-handoff "$CONCEPT_PACKET" "$ART_DIRECTION_GATES"`
    validates the concept and art artifacts.

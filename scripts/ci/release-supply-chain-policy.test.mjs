@@ -18,9 +18,9 @@ test('rollback selection is deterministic and excludes the current tag', () => {
 });
 
 test('SBOM validator fails closed for malformed or incomplete CycloneDX payloads', () => {
-  assert.doesNotThrow(() => assertSbom({ bomFormat: 'CycloneDX', components: [{ name: 'dai-nexus-mcp-global' }] }, ['dai-nexus-mcp-global']));
+  assert.doesNotThrow(() => assertSbom({ bomFormat: 'CycloneDX', components: [{ name: 'dai-harness-mcp-global' }] }, ['dai-harness-mcp-global']));
   assert.throws(() => assertSbom({ bomFormat: 'SPDX', components: [] }, []), /CycloneDX/);
-  assert.throws(() => assertSbom({ bomFormat: 'CycloneDX', components: [] }, ['@dai-nexus/cli']), /missing component/);
+  assert.throws(() => assertSbom({ bomFormat: 'CycloneDX', components: [] }, ['@dai-harness/cli']), /missing component/);
 });
 
 test('static policy rejects mutable actions, curl pipes, and unpinned tools', () => {

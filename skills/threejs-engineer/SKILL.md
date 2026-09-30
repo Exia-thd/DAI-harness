@@ -6,7 +6,7 @@ description: >
   Creates interactive 3D visualizations and games.
   Routed via the production-grade orchestrator (Web/3D mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [threejs, three.js, 3d, webgl, web-3d, 3d-graphics, webxr, visualization, game-development]
 ---
 

@@ -14,7 +14,7 @@ run_required() {
 }
 
 run_docs_continuity() {
-  local base_ref="${DAINEXUS_DOCS_BASE_REF:-}"
+  local base_ref="${DAIHARNESS_DOCS_BASE_REF:-}"
   if [[ -z "$base_ref" ]] \
     && git rev-parse --verify --quiet origin/main >/dev/null \
     && ! git diff --quiet origin/main...HEAD; then
@@ -43,8 +43,8 @@ run_required mcp-tests npm --prefix mcp run test
 run_required harness-lifecycle-contract npm --prefix mcp test -- src/runtime/harness-adapter.test.ts src/runtime/lifecycle-lease.test.ts
 run_required harness-upgrade-evidence bash scripts/ci/verify-harness-upgrade.sh
 run_required mcp-coverage npm --prefix mcp run test:coverage
-run_required mcp-launcher-security bash tests/test-dainexus-mcp-launcher.sh
-run_required mcp-setup bash tests/setup/test-dainexus-mcp-setup.sh
+run_required mcp-launcher-security bash tests/test-daiharness-mcp-launcher.sh
+run_required mcp-setup bash tests/setup/test-daiharness-mcp-setup.sh
 run_required hook-installation bash tests/test_hooks.sh
 run_required runtime-lifecycle-guard bash scripts/ci/verify-runtime-leases.sh
 run_required cli-tests npm --prefix src/cli test

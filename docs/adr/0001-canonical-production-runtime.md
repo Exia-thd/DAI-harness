@@ -19,7 +19,7 @@ tests. The public CLI is a separate surface and is covered by
 
 ## Non-decision and evidence boundary
 
-`scripts/runtime/dainexus-orchestrator.py`, its compatibility shim, and the
+`scripts/runtime/daiharness-orchestrator.py`, its compatibility shim, and the
 shell MCP launchers remain installed compatibility or development paths. This
 repository does not currently prove that every one of those paths constructs
 or traverses `MiddlewareChain`. Therefore they are not the canonical

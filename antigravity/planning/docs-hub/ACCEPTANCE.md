@@ -10,7 +10,7 @@
 | AC-06 | PASS | Sensitive-source test plus real Pixelworld artifact exclusion |
 | AC-07 | PASS | Repeated scan ID/fingerprint determinism test |
 | AC-08 | PASS | Broken link, image, anchor, case/symlink and stale-index diagnostics |
-| AC-09 | PASS | Static build integration and real DAI Nexus build |
+| AC-09 | PASS | Static build integration and real DAI Harness build |
 | AC-10 | PASS | Generated document content/navigation is present without JS dependency; browser pages render statically |
 | AC-11 | PASS | Offline project-aware search test and browser interaction |
 | AC-12 | PASS | Mermaid validation, SVG `role=img`, title/description and text fallback tests/browser audit |

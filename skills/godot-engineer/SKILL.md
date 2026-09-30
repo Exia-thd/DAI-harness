@@ -6,7 +6,7 @@ description: >
   multiplayer networking, and export configuration.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [godot, gdscript, scene-tree, signals, shaders, multiplayer, game-development]
 ---
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DAI Nexus Memory Middleware
+DAI Harness Memory Middleware
 ============================
 Automatic memory checkpoint system for cross-IDE compatibility.
 Works with Claude Code, Cursor, VS Code, JetBrains, etc.
@@ -26,7 +26,7 @@ Environment Variables:
   MEMORY_TOKEN_THRESHOLD_WARN: Warning threshold % (default: 80)
   MEMORY_TOKEN_THRESHOLD_CRITICAL: Critical threshold % (default: 95)
   MEMORY_DB_DIR: Session storage directory
-  DAINEXUS_WORKSPACE: Override workspace root detection
+  DAIHARNESS_WORKSPACE: Override workspace root detection
 """
 
 import argparse
@@ -66,10 +66,10 @@ def _resolve_workspace_root() -> Path:
 
 
 WORKSPACE_ROOT = Path(
-    os.environ.get("DAINEXUS_WORKSPACE", str(_resolve_workspace_root()))
+    os.environ.get("DAIHARNESS_WORKSPACE", str(_resolve_workspace_root()))
 )
 _MEMORY_DB_OVERRIDE = os.environ.get("MEMORY_DB_DIR", "").strip()
-_WORKSPACE_MEMORY_ROOT = WORKSPACE_ROOT / ".dainexus" / "runtime" / "memory"
+_WORKSPACE_MEMORY_ROOT = WORKSPACE_ROOT / ".daiharness" / "runtime" / "memory"
 MEMORY_DB_DIR = (
     Path(_MEMORY_DB_OVERRIDE).expanduser()
     if _MEMORY_DB_OVERRIDE
@@ -79,7 +79,7 @@ SESSION_FILE = MEMORY_DB_DIR / "current-session.json"
 
 # Canonical absolute paths for workspace-relative files
 SUMMARY_FILE = (
-    WORKSPACE_ROOT / ".dainexus" / "subagent-context" / "CONVERSATION_SUMMARY.md"
+    WORKSPACE_ROOT / ".daiharness" / "subagent-context" / "CONVERSATION_SUMMARY.md"
 )
 HANDOVER_DIR = (
     MEMORY_DB_DIR.parent / "memory-bank"
@@ -89,19 +89,19 @@ HANDOVER_DIR = (
 HANDOVER_FILE = HANDOVER_DIR / "HANDOVER.md"
 
 # session-log.json path resolution
-# Resolution: DAINEXUS_SESSION_LOG env > project-local runtime state.
-DAINEXUS_SESSION_LOG = os.environ.get("DAINEXUS_SESSION_LOG", "")
+# Resolution: DAIHARNESS_SESSION_LOG env > project-local runtime state.
+DAIHARNESS_SESSION_LOG = os.environ.get("DAIHARNESS_SESSION_LOG", "")
 
 
 def get_session_log_path() -> Path:
     """Resolve session-log.json location with env override.
 
     Resolution order:
-      1. DAINEXUS_SESSION_LOG env var (highest priority)
-      2. project-local .dainexus/runtime/memory/session-log.json
+      1. DAIHARNESS_SESSION_LOG env var (highest priority)
+      2. project-local .daiharness/runtime/memory/session-log.json
     """
-    if DAINEXUS_SESSION_LOG:
-        return Path(DAINEXUS_SESSION_LOG)
+    if DAIHARNESS_SESSION_LOG:
+        return Path(DAIHARNESS_SESSION_LOG)
 
     return MEMORY_DB_DIR / "session-log.json"
 
@@ -883,7 +883,7 @@ def append_to_summary(checkpoint_id: str, reason: str, summary: str):
 
 def update_memory_bank_progress(summary: str):
     """Update Memory Bank progress.md at checkpoint (NEW v8.0)."""
-    progress_file = Path(".dainexus/memory-bank/progress.md")
+    progress_file = Path(".daiharness/memory-bank/progress.md")
 
     if not progress_file.exists():
         return
@@ -1084,7 +1084,7 @@ def do_checkpoint(reason: str = "manual") -> Optional[str]:
     # resume, a tool call, or a completion claim.
     continuity_script = Path(__file__).parent / "continuity.py"
     safe_reason = re.sub(r"[^A-Za-z0-9._-]+", "-", reason).strip("-") or "manual"
-    turn_id = os.environ.get("DAINEXUS_TURN", "").strip() or checkpoint_id
+    turn_id = os.environ.get("DAIHARNESS_TURN", "").strip() or checkpoint_id
     turn_id = re.sub(r"[^A-Za-z0-9._-]+", "-", turn_id).strip("-") or checkpoint_id
     continuity_payload = {
         "objective": summary,
@@ -1340,7 +1340,7 @@ def cmd_handover(args=None):
 
 def main():
     # Support both flat commands and 'session-log' subcommand
-    parser = argparse.ArgumentParser(description="DAI Nexus Memory Middleware")
+    parser = argparse.ArgumentParser(description="DAI Harness Memory Middleware")
 
     # Check if first arg is 'session-log' for subcommand mode
     import sys

@@ -8,7 +8,7 @@ P3.3 requires one documented, reproducible project setup path. The command must 
 
 ## Decision
 
-`dai init [target]` creates `.dainexus/project.json`, and `dai onboard [target]` requires that manifest before creating `.dainexus/project-profile.json`. The profile records only deterministic local filesystem facts: Git metadata presence, `package.json` presence, recognized lockfiles, and a readable declared `test` script.
+`dai init [target]` creates `.daiharness/project.json`, and `dai onboard [target]` requires that manifest before creating `.daiharness/project-profile.json`. The profile records only deterministic local filesystem facts: Git metadata presence, `package.json` presence, recognized lockfiles, and a readable declared `test` script.
 
 Existing generated files are preserved by default and return `already_exists`; `--force` explicitly refreshes the corresponding generated file. Both commands support the normal CLI JSON envelope.
 

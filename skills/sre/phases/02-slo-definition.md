@@ -11,7 +11,7 @@ Read Phase 1 findings from `production-readiness/findings.md` to understand know
 ## Inputs
 
 - `infrastructure/monitoring/` — existing Prometheus rules, Grafana dashboards
-- `.dainexus/product-manager/` or requirements — availability promises, user expectations
+- `.daiharness/product-manager/` or requirements — availability promises, user expectations
 - Architecture docs — request flow, critical paths, dependency chains
 - Phase 1 findings — known reliability risks
 

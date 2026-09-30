@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # dai-validate.sh — Quality Gate Validation CLI
-# Part of DAI Nexus Production Grade Pipeline
+# Part of DAI Harness Production Grade Pipeline
 #
 # Automates Quality Gate Levels 1-3:
 #   Level 1: Build & Syntax (critical)
@@ -32,7 +32,7 @@ ISSUES=()
 WARNINGS=()
 
 # Config
-OUTPUT_DIR=".dainexus"
+OUTPUT_DIR=".daiharness"
 REPORT_FILE=""
 QUIET=false
 JSON_OUTPUT=false
@@ -378,13 +378,13 @@ usage() {
   cat <<EOF
 
   ${BOLD}dai-validate.sh${NC} — Quality Gate Validation CLI
-  Part of DAI Nexus Production Grade Pipeline
+  Part of DAI Harness Production Grade Pipeline
 
   ${BOLD}Usage:${NC} ./scripts/dai-validate.sh [options]
 
   ${BOLD}Options:${NC}
     --quiet, -q       Suppress output (exit code only)
-    --json            Write JSON report to .dainexus/
+    --json            Write JSON report to .daiharness/
     --report FILE     Write JSON report to specific file
     --strict          Treat Level 3 warnings as failures
     --help, -h        Show this help
@@ -418,7 +418,7 @@ main() {
 
   if ! $QUIET; then
     echo ""
-    echo -e "${BOLD}${CYAN}DAI Nexus Quality Gate Validation${NC}"
+    echo -e "${BOLD}${CYAN}DAI Harness Quality Gate Validation${NC}"
     echo -e "${DIM}Running Level 1-3 automated checks...${NC}"
   fi
 

@@ -18,7 +18,7 @@ variants:
 metadata:
   domain: mobile-development
   contributors:
-    - dai-nexus
+    - dai-harness
   source_prompts_count: 0  # prompts.chat not found at ~/.claude/prompts/prompts.chat
   created: 2026-06-02
   version: 1.0.0

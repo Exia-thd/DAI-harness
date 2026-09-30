@@ -40,11 +40,11 @@ export const DEFAULT_TOKEN_BUDGET: TokenBudget = {
 };
 
 export function getDefaultUsageDir(projectRoot: string): string {
-  return join(homedir(), ".dainexus", "usage", getProjectName(projectRoot));
+  return join(homedir(), ".daiharness", "usage", getProjectName(projectRoot));
 }
 
 export function getBudgetPath(projectRoot: string): string {
-  return join(projectRoot, ".dainexus", "budget.yaml");
+  return join(projectRoot, ".daiharness", "budget.yaml");
 }
 
 export function setTokenTrackingEnabled(
@@ -96,7 +96,7 @@ export function writeBudgetFile(
   budget: TokenBudget,
 ): string {
   const budgetPath = getBudgetPath(projectRoot);
-  mkdirSync(join(projectRoot, ".dainexus"), { recursive: true });
+  mkdirSync(join(projectRoot, ".daiharness"), { recursive: true });
   writeFileSync(
     budgetPath,
     [
@@ -222,7 +222,7 @@ function buildTokenTrackingBlock(enabled: boolean): string {
   return [
     "token_tracking:",
     `  enabled: ${enabled ? "true" : "false"}`,
-    '  log_dir: "~/.dainexus/usage"',
+    '  log_dir: "~/.daiharness/usage"',
     "  export_format: jsonl",
   ].join("\n");
 }

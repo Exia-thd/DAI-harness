@@ -1,6 +1,6 @@
 ---
 id: pipeline
-title: DAI Nexus Pipeline
+title: DAI Harness Pipeline
 summary: Canonical phase semantics for proportional, evidence-gated delivery.
 status: active
 version: 2.0.0
@@ -11,7 +11,7 @@ related: [senior-execution-contract, plan-quality-loop, model-tier, pipeline-ope
 supersedes: []
 superseded_by: null
 ---
-# DAI Nexus Pipeline
+# DAI Harness Pipeline
 
 <!-- source: skills/_shared/protocols/pipeline.md -->
 <!-- Canonical phase semantics. Kernel ENTRY/SOLVE/VERIFY owns turn-level execution gates. -->

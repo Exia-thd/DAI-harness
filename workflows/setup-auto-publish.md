@@ -6,7 +6,7 @@ description: Set up automated mobile app publishing to Apple App Store and Googl
 
 One-command setup to enable automated building and publishing of Expo/React Native apps to the Apple App Store and Google Play Store using EAS CLI. 
 
-All credentials, keystores, and configuration details are stored directly in your target mobile project folder—keeping DAI Nexus environment-independent and secure.
+All credentials, keystores, and configuration details are stored directly in your target mobile project folder—keeping DAI Harness environment-independent and secure.
 
 ---
 
@@ -68,7 +68,7 @@ Create a `credentials.json` file inside your app folder (`apps/mobile/credential
 ### Step 1: Scaffold Auto-Publish in Your Project
 Run the setup script, passing the path to your mobile project root:
 ```bash
-bash dai-nexus/scripts/auto-publish-setup.sh [path_to_mobile_project]
+bash dai-harness/scripts/auto-publish-setup.sh [path_to_mobile_project]
 ```
 
 This will automatically:

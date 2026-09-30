@@ -3,8 +3,8 @@
  *
  * Loads and validates sandbox configuration from multiple sources:
  * 1. Default config (built-in)
- * 2. User config (~/.config/dai-nexus/sandbox.yaml)
- * 3. Project config (.dainexus/sandbox.yaml)
+ * 2. User config (~/.config/dai-harness/sandbox.yaml)
+ * 3. Project config (.daiharness/sandbox.yaml)
  * 4. Environment variables (FORGE_SANDBOX_*)
  * 5. Inline config (highest priority)
  */
@@ -49,10 +49,10 @@ export class ConfigLoader {
     this.userConfigPath = path.join(
       process.env.HOME || "~",
       ".config",
-      "dai-nexus",
+      "dai-harness",
       "sandbox.yaml"
     );
-    this.projectConfigPath = ".dainexus/sandbox.yaml";
+    this.projectConfigPath = ".daiharness/sandbox.yaml";
   }
 
   /**
@@ -67,7 +67,7 @@ export class ConfigLoader {
     // 1. Default config
     sources.push({ source: "default", priority: 1 });
 
-    // 2. User config (~/.config/dai-nexus/sandbox.yaml)
+    // 2. User config (~/.config/dai-harness/sandbox.yaml)
     const userConfig = this.loadFromPath(this.userConfigPath);
     if (userConfig) {
       config = this.merge(config, userConfig);
@@ -78,7 +78,7 @@ export class ConfigLoader {
       });
     }
 
-    // 3. Project config (.dainexus/sandbox.yaml)
+    // 3. Project config (.daiharness/sandbox.yaml)
     const projectConfig = this.loadFromPath(this.projectConfigPath);
     if (projectConfig) {
       config = this.merge(config, projectConfig);
@@ -408,12 +408,12 @@ export class ConfigLoader {
       monitoring: {
         enabled: true,
         logAllOperations: true,
-        auditPath: ".dainexus/sandbox-audit.jsonl",
+        auditPath: ".daiharness/sandbox-audit.jsonl",
         auditMaxSize: "100MB",
         detectEscapeAttempts: true,
         alertOnBypass: true,
         collectMetrics: true,
-        metricsPath: ".dainexus/sandbox-metrics.json",
+        metricsPath: ".daiharness/sandbox-metrics.json",
       },
       features: {
         realTimeBlocking: true,

@@ -6,7 +6,7 @@ description: >
   avatar systems, monetization, and moderation.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [roblox, luau, roblox-studio, experience, datastore, avatar, game-development, robux]
 ---
 
@@ -25,7 +25,7 @@ tags: [roblox, luau, roblox-studio, experience, datastore, avatar, game-developm
 
 ## Aesthetic Foundation
 
-Roblox has a distinctive default aesthetic — intentional visual direction is essential. This skill references **DAI Nexus Game Visual Foundations** (`skills/_shared/game-visual-foundations.md`) for:
+Roblox has a distinctive default aesthetic — intentional visual direction is essential. This skill references **DAI Harness Game Visual Foundations** (`skills/_shared/game-visual-foundations.md`) for:
 
 - **Roblox visual identity** (overcoming the "default Roblox look" with style guide)
 - **Color psychology** (Roblox audience responds to specific color coding)

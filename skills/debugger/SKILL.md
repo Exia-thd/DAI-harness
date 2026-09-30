@@ -629,7 +629,7 @@ describe("intermittent bug", () => {
 ## Output Structure
 
 ```
-.dainexus/debugger/
+.daiharness/debugger/
 ├── investigation-report.md      # Full investigation trail
 ├── root-cause-analysis.md       # Root cause + fix summary
 └── evidence/                    # Collected evidence

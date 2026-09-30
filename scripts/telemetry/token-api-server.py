@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Token Usage API Server for DAI Nexus Dashboard
+Token Usage API Server for DAI Harness Dashboard
 
 Serves token usage data via REST API for the dashboard.
 
@@ -128,8 +128,8 @@ PRICING = {
 }
 
 # Model name normalization patterns
-DASHBOARD_AUTH_ENV = "DAINEXUS_TOKEN_DASHBOARD_AUTH_TOKEN"
-DASHBOARD_AUTH_USER = "dai-nexus"
+DASHBOARD_AUTH_ENV = "DAIHARNESS_TOKEN_DASHBOARD_AUTH_TOKEN"
+DASHBOARD_AUTH_USER = "dai-harness"
 
 
 def is_loopback_host(host: str) -> bool:
@@ -221,7 +221,7 @@ DASHBOARD_HTML = """
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Token Usage Dashboard - DAI Nexus</title>
+  <title>Token Usage Dashboard - DAI Harness</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -884,7 +884,7 @@ class UnifiedAggregator:
             "platforms": {
                 "cursor": {"available": False, "calls": 0, "estimated_cost": 0},
                 "claude-code": {"available": False, "sessions": 0, "models": []},
-                "dai-nexus": {"available": False, "calls": 0, "tokens": 0, "cost": 0},
+                "dai-harness": {"available": False, "calls": 0, "tokens": 0, "cost": 0},
             },
             "by_model": {},
             "total_estimated_cost": 0,
@@ -930,7 +930,7 @@ class UnifiedAggregator:
 class TokenAPI:
     def __init__(self):
         self.home = os.path.expanduser("~")
-        self.base_path = Path(self.home) / ".dainexus" / "usage"
+        self.base_path = Path(self.home) / ".daiharness" / "usage"
 
     def calculate_cost(
         self, provider: str, model: str, input_tokens: int, output_tokens: int
@@ -1110,12 +1110,16 @@ def create_app(auth_token: str = ""):
 
             @app.before_request
             def require_dashboard_auth():
-                if is_authorized_request(request.headers.get("Authorization"), auth_token):
+                if is_authorized_request(
+                    request.headers.get("Authorization"), auth_token
+                ):
                     return None
                 return Response(
                     "Authentication required",
                     status=401,
-                    headers={"WWW-Authenticate": 'Basic realm="DAI Nexus Token Dashboard"'},
+                    headers={
+                        "WWW-Authenticate": 'Basic realm="DAI Harness Token Dashboard"'
+                    },
                 )
 
         @app.route("/")
@@ -1187,15 +1191,15 @@ def create_app(auth_token: str = ""):
         def unified_usage():
             """Combined usage from all sources."""
             cursor_reader = CursorDBReader()
-            project = request.args.get("project", "dai-nexus")
+            project = request.args.get("project", "dai-harness")
             period = int(request.args.get("period", 7))
-            dai_nexus_data = api.get_usage(project, period)
+            dai_harness_data = api.get_usage(project, period)
 
             cursor_models_data = cursor_reader.get_model_stats()
 
             return jsonify(
                 {
-                    "dai-nexus": dai_nexus_data,
+                    "dai-harness": dai_harness_data,
                     "cursor": {
                         "models": cursor_models_data,
                         "available": cursor_reader.is_available(),
@@ -1251,7 +1255,7 @@ def run_basic_server(host: str, port: int, auth_token: str = ""):
                 return True
             self.send_response(401)
             self.send_header(
-                "WWW-Authenticate", 'Basic realm="DAI Nexus Token Dashboard"'
+                "WWW-Authenticate", 'Basic realm="DAI Harness Token Dashboard"'
             )
             self.end_headers()
             self.wfile.write(b"Authentication required")
@@ -1304,15 +1308,15 @@ def run_basic_server(host: str, port: int, auth_token: str = ""):
                 import urllib.parse
 
                 qs = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
-                project = qs.get("project", ["dai-nexus"])[0]
-                dai_nexus_data = api.get_usage(project, 7)
+                project = qs.get("project", ["dai-harness"])[0]
+                dai_harness_data = api.get_usage(project, 7)
                 self.send_response(200)
                 self.send_header("Content-type", "application/json")
                 self.end_headers()
                 self.wfile.write(
                     json.dumps(
                         {
-                            "dai-nexus": dai_nexus_data,
+                            "dai-harness": dai_harness_data,
                             "cursor": {
                                 "models": cursor_reader.get_model_stats(),
                                 "available": cursor_reader.is_available(),
@@ -1422,7 +1426,9 @@ if __name__ == "__main__":
         print(f"   Dashboard: http://{display_host}:{args.port}/dashboard")
         print(f"   API:       http://{display_host}:{args.port}/api/usage")
         print(f"   Projects:  {len(TokenAPI().list_projects())} tracked")
-        print(f"   Auth:      {'Basic auth enabled' if auth_token else 'loopback-only'}")
+        print(
+            f"   Auth:      {'Basic auth enabled' if auth_token else 'loopback-only'}"
+        )
         print("\n   Press Ctrl+C to stop\n")
         app.run(host=args.host, port=args.port, debug=False)
     else:

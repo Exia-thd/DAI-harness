@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # scripts/lite/rule-ledger.sh
-# DAI Nexus Phase 1 — rule ledger.
+# DAI Harness Phase 1 — rule ledger.
 # Tracks per-rule enforcement events so the kernel can measure which
 # Hard Rules actually fire and which get violated.
 #
@@ -10,7 +10,7 @@
 #   bash scripts/lite/rule-ledger.sh top [N] [outcome]
 #   bash scripts/lite/rule-ledger.sh recent [N] [outcome]
 #
-# Storage: .dainexus/rule-ledger.jsonl
+# Storage: .daiharness/rule-ledger.jsonl
 # Record:  {"ts":"<ISO-8601 UTC>","rule":"<id>","outcome":"<outcome>","note":"..."}
 # Recommended outcomes: hit | violation | override | waived
 #
@@ -33,19 +33,19 @@ log_error() { echo -e "${RED}[RULE-LEDGER] ERROR:${NC} $*" >&2; }
 # Find project root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-if [[ -n "${DAINEXUS_WORKSPACE:-}" ]]; then
-  if [[ ! -d "$DAINEXUS_WORKSPACE" ]]; then
-    log_error "DAINEXUS_WORKSPACE is not a readable directory."
+if [[ -n "${DAIHARNESS_WORKSPACE:-}" ]]; then
+  if [[ ! -d "$DAIHARNESS_WORKSPACE" ]]; then
+    log_error "DAIHARNESS_WORKSPACE is not a readable directory."
     exit 1
   fi
-  PROJECT_ROOT="$(cd "$DAINEXUS_WORKSPACE" 2>/dev/null && pwd -P)" || {
-    log_error "DAINEXUS_WORKSPACE cannot be resolved."
+  PROJECT_ROOT="$(cd "$DAIHARNESS_WORKSPACE" 2>/dev/null && pwd -P)" || {
+    log_error "DAIHARNESS_WORKSPACE cannot be resolved."
     exit 1
   }
 fi
 cd "$PROJECT_ROOT"
 
-LEDGER_FILE="${DAINEXUS_RULE_LEDGER:-.dainexus/rule-ledger.jsonl}"
+LEDGER_FILE="${DAIHARNESS_RULE_LEDGER:-.daiharness/rule-ledger.jsonl}"
 
 command -v jq >/dev/null 2>&1 || { log_error "jq is required but not found in PATH."; exit 1; }
 

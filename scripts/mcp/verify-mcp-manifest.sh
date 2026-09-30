@@ -1,6 +1,6 @@
 #!/bin/bash
 # verify-mcp-manifest.sh — Verification artifact for Task 1.1
-# Validates .dainexus/mcp-manifest.json against JSON Schema
+# Validates .daiharness/mcp-manifest.json against JSON Schema
 
 set -e
 
@@ -26,14 +26,14 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-# Check .antigravity/mcp-manifest.json first, fallback to .dainexus/mcp-manifest.json
+# Check .antigravity/mcp-manifest.json first, fallback to .daiharness/mcp-manifest.json
 if [ -f "$PROJECT_DIR/.antigravity/mcp-manifest.json" ]; then
     MANIFEST_PATH="$PROJECT_DIR/.antigravity/mcp-manifest.json"
 else
-    MANIFEST_PATH="$PROJECT_DIR/.dainexus/mcp-manifest.json"
+    MANIFEST_PATH="$PROJECT_DIR/.daiharness/mcp-manifest.json"
 fi
 
-SCHEMA_PATH="$PROJECT_DIR/.dainexus/schemas/mcp-manifest.schema.json"
+SCHEMA_PATH="$PROJECT_DIR/.daiharness/schemas/mcp-manifest.schema.json"
 
 # Colors
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
@@ -63,7 +63,7 @@ pass "Valid JSON syntax"
 
 # 3. Check required fields
 info "Checking required fields..."
-REQUIRED_FIELDS=("manifest_version" "workspace" "dai-nexus" "servers")
+REQUIRED_FIELDS=("manifest_version" "workspace" "dai-harness" "servers")
 for field in "${REQUIRED_FIELDS[@]}"; do
     if ! jq -e ".$field" "$MANIFEST_PATH" > /dev/null 2>&1; then
         fail "FAIL: Missing required field: $field"
@@ -71,18 +71,18 @@ for field in "${REQUIRED_FIELDS[@]}"; do
 done
 pass "All 4 required fields present"
 
-# 4. Validate dai-nexus sub-object
-info "Validating dai-nexus object..."
-if ! jq -e ".dainexus.version" "$MANIFEST_PATH" > /dev/null 2>&1; then
-    fail "FAIL: Missing dai-nexus.version"
+# 4. Validate dai-harness sub-object
+info "Validating dai-harness object..."
+if ! jq -e ".daiharness.version" "$MANIFEST_PATH" > /dev/null 2>&1; then
+    fail "FAIL: Missing dai-harness.version"
 fi
-if ! jq -e ".dainexus.canonical" "$MANIFEST_PATH" > /dev/null 2>&1; then
-    fail "FAIL: Missing dai-nexus.canonical"
+if ! jq -e ".daiharness.canonical" "$MANIFEST_PATH" > /dev/null 2>&1; then
+    fail "FAIL: Missing dai-harness.canonical"
 fi
-if ! jq -e ".dainexus.server" "$MANIFEST_PATH" > /dev/null 2>&1; then
-    fail "FAIL: Missing dai-nexus.server"
+if ! jq -e ".daiharness.server" "$MANIFEST_PATH" > /dev/null 2>&1; then
+    fail "FAIL: Missing dai-harness.server"
 fi
-pass "dai-nexus object valid"
+pass "dai-harness object valid"
 
 # 5. Validate schema (if schema exists and ajv is available)
 if [ -f "$SCHEMA_PATH" ]; then
@@ -123,8 +123,8 @@ pass "All servers have required fields"
 
 # 7. Test MCP setup script compatibility
 info "Checking MCP setup script compatibility..."
-if [ -f "$PROJECT_DIR/scripts/dainexus-mcp-setup.sh" ]; then
-    if timeout 10 bash "$PROJECT_DIR/scripts/dainexus-mcp-setup.sh" --check 2>/dev/null; then
+if [ -f "$PROJECT_DIR/scripts/daiharness-mcp-setup.sh" ]; then
+    if timeout 10 bash "$PROJECT_DIR/scripts/daiharness-mcp-setup.sh" --check 2>/dev/null; then
         pass "MCP setup script compatible"
     else
         warn "MCP setup script returned warnings (non-critical)"

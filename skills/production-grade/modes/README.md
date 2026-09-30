@@ -1,6 +1,6 @@
 # Mode Reference Index
 
-> **Purpose:** Maps DAI Nexus's 24 modes to their execution references. The canonical inventory is `product-manifest.json` / `docs/mode-reference.md`.
+> **Purpose:** Maps DAI Harness's 24 modes to their execution references. The canonical inventory is `product-manifest.json` / `docs/mode-reference.md`.
 > This file provides a quick reference; full mode descriptions are in `skills/production-grade/SKILL.md`.
 
 ## Mode Map

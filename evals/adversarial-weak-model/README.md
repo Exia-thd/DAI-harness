@@ -1,6 +1,6 @@
 # Adversarial Weak-Model Eval
 
-This suite measures whether a hallucination-prone model stays inside DAI Nexus's **observable execution rails**. It does not inspect chain-of-thought and does not treat mock/replay output as model evidence.
+This suite measures whether a hallucination-prone model stays inside DAI Harness's **observable execution rails**. It does not inspect chain-of-thought and does not treat mock/replay output as model evidence.
 
 The scenarios cover grounding/runtime truth, invented symbols, proportionality, unnecessary clarification, framework self-mutation, requirement-locked test-oracle integrity, fake success claims, provider neutrality, scope discipline, instruction-boundary safety, visual-reference fidelity, and hidden-risk consulting.
 
@@ -13,24 +13,24 @@ python3 evals/adversarial-weak-model/run-evals.py --self-test
 The self-test runs two deterministic replays for every scenario:
 
 - `good`: behavior that should be accepted.
-- `bad`: behavior that remains functionally plausible where possible but violates a DAI Nexus rail.
+- `bad`: behavior that remains functionally plausible where possible but violates a DAI Harness rail.
 
 CI passes only when **every good replay passes and every bad replay is rejected**. This validates the grader and fixtures; it is not empirical evidence about a model.
 
 ## Live weak-model evidence
 
 ```bash
-DAINEXUS_PROVIDER=agy \
-DAINEXUS_MODEL='Gemini 3.5 Flash (Low)' \
-DAINEXUS_MODEL_SNAPSHOT='agy-<version>:Gemini 3.5 Flash (Low)' \
-DAINEXUS_SNAPSHOT_SCOPE=adapter-route \
+DAIHARNESS_PROVIDER=agy \
+DAIHARNESS_MODEL='Gemini 3.5 Flash (Low)' \
+DAIHARNESS_MODEL_SNAPSHOT='agy-<version>:Gemini 3.5 Flash (Low)' \
+DAIHARNESS_SNAPSHOT_SCOPE=adapter-route \
 python3 evals/adversarial-weak-model/run-evals.py --live --adapter agy \
   --output evals/adversarial-weak-model/results-live.json
 ```
 
 A live report records provider, model ID, snapshot identifier, snapshot scope, adapter, ordered task IDs, and a fingerprint of the complete suite. Only reports where `mode=live` and `empirical=true` are eligible as model evidence. Use `snapshotScope=provider-resolved` only when the provider exposes an immutable/resolved backend snapshot; use `adapter-route` for an AGY version + model-label route so the report does not overclaim backend-weight identity.
 
-The AGY adapter reuses DAI Nexus's established sandboxed `accept-edits` benchmark pattern, injects the current Lite kernel contract, disables slash-command expansion, closes stdin, and hard-stops the process group on timeout. The legacy orchestrator adapter remains available for chat-completions providers.
+The AGY adapter reuses DAI Harness's established sandboxed `accept-edits` benchmark pattern, injects the current Lite kernel contract, disables slash-command expansion, closes stdin, and hard-stops the process group on timeout. The legacy orchestrator adapter remains available for chat-completions providers.
 
 Use `--task <id>` for a focused live smoke. Do not add network/model execution to CI: the deterministic replay self-test is the release gate; live evidence is an explicit benchmark run.
 

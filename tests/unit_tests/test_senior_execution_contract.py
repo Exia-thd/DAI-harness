@@ -166,10 +166,10 @@ def test_full_mode_and_activation_cannot_override_runtime_contract():
     assert "file:///Users/" not in qa
     assert "file:///Users/" not in index_generator
     assert "file:///Users/" not in skill_index
-    assert "Do **not** mutate shared DAI Nexus skill/protocol files" in production
+    assert "Do **not** mutate shared DAI Harness skill/protocol files" in production
     assert "score ≥ 9.0 before any work begins" not in mode_execution
     assert "3+ components MUST use antigravity" not in mode_execution
-    assert "DAI Nexus's 24 modes" in mode_index
+    assert "DAI Harness's 24 modes" in mode_index
     assert "| Goal |" in mode_index
     assert "Plan with score ≥ 9.0" not in antigravity
     assert "Senior Delivery Standard" in preflight and "RIGHT-SIZE" in preflight
@@ -177,8 +177,8 @@ def test_full_mode_and_activation_cannot_override_runtime_contract():
 
 
 def test_runtime_recovery_cannot_auto_mutate_framework_skills():
-    tracker = _read("scripts/runtime/dainexus-session-tracker.sh")
-    migrator = _read("scripts/skills/dainexus-lesson-migrator.sh")
+    tracker = _read("scripts/runtime/daiharness-session-tracker.sh")
+    migrator = _read("scripts/skills/daiharness-lesson-migrator.sh")
     recovery = _read("skills/production-grade/middleware/10-asip.md")
     memory = _read("skills/production-grade/middleware/09-memory.md")
     graceful = _read("skills/_shared/protocols/graceful-failure.md")
@@ -187,13 +187,13 @@ def test_runtime_recovery_cannot_auto_mutate_framework_skills():
 
     assert "Triggering forced ASIP evolution" not in tracker
     assert (
-        'bash "$PROJECT_DIR/scripts/dainexus-lesson-migrator.sh" migrate'
+        'bash "$PROJECT_DIR/scripts/daiharness-lesson-migrator.sh" migrate'
         not in tracker
     )
-    assert "DAINEXUS_ALLOW_FRAMEWORK_MUTATION" in migrator
+    assert "DAIHARNESS_ALLOW_FRAMEWORK_MUTATION" in migrator
     assert "migrate-framework" in migrator
     assert "Framework skill mutation is disabled by default" in migrator
-    assert "Never append session lessons into shared DAI Nexus" in recovery
+    assert "Never append session lessons into shared DAI Harness" in recovery
     assert "Never migrate project/session lessons automatically" in memory
     assert "same step fails twice" in graceful.lower()
     assert "Never trigger automatic shared-skill mutation" in verification

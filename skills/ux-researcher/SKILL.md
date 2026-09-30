@@ -6,7 +6,7 @@ description: >
   and data-driven design recommendations.
   Routed via the production-grade orchestrator (Design mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [ux, research, usability, personas, journey-mapping, interviews, heuristic]
 ---
 
@@ -842,7 +842,7 @@ Create a "Research Brief for Design" document:
 ## Output Structure
 
 ```
-.dainexus/ux-researcher/
+.daiharness/ux-researcher/
 ├── research-plan.md                 # Research questions, methods, participants
 ├── interview-guides/                # Per-session interview guides
 │   ├── session-01.md

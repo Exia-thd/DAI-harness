@@ -2,7 +2,7 @@
 
 ## Overview
 
-Integration architecture connecting DAI Nexus's production-quality Unity skills with Unity-MCP's Editor automation tools.
+Integration architecture connecting DAI Harness's production-quality Unity skills with Unity-MCP's Editor automation tools.
 
 ---
 
@@ -10,7 +10,7 @@ Integration architecture connecting DAI Nexus's production-quality Unity skills 
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     DAI Nexus Pipeline                        │
+│                     DAI Harness Pipeline                        │
 ├─────────────────────────────────────────────────────────────────┤
 │  Game Designer → Unity Engineer → Unity Shader Artist          │
 │                → Unity Multiplayer → QA                        │
@@ -20,7 +20,7 @@ Integration architecture connecting DAI Nexus's production-quality Unity skills 
 ┌─────────────────────────────────────────────────────────────────┐
 │                   Unity-MCP Bridge                             │
 ├─────────────────────────────────────────────────────────────────┤
-│  DAI Nexus Tasks              Unity-MCP Tools                 │
+│  DAI Harness Tasks              Unity-MCP Tools                 │
 │  ─────────────────             ─────────────────                │
 │  Architecture Design     →     (No Editor needed)              │
 │  Scene Setup            →     gameobject-create/modify         │
@@ -49,7 +49,7 @@ Integration architecture connecting DAI Nexus's production-quality Unity skills 
 ### Flow 1: Architecture-First (No Editor)
 
 ```
-DAI Nexus                  Unity-MCP              Unity Editor
+DAI Harness                  Unity-MCP              Unity Editor
     │                           │                       │
     │  Design SO framework      │                       │
     │──────────────────────────>│                       │
@@ -68,7 +68,7 @@ DAI Nexus                  Unity-MCP              Unity Editor
 ### Flow 2: Editor Automation
 
 ```
-DAI Nexus                  Unity-MCP              Unity Editor
+DAI Harness                  Unity-MCP              Unity Editor
     │                           │                       │
     │  Define scene structure   │                       │
     │──────────────────────────>│                       │
@@ -88,7 +88,7 @@ DAI Nexus                  Unity-MCP              Unity Editor
 ### Flow 3: Testing & Verification
 
 ```
-DAI Nexus                  Unity-MCP              Unity Editor
+DAI Harness                  Unity-MCP              Unity Editor
     │                           │                       │
     │  Define test scenarios     │                       │
     │──────────────────────────>│                       │
@@ -111,9 +111,9 @@ DAI Nexus                  Unity-MCP              Unity Editor
 
 ## Component Interactions
 
-### 1. DAI Nexus Skills → Unity-MCP
+### 1. DAI Harness Skills → Unity-MCP
 
-| DAI Nexus Component | Unity-MCP Interaction |
+| DAI Harness Component | Unity-MCP Interaction |
 |---------------------|----------------------|
 | `unity-engineer` | Scene setup, component wiring, prefab creation |
 | `unity-shader-artist` | Material creation, shader assignment, visual verification |
@@ -132,7 +132,7 @@ DAI Nexus                  Unity-MCP              Unity Editor
 ### 3. Quality Gates
 
 ```
-Unity-MCP Results ──► DAI Nexus Quality Gate
+Unity-MCP Results ──► DAI Harness Quality Gate
        │                         │
        ▼                         ▼
   Test results            Architecture compliance
@@ -173,23 +173,23 @@ unity-game-developer://
 
 ## Integration Patterns
 
-### Pattern 1: DAI Nexus-First, Unity-MCP-Second
+### Pattern 1: DAI Harness-First, Unity-MCP-Second
 
 **Workflow:**
-1. DAI Nexus: Design architecture (no Editor)
-2. DAI Nexus: Generate SO framework code
+1. DAI Harness: Design architecture (no Editor)
+2. DAI Harness: Generate SO framework code
 3. Unity-MCP: Create scene objects
 4. Unity-MCP: Assign components
-5. DAI Nexus: Review and validate
+5. DAI Harness: Review and validate
 
 **When:** New architecture, greenfield projects
 
-### Pattern 2: Unity-MCP-First, DAI Nexus-Second
+### Pattern 2: Unity-MCP-First, DAI Harness-Second
 
 **Workflow:**
 1. Unity-MCP: Create initial scene structure
-2. DAI Nexus: Analyze existing code
-3. DAI Nexus: Extend with SO patterns
+2. DAI Harness: Analyze existing code
+3. DAI Harness: Extend with SO patterns
 4. Unity-MCP: Apply changes
 
 **When:** Brownfield projects, extending existing code
@@ -197,13 +197,13 @@ unity-game-developer://
 ### Pattern 3: Interleaved (Iterative)
 
 **Workflow:**
-1. DAI Nexus: Design component
+1. DAI Harness: Design component
 2. Unity-MCP: Create GameObject
-3. DAI Nexus: Implement logic
+3. DAI Harness: Implement logic
 4. Unity-MCP: Add components
-5. DAI Nexus: Connect events
+5. DAI Harness: Connect events
 6. Unity-MCP: Test and screenshot
-7. DAI Nexus: Review and iterate
+7. DAI Harness: Review and iterate
 
 **When:** Complex features, visual verification needed
 
@@ -214,7 +214,7 @@ unity-game-developer://
 ### Integration Files
 
 ```
-dai-nexus/
+dai-harness/
 ├── skills/
 │   ├── unity-engineer/
 │   │   ├── SKILL.md              # Updated with Unity-MCP section
@@ -241,16 +241,16 @@ dai-nexus/
 
 ### 1. Custom Unity-MCP Tools
 
-DAI Nexus có thể recommend tạo custom tools cho project-specific automation:
+DAI Harness có thể recommend tạo custom tools cho project-specific automation:
 
 ```csharp
 [McpPluginToolType]
-public class Tool_DaiNexus
+public class Tool_DaiHarness
 {
-    [McpPluginTool("dai-nexus-create-so-framework")]
+    [McpPluginTool("dai-harness-create-so-framework")]
     public string CreateSOFramework()
     {
-        // Custom tool cho DAI Nexus-specific patterns
+        // Custom tool cho DAI Harness-specific patterns
     }
 }
 ```
@@ -262,7 +262,7 @@ Unity-MCP có extensions cho:
 - `Unity-AI-ParticleSystem`: VFX tools
 - `Unity-AI-ProBuilder`: ProBuilder tools
 
-DAI Nexus có thể recommend cài đặt these khi cần.
+DAI Harness có thể recommend cài đặt these khi cần.
 
 ---
 

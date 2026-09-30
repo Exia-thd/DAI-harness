@@ -1,6 +1,6 @@
 # Feature Plan: AI Game Integration
 
-> Integrate AI services (ChatGPT, Claude, image generation) into DAI Nexus game builder.
+> Integrate AI services (ChatGPT, Claude, image generation) into DAI Harness game builder.
 
 ## Metadata
 

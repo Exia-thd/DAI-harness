@@ -17,14 +17,14 @@ param(
 $ErrorActionPreference = "Stop"
 
 # Configuration
-$RepoUrl = "https://github.com/Exia-thd/DAI-nexus"
+$RepoUrl = "https://github.com/Exia-thd/DAI-harness"
 $SubmodulePath = ".antigravity/plugins/production-grade"
 $Branch = "main"
 
 function Write-Header {
     Write-Host ""
     Write-Host "  ╔══════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "  ║  DAI Nexus — 52 Skills for Antigravity              ║" -ForegroundColor Cyan
+    Write-Host "  ║  DAI Harness — 52 Skills for Antigravity              ║" -ForegroundColor Cyan
     Write-Host "  ╚══════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
     Write-Host ""
 }

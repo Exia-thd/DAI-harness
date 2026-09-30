@@ -25,7 +25,7 @@ function makeCtx(sessionId = 'test-session', turnNumber = 1): ToolContext {
 
 describe('ContextOffloadMiddleware', () => {
   it('offloads large sanitized tool output to JSONL and raw refs', () => {
-    const dataDir = mkdtempSync(join(tmpdir(), 'dai-nexus-offload-'));
+    const dataDir = mkdtempSync(join(tmpdir(), 'dai-harness-offload-'));
     const mw = new ContextOffloadMiddleware();
     mw.configure({
       enabled: true,
@@ -67,7 +67,7 @@ describe('ContextOffloadMiddleware', () => {
   });
 
   it('loads events while skipping corrupt JSONL lines', () => {
-    const dataDir = mkdtempSync(join(tmpdir(), 'dai-nexus-offload-'));
+    const dataDir = mkdtempSync(join(tmpdir(), 'dai-harness-offload-'));
     const mw = new ContextOffloadMiddleware();
     mw.configure({
       enabled: true,
@@ -90,7 +90,7 @@ describe('ContextOffloadMiddleware', () => {
   });
 
   it('skips small successful results below threshold', () => {
-    const dataDir = mkdtempSync(join(tmpdir(), 'dai-nexus-offload-'));
+    const dataDir = mkdtempSync(join(tmpdir(), 'dai-harness-offload-'));
     const mw = new ContextOffloadMiddleware();
     mw.configure({
       enabled: true,
@@ -110,7 +110,7 @@ describe('ContextOffloadMiddleware', () => {
   });
 
   it('offloads error results even when they are below threshold', () => {
-    const dataDir = mkdtempSync(join(tmpdir(), 'dai-nexus-offload-'));
+    const dataDir = mkdtempSync(join(tmpdir(), 'dai-harness-offload-'));
     const mw = new ContextOffloadMiddleware();
     mw.configure({
       enabled: true,
@@ -133,7 +133,7 @@ describe('ContextOffloadMiddleware', () => {
   });
 
   it('limits canvas to the configured number of most recent events', () => {
-    const dataDir = mkdtempSync(join(tmpdir(), 'dai-nexus-offload-'));
+    const dataDir = mkdtempSync(join(tmpdir(), 'dai-harness-offload-'));
     const mw = new ContextOffloadMiddleware();
     mw.configure({
       enabled: true,

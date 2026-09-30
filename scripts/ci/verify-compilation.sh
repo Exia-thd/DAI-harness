@@ -1,5 +1,5 @@
 #!/bin/bash
-# verify-compilation.sh - Automated compiler verification loop for DAI Nexus.
+# verify-compilation.sh - Automated compiler verification loop for DAI Harness.
 # Auto-detects project types (Unity, Godot, WebGL/Three.js/Phaser 3) and validates compilation.
 
 set -o pipefail

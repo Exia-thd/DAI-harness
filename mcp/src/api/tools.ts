@@ -21,14 +21,14 @@ import {
 export function registerTools(server: Server, toolGateway = new ToolExecutionGateway()) {
   // stdio serves one MCP client per server process. Keep its cache namespace
   // stable across calls while keeping separate server instances isolated.
-  const sessionId = `${process.env.DAINEXUS_SESSION_ID ?? 'mcp'}:${randomUUID()}`;
+  const sessionId = `${process.env.DAIHARNESS_SESSION_ID ?? 'mcp'}:${randomUUID()}`;
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
       tools: [
         {
           name: 'fw_start_pipeline',
           description:
-            'Initialize the DAI Nexus pipeline for a new project/session. Use this when the user specifies a goal (e.g. Build a SaaS, add a feature).',
+            'Initialize the DAI Harness pipeline for a new project/session. Use this when the user specifies a goal (e.g. Build a SaaS, add a feature).',
           inputSchema: {
             type: 'object',
             properties: {
@@ -44,7 +44,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
         {
           name: 'fw_get_current_phase',
           description:
-            'Get the current phase of the DAI Nexus pipeline and its locked status. Use this to determine which skill to load.',
+            'Get the current phase of the DAI Harness pipeline and its locked status. Use this to determine which skill to load.',
           inputSchema: {
             type: 'object',
             properties: {},
@@ -204,7 +204,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
         {
           name: 'fw_check_pipeline_compliance',
           description:
-            'Check whether DAI Nexus pipeline activation state is healthy and not stale. Use before closing substantial work.',
+            'Check whether DAI Harness pipeline activation state is healthy and not stale. Use before closing substantial work.',
           inputSchema: {
             type: 'object',
             properties: {

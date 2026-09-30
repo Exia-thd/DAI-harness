@@ -3,7 +3,7 @@
 # test_runtime_p1.sh — Runtime Lifecycle Guard, P1 (SPAWN) test suite
 # Plan: docs/adr/ADR-010-runtime-lifecycle-guard.md
 #
-# Isolated: DAINEXUS_RLG_HOME points into a temp dir. Real servers ARE
+# Isolated: DAIHARNESS_RLG_HOME points into a temp dir. Real servers ARE
 # started (that is the point), but only on this project's own brokered band,
 # and every one of them is killed on exit.
 #
@@ -21,8 +21,8 @@ SPAWNER="$RT/rlg_spawn.py"
 GATE="$REPO_ROOT/scripts/lite/runtime-pretool-gate.sh"
 
 SANDBOX="$(mktemp -d "${TMPDIR:-/tmp}/rlg-p1.XXXXXX")"
-export DAINEXUS_RLG_HOME="$SANDBOX/rlg-home"
-export DAINEXUS_SESSION_ID="p1-session-$$"
+export DAIHARNESS_RLG_HOME="$SANDBOX/rlg-home"
+export DAIHARNESS_SESSION_ID="p1-session-$$"
 export NO_COLOR=1
 
 PID_FILE="$SANDBOX/spawned.pids"   # see P0 suite: a shell array would be lost
@@ -155,7 +155,7 @@ log_path="$(printf '%s' "$out1" | python3 -c 'import json,sys;print(json.load(sy
 section "dev-run — fail-open when the guard is off"
 
 marker="$SANDBOX/ran-unmanaged.txt"
-DAINEXUS_RLG=off bash "$DEVRUN" --role docs --project "$PROJ" \
+DAIHARNESS_RLG=off bash "$DEVRUN" --role docs --project "$PROJ" \
   -- /bin/sh -c "echo ok > '$marker'" >/dev/null 2>&1
 sleep 0.3
 [ -f "$marker" ] && ok "guard disabled → command still runs (never blocks work)" \
@@ -164,7 +164,7 @@ sleep 0.3
 # ══ 5. gate hook ═════════════════════════════════════════════════════════════
 section "PreToolUse gate — observe mode"
 
-GATELOG="$DAINEXUS_RLG_HOME/gate.log"
+GATELOG="$DAIHARNESS_RLG_HOME/gate.log"
 : > "$GATELOG"
 mk_payload() { printf '{"session_id":"s","cwd":"%s","tool_name":"Bash","tool_input":{"command":"%s"}}' "$PROJ" "$1"; }
 
@@ -183,18 +183,18 @@ printf '{"session_id":"s","cwd":"%s","tool_name":"Bash",\n"tool_input":{"command
 assert_contains "$(tail -1 "$GATELOG")" "vite" "multi-line payload parses (bash 3.2 read -d '')"
 
 before="$(wc -l < "$GATELOG" | tr -d ' ')"
-mk_payload "npm run dev" | DAINEXUS_RLG=off bash "$GATE" >/dev/null 2>&1
+mk_payload "npm run dev" | DAIHARNESS_RLG=off bash "$GATE" >/dev/null 2>&1
 assert_eq "$(wc -l < "$GATELOG" | tr -d ' ')" "$before" "kill-switch tier 1 silences the gate"
 
-touch "$DAINEXUS_RLG_HOME/DISABLED"
+touch "$DAIHARNESS_RLG_HOME/DISABLED"
 mk_payload "npm run dev" | bash "$GATE" >/dev/null 2>&1
 assert_eq "$(wc -l < "$GATELOG" | tr -d ' ')" "$before" "kill-switch tier 2 silences the gate"
-rm -f "$DAINEXUS_RLG_HOME/DISABLED"
+rm -f "$DAIHARNESS_RLG_HOME/DISABLED"
 
-mkdir -p "$PROJ/.dainexus" && touch "$PROJ/.dainexus/rlg-optout"
+mkdir -p "$PROJ/.daiharness" && touch "$PROJ/.daiharness/rlg-optout"
 mk_payload "npm run dev" | bash "$GATE" >/dev/null 2>&1
 assert_eq "$(wc -l < "$GATELOG" | tr -d ' ')" "$before" "kill-switch tier 3 (project opt-out) silences the gate"
-rm -f "$PROJ/.dainexus/rlg-optout"
+rm -f "$PROJ/.daiharness/rlg-optout"
 
 # Non-Bash tools must be ignored entirely.
 printf '{"tool_name":"Read","tool_input":{"file_path":"/tmp/npm run dev"}}' | bash "$GATE" >/dev/null 2>&1

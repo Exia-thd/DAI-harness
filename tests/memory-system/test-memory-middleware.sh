@@ -3,10 +3,10 @@
 # NOTE: Do NOT use set -e — individual tests handle their own conditions
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DAINEXUS_DIR="$(git -C "$(dirname "$SCRIPT_DIR")" rev-parse --show-toplevel 2>/dev/null || dirname "$SCRIPT_DIR")"
-MIDDLEWARE="$DAINEXUS_DIR/scripts/memory-middleware.py"
-TMP_SESSION="$DAINEXUS_DIR/.dainexus/test-session-$$.json"
-export DAINEXUS_SESSION_LOG="$TMP_SESSION"
+DAIHARNESS_DIR="$(git -C "$(dirname "$SCRIPT_DIR")" rev-parse --show-toplevel 2>/dev/null || dirname "$SCRIPT_DIR")"
+MIDDLEWARE="$DAIHARNESS_DIR/scripts/memory-middleware.py"
+TMP_SESSION="$DAIHARNESS_DIR/.daiharness/test-session-$$.json"
+export DAIHARNESS_SESSION_LOG="$TMP_SESSION"
 
 PASS=0
 FAIL=0
@@ -15,7 +15,7 @@ TESTS=0
 pass() { PASS=$((PASS+1)); echo "  ✅ $1"; }
 fail() { FAIL=$((FAIL+1)); echo "  ❌ $1"; }
 
-cd "$DAINEXUS_DIR"
+cd "$DAIHARNESS_DIR"
 
 cleanup() { rm -f "$TMP_SESSION" "$TMP_SESSION.corrupt" "$TMP_SESSION.bak" 2>/dev/null; }
 trap cleanup EXIT
@@ -45,7 +45,7 @@ TESTS=$((TESTS+1))
 # Canonical path, not the deprecation shim: the shim writes a migration
 # warning to stderr, and merging that into stdout fed it straight to
 # json.load below. stderr is left on the terminal so failures stay visible.
-output=$(bash "$DAINEXUS_DIR/scripts/runtime/checkpoint-extract.sh" --reason test)
+output=$(bash "$DAIHARNESS_DIR/scripts/runtime/checkpoint-extract.sh" --reason test)
 if echo "$output" | python3 -c "import json,sys; d=json.load(sys.stdin); exit(0 if 'intent' in d else 1)" 2>/dev/null; then
     pass "Rich context in checkpoint"
 else

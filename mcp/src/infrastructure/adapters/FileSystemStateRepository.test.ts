@@ -8,7 +8,7 @@ import { FileSystemStateRepository, StatePersistenceError } from './FileSystemSt
 const workspaces: string[] = [];
 
 function workspace(): string {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'dai-nexus-state-'));
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'dai-harness-state-'));
   workspaces.push(directory);
   return directory;
 }
@@ -18,7 +18,7 @@ function repository(root: string, options = {}) {
 }
 
 function stateFile(root: string): string {
-  return path.join(root, '.dainexus', 'pipeline-state.json');
+  return path.join(root, '.daiharness', 'pipeline-state.json');
 }
 
 afterEach(() => {

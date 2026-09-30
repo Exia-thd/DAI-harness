@@ -56,7 +56,7 @@ const DEFAULT_CONFIG = {
   block_on_error: true,
   block_on_injection: false,
   require_non_empty_output: true,
-  metrics_file: '.dainexus/quality-gate-events.jsonl',
+  metrics_file: '.daiharness/quality-gate-events.jsonl',
 };
 
 function resultText(result: ToolResult): string {

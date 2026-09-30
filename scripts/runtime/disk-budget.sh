@@ -9,7 +9,7 @@
 # without bound because nothing ever states how big they are allowed to get.
 #
 # Thresholds come from budget.yaml — global at $RLG_HOME/budget.yaml, and a
-# project may override with its own .dainexus/budget.yaml. Reporting only;
+# project may override with its own .daiharness/budget.yaml. Reporting only;
 # deletion lives in runtime-gc.sh, deliberately a separate script so measuring
 # can never remove anything by accident.
 #
@@ -56,7 +56,7 @@ except ImportError:
 
 key = os.environ["KEY"]
 val = None
-for path in (os.environ["GLOBAL"], os.path.join(os.environ["PROJ"], ".dainexus", "budget.yaml")):
+for path in (os.environ["GLOBAL"], os.path.join(os.environ["PROJ"], ".daiharness", "budget.yaml")):
     try:
         with open(path) as fh:
             data = yaml.safe_load(fh) or {}

@@ -43,7 +43,7 @@ class TestDashboardBindPolicy:
         assert not is_loopback_host("192.168.1.20")
 
     def test_non_loopback_requires_auth_token(self):
-        with pytest.raises(ValueError, match="DAINEXUS_TOKEN_DASHBOARD_AUTH_TOKEN"):
+        with pytest.raises(ValueError, match="DAIHARNESS_TOKEN_DASHBOARD_AUTH_TOKEN"):
             validate_bind_policy("0.0.0.0", "")
         validate_bind_policy("0.0.0.0", "secret")
         validate_bind_policy("127.0.0.1", "")
@@ -232,7 +232,7 @@ class TestUnifiedAggregator:
         assert "platforms" in summary
         assert "cursor" in summary["platforms"]
         assert "claude-code" in summary["platforms"]
-        assert "dai-nexus" in summary["platforms"]
+        assert "dai-harness" in summary["platforms"]
         assert "total_estimated_cost" in summary
 
     def test_get_summary_platforms_have_required_fields(self):

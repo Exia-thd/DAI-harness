@@ -1,13 +1,13 @@
 # Changelog
 
-All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
+All notable changes to [DAI Harness](https://github.com/Exia-thd/DAI-harness).
 
 ## [Unreleased]
 
 > Features targeting v8.8.0 and beyond. Not yet released.
 
 ### Added
-- **DAI Nexus Rule Compliance Loop** — Telemetry, Rule Ledger, Execution Policy, Context Manager, and Rule Validator to self-correct and enforce rules.
+- **DAI Harness Rule Compliance Loop** — Telemetry, Rule Ledger, Execution Policy, Context Manager, and Rule Validator to self-correct and enforce rules.
 - **AI Reasoning Research Integration** — Deep NotebookLM research across 14 sources (OpenAI o1/o3, Anthropic extended thinking, Claude Code best practices) producing 15 actionable lessons (reconstructed from docs).
 - **Reasoning Checkpoint** — SOLVE Step 6.4 mandates a 1–2 sentence reasoning pause after every CHECK result (reconstructed from docs).
 - **Adversarial Review** — SOLVE Step 6.7 spawns a fresh-context reviewer for FEATURE/DEBUG tasks touching ≥3 files (reconstructed from docs).
@@ -20,11 +20,16 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
 - **Client-Server Sequence Flow Generator** — Automated Mermaid sequence diagram generation powered by GitNexus static call-graphs (reconstructed from docs).
 
 ### Fixed
+- **Inverted code blocks in 25 Markdown files** — examples written as ```` ```markdown ```` with
+  another ```` ``` ```` block inside them closed early, so the rest of the file rendered code as
+  prose and prose as code. Outer example fences are now longer than anything inside them, and
+  `tests/unit_tests/test_markdown_fences.py` fails on an unclosed block or on an inner opener
+  the length of its enclosing block.
 - **Memory graph layer restored** — The relational layer (`flux_nodes`, `flux_edges`,
   `procedural_circuits`) was reachable only through paths that a rename had corrupted, so all
   15 graph writes in the session tracker and lesson migrator failed silently. Observation ops
   now route to `scripts/lite/memory.py` and graph ops to `scripts/memory/memory-v2.py`; both
-  share `.dainexus/memory.db` over disjoint tables.
+  share `.daiharness/memory.db` over disjoint tables.
 - **14 broken engine paths** — A rename rewrote path *basenames* into repo-relative paths,
   producing doubled prefixes (`scripts/memory/scripts/lite/memory.py`) and a shim pointing at
   `scripts/scripts/lite/memory.py`. Every one is now resolved and asserted.
@@ -36,6 +41,15 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
   `cygpath -m`.
 
 ### Changed
+- **Product renamed from DAI Nexus to DAI Harness** — everywhere at once: display text, identifiers
+  (`DaiHarnessError`, `detectDaiHarnessDir`, …), environment variables (`DAIHARNESS_*`), the
+  runtime directory (`.daiharness/`, `~/.daiharness/`, `~/.daiharness-console/`), the project
+  config (`.daiharness.yaml`), script names (`scripts/**/daiharness-*.sh`), package names
+  (`@dai-harness/*`) and the MCP server's tool prefix (`dh_*`). The setup and install scripts
+  move runtime state kept under the former name the first time they run, and never merge into
+  a directory that already exists. Calls to the former `dn_*` tool names are still served.
+  Environment variables under the former prefix are no longer read: set the `DAIHARNESS_*`
+  names instead. The frozen code-graph oracle keeps its recorded paths.
 - **Workflow Consolidation** — Archived overlapping GitHub Action workflows into `.github/workflows/archive/` and simplified `ci.yml`.
 - **Game Extraction** — Removed the `game/` directory from the repository structure to decouple game assets from orchestrator CI.
 - **NPM Workspaces** — Configured `mcp` and `src/cli` as NPM workspaces in the root `package.json` to deduplicate dependencies and share the lockfile.
@@ -49,7 +63,7 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
 > **v8.7 — Evidence-Gated Kernel & Parallel Skill Distillation**
 
 ### Added
-- **DAI Nexus Lite — Evidence-Gated Kernel (Upgraded v3)**: Lightweight reasoning kernel for fast models (Gemini Flash), featuring turn-level script verification via `.dainexus/verify/<turn>.json`, turn-blocking platform hooks (Claude Code, Gemini CLI, Cursor, Codex CLI), ≤7k tokens boot budget, and objective escalations to Sonnet/Opus models.
+- **DAI Harness Lite — Evidence-Gated Kernel (Upgraded v3)**: Lightweight reasoning kernel for fast models (Gemini Flash), featuring turn-level script verification via `.daiharness/verify/<turn>.json`, turn-blocking platform hooks (Claude Code, Gemini CLI, Cursor, Codex CLI), ≤7k tokens boot budget, and objective escalations to Sonnet/Opus models.
 - **Automated Skill Distillation & Batch Upgrader**: `upgrade-skills.py` queries NotebookLM CLI in parallel via multi-agent subagents to distill all 83 skills to Lite overlays (`LITE.md`).
 - **Self-Healing Skill Indexing**: Dynamic generation of `kernel/INDEX.md` by scanning all `LITE.md` overlays, automatically mapping triggers and paths.
 - **Agent Benchmark Command** (`dai agent benchmark`): CLI command for evaluating agent performance.
@@ -83,7 +97,7 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
 - **Unified IDE MCP Setup** (`fw-mcp.sh`): Single script to configure MCP for all editors (reconstructed from docs).
 
 ### Changed
-- **DAI Nexus Node deprecated**: Added DEPRECATED notice; all new projects should use GitNexus (reconstructed from docs).
+- **DAI Harness Node deprecated**: Added DEPRECATED notice; all new projects should use GitNexus (reconstructed from docs).
 - **Post-commit hook**: Auto-reindexes GitNexus on commit (reconstructed from docs).
 
 ## [8.5.0] — 2026-05-29
@@ -91,29 +105,29 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
 > **v8.5 — GitNexus Migration**
 
 ### Added
-- **GitNexus Integration**: Migrated code intelligence from DAI Nexus Node to GitNexus (38K+ stars, npm install, auto-setup for all editors, 16 MCP tools) (reconstructed from docs).
-- **dainexus-mcp-setup.sh v3.0.0**: Unified setup script configuring both `dai-nexus` and `gitnexus` MCP servers.
+- **GitNexus Integration**: Migrated code intelligence from DAI Harness Node to GitNexus (38K+ stars, npm install, auto-setup for all editors, 16 MCP tools) (reconstructed from docs).
+- **daiharness-mcp-setup.sh v3.0.0**: Unified setup script configuring both `dai-harness` and `gitnexus` MCP servers.
 - **Multi-repo Support**: New `gitnexus group` for cross-repo analysis.
 
 ### Breaking
-- `npx dainexus-node analyze` → `gitnexus analyze`
-- `dainexus_node_*` MCP tools → `gitnexus_*` MCP tools
-- `fw-mcp.sh dainexus-node` → `gitnexus setup` (GitNexus) + `dainexus-mcp-setup.sh` (DAI Nexus)
+- `npx daiharness-node analyze` → `gitnexus analyze`
+- `daiharness_node_*` MCP tools → `gitnexus_*` MCP tools
+- `fw-mcp.sh daiharness-node` → `gitnexus setup` (GitNexus) + `daiharness-mcp-setup.sh` (DAI Harness)
 
 ## [8.4.0] — 2026-05-10
 
 > **v8.4 — Mandatory Pipeline Rule & Enhanced ASIP**
 
 ### Added
-- **Mandatory DAI Nexus Rule**: EVERY user request MUST go through the DAI Nexus pipeline after installation. Added enforcement box to README and AGENTS.md (reconstructed from docs).
+- **Mandatory DAI Harness Rule**: EVERY user request MUST go through the DAI Harness pipeline after installation. Added enforcement box to README and AGENTS.md (reconstructed from docs).
 - **Enhanced Research Gate**: ASIP Research Gate now checks NotebookLM availability first, falls back to Web Search, synthesizes insights, and updates session tracker (reconstructed from docs).
-- **Session Tracker** (`scripts/dainexus-session-tracker.sh`): Tracks consecutive plan failures; ≥2 consecutive failures trigger mandatory Research Gate (reconstructed from docs).
+- **Session Tracker** (`scripts/daiharness-session-tracker.sh`): Tracks consecutive plan failures; ≥2 consecutive failures trigger mandatory Research Gate (reconstructed from docs).
 - **Plan Quality Tracking**: Mandatory `plan → score → meta-evaluate → check ≥9 → execute` loop with max 3 iterations.
 
 ### Changed
-- **DAI Nexus Node community detection threshold** increased to 20K.
+- **DAI Harness Node community detection threshold** increased to 20K.
 - **MCP setup flow** simplified for multi-project use.
-- **Memory optimization** (round 2) for DAI Nexus Node indexer.
+- **Memory optimization** (round 2) for DAI Harness Node indexer.
 
 ## [8.3.0] — 2026-04-24
 
@@ -122,8 +136,8 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
 ### Added
 - **Adaptive Self-Improving Protocol (ASIP)** (`skills/_shared/protocols/asip.md`): Combines Plan Quality Loop + Execution Blocker Loop. Mandatory 2-failure-then-research with NotebookLM. Skills improve over time based on real failures (reconstructed from docs).
 - **ASIP Middleware** (`skills/production-grade/middleware/10-asip.md`): Enforcement middleware for ASIP protocol.
-- **ASIP Metrics** (`.dainexus/asip-metrics.json`): Tracking file for ASIP protocol performance.
-- **Lessons file** (`.dainexus/lessons.md`): Project-specific learnings from ASIP failures.
+- **ASIP Metrics** (`.daiharness/asip-metrics.json`): Tracking file for ASIP protocol performance.
+- **Lessons file** (`.daiharness/lessons.md`): Project-specific learnings from ASIP failures.
 - **Multica Hub Token Stats**: Token statistics component added to status dashboard (reconstructed from docs).
 - **Token Tracking & Cost Analytics**: `dai token on`, budget management, real-time tracking, and cost dashboard (reconstructed from docs).
 
@@ -137,11 +151,11 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
 
 ### Fixed
 - **Vitest Coverage Reporter**: Removed `minimatch` version override in `mcp/package.json` to resolve conflicts with `test-exclude` and enable Vitest coverage generation and reporting.
-- **Pipeline Test State Isolation**: Refactored `mcp/src/state/pipeline-manager.test.ts` to execute inside isolated temporary directories, preventing test runs from writing to and polluting the workspace's `.dainexus/` state directory.
+- **Pipeline Test State Isolation**: Refactored `mcp/src/state/pipeline-manager.test.ts` to execute inside isolated temporary directories, preventing test runs from writing to and polluting the workspace's `.daiharness/` state directory.
 
 ### Added
 - **Sequence Diagram Generator Update**: Automated sequence diagram generator to trace routes, extract parameters, and map client-to-server call trees using GitNexus.
-- **Submodule Auto-Update Check**: Added `scripts/dainexus-submodule-check.sh` to allow projects using DAI Nexus as a submodule to automatically check, fetch, and pull DAI Nexus updates in their git hooks (pre-commit or post-merge).
+- **Submodule Auto-Update Check**: Added `scripts/daiharness-submodule-check.sh` to allow projects using DAI Harness as a submodule to automatically check, fetch, and pull DAI Harness updates in their git hooks (pre-commit or post-merge).
 
 ## [8.1.0] — 2026-04-29
 
@@ -162,7 +176,7 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
 - **Circuit Breaker Protocol** (`skills/_shared/protocols/circuit-breaker.md`) — State machine pattern (CLOSED → OPEN → HALF_OPEN) to prevent cascading failures in parallel dispatch workers.
 - **Bulkhead Isolation Protocol** (`skills/_shared/protocols/bulkhead.md`) — Resource limits per worker type (memory, CPU, duration) with failure containment.
 - **Verification Protocol** (`skills/_shared/protocols/verification.md`) — 4-level verification framework (Contract Compliance → Acceptance Criteria → Integration → Quality Score).
-- **Quality History Schema** (`.dainexus/quality-history.schema.json`) — JSON Schema for tracking quality scores across sessions.
+- **Quality History Schema** (`.daiharness/quality-history.schema.json`) — JSON Schema for tracking quality scores across sessions.
 - **Production Config Template** (`.production-grade.yaml.example`) — Example config with circuit breaker, bulkhead, quality gate, middleware chain, and timeout settings.
 
 ### Changed
@@ -195,12 +209,12 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
 - **Middleware Chain Extraction** (`skills/production-grade/middleware/`) — 10 middleware files extracted from SKILL.md into separate files for maintainability: `01-session-data.md` through `10-graceful-failure.md`. SKILL.md reduced from 1700+ lines to ~400 lines.
 - **Modes Reference** (`skills/production-grade/modes/README.md`) — Quick-reference index for all 19 modes, gate counts, skill counts, and shared behaviors.
 - **Architecture Decision Records** (`docs/adr/`) — 4 ADRs documenting key decisions: orchestrator separation, KuzuDB read-only MCP, parallel pre-commit, skills count oscillation prevention.
-- **Health Monitoring Script** (`scripts/dainexus-node-health.sh`) — Automated index health check, staleness detection, and auto-reindex trigger.
+- **Health Monitoring Script** (`scripts/daiharness-node-health.sh`) — Automated index health check, staleness detection, and auto-reindex trigger.
 - **CLI Integration Tests** (`scripts/test-cli.sh`) — 16-test suite covering CLI commands, skills system, CI/CD, and version consistency.
 
 ### Changed
 
-- **KuzuDB readOnly mode** (`dainexus-node/src/data/db.ts`) — MCP server now opens database in read-only mode, eliminating lock conflicts with concurrent `analyze` CLI runs. Multiple MCP servers across projects can run safely alongside indexing.
+- **KuzuDB readOnly mode** (`daiharness-node/src/data/db.ts`) — MCP server now opens database in read-only mode, eliminating lock conflicts with concurrent `analyze` CLI runs. Multiple MCP servers across projects can run safely alongside indexing.
 - **Pre-commit parallelization** (`.husky/pre-commit`) — Restructured into 2-wave architecture: ESLint + Prettier run in parallel (wave 1), TypeScript + Vitest run in parallel (wave 2). ESLint uses `--cache` for incremental checks. ~2x speedup.
 - **GitHub Actions CI parallelization** (`.github/workflows/ci.yml`) — All jobs (`lint-and-format`, `typecheck`, `test`, `commitlint`) now run in parallel. `test-coverage` waits only for `test`. Total CI time reduced significantly.
 - **SKILL.md Middleware Table** — Middleware chain now documented with explicit file references, eliminating duplicate inline protocol reading.
@@ -211,10 +225,10 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
 ### Fixed
 
 - **husky version** (`package.json`) — Corrected `husky: "^10.0.0"` (non-existent) to `husky: "^9.1.7"`.
-- **typo: `forgwrightVersion`** (`scripts/mcp-generate.sh`, `mcp-generator/templates/`) — Fixed to `dai-nexusVersion` in both script and Handlebars template.
+- **typo: `forgwrightVersion`** (`scripts/mcp-generate.sh`, `mcp-generator/templates/`) — Fixed to `dai-harnessVersion` in both script and Handlebars template.
 - **Version consistency** — `package.json` `version` field bumped to `7.8.1`, matching `VERSION` file.
-- **`mcp-config.json` version** — `dai_nexus_version` updated from `7.0.0` to `7.8.1`.
-- **MCP server config** — Added `dai-nexus-dainexus-node` entry to `.cursor/mcp.json` pointing to local dai-nexus repo.
+- **`mcp-config.json` version** — `dai_harness_version` updated from `7.0.0` to `7.8.1`.
+- **MCP server config** — Added `dai-harness-daiharness-node` entry to `.cursor/mcp.json` pointing to local dai-harness repo.
 
 ### Dependencies
 
@@ -229,13 +243,13 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
 
 ## [7.8.1] — 2026-04-08
 
-> **DAI Nexus Node Enterprise — Phase 1-3**
+> **DAI Harness Node Enterprise — Phase 1-3**
 
 ### Added
 
-- **DAI Nexus Node Enterprise Features** (Phase 1-3)
-  - PR Review with blast radius analysis (`dainexus-node pr-review <base> [head]`)
-  - Symbol impact analysis (`dainexus-node impact <symbol>`)
+- **DAI Harness Node Enterprise Features** (Phase 1-3)
+  - PR Review with blast radius analysis (`daiharness-node pr-review <base> [head]`)
+  - Symbol impact analysis (`daiharness-node impact <symbol>`)
   - OpenAPI contract checking (oasdiff integration)
   - Auto Wiki generation with multi-provider LLM support
   - Auto Reindex workflow (incremental/full)
@@ -270,28 +284,28 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
 
 ## [7.8.0] — 2026-04-06
 
-> **⚠️ Breaking Change — DAI Nexus Node Database Migration**
+> **⚠️ Breaking Change — DAI Harness Node Database Migration**
 >
-> DAI Nexus Node has migrated from `better-sqlite3` to **KuzuDB** (graph database).
+> DAI Harness Node has migrated from `better-sqlite3` to **KuzuDB** (graph database).
 > Existing SQLite indexes must be migrated. Run the migration script:
 > ```bash
-> node dainexus-node/scripts/migrate-sqlite-to-kuzu.js [--dry-run]
+> node daiharness-node/scripts/migrate-sqlite-to-kuzu.js [--dry-run]
 > ```
 
 ### Added
 
-- **DAI Nexus Node Groups** (`dainexus-node/src/data/groups.ts`) — Multi-repo contract tracking. Create named groups, add repos, sync contracts, query cross-repo execution flows. 8 new MCP tools: `group_list`, `group_create`, `group_add`, `group_sync`, `group_contracts`, `group_query`, `group_status`, `group_remove`. CLI: `dainexus-node group <list|create|add|remove|sync>`.
-- **Claude Code Hooks** (`dainexus-node/.claude/hooks/`) — Auto-install on `dainexus-node setup`: `pre-tool-use.ts` enriches grep/search context with graph data; `post-tool-use.ts` auto-reindexes after git commits.
-- **SQLite → KuzuDB Migration Script** (`dainexus-node/scripts/migrate-sqlite-to-kuzu.js`) — Automated migration for existing DAI Nexus Node SQLite indexes. Run with `--dry-run` to preview.
-- **README Mermaid Diagrams** — 7 diagrams replacing ASCII art: Architecture Overview, Middleware Chain, Session Lifecycle, DAI Nexus Node Analyze Pipeline, Multi-Repo Group Management, Claude Code Hooks Flow, Request → Mode → Skills Routing.
+- **DAI Harness Node Groups** (`daiharness-node/src/data/groups.ts`) — Multi-repo contract tracking. Create named groups, add repos, sync contracts, query cross-repo execution flows. 8 new MCP tools: `group_list`, `group_create`, `group_add`, `group_sync`, `group_contracts`, `group_query`, `group_status`, `group_remove`. CLI: `daiharness-node group <list|create|add|remove|sync>`.
+- **Claude Code Hooks** (`daiharness-node/.claude/hooks/`) — Auto-install on `daiharness-node setup`: `pre-tool-use.ts` enriches grep/search context with graph data; `post-tool-use.ts` auto-reindexes after git commits.
+- **SQLite → KuzuDB Migration Script** (`daiharness-node/scripts/migrate-sqlite-to-kuzu.js`) — Automated migration for existing DAI Harness Node SQLite indexes. Run with `--dry-run` to preview.
+- **README Mermaid Diagrams** — 7 diagrams replacing ASCII art: Architecture Overview, Middleware Chain, Session Lifecycle, DAI Harness Node Analyze Pipeline, Multi-Repo Group Management, Claude Code Hooks Flow, Request → Mode → Skills Routing.
 
 ### Changed
 
-- **DAI Nexus Node Database Backend** (`dainexus-node/src/data/db.ts`, `schema.ts`, `registry.ts`) — Replaced `better-sqlite3` with `kuzu ^0.11.3`. Schema migrated from single `nodes`/`edges` tables to per-type node tables (CodeNode, Community, Process) and per-edge-type rel tables (CALLS, IMPORTS, EXTENDS, etc.). KuzuDB handles FTS and vector extensions natively.
+- **DAI Harness Node Database Backend** (`daiharness-node/src/data/db.ts`, `schema.ts`, `registry.ts`) — Replaced `better-sqlite3` with `kuzu ^0.11.3`. Schema migrated from single `nodes`/`edges` tables to per-type node tables (CodeNode, Community, Process) and per-edge-type rel tables (CALLS, IMPORTS, EXTENDS, etc.). KuzuDB handles FTS and vector extensions natively.
 - **Husky Git Hooks** (`.husky/`) — Upgraded from v9 to v10. All hook scripts updated to use `#!/usr/bin/env sh` + source `husky.sh`. `husky.sh` rewritten with v10-compatible bootstrap logic.
-- **ESLint + Security Fixes** (`dainexus-node/src/analysis/detect-changes.ts`, prompts) — Fixed 34 ESLint errors (unused vars, prefer-const, no-useless-escape, no-extra-semi, dead code). Added security overrides for `esbuild ^0.25.0` and `minimatch ^9.0.5`. Fixed 2 critical prompt bugs: `checkStaleness` variable interpolation and `detect_impact` template literal.
+- **ESLint + Security Fixes** (`daiharness-node/src/analysis/detect-changes.ts`, prompts) — Fixed 34 ESLint errors (unused vars, prefer-const, no-useless-escape, no-extra-semi, dead code). Added security overrides for `esbuild ^0.25.0` and `minimatch ^9.0.5`. Fixed 2 critical prompt bugs: `checkStaleness` variable interpolation and `detect_impact` template literal.
 - **Prettier Format** — Reformatted all 32 source files.
-- **Root-Level Scripts** (`package.json`) — Added `build:dainexus-node`, `test:dainexus-node`, `lint:dainexus-node`, `format:dainexus-node`, `build:cli`, `dev:cli`, `typecheck:cli`.
+- **Root-Level Scripts** (`package.json`) — Added `build:daiharness-node`, `test:daiharness-node`, `lint:daiharness-node`, `format:daiharness-node`, `build:cli`, `dev:cli`, `typecheck:cli`.
 
 ### Dependencies
 
@@ -303,11 +317,11 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
 
 ### Added
 
-- **DAI Nexus Node 2.1.0** (`dainexus-node/`) — Parallel worker threads, Leiden algorithm, binding propagation, suffix trie, incremental FTS, embedding cache, early-exit optimization, 15+ framework detection
+- **DAI Harness Node 2.1.0** (`daiharness-node/`) — Parallel worker threads, Leiden algorithm, binding propagation, suffix trie, incremental FTS, embedding cache, early-exit optimization, 15+ framework detection
 
 ### Changed
 
-- **DAI Nexus Node README** — Full 9-phase pipeline architecture diagram, expanded features table, performance comparison vs original pipeline, GitNexus integration docs
+- **DAI Harness Node README** — Full 9-phase pipeline architecture diagram, expanded features table, performance comparison vs original pipeline, GitNexus integration docs
 - **VERSION** — Bumped to 7.7.1
 - **Version badge** in README, AGENTS.md
 
@@ -315,15 +329,15 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
 
 ### Added
 
-- **DAI-Nexus MCP Server** (`mcp/`) — Global MCP server v1.0.0 with PipelineManager, SkillParser, PromptEngine. Enables Claude/Cursor AI assistants to interact with DAI Nexus pipeline across all projects. Listens on stdio via Model Context Protocol SDK.
+- **DAI-Harness MCP Server** (`mcp/`) — Global MCP server v1.0.0 with PipelineManager, SkillParser, PromptEngine. Enables Claude/Cursor AI assistants to interact with DAI Harness pipeline across all projects. Listens on stdio via Model Context Protocol SDK.
 - **GitHub Actions CI/CD** (`.github/workflows/ci.yml`) — Full pipeline: ESLint, Prettier format-check, TypeScript build, Vitest unit tests with v8 coverage, coverage threshold gate, commitlint on PRs.
 - **Dev tooling** (`mcp/`) — ESLint with TypeScript ESLint plugin, Prettier formatting, Vitest test runner, commitlint for Conventional Commits, `.eslintrc.json`, `.prettierrc`, `vitest.config.ts` with pool: forks.
 - **Husky Git hooks** (`.husky/`) — Pre-commit hook (ESLint + Prettier + TypeScript + Vitest), commit-msg hook for commitlint. Root `package.json` with `prepare: husky install` for auto-initialization on clone.
-- **Global Setup Script** (`scripts/setup-project.sh`) — Links DAI Nexus to any project without git submodule. Detects tech stack, runs DAI Nexus Node analyze, prints Cursor MCP config snippet.
-- **GitHub Templates** (`.github/`) — Issue templates (bug report, feature request), PR template with DAI Nexus pipeline checklist.
+- **Global Setup Script** (`scripts/setup-project.sh`) — Links DAI Harness to any project without git submodule. Detects tech stack, runs DAI Harness Node analyze, prints Cursor MCP config snippet.
+- **GitHub Templates** (`.github/`) — Issue templates (bug report, feature request), PR template with DAI Harness pipeline checklist.
 - **Cursor Subagent Review Workflow** (`.cursor/agents/`) — 5 specialized subagents: quality-reviewer, security-auditor, spec-reviewer, verifier, chat-interpreter for structured code review.
-- **DAI Nexus Node MCP Tools** (via MCP server) — `dainexus_node_query`, `dainexus_node_context`, `dainexus_node_impact`, `dainexus_node_detect_changes`, `dainexus_node_rename`, `dainexus_node_cypher` for code intelligence.
-- **Auto-initialization Check** — MCP server and DAI Nexus Node index auto-initialize on session start if `.dainexus/mcp-server/mcp-config.json` is missing.
+- **DAI Harness Node MCP Tools** (via MCP server) — `daiharness_node_query`, `daiharness_node_context`, `daiharness_node_impact`, `daiharness_node_detect_changes`, `daiharness_node_rename`, `daiharness_node_cypher` for code intelligence.
+- **Auto-initialization Check** — MCP server and DAI Harness Node index auto-initialize on session start if `.daiharness/mcp-server/mcp-config.json` is missing.
 - **Antigravity Plugin** (`.antigravity/`) — Production-grade plugin system with 52 skills, 15 shared protocols, preset templates, game dev workflows.
 
 ### Changed
@@ -338,13 +352,13 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
 
 - `.vite` build cache ignored in `.gitignore`
 - `mcp/node_modules/` tracked artifacts removed (added to `.gitignore`)
-- DAI Nexus Node code intelligence block updated with `npx dainexus-node analyze` refresh note
+- DAI Harness Node code intelligence block updated with `npx daiharness-node analyze` refresh note
 
 
 ## [7.0.0] — 2026-03-14
 
 ### Added — New Protocols (5)
-- **Project Onboarding** (`project-onboarding.md`) — 5-phase deep project analysis: fingerprint → health check → pattern analysis → risk assessment → profile generation. Produces `.dainexus/project-profile.json` and `.dainexus/code-conventions.md`.
+- **Project Onboarding** (`project-onboarding.md`) — 5-phase deep project analysis: fingerprint → health check → pattern analysis → risk assessment → profile generation. Produces `.daiharness/project-profile.json` and `.daiharness/code-conventions.md`.
 - **Session Lifecycle** (`session-lifecycle.md`) — Cross-session continuity with start/save/end hooks. Resume interrupted sessions, detect drift, memory integration.
 - **Quality Gate** (`quality-gate.md`) — Universal per-skill validation: 4 levels (Build, Regression, Standards, Traceability), 0-100 quality scoring, configurable thresholds. Works in sequential AND parallel modes.
 - **Brownfield Safety** (`brownfield-safety.md`) — Safety net: auto git branching, baseline snapshots, protected paths, change manifest, regression checks, rollback.
@@ -354,7 +368,7 @@ All notable changes to [DAI Nexus](https://github.com/Exia-thd/DAI-nexus).
 - `/onboard` — Run deep project analysis without starting pipeline.
 
 ### Added — Project State
-- `.dainexus/` directory for persistent project state (profile, conventions, session logs, quality reports).
+- `.daiharness/` directory for persistent project state (profile, conventions, session logs, quality reports).
 
 ### Changed — Orchestrator
 - **Session lifecycle pre-flight (Step 0.5)** — Loads project profile, session state, memory context, quality trends before work begins.

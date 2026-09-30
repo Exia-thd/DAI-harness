@@ -1,7 +1,7 @@
 # POLICY — Execution Policy
 
 Runtime guardrail configuration for tool execution. The policy lives in
-`.dainexus/execution-policy.yaml` and is enforced by
+`.daiharness/execution-policy.yaml` and is enforced by
 `scripts/lite/policy_check.py`, called from guard middleware ④
 (`skills/_shared/protocols/guardrail.md`) before a tool call runs.
 

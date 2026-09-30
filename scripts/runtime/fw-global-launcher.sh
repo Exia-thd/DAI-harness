@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────
-# fw-global-launcher — Global Adaptive MCP Launcher for DAI Nexus
+# fw-global-launcher — Global Adaptive MCP Launcher for DAI Harness
 #
 # A universal launcher that works with ANY project without per-project
 # setup. Uses environment variables and git root detection to find
-# the current workspace, then loads the appropriate DAI Nexus MCP.
+# the current workspace, then loads the appropriate DAI Harness MCP.
 #
 # HOW IT WORKS:
 #   1. Detect workspace (env vars → git root → PWD)
 #   2. Check global registry for known projects
-#   3. Find dai-nexus installation
+#   3. Find dai-harness installation
 #   4. Launch MCP server with workspace context
 #
 # USAGE (single entry in mcp.json):
 #   {
 #     "mcpServers": {
-#       "dai-nexus": {
+#       "dai-harness": {
 #         "command": "bash",
 #         "args": ["/path/to/fw-global-launcher.sh"]
 #       }
@@ -23,7 +23,7 @@
 #   }
 #
 # DEBUG MODE:
-#   DAINEXUS_DEBUG=1 fw-global-launcher.sh
+#   DAIHARNESS_DEBUG=1 fw-global-launcher.sh
 #
 # TEST MODE:
 #   fw-global-launcher.sh --dry-run
@@ -47,8 +47,8 @@ NC='\033[0m'
 
 # ─── Debug Logging ───────────────────────────────────────────────────────────
 
-DEBUG="${DAINEXUS_DEBUG:-0}"
-DRY_RUN="${DAINEXUS_DRY_RUN:-0}"
+DEBUG="${DAIHARNESS_DEBUG:-0}"
+DRY_RUN="${DAIHARNESS_DRY_RUN:-0}"
 
 log_debug() {
     if [[ "$DEBUG" == "1" ]]; then
@@ -69,16 +69,16 @@ log_info() {
 # ─── Constants ───────────────────────────────────────────────────────────────
 
 # Global config directory
-GLOBAL_CONFIG_DIR="${HOME}/.config/dai-nexus"
+GLOBAL_CONFIG_DIR="${HOME}/.config/dai-harness"
 GLOBAL_REGISTRY="${GLOBAL_CONFIG_DIR}/registry.json"
 GLOBAL_SETTINGS="${GLOBAL_CONFIG_DIR}/settings.env"
 
-# DAI Nexus locations (in order of preference)
-DAINEXUS_CANDIDATES=(
-    "${HOME}/Documents/GitHub/dai-nexus"
-    "${HOME}/GitHub/dai-nexus"
-    "${HOME}/Projects/dai-nexus"
-    "${DAINEXUS_DIR:-}"  # Allow env override
+# DAI Harness locations (in order of preference)
+DAIHARNESS_CANDIDATES=(
+    "${HOME}/Documents/GitHub/dai-harness"
+    "${HOME}/GitHub/dai-harness"
+    "${HOME}/Projects/dai-harness"
+    "${DAIHARNESS_DIR:-}"  # Allow env override
 )
 
 # ─── Version/Dry-Run Mode ────────────────────────────────────────────────────
@@ -91,7 +91,7 @@ cmd_version() {
 
 cmd_help() {
     cat << 'EOF'
-fw-global-launcher — Global Adaptive MCP Launcher for DAI Nexus
+fw-global-launcher — Global Adaptive MCP Launcher for DAI Harness
 
 USAGE
     fw-global-launcher.sh [OPTIONS]
@@ -103,26 +103,26 @@ OPTIONS
     --help        Show this help
 
 ENVIRONMENT VARIABLES
-    DAINEXUS_DEBUG=1           Enable debug output
-    DAINEXUS_DRY_RUN=1        Dry-run mode
-    DAINEXUS_WORKSPACE=/path  Override workspace detection
+    DAIHARNESS_DEBUG=1           Enable debug output
+    DAIHARNESS_DRY_RUN=1        Dry-run mode
+    DAIHARNESS_WORKSPACE=/path  Override workspace detection
     MCP_WORKSPACE_ROOT=/path     MCP standard workspace var
-    DAINEXUS_DIR=/path        Override dai-nexus location
-    DAINEXUS_GLOBAL_CONFIG    Override global config dir
+    DAIHARNESS_DIR=/path        Override dai-harness location
+    DAIHARNESS_GLOBAL_CONFIG    Override global config dir
 
 WORKSPACE DETECTION (priority order)
-    1. DAINEXUS_WORKSPACE env var
+    1. DAIHARNESS_WORKSPACE env var
     2. MCP_WORKSPACE_ROOT env var (MCP standard)
     3. CLAUDE_DESKTOP_WORKSPACE env var
     4. Git repository root
     5. Current working directory
 
-DAI-NEXUS DETECTION (priority order)
-    1. .dainexus/ directory in workspace
-    2. dai-nexus/ submodule in workspace
+DAI-HARNESS DETECTION (priority order)
+    1. .daiharness/ directory in workspace
+    2. dai-harness/ submodule in workspace
     3. Walk up directory tree
     4. Global config registry
-    5. Known locations (HOME/Documents/GitHub/dai-nexus, etc.)
+    5. Known locations (HOME/Documents/GitHub/dai-harness, etc.)
 EOF
     exit 0
 }
@@ -135,9 +135,9 @@ resolve_workspace() {
     log_debug "Resolving workspace..."
     
     # Priority 1: Environment variable (set by Antigravity or user)
-    if [[ -n "${DAINEXUS_WORKSPACE:-}" ]]; then
-        workspace="$DAINEXUS_WORKSPACE"
-        log_debug "  → DAINEXUS_WORKSPACE: $workspace"
+    if [[ -n "${DAIHARNESS_WORKSPACE:-}" ]]; then
+        workspace="$DAIHARNESS_WORKSPACE"
+        log_debug "  → DAIHARNESS_WORKSPACE: $workspace"
     
     # Priority 2: MCP standard workspace root
     elif [[ -n "${MCP_WORKSPACE_ROOT:-}" ]]; then
@@ -191,45 +191,45 @@ resolve_workspace() {
     echo "$workspace"
 }
 
-# ─── Step 2: Find DAI Nexus ────────────────────────────────────────────────
+# ─── Step 2: Find DAI Harness ────────────────────────────────────────────────
 
-find_dai_nexus() {
+find_dai_harness() {
     local workspace="$1"
-    local dai_nexus=""
+    local dai_harness=""
     
-    log_debug "Searching for dai-nexus in $workspace..."
+    log_debug "Searching for dai-harness in $workspace..."
     
-    # Pattern 1: .dainexus/ directory (sibling to project)
-    if [[ -d "$workspace/.dainexus" ]]; then
-        # .dainexus might contain dai-nexus itself, or be project config
-        if [[ -f "$workspace/.dainexus/AGENTS.md" ]] || [[ -f "$workspace/.dainexus/CLAUDE.md" ]]; then
-            dai_nexus="$workspace/.dainexus"
-            log_debug "  → .dainexus in workspace: $dai_nexus"
+    # Pattern 1: .daiharness/ directory (sibling to project)
+    if [[ -d "$workspace/.daiharness" ]]; then
+        # .daiharness might contain dai-harness itself, or be project config
+        if [[ -f "$workspace/.daiharness/AGENTS.md" ]] || [[ -f "$workspace/.daiharness/CLAUDE.md" ]]; then
+            dai_harness="$workspace/.daiharness"
+            log_debug "  → .daiharness in workspace: $dai_harness"
         fi
     fi
     
-    # Pattern 2: dai-nexus/ submodule
-    if [[ -z "$dai_nexus" ]] && [[ -d "$workspace/dai-nexus" ]]; then
-        if [[ -f "$workspace/dai-nexus/AGENTS.md" ]] || [[ -f "$workspace/dai-nexus/CLAUDE.md" ]]; then
-            dai_nexus="$workspace/dai-nexus"
-            log_debug "  → dai-nexus submodule: $dai_nexus"
+    # Pattern 2: dai-harness/ submodule
+    if [[ -z "$dai_harness" ]] && [[ -d "$workspace/dai-harness" ]]; then
+        if [[ -f "$workspace/dai-harness/AGENTS.md" ]] || [[ -f "$workspace/dai-harness/CLAUDE.md" ]]; then
+            dai_harness="$workspace/dai-harness"
+            log_debug "  → dai-harness submodule: $dai_harness"
         fi
     fi
     
     # Pattern 3: Walk up directory tree
-    if [[ -z "$dai_nexus" ]]; then
+    if [[ -z "$dai_harness" ]]; then
         local current="$workspace"
         while [[ "$current" != "/" ]] && [[ "$current" != "$HOME" ]]; do
-            # Check for dai-nexus markers
+            # Check for dai-harness markers
             if [[ -f "$current/AGENTS.md" ]] || [[ -f "$current/CLAUDE.md" ]]; then
-                dai_nexus="$current"
-                log_debug "  → Found by walking up: $dai_nexus"
+                dai_harness="$current"
+                log_debug "  → Found by walking up: $dai_harness"
                 break
             fi
-            # Check for .dainexus containing dai-nexus
-            if [[ -d "$current/.dainexus" ]] && [[ -f "$current/.dainexus/AGENTS.md" ]]; then
-                dai_nexus="$current/.dainexus"
-                log_debug "  → Found .dainexus: $dai_nexus"
+            # Check for .daiharness containing dai-harness
+            if [[ -d "$current/.daiharness" ]] && [[ -f "$current/.daiharness/AGENTS.md" ]]; then
+                dai_harness="$current/.daiharness"
+                log_debug "  → Found .daiharness: $dai_harness"
                 break
             fi
             current="$(dirname "$current")"
@@ -237,16 +237,16 @@ find_dai_nexus() {
     fi
     
     # Pattern 4: Check global registry
-    if [[ -z "$dai_nexus" ]] && [[ -f "$GLOBAL_REGISTRY" ]]; then
+    if [[ -z "$dai_harness" ]] && [[ -f "$GLOBAL_REGISTRY" ]]; then
         local registered
         registered=$(node -e "
 var fs = require('fs');
 try {
     var reg = JSON.parse(fs.readFileSync('${GLOBAL_REGISTRY}', 'utf8'));
-    // Find dai-nexus in projects
+    // Find dai-harness in projects
     for (var p in reg.projects || {}) {
-        if (reg.projects[p].dainexus_path) {
-            console.log(reg.projects[p].dainexus_path);
+        if (reg.projects[p].daiharness_path) {
+            console.log(reg.projects[p].daiharness_path);
             break;
         }
     }
@@ -254,18 +254,18 @@ try {
 " 2>/dev/null || echo "")
         
         if [[ -n "$registered" ]] && [[ -d "$registered" ]]; then
-            dai_nexus="$registered"
-            log_debug "  → From registry: $dai_nexus"
+            dai_harness="$registered"
+            log_debug "  → From registry: $dai_harness"
         fi
     fi
     
     # Pattern 5: Known locations
-    if [[ -z "$dai_nexus" ]]; then
-        for candidate in "${DAINEXUS_CANDIDATES[@]}"; do
+    if [[ -z "$dai_harness" ]]; then
+        for candidate in "${DAIHARNESS_CANDIDATES[@]}"; do
             if [[ -n "$candidate" ]] && [[ -d "$candidate" ]]; then
                 if [[ -f "$candidate/AGENTS.md" ]] || [[ -f "$candidate/CLAUDE.md" ]]; then
-                    dai_nexus="$candidate"
-                    log_debug "  → Known location: $dai_nexus"
+                    dai_harness="$candidate"
+                    log_debug "  → Known location: $dai_harness"
                     break
                 fi
             fi
@@ -273,31 +273,31 @@ try {
     fi
     
     # Pattern 6: Check script's own location (for development)
-    if [[ -z "$dai_nexus" ]]; then
+    if [[ -z "$dai_harness" ]]; then
         local script_path
         script_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-        local script_dai_nexus="${script_path%/*}"
+        local script_dai_harness="${script_path%/*}"
         
-        if [[ -f "${script_dai_nexus}/AGENTS.md" ]] || [[ -f "${script_dai_nexus}/CLAUDE.md" ]]; then
-            dai_nexus="$script_dai_nexus"
-            log_debug "  → From script location: $dai_nexus"
+        if [[ -f "${script_dai_harness}/AGENTS.md" ]] || [[ -f "${script_dai_harness}/CLAUDE.md" ]]; then
+            dai_harness="$script_dai_harness"
+            log_debug "  → From script location: $dai_harness"
         fi
     fi
     
-    if [[ -z "$dai_nexus" ]]; then
-        log_debug "  → No dai-nexus found"
+    if [[ -z "$dai_harness" ]]; then
+        log_debug "  → No dai-harness found"
         echo ""
         return 1
     fi
     
-    echo "$dai_nexus"
+    echo "$dai_harness"
 }
 
 # ─── Step 3: Find MCP Server ─────────────────────────────────────────────────
 
 find_mcp_server() {
     local workspace="$1"
-    local dai_nexus="$2"
+    local dai_harness="$2"
     
     log_debug "Finding MCP server..."
     
@@ -311,21 +311,21 @@ find_mcp_server() {
         fi
     fi
     
-    # Priority 2: DAI Nexus's own MCP server
-    if [[ -z "$server_path" ]] && [[ -f "${dai_nexus}/mcp-server/src/index.ts" ]]; then
-        server_path="${dai_nexus}/mcp-server/src/index.ts"
-        log_debug "  → DAI Nexus MCP server: $server_path"
+    # Priority 2: DAI Harness's own MCP server
+    if [[ -z "$server_path" ]] && [[ -f "${dai_harness}/mcp-server/src/index.ts" ]]; then
+        server_path="${dai_harness}/mcp-server/src/index.ts"
+        log_debug "  → DAI Harness MCP server: $server_path"
     fi
     
     # Priority 3: Project's MCP server
-    if [[ -z "$server_path" ]] && [[ -f "$workspace/.dainexus/mcp-server/src/index.ts" ]]; then
-        server_path="$workspace/.dainexus/mcp-server/src/index.ts"
+    if [[ -z "$server_path" ]] && [[ -f "$workspace/.daiharness/mcp-server/src/index.ts" ]]; then
+        server_path="$workspace/.daiharness/mcp-server/src/index.ts"
         log_debug "  → Project MCP server: $server_path"
     fi
     
-    # Priority 4: Legacy dai-nexus MCP server path
-    if [[ -z "$server_path" ]] && [[ -f "${dai_nexus}/mcp/src/index.ts" ]]; then
-        server_path="${dai_nexus}/mcp/src/index.ts"
+    # Priority 4: Legacy dai-harness MCP server path
+    if [[ -z "$server_path" ]] && [[ -f "${dai_harness}/mcp/src/index.ts" ]]; then
+        server_path="${dai_harness}/mcp/src/index.ts"
         log_debug "  → Legacy MCP server: $server_path"
     fi
     
@@ -357,17 +357,17 @@ check_code_graph() {
 
 load_project_settings() {
     local workspace="$1"
-    local dai_nexus="$2"
+    local dai_harness="$2"
     
     log_debug "Loading project settings..."
     
     local settings_file=""
     
     # Check project settings
-    if [[ -f "$workspace/.dainexus/settings.env" ]]; then
-        settings_file="$workspace/.dainexus/settings.env"
-    elif [[ -f "$workspace/.dainexus/.env" ]]; then
-        settings_file="$workspace/.dainexus/.env"
+    if [[ -f "$workspace/.daiharness/settings.env" ]]; then
+        settings_file="$workspace/.daiharness/settings.env"
+    elif [[ -f "$workspace/.daiharness/.env" ]]; then
+        settings_file="$workspace/.daiharness/.env"
     fi
     
     # Load settings if exists
@@ -391,7 +391,7 @@ load_project_settings() {
 
 register_project() {
     local workspace="$1"
-    local dai_nexus="$2"
+    local dai_harness="$2"
     
     # Skip if registry doesn't exist
     [[ ! -f "$GLOBAL_REGISTRY" ]] && return 0
@@ -416,7 +416,7 @@ try {
     var reg = JSON.parse(fs.readFileSync('${GLOBAL_REGISTRY}', 'utf8'));
     if (!reg.projects) reg.projects = {};
     reg.projects['${workspace}'] = {
-        dai_nexus_path: '${dai_nexus}',
+        dai_harness_path: '${dai_harness}',
         registered_at: new Date().toISOString(),
         last_used: new Date().toISOString()
     };
@@ -429,7 +429,7 @@ try {
 
 build_launch_command() {
     local workspace="$1"
-    local dai_nexus="$2"
+    local dai_harness="$2"
     local server_path="$3"
     
     # Determine the launch command
@@ -450,7 +450,7 @@ build_launch_command() {
     fi
     
     # Add workspace context via environment
-    cmd="DAINEXUS_WORKSPACE='$workspace' DAINEXUS_DIR='$dai_nexus' $cmd"
+    cmd="DAIHARNESS_WORKSPACE='$workspace' DAIHARNESS_DIR='$dai_harness' $cmd"
     
     echo "$cmd"
 }
@@ -459,7 +459,7 @@ build_launch_command() {
 
 cmd_dry_run() {
     local workspace="$1"
-    local dai_nexus="$2"
+    local dai_harness="$2"
     local server_path="$3"
     local launch_cmd="$4"
     
@@ -467,7 +467,7 @@ cmd_dry_run() {
     echo -e "${CYAN}━━━ fw-global-launcher Dry Run ━━━${NC}"
     echo ""
     echo "  Workspace:    $workspace"
-    echo "  DAI Nexus:  $dai_nexus"
+    echo "  DAI Harness:  $dai_harness"
     echo "  MCP Server:   $server_path"
     echo ""
     echo "  Launch command:"
@@ -495,7 +495,7 @@ main() {
     done
     
     log_debug "=== fw-global-launcher v${VERSION} ==="
-    log_debug "DAINEXUS_WORKSPACE: ${DAINEXUS_WORKSPACE:-<not set>}"
+    log_debug "DAIHARNESS_WORKSPACE: ${DAIHARNESS_WORKSPACE:-<not set>}"
     log_debug "MCP_WORKSPACE_ROOT: ${MCP_WORKSPACE_ROOT:-<not set>}"
     log_debug "PWD: $(pwd)"
     log_debug "GLOBAL_CONFIG: ${GLOBAL_CONFIG_DIR}"
@@ -504,21 +504,21 @@ main() {
     local workspace
     workspace="$(resolve_workspace)" || exit 1
     
-    # Step 2: Find dai-nexus
-    local dai-nexus
-    dai_nexus="$(find_dai_nexus "$workspace")" || {
-        log_error "DAI Nexus not found"
+    # Step 2: Find dai-harness
+    local dai-harness
+    dai_harness="$(find_dai_harness "$workspace")" || {
+        log_error "DAI Harness not found"
         log_info ""
-        log_info "Install DAI Nexus:"
-        log_info "  git clone https://github.com/Exia-thd/DAI-nexus"
+        log_info "Install DAI Harness:"
+        log_info "  git clone https://github.com/Exia-thd/DAI-harness"
         log_info ""
-        log_info "Or set DAINEXUS_DIR environment variable"
+        log_info "Or set DAIHARNESS_DIR environment variable"
         exit 1
     }
     
     # Step 3: Find MCP server
     local server_path
-    server_path="$(find_mcp_server "$workspace" "$dai_nexus")" || {
+    server_path="$(find_mcp_server "$workspace" "$dai_harness")" || {
         log_error "MCP server not found"
         log_info ""
         log_info "Run global setup first:"
@@ -532,18 +532,18 @@ main() {
     fi
     
     # Step 5: Load settings
-    load_project_settings "$workspace" "$dai_nexus"
+    load_project_settings "$workspace" "$dai_harness"
     
     # Step 6: Register project (optional)
-    register_project "$workspace" "$dai_nexus"
+    register_project "$workspace" "$dai_harness"
     
     # Step 7: Build launch command
     local launch_cmd
-    launch_cmd="$(build_launch_command "$workspace" "$dai_nexus" "$server_path")"
+    launch_cmd="$(build_launch_command "$workspace" "$dai_harness" "$server_path")"
     
     # Step 8: Dry run or execute
-    if [[ "$dry_run" == "true" ]] || [[ "${DAINEXUS_DRY_RUN:-0}" == "1" ]]; then
-        cmd_dry_run "$workspace" "$dai_nexus" "$server_path" "$launch_cmd"
+    if [[ "$dry_run" == "true" ]] || [[ "${DAIHARNESS_DRY_RUN:-0}" == "1" ]]; then
+        cmd_dry_run "$workspace" "$dai_harness" "$server_path" "$launch_cmd"
     fi
     
     log_debug "Launching MCP server..."

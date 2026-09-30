@@ -1,9 +1,9 @@
-# DAI Nexus — AI Orchestrator Tự Học và Tự Sửa Sai
+# DAI Harness — AI Orchestrator Tự Học và Tự Sửa Sai
 
 > **This is the Vietnamese version.** For English documentation, see [README.md](./README.md)
 
 <p align="center">
-  <img src="assets/dai-nexus-banner.png" alt="DAI Nexus Banner" width="600" />
+  <img src="assets/dai-harness-banner.png" alt="DAI Harness Banner" width="600" />
 </p>
 
 <p align="center">
@@ -20,11 +20,11 @@
 
 ---
 
-## TL;DR — DAI Nexus là gì?
+## TL;DR — DAI Harness là gì?
 
-**Tưởng tượng:** Bạn có một đội ngũ 83 chuyên gia AI. Mỗi người giỏi một việc khác nhau — viết code, kiểm tra bảo mật, thiết kế game, tối ưu tốc độ. DAI Nexus là "người quản lý" — khi bạn nói "tôi muốn build một app bán hàng", nó tự biết cần gọi chuyên gia nào, theo thứ tự nào, và kiểm tra chất lượng ra sao.
+**Tưởng tượng:** Bạn có một đội ngũ 83 chuyên gia AI. Mỗi người giỏi một việc khác nhau — viết code, kiểm tra bảo mật, thiết kế game, tối ưu tốc độ. DAI Harness là "người quản lý" — khi bạn nói "tôi muốn build một app bán hàng", nó tự biết cần gọi chuyên gia nào, theo thứ tự nào, và kiểm tra chất lượng ra sao.
 
-> **Một câu:** DAI Nexus tự động chọn đúng chuyên gia AI cho đúng việc, từ ý tưởng đến sản phẩm.
+> **Một câu:** DAI Harness tự động chọn đúng chuyên gia AI cho đúng việc, từ ý tưởng đến sản phẩm.
 
 ### Ví dụ cụ thể
 
@@ -33,7 +33,7 @@ Bạn nói:  "Build cho tôi một website bán áo thun"
 
     ↓
 
-DAI Nexus tự động làm:
+DAI Harness tự động làm:
     1. Phân tích thị trường (Business Analyst)
     2. Lên kế hoạch tính năng (Product Manager)
     3. Thiết kế kiến trúc database & API (Solution Architect)
@@ -50,13 +50,13 @@ Kết quả: Website production-ready, đã review, đã test, score 0-100
 
 ---
 
-## 🖥️ DAI Nexus Console — Giao diện Desktop Chuyên nghiệp (Premium GUI)
+## 🖥️ DAI Harness Console — Giao diện Desktop Chuyên nghiệp (Premium GUI)
 
-Bạn muốn theo dõi trực quan luồng hoạt động của agent theo thời gian thực? Hãy trải nghiệm **[DAI Nexus Console](https://feedmycode.com/)** — phiên bản giao diện Desktop cao cấp (GUI) chạy cục bộ, được thiết kế để kết hợp hoàn hảo với CLI mã nguồn mở.
+Bạn muốn theo dõi trực quan luồng hoạt động của agent theo thời gian thực? Hãy trải nghiệm **[DAI Harness Console](https://feedmycode.com/)** — phiên bản giao diện Desktop cao cấp (GUI) chạy cục bộ, được thiết kế để kết hợp hoàn hảo với CLI mã nguồn mở.
 
 <p align="center">
   <a href="https://feedmycode.com/">
-    <img src="https://img.shields.io/badge/Giao_diện_Desktop-Sở_hữu_License_Trọn_đời-brightgreen?style=for-the-badge&logo=appstore&logoColor=white" alt="Sở hữu DAI Nexus Console" />
+    <img src="https://img.shields.io/badge/Giao_diện_Desktop-Sở_hữu_License_Trọn_đời-brightgreen?style=for-the-badge&logo=appstore&logoColor=white" alt="Sở hữu DAI Harness Console" />
   </a>
 </p>
 
@@ -74,10 +74,10 @@ Bạn muốn theo dõi trực quan luồng hoạt động của agent theo thờ
 Trong kỹ nghệ AI hiện đại, một mô hình ngôn ngữ lớn (LLM) thô chỉ đóng vai trò 20% trong một agent hoàn chỉnh. 80% còn lại thuộc về **Harness (Khung vận hành)** — hệ thống điều phối execution pipeline, các rào cản an toàn (safety guardrails), bộ nhớ (cognitive memory), và các lớp kiểm thử tự động điều khiển cách AI hoạt động.
 
 <p align="center">
-  <strong>Agent = Model (Claude/GPT/Gemini) + DAI Nexus Harness</strong>
+  <strong>Agent = Model (Claude/GPT/Gemini) + DAI Harness</strong>
 </p>
 
-DAI Nexus đóng vai trò là một Harness phân phối phần mềm chuẩn production dành cho các AI coding agent:
+DAI Harness đóng vai trò là một Harness phân phối phần mềm chuẩn production dành cho các AI coding agent:
 
 *   **Middleware Chain (14 giai đoạn)**: Bọc ngoài mỗi lượt thực thi skill bằng các công cụ kiểm soát an toàn, môi trường sandbox cô lập, nén ngữ cảnh và cổng kiểm định chất lượng (Quality Gates).
 *   **Vòng lặp ASIP tự sửa đổi**: Tự động phát hiện lỗi lên plan/thực thi code, kích hoạt nghiên cứu tài liệu chuyên sâu và tự cập nhật quy trình làm việc (SOPs).
@@ -85,8 +85,8 @@ DAI Nexus đóng vai trò là một Harness phân phối phần mềm chuẩn pr
 *   **Hệ thống phòng vệ chủ động**: Tự động quét lỗ hổng bảo mật, tích hợp kiểm thử CI/CD và bảo vệ các thư mục nhạy cảm, ngăn các ảo giác của AI đưa lỗ hổng bảo mật vào dự án.
 *   **Quy trình kiểm thử Hybrid BDD-First**: Tự động phân loại độ phức tạp của tác vụ dựa trên số liệu của code graph (DAI memory). Bắt buộc thực hiện theo luồng BDD/TDD-first (`BA (BDD) -> QA (Stubs) -> Build -> Test`) cho các tác vụ phức tạp, và cho phép kiểm thử sau (test-after) đối với các hotfix rủi ro thấp.
 *   **Tối ưu hóa Gemini 3.x Native**: Hỗ trợ tối ưu hoàn toàn cho Gemini 3.5 Flash (cho các luồng điều phối nhanh với `thinking_level: MINIMAL` và strict grounding) và Gemini 3.1 Pro (cho lập luận phức tạp với `thinking_level: HIGH` và temperature 1.0). Tránh việc ép buộc Temperature 1.0 đồng loạt để giữ ổn định cho các tác vụ deterministic của Claude/GPT, đồng thời bảo toàn Thought Signatures (tránh lỗi API 400) và tự động kích hoạt Context Caching cho ngữ cảnh lớn hơn 4,096 tokens.
-*   **⚡ DAI Nexus Lite — Nhân Điều Hướng Evidence-Gated (Nâng cấp v3)**: Thiết kế đặc biệt cho các mô hình nhỏ và nhanh (ví dụ: Gemini Flash), loại bỏ các câu từ rườm rà để tập trung vào nhân lập luận gọn nhẹ kết hợp với kiểm chứng lớp script, giúp tăng đáng kể độ chính xác lập trình trên cùng một mô hình.
-    *   **Evidence-Gated Turn Checks**: Việc hoàn thành lượt (turn) được kiểm soát thông qua xác thực lớp script đối với các file bằng chứng (`.dainexus/verify/<turn>.json`), loại bỏ ảo giác và thiên kiến tự chứng thực (self-attested).
+*   **⚡ DAI Harness Lite — Nhân Điều Hướng Evidence-Gated (Nâng cấp v3)**: Thiết kế đặc biệt cho các mô hình nhỏ và nhanh (ví dụ: Gemini Flash), loại bỏ các câu từ rườm rà để tập trung vào nhân lập luận gọn nhẹ kết hợp với kiểm chứng lớp script, giúp tăng đáng kể độ chính xác lập trình trên cùng một mô hình.
+    *   **Evidence-Gated Turn Checks**: Việc hoàn thành lượt (turn) được kiểm soát thông qua xác thực lớp script đối với các file bằng chứng (`.daiharness/verify/<turn>.json`), loại bỏ ảo giác và thiên kiến tự chứng thực (self-attested).
     *   **Turn-level Platform Hooks**: Cấu hình ăn liền (out-of-the-box) cho Claude Code, Gemini CLI, Cursor, và Codex CLI để tự động chặn đứng việc thực thi nếu kiểm chứng thất bại.
     *   **Giới hạn Boot ≤7k**: Giới hạn ngữ cảnh khởi động dưới 7,000 tokens thông qua việc tải lũy tiến các kỹ năng (skill-overlay loading), giúp giữ tác vụ trong vùng nhớ đáng tin cậy của mô hình.
     *   **Leo thang Tác vụ Tự động (Objective Escalations)**: Các trigger hệ thống (như quét grep đường dẫn đối với các thay đổi về bảo mật/đồng thời/schema hoặc lỗi kiểm thử liên tiếp) sẽ tự động chuyển tác vụ cho các mô hình mạnh hơn (Sonnet/Opus).
@@ -127,7 +127,7 @@ flowchart LR
     subgraph L4["⚡⚡⚡⚡ Level 4 — Full Power"]
         direction TB
         L4A["🚀 Tất cả"]
-        L4B["• 12 công cụ DAI Nexus Node trong chat"]
+        L4B["• 12 công cụ DAI Harness Node trong chat"]
         L4C["• Tra cứu code tức thì"]
         L4D["• Cần: MCP server"]
     end
@@ -206,49 +206,49 @@ Mỗi máy dev hoặc CI dùng `agy` cần cài hook Antigravity cấp máy và 
 nhật trong repository cha một lần:
 
 ```bash
-bash dai-nexus/scripts/dainexus-install.sh --profile minimal --yes
-bash dai-nexus/scripts/dainexus-hook-doctor.sh --quick --fix
-bash dai-nexus/scripts/lite/install-submodule-update-hooks.sh "$PWD"
+bash dai-harness/scripts/daiharness-install.sh --profile minimal --yes
+bash dai-harness/scripts/daiharness-hook-doctor.sh --quick --fix
+bash dai-harness/scripts/lite/install-submodule-update-hooks.sh "$PWD"
 ```
 
 Installer sẽ thêm native named `PreToolUse` policy hook vào
 `~/.gemini/config/hooks.json`. Đây là cấu hình của Antigravity CLI, hoàn toàn
 tách biệt với `.gemini/settings.json` của Gemini CLI. Setup và `doctor --fix`
-cũng tự tạo `.dainexus/execution-policy.yaml` ở workspace cha khi còn thiếu;
+cũng tự tạo `.daiharness/execution-policy.yaml` ở workspace cha khi còn thiếu;
 nếu đã có file hoặc symlink tùy biến thì luôn giữ nguyên. Kiểm tra lại bằng:
 
 ```bash
-bash dai-nexus/scripts/dainexus-hook-doctor.sh --quick
+bash dai-harness/scripts/daiharness-hook-doctor.sh --quick
 ```
 
 Sau bước cài một lần này, `post-merge` và `post-checkout` của repository cha sẽ
-tự kiểm tra `origin/main`. Nếu submodule sạch và có thể fast-forward, DAI Nexus
+tự kiểm tra `origin/main`. Nếu submodule sạch và có thể fast-forward, DAI Harness
 sẽ tự cập nhật code, refresh Antigravity hook runtime, chạy doctor và đồng bộ MCP.
 Thay đổi local hoặc lịch sử đã phân kỳ sẽ không bị ghi đè. Bản thân thao tác mở
 `agy` không fetch Git; auto-update diễn ra khi repository cha vừa pull, merge
 hoặc checkout.
 
 Nên gọi `agy` qua các luồng delegation, escalation, benchmark hoặc
-parallel-dispatch do DAI Nexus quản lý. Các luồng này dùng đúng binary `agy`,
+parallel-dispatch do DAI Harness quản lý. Các luồng này dùng đúng binary `agy`,
 bật sandbox và mode rõ ràng, kiểm tra global policy hook, đồng thời truyền
-workspace chuẩn qua `DAINEXUS_WORKSPACE`.
+workspace chuẩn qua `DAIHARNESS_WORKSPACE`.
 
 Nếu chủ động chạy `agy` trực tiếp tại project root, phải truyền workspace và
 chọn mode rõ ràng:
 
 ```bash
-DAINEXUS_WORKSPACE="$PWD" agy --sandbox --mode accept-edits
+DAIHARNESS_WORKSPACE="$PWD" agy --sandbox --mode accept-edits
 ```
 
 Với `agy 1.1.2 --print`, runtime có thể gửi `workspacePaths` rỗng. Nếu thiếu
-`DAINEXUS_WORKSPACE`, hook DAI Nexus sẽ fail-closed và có thể chặn cả tool
+`DAIHARNESS_WORKSPACE`, hook DAI Harness sẽ fail-closed và có thể chặn cả tool
 call an toàn. File `.agents/hooks.json` vẫn được giữ để hỗ trợ project portability,
 nhưng runtime đã kiểm thử hiện chỉ load global registry; không được xóa global
 hook.
 
 ---
 
-## The Flow — DAI Nexus làm việc thế nào?
+## The Flow — DAI Harness làm việc thế nào?
 
 > Tất cả sơ đồ dưới đây hiển thị tốt trên GitHub, GitLab, và mọi trình xem mermaid.
 > Nếu không thấy hình — đảm bảo trình xem dùng **mermaid 10+**.
@@ -259,7 +259,7 @@ hook.
 flowchart TD
     START(["Bạn nói: 'Build app bán hàng'"])
     CHAT_INT{{"Chat Interpreter<br/>(chat-interpreter)"}}
-    ORCH(["DAI Nexus<br/>(người quản lý)"])
+    ORCH(["DAI Harness<br/>(người quản lý)"])
 
     START --> CHAT_INT
     CHAT_INT --> |"intent parsed"| ORCH
@@ -402,12 +402,12 @@ sequenceDiagram
     participant User
     participant Orch as Orchestrator
     participant Mem as Memory memory
-    participant DAI as DAI Nexus Node
+    participant DAI as DAI Harness Node
     participant Skill as Skills
 
     User->>Orch: New Session Start
 
-    Orch->>Orch: Step 0.5: Load .dainexus/ context
+    Orch->>Orch: Step 0.5: Load .daiharness/ context
     Orch->>Orch: Step 1: Load project-profile.json
     Orch->>Orch: Step 2: Load session-log.json
     Orch->>Orch: Step 3: memory search + code-conventions
@@ -684,9 +684,9 @@ flowchart TD
     style REPOS fill:#1a5276,stroke:#3498db,color:#fff
 ```
 
-### DAI Nexus Node Enterprise — Local Automation
+### DAI Harness Node Enterprise — Local Automation
 
-DAI Nexus/DAI Nexus Node chạy local-first; GitHub/GitLab chỉ là nơi lưu source nếu team muốn dùng, không phải nơi quyết định PASS/FAIL.
+DAI Harness/DAI Harness Node chạy local-first; GitHub/GitLab chỉ là nơi lưu source nếu team muốn dùng, không phải nơi quyết định PASS/FAIL.
 
 ```mermaid
 flowchart LR
@@ -739,7 +739,7 @@ flowchart TD
 
     subgraph PRE_HOOK["pre-tool-use.ts"]
         T1{"tool name?"}
-        T_GREP["grep / search<br/>DAI Nexus Node search<br/>→ show callers"]
+        T_GREP["grep / search<br/>DAI Harness Node search<br/>→ show callers"]
         T_READ["read file<br/>→ show file symbols"]
         T_EDIT["edit / Write<br/>→ warn about callers"]
         T_SKIP["Other tools<br/>→ skip"]
@@ -774,7 +774,7 @@ flowchart TD
     style G3 fill:#d35400,stroke:#e67e22,color:#fff
 ```
 
-### 23 Modes — Bạn nói gì, DAI Nexus chọn cái đó
+### 23 Modes — Bạn nói gì, DAI Harness chọn cái đó
 
 ```mermaid
 flowchart LR
@@ -936,21 +936,21 @@ flowchart TD
 **Bước 1:** Mở Terminal, chạy từ thư mục gốc dự án của bạn:
 
 ```bash
-git submodule add -b main https://github.com/Exia-thd/DAI-nexus dai-nexus
+git submodule add -b main https://github.com/Exia-thd/DAI-harness dai-harness
 ```
 
 **Bước 2:** Copy 2 file cần thiết:
 
 ```bash
-cp dai-nexus/AGENTS.md .
-cp dai-nexus/CLAUDE.md .
+cp dai-harness/AGENTS.md .
+cp dai-harness/CLAUDE.md .
 ```
 
 **Bước 3:** Commit:
 
 ```bash
-git add .gitmodules dai-nexus AGENTS.md CLAUDE.md
-git commit -m "feat: add dai-nexus"
+git add .gitmodules dai-harness AGENTS.md CLAUDE.md
+git commit -m "feat: add dai-harness"
 ```
 
 **Bước 4:** Khởi tạo submodule:
@@ -991,7 +991,7 @@ python3 --version
 Sau đó:
 
 ```bash
-bash dai-nexus/scripts/ensure-memory.sh "$(pwd)"
+bash dai-harness/scripts/ensure-memory.sh "$(pwd)"
 ```
 
 ### Cách 4: Cài MCP server (Level 4)
@@ -999,7 +999,7 @@ bash dai-nexus/scripts/ensure-memory.sh "$(pwd)"
 Chạy 1 lệnh:
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh
+bash dai-harness/scripts/daiharness-mcp-setup.sh
 ```
 
 Sau đó khởi động lại Cursor/VS Code.
@@ -1010,8 +1010,8 @@ Sau khi cài đặt xong và khởi động lại IDE (Cursor / Claude), việc 
 
 > Chạy `/onboard` để phân tích và khởi tạo thông tin dự án.
 
-Lệnh này giúp DAI Nexus:
-1. Tự động nhận diện ngôn ngữ & framework của dự án để tạo file cấu hình `.dainexus/project-profile.json`.
+Lệnh này giúp DAI Harness:
+1. Tự động nhận diện ngôn ngữ & framework của dự án để tạo file cấu hình `.daiharness/project-profile.json`.
 2. Kiểm tra sức khỏe hệ thống (các công cụ dev có sẵn).
 3. Thiết lập bộ nhớ cơ sở (local memory baseline) cho dự án mới này.
 
@@ -1019,8 +1019,8 @@ Lệnh này giúp DAI Nexus:
 
 ```bash
 echo "=== Kiểm tra ==="
-echo "Skills: $(ls dai-nexus/skills/ -1 2>/dev/null | wc -l | tr -d ' ')"
-echo "MCP: $([ -d dai-nexus/.dainexus/mcp-server ] || [ -d ~/.dainexus/mcp-server ] && echo 'OK' || echo 'MISSING')"
+echo "Skills: $(ls dai-harness/skills/ -1 2>/dev/null | wc -l | tr -d ' ')"
+echo "MCP: $([ -d dai-harness/.daiharness/mcp-server ] || [ -d ~/.daiharness/mcp-server ] && echo 'OK' || echo 'MISSING')"
 echo "Memory: $([ -f .memory/meta.json ] && echo 'OK' || echo 'MISSING (dai-memory init)')"
 ```
 
@@ -1046,10 +1046,10 @@ Vấn đề lớn nhất của các phiên chat AI dài là **context bloat (ph�
 
 ## Featured: MCP Tool Sandbox & Context Offload (DeerFlow IV)
 
-Để chống phình to ngữ cảnh (context bloat) và tối ưu hóa token trong các phiên chat dài, DAI Nexus tích hợp bộ đôi middleware trung gian trực tiếp trong luồng thực thi công cụ MCP (chạy tại giai đoạn ④c và ④d):
+Để chống phình to ngữ cảnh (context bloat) và tối ưu hóa token trong các phiên chat dài, DAI Harness tích hợp bộ đôi middleware trung gian trực tiếp trong luồng thực thi công cụ MCP (chạy tại giai đoạn ④c và ④d):
 
 1. **Tool Sandbox (Middleware ④c)**: Tự động chặn và kiểm duyệt mọi kết quả trả về của công cụ, loại bỏ mã màu ANSI, ngăn chặn tấn công Prompt Injection, và tự động ẩn/redact các thông tin nhạy cảm (như API keys, bearer tokens, chuỗi kết nối database PostgreSQL/MongoDB/MySQL) trước khi đưa vào cache hoặc ngữ cảnh của mô hình.
-2. **Context Offload (Middleware ④d)**: Tự động đẩy các kết quả chạy công cụ có kích thước lớn hơn ngữ cảnh quy định (mặc định: 1200 tokens) ra ngoài ngữ cảnh lưu dưới dạng các file Markdown cục bộ tại `.dainexus/offload/<session_id>/refs/<node_id>.md`.
+2. **Context Offload (Middleware ④d)**: Tự động đẩy các kết quả chạy công cụ có kích thước lớn hơn ngữ cảnh quy định (mặc định: 1200 tokens) ra ngoài ngữ cảnh lưu dưới dạng các file Markdown cục bộ tại `.daiharness/offload/<session_id>/refs/<node_id>.md`.
    - Ngữ cảnh mô hình chỉ nhận được một **mã tham chiếu truy vết (trace handle)** ngắn (ví dụ: `refs/n-X-tool-hash.md`) kèm theo bản tóm tắt cực kỳ ngắn gọn của kết quả.
    - Tiết kiệm lên tới 90% số lượng token trong ngữ cảnh.
    - Tự động duy trì và vẽ lại đồ thị luồng thực thi của phiên làm việc (`canvas.mmd` định dạng Mermaid) với các màu sắc biểu thị trạng thái trực quan (`queued`, `running`, `done`, `error`, `skipped`).
@@ -1121,7 +1121,7 @@ cd paperclip && pnpm dev
 
 ### Tích hợp LLM Wiki & Obsidian
 
-DAI Nexus tích hợp với [nashsu/llm_wiki](https://github.com/nashsu/llm_wiki) và Obsidian để quản lý và trực quan hóa tài liệu của tất cả các dự án trong một **Shared Obsidian Vault** tập trung.
+DAI Harness tích hợp với [nashsu/llm_wiki](https://github.com/nashsu/llm_wiki) và Obsidian để quản lý và trực quan hóa tài liệu của tất cả các dự án trong một **Shared Obsidian Vault** tập trung.
 
 * **Không trùng lặp dung lượng (Symlink-based):** Tài liệu của mỗi dự án con được liên kết trực tiếp vào Vault bằng liên kết mềm (Symlink), đảm bảo cập nhật thời gian thực mà không làm tăng dung lượng đĩa.
 * **Tự động hóa 2 lớp:**
@@ -1132,15 +1132,15 @@ DAI Nexus tích hợp với [nashsu/llm_wiki](https://github.com/nashsu/llm_wiki
 Các lệnh thực thi:
 ```bash
 # Đồng bộ dự án hiện tại vào Vault chung
-./scripts/dainexus-wiki-sync.sh
+./scripts/daiharness-wiki-sync.sh
 
 # Quét và đồng bộ hàng loạt tất cả dự án trong thư mục GitHub
-./scripts/dainexus-wiki-sync-all.sh
+./scripts/daiharness-wiki-sync-all.sh
 ```
 
 ### Chuẩn hóa cấu trúc tài liệu dự án
 
-Để duy trì tính nhất quán và tối ưu hóa việc truy xuất ngữ cảnh cho AI Agent (giảm thiểu ảo giác), các dự án DAI Nexus áp dụng cấu trúc thư mục tài liệu chuẩn hóa trong thư mục `docs/`:
+Để duy trì tính nhất quán và tối ưu hóa việc truy xuất ngữ cảnh cho AI Agent (giảm thiểu ảo giác), các dự án DAI Harness áp dụng cấu trúc thư mục tài liệu chuẩn hóa trong thư mục `docs/`:
 
 *   **Cấu trúc thư mục**: Phân lớp rõ ràng sử dụng tiền tố số (ví dụ: `00-vision/` cho lộ trình phát triển, `01-product/` cho yêu cầu nghiệp vụ, `02-architecture/` cho thiết kế kiến trúc và ADR, `03-guides/` cho hướng dẫn lập trình viên, `04-testing/` cho QA test case, và `05-operations/` cho tài liệu vận hành).
 *   **Quy tắc đặt tên file**: Chỉ sử dụng chữ viết thường và định dạng `kebab-case` (ví dụ: `api-specification.md`). Không sử dụng khoảng trắng hay tiếng Việt có dấu.
@@ -1176,7 +1176,7 @@ bash scripts/dai-validate.sh --json
 
 ## Bộ Công Cụ Kiểm Thử & Quản Lý Chất Lượng Chuẩn Enterprise
 
-DAI Nexus hỗ trợ hạ tầng kiểm thử mã nguồn mở hoàn toàn miễn phí, chạy offline cục bộ, giúp loại bỏ hoàn toàn chi phí bản quyền SaaS bên thứ ba và đảm bảo chất lượng phần mềm không lọt lỗi (zero-escaped bugs):
+DAI Harness hỗ trợ hạ tầng kiểm thử mã nguồn mở hoàn toàn miễn phí, chạy offline cục bộ, giúp loại bỏ hoàn toàn chi phí bản quyền SaaS bên thứ ba và đảm bảo chất lượng phần mềm không lọt lỗi (zero-escaped bugs):
 
 *   **Property-Based Testing (PBT)**: Tích hợp thư viện `fast-check` (JS/TS) và `Hypothesis` (Python) giúp tự động sinh hàng ngàn bộ dữ liệu ngẫu nhiên, dị biệt để dò tìm các lỗi biên, lỗi logic cực đoan của thuật toán trước khi release.
 *   **Mutation Testing (Kiểm thử đột biến)**: Tích hợp `Stryker` (JS/TS) và `mutmut` (Python) để tự động tiêm lỗi giả lập ("mutants") vào code logic, đánh giá độ tin cậy thực tế và chất lượng của bộ test case hiện có.
@@ -1189,7 +1189,7 @@ DAI Nexus hỗ trợ hạ tầng kiểm thử mã nguồn mở hoàn toàn miễ
 
 ## 🖼️ Tự động vẽ sơ đồ Sequence Flow Chart Client-Server (NEW v8.8.0)
 
-DAI Nexus tích hợp tính năng **Tự động vẽ và cập nhật Sequence Flow Chart** liên thông hoàn hảo giữa Client và Server sử dụng dữ liệu đồ thị tĩnh từ DAI memory và định tuyến Heuristics.
+DAI Harness tích hợp tính năng **Tự động vẽ và cập nhật Sequence Flow Chart** liên thông hoàn hảo giữa Client và Server sử dụng dữ liệu đồ thị tĩnh từ DAI memory và định tuyến Heuristics.
 
 *   **Không tốn phí & Không cần chạy App**: Tự động khớp nối các lượt gọi API ở Client (`fetch`/`axios` trong file React/Next.js) sang API handler tương ứng ở Server (`route.ts`) mà không cần khởi chạy ứng dụng hay kết nối cơ sở dữ liệu.
 *   **Truy vết sâu đồ thị cuộc gọi (Call Graph)**: Tự động chạy truy vấn đệ quy qua call graph của DAI memory (`dai-memory context`) để vẽ chi tiết luồng gọi (`Route -> Service -> Database/Prisma`).
@@ -1198,9 +1198,9 @@ DAI Nexus tích hợp tính năng **Tự động vẽ và cập nhật Sequence 
 
 **Cách sử dụng trong các dự án khác (Submodules):**
 
-Để chạy và đồng bộ sơ đồ trình tự cho bất kỳ dự án nào tích hợp DAI Nexus dưới dạng submodule:
+Để chạy và đồng bộ sơ đồ trình tự cho bất kỳ dự án nào tích hợp DAI Harness dưới dạng submodule:
 
-#### Bước 1: Cập nhật Submodule DAI Nexus mới nhất
+#### Bước 1: Cập nhật Submodule DAI Harness mới nhất
 Tại thư mục root của dự án đó, chạy lệnh sau để kéo mã nguồn script mới nhất về:
 ```bash
 git submodule update --remote --merge
@@ -1210,16 +1210,16 @@ git submodule update --remote --merge
 Sequence Generator yêu cầu call graph từ DAI memory. Nếu chưa có hoặc index cũ, hãy chạy:
 ```bash
 # 1. Cài engine (một lần, cài ra ngoài repo)
-python3 dai-nexus/scripts/lite/dai_memory.py install
+python3 dai-harness/scripts/lite/dai_memory.py install
 
 # 2. Tạo chỉ mục đồ thị cho repo
-node "$(python3 dai-nexus/scripts/lite/dai_memory.py where)/bin/dai-memory.mjs" init
+node "$(python3 dai-harness/scripts/lite/dai_memory.py where)/bin/dai-memory.mjs" init
 ```
 
 #### Bước 3: Khởi chạy vẽ sơ đồ trình tự
 Chạy script sinh sơ đồ thông qua các tham số cấu hình đường dẫn linh hoạt (CLI Arguments) của dự án đó:
 ```bash
-npx tsx dai-nexus/scripts/generate-sequence.ts \
+npx tsx dai-harness/scripts/generate-sequence.ts \
   --client <thư-mục-chứa-frontend> \
   --api <thư-mục-chứa-routes-api> \
   --repo <tên-repo (chỉ để hiển thị)> \
@@ -1229,7 +1229,7 @@ npx tsx dai-nexus/scripts/generate-sequence.ts \
 *Ví dụ thực tế:*
 Nếu dự án mới có Client tại `apps/web/src`, API routes tại `apps/web/src/pages/api`, tên repo là `my-saas-app`, và muốn lưu sơ đồ vào `docs/flows/`:
 ```bash
-npx tsx dai-nexus/scripts/generate-sequence.ts \
+npx tsx dai-harness/scripts/generate-sequence.ts \
   --client apps/web/src \
   --api apps/web/src/pages/api \
   --repo my-saas-app \
@@ -1241,15 +1241,15 @@ npx tsx dai-nexus/scripts/generate-sequence.ts \
 
 #### 🚀 Cách ép quy luật tự động hóa (Automation)
 
-1.  **Tự động cập nhật khi commit**: DAI Nexus tích hợp sẵn pre-commit hook (`.husky/pre-commit`). Khi phát hiện có thay đổi ở các file logic core (`.ts`, `.py`, `.js` trong `src/`, `mcp/` hoặc `scripts/` ngoại trừ test), hook này sẽ tự động cập nhật code graph và sinh lại sơ đồ Sequence Flow:
+1.  **Tự động cập nhật khi commit**: DAI Harness tích hợp sẵn pre-commit hook (`.husky/pre-commit`). Khi phát hiện có thay đổi ở các file logic core (`.ts`, `.py`, `.js` trong `src/`, `mcp/` hoặc `scripts/` ngoại trừ test), hook này sẽ tự động cập nhật code graph và sinh lại sơ đồ Sequence Flow:
     ```bash
     dai-memory ingest
     npx tsx scripts/generate-sequence.ts
     ```
 2.  **Ràng buộc Agent AI**: Dự án bắt buộc tự động cập nhật code graph & Sơ đồ Sequence thông qua các quy tắc (Rules) thiết lập trong file `CLAUDE.md` và `AGENTS.md`.
-3.  **Tự động kiểm tra và cập nhật Submodule DAI Nexus**: Đối với dự án dùng DAI Nexus dưới dạng submodule, cài `post-merge` và `post-checkout` idempotent vào repository cha bằng:
+3.  **Tự động kiểm tra và cập nhật Submodule DAI Harness**: Đối với dự án dùng DAI Harness dưới dạng submodule, cài `post-merge` và `post-checkout` idempotent vào repository cha bằng:
     ```bash
-    bash dai-nexus/scripts/lite/install-submodule-update-hooks.sh "$PWD"
+    bash dai-harness/scripts/lite/install-submodule-update-hooks.sh "$PWD"
     ```
     Hook giữ nguyên nội dung hook có sẵn. Khi có bản mới và submodule sạch, updater chỉ fast-forward đến `origin/main`, sau đó refresh Antigravity global hook runtime, doctor và MCP. Nếu có local changes hoặc lịch sử phân kỳ, updater sẽ bỏ qua thay vì ghi đè.
 
@@ -1269,7 +1269,7 @@ npx tsx dai-nexus/scripts/generate-sequence.ts \
 | `python3` không tìm thấy | Cài Python 3.8+ cho tính năng memory |
 | Windows: `bash` không tìm thấy | Dùng lệnh PowerShell tương đương |
 | Sơ đồ mermaid không hiển thị | Đảm bảo trình xem dùng **mermaid 10+**. GitHub/GitLab đã hỗ trợ. |
-| Lỗi `better-sqlite3` sau merge | Chạy `cd dainexus-node && npm install` để cài `kuzu` thay thế |
+| Lỗi `better-sqlite3` sau merge | Chạy `cd daiharness-node && npm install` để cài `kuzu` thay thế |
 
 ---
 
@@ -1280,7 +1280,7 @@ npx tsx dai-nexus/scripts/generate-sequence.ts \
 | `/setup` | Cài đặt lần đầu như git submodule |
 | `/update` | Kiểm tra & cài cập nhật mới (an toàn, giữ thay đổi) |
 | `/pipeline` | Xem toàn bộ pipeline, modes, và danh sách skills |
-| `/onboard` | Phân tích sâu dự án — tạo `.dainexus/project-profile.json` |
+| `/onboard` | Phân tích sâu dự án — tạo `.daiharness/project-profile.json` |
 | `/mcp` | Tạo hoặc tạo lại MCP server config |
 | `/setup-mobile-test` | Cài đặt mobile testing cho Android/iOS |
 | `/setup-auto-publish` | Cài đặt tự động publish iOS/Android (EAS & Fastlane) |
@@ -1306,7 +1306,7 @@ MIT
 
 ## Ủng hộ dự án
 
-Nếu DAI Nexus giúp bạn ship nhanh hơn, bạn có thể ủng hộ tại đây:
+Nếu DAI Harness giúp bạn ship nhanh hơn, bạn có thể ủng hộ tại đây:
 
 <p align="center">
   <img src="assets/donate/give-me-a-coffee-international.png" width="280" alt="Buy Me a Coffee" />
@@ -1315,7 +1315,7 @@ Nếu DAI Nexus giúp bạn ship nhanh hơn, bạn có thể ủng hộ tại đ
 ---
 
 <p align="center">
-  <strong>DAI Nexus — 83 AI skills. 24 modes. Persistent Memory. Code Intelligence. SaaS to AAA games.</strong>
+  <strong>DAI Harness — 83 AI skills. 24 modes. Persistent Memory. Code Intelligence. SaaS to AAA games.</strong>
 </p>
 <p align="center">
   <em>Lên kế hoạch chính xác. Build với tự tin. Mở rộng thông minh.</em>

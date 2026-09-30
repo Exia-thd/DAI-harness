@@ -1,6 +1,6 @@
 #!/bin/bash
 # skill-backup.sh — Automated backup before skill changes
-# Part of DAI Nexus Phase 2.3 Skill Versioning
+# Part of DAI Harness Phase 2.3 Skill Versioning
 # Created: 2026-05-29
 
 set -euo pipefail
@@ -14,7 +14,7 @@ NC='\033[0m'
 
 SKILL_NAME="${1:-}"
 SKILLS_DIR="skills"
-BACKUP_DIR=".dainexus/backups/skills"
+BACKUP_DIR=".daiharness/backups/skills"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 # Print colored output

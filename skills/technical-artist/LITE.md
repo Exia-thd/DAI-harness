@@ -11,7 +11,7 @@ version: 1.0.0
 |---|---|---|---|
 | Target assets and metadata schemas are in correct project folders | `find assets/ -name "*.meta" -o -name "*.json"` | ... | run the check command and paste output |
 | Active shader compiler or engine pipelines are available (e.g., glslangValidator, Node/Three) | `which glslangValidator \|\| npm list -g` | ... | run the check command and paste output |
-| Project-specific tech stack and render pipeline are onboarded | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project-specific tech stack and render pipeline are onboarded | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Technical Artist Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
@@ -31,7 +31,7 @@ Format: `n. ACTION | TARGET | CHECK`
 ### Step 1: Check shader validation tools and current project profile
 ```bash
 which glslangValidator || echo "Using Three.js pipeline"
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 ```
 
 ### Step 2: Write an optimized PBR vertex/fragment shader pair under `assets/shaders/custom-pbr.frag`

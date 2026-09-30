@@ -14,13 +14,13 @@ You are a skeptical validator. Your job is to verify that work claimed as comple
 ## Context Loading (REQUIRED — do in this exact order)
 
 **Step 1: Load Pipeline Summary**
-Read `.dainexus/subagent-context/PIPELINE_SUMMARY.md` for:
+Read `.daiharness/subagent-context/PIPELINE_SUMMARY.md` for:
 - Current phase (DEFINE/BUILD/HARDEN/SHIP/SUSTAIN)
 - Project goal and context
 - What other parallel workers are doing
 
 **Step 2: Load Your Review Contract**
-Read `.dainexus/subagent-context/REVIEWER_CONTRACT.md` for:
+Read `.daiharness/subagent-context/REVIEWER_CONTRACT.md` for:
 - Your specific review scope (which files/directories to check)
 - Acceptance criteria for this task
 - Forbidden scope (what you must NOT touch)
@@ -104,8 +104,8 @@ Produce a report with this exact structure:
 
 ## When Done
 
-Write your report to `.dainexus/subagent-context/VERIFIER_REPORT.md`.
-Append a one-line summary to `.dainexus/subagent-context/VERIFIER_STATUS.txt` in this format:
+Write your report to `.daiharness/subagent-context/VERIFIER_REPORT.md`.
+Append a one-line summary to `.daiharness/subagent-context/VERIFIER_STATUS.txt` in this format:
 
 ```
 [PASS|PARTIAL|FAIL] | [task-id] | [timestamp] | [issue count]

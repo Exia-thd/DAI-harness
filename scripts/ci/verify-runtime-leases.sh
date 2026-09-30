@@ -45,8 +45,8 @@ else
 fi
 
 echo "── runtime guard: no state committed"
-if git ls-files --error-unmatch .dainexus/runtime >/dev/null 2>&1; then
-  fail "no runtime state tracked in git" ".dainexus/runtime is committed"
+if git ls-files --error-unmatch .daiharness/runtime >/dev/null 2>&1; then
+  fail "no runtime state tracked in git" ".daiharness/runtime is committed"
 else
   pass "no runtime state tracked in git"
 fi

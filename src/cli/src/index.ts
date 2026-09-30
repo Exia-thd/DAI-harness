@@ -1,5 +1,5 @@
 /**
- * DAI Nexus CLI - Agent-First Command Line Interface
+ * DAI Harness CLI - Agent-First Command Line Interface
  *
  * Dual-purpose:
  * • Humans: colored pretty output, spinners, sensible defaults
@@ -35,7 +35,7 @@ export function buildProgram(): Command {
 
   program
     .name("dai")
-    .description("DAI Nexus CLI - Agent-First Command Line Interface")
+    .description("DAI Harness CLI - Agent-First Command Line Interface")
     .version(VERSION, "-V, --version");
 
   // Register global flags

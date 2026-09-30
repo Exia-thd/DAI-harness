@@ -1,13 +1,13 @@
 ---
 name: pipeline
 description: >
-  DAI Nexus meta-orchestrator. Turns a single requirement sentence into a
+  DAI Harness meta-orchestrator. Turns a single requirement sentence into a
   shipped app via DEFINE → BUILD → HARDEN → SHIP with user approval gates,
   and routes smaller requests (debug, review, test, ship-only) to the
   minimal subset of phases they need.
 ---
 
-# Pipeline — DAI Nexus Orchestrator
+# Pipeline — DAI Harness Orchestrator
 
 Adaptive orchestrator for all software engineering work. One agent plays every role sequentially (product manager → architect → engineer → QA/security → devops), switching hats per phase. No forced full-pipeline ceremony for everyday tasks.
 
@@ -28,10 +28,10 @@ If two modes are plausible, ask ONE MCQ. Default to the smaller mode — the use
 
 ## Workspace Layout
 
-All pipeline artifacts live under `.dainexus/` (git-ignorable, never product source):
+All pipeline artifacts live under `.daiharness/` (git-ignorable, never product source):
 
 ```
-.dainexus/
+.daiharness/
   task.md                 # live task list: id | phase | status
   decisions-log.md        # every gate approval + key decision, append-only
   product-manager/BRD/    # brd.md, constraints.md
@@ -63,11 +63,11 @@ At every gate:
 1. Present a ≤10-line summary of the artifact + where the full artifact lives.
 2. Offer: **Approve** / **I have changes** / **Show details**.
 3. WAIT. Never self-approve. "I have changes" → iterate, re-present the same gate.
-4. On approval, append one line to `.dainexus/decisions-log.md`:
+4. On approval, append one line to `.daiharness/decisions-log.md`:
    `<ISO date> | Gate N approved | <top 3 decisions>`
 5. Persist the decision to long-term memory:
    `python scripts/lite/dai_memory.py add "Gate N approved: <top decisions>" --category decisions --importance 8`
-6. If running under MCP (IDE dashboard connected): mirror the gate via `dn_request_gate_approval` / `dn_approve_gate` so the dashboard tracks state.
+6. If running under MCP (IDE dashboard connected): mirror the gate via `dh_request_gate_approval` / `dh_approve_gate` so the dashboard tracks state.
 
 ## Evidence Discipline
 

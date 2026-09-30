@@ -40,7 +40,7 @@ You are NOT an executor — you orchestrate. You delegate implementation to work
 
 ## Overview
 
-Manages parallel execution of independent tasks in the DAI Nexus pipeline. Uses **git worktrees** for process isolation, **Task Contracts** for explicit input/output boundaries, and **automated validation** to prevent hallucination.
+Manages parallel execution of independent tasks in the DAI Harness pipeline. Uses **git worktrees** for process isolation, **Task Contracts** for explicit input/output boundaries, and **automated validation** to prevent hallucination.
 
 **Max concurrent workers:** 4 (configurable via `MAX_WORKERS` env var)
 
@@ -50,7 +50,7 @@ Manages parallel execution of independent tasks in the DAI Nexus pipeline. Uses 
 
 ## Parallel Groups
 
-Based on the DAI Nexus task dependency graph:
+Based on the DAI Harness task dependency graph:
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -102,7 +102,7 @@ Quick Reference:
 
 ```bash
 # Step 1: Read settings
-view_file_outline .dainexus/settings.md
+view_file_outline .daiharness/settings.md
 # Confirm execution: parallel
 # view_file_outline engagement mode
 
@@ -154,7 +154,7 @@ interface TaskContract {
 const t3aContract: TaskContract = {
   taskId: 'T3a',
   skill: 'software-engineer',
-  inputs: ['api/', 'schemas/', 'docs/architecture/', '.dainexus/product-manager/'],
+  inputs: ['api/', 'schemas/', 'docs/architecture/', '.daiharness/product-manager/'],
   outputs: ['services/', 'libs/shared/'],
   forbidden: ['frontend/', 'mobile/', 'infrastructure/'],
   constraints: {
@@ -179,7 +179,7 @@ const t3aContract: TaskContract = {
 const t3bContract: TaskContract = {
   taskId: 'T3b',
   skill: 'frontend-engineer',
-  inputs: ['api/', '.dainexus/product-manager/', 'docs/design-tokens/'],
+  inputs: ['api/', '.daiharness/product-manager/', 'docs/design-tokens/'],
   outputs: ['frontend/'],
   forbidden: ['services/', 'mobile/', 'infrastructure/'],
   constraints: {
@@ -281,7 +281,7 @@ const t6bContract: TaskContract = {
 const tGameDevContract: TaskContract = {
   taskId: 'T_game_dev',
   skill: 'game-engineer',
-  inputs: ['Assets/', 'presets/gameplay/', '.dainexus/game-designer/'],
+  inputs: ['Assets/', 'presets/gameplay/', '.daiharness/game-designer/'],
   outputs: ['Assets/Scripts/', 'presets/gameplay/'],
   forbidden: ['infrastructure/'],
   constraints: {
@@ -301,7 +301,7 @@ const tGameDevContract: TaskContract = {
 const tSpatialDesignContract: TaskContract = {
   taskId: 'T_spatial_design',
   skill: '3d-spatial-engineer',
-  inputs: ['Assets/', '.dainexus/game-designer/'],
+  inputs: ['Assets/', '.daiharness/game-designer/'],
   outputs: ['Assets/Scenes/', 'Assets/Prefabs/'],
   forbidden: ['Assets/Scripts/'],
   constraints: {
@@ -331,7 +331,7 @@ scripts/runtime/worktree-manager.sh create T3b parallel/T3b-frontend
 scripts/runtime/worktree-manager.sh create T3c parallel/T3c-mobile
 
 # Copy CONTRACT.json into worktree root
-cp .dainexus/contracts/T3a.json parallel/T3a-backend/CONTRACT.json
+cp .daiharness/contracts/T3a.json parallel/T3a-backend/CONTRACT.json
 
 # Copy readonly input files into worktree (from contract.inputs)
 cp -r api parallel/T3a-backend/
@@ -359,7 +359,7 @@ Context Isolation Rules:
     ✅ Its CONTRACT.json (task-specific inputs/outputs/constraints)
     ✅ Its SKILL.md (skill instructions only)
     ✅ Shared API contracts (api/, schemas/ — read-only)
-    ✅ .dainexus/code-conventions.md (pattern consistency)
+    ✅ .daiharness/code-conventions.md (pattern consistency)
     ✅ Compressed pipeline summary (max 2K tokens)
 
   EACH WORKER DOES NOT RECEIVE:
@@ -396,7 +396,7 @@ Workers attempting to write outside their contract outputs → **DENY**
 
 ```bash
 # Load circuit breaker config
-CIRCUIT_FILE="${CIRCUIT_FILE:-.dainexus/circuits.json}"
+CIRCUIT_FILE="${CIRCUIT_FILE:-.daiharness/circuits.json}"
 
 # Source circuit breaker functions
 source scripts/runtime/circuit-breaker.sh
@@ -478,7 +478,7 @@ for task in T3a T3b T3c; do
   cat > "${worktree_path}/WORKER_INSTRUCTIONS.md" <<'INSTRUCTIONS'
   # Worker Instructions
 
-  You are a parallel worker in the DAI Nexus pipeline.
+  You are a parallel worker in the DAI Harness pipeline.
 
   ## Your Contract
   view_file_outline CONTRACT.json in this directory.
@@ -527,7 +527,7 @@ echo "All workers completed."
 **Safety Guarantees:**
 1. One worker OOM/timeout does NOT crash other workers
 2. Main process remains stable
-3. All bulkhead events logged to `.dainexus/bulkhead-log.md`
+3. All bulkhead events logged to `.daiharness/bulkhead-log.md`
 
 ---
 
@@ -541,7 +541,7 @@ After all workers complete, run the Cursor `spec-reviewer` subagent for each tas
 # For each task, generate reviewer contract from CONTRACT.json
 for task in T3a T3b T3c; do
   # Extract acceptance criteria from worktree CONTRACT.json
-  # Write to .dainexus/subagent-context/REVIEWER_CONTRACT_$task.md
+  # Write to .daiharness/subagent-context/REVIEWER_CONTRACT_$task.md
 done
 
 # Invoke spec-reviewer for each task
@@ -555,7 +555,7 @@ Invoke: /spec-reviewer Review T3a backend services against CONTRACT.json
 4. Checks every acceptance criterion: **PASS / FAIL / PARTIAL**
 5. Detects over-building (out of scope)
 6. Detects under-building (missing requirements)
-7. Writes report to `.dainexus/subagent-context/SPEC_REVIEW_[task-id].md`
+7. Writes report to `.daiharness/subagent-context/SPEC_REVIEW_[task-id].md`
 
 **Retry Protocol:**
 - If FAIL: feed issues back to worker → fix → re-submit → re-invoke (max 3)
@@ -578,12 +578,12 @@ Invoke: /security-auditor Perform OWASP audit on T3a auth and payment code
 2. Reads SPEC_REVIEW_[task-id].md (confirms spec passed)
 3. Assesses: naming, error handling, architecture conformance, test quality
 4. Scores: Correctness, Readability, Maintainability, Testability, Performance
-5. Writes report to `.dainexus/subagent-context/QUALITY_REVIEW_[task-id].md`
+5. Writes report to `.daiharness/subagent-context/QUALITY_REVIEW_[task-id].md`
 
 **security-auditor performs:**
 1. Checks all 10 OWASP Top 10 categories
 2. Checks MITRE CWE Top 25
-3. Writes report to `.dainexus/subagent-context/SECURITY_AUDIT_[task-id].md`
+3. Writes report to `.daiharness/subagent-context/SECURITY_AUDIT_[task-id].md`
 4. **readonly: true** — never modifies any file
 
 ### Validation Report Template
@@ -596,9 +596,9 @@ Invoke: /security-auditor Perform OWASP audit on T3a auth and payment code
   "stage2_security_audit": "PASS",
   "overall": "PASS",
   "reports": {
-    "spec": ".dainexus/subagent-context/SPEC_REVIEW_T3a.md",
-    "quality": ".dainexus/subagent-context/QUALITY_REVIEW_T3a.md",
-    "security": ".dainexus/subagent-context/SECURITY_AUDIT_T3a.md"
+    "spec": ".daiharness/subagent-context/SPEC_REVIEW_T3a.md",
+    "quality": ".daiharness/subagent-context/QUALITY_REVIEW_T3a.md",
+    "security": ".daiharness/subagent-context/SECURITY_AUDIT_T3a.md"
   },
   "validated_at": "2026-05-24T01:00:00Z",
   "summary": {
@@ -695,8 +695,8 @@ npm run test:integration
 npm run test:e2e
 
 # Step 4: Log to merge-log.md
-echo "## Merge Log" >> .dainexus/merge-log.md
-echo "$(date): T3a, T3b merged successfully" >> .dainexus/merge-log.md
+echo "## Merge Log" >> .daiharness/merge-log.md
+echo "$(date): T3a, T3b merged successfully" >> .daiharness/merge-log.md
 
 # Step 5: Clean up worktrees
 scripts/runtime/worktree-manager.sh cleanup-all
@@ -771,7 +771,7 @@ scripts/runtime/worktree-manager.sh resume T3a
 
 ## Progress Tracking
 
-Update `.dainexus/task.md`:
+Update `.daiharness/task.md`:
 
 ```markdown
 ## BUILD Phase (Parallel)
@@ -797,7 +797,7 @@ Update `.dainexus/task.md`:
 ## Execution Checklist
 
 ### Pre-Execution
-- [ ] view_file_outline .dainexus/settings.md (confirm parallel mode)
+- [ ] view_file_outline .daiharness/settings.md (confirm parallel mode)
 - [ ] view_file_outline phase dispatcher (identify tasks)
 - [ ] Build execution plan (waves, dependencies)
 - [ ] Check circuit breaker states

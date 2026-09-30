@@ -3,12 +3,12 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dai-nexus-test-'));
-// resolveWorkspaceRoot checks DAINEXUS_WORKSPACE *before* CURSOR_WORKSPACE_ROOT,
+const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dai-harness-test-'));
+// resolveWorkspaceRoot checks DAIHARNESS_WORKSPACE *before* CURSOR_WORKSPACE_ROOT,
 // so setting only the latter leaves this suite at the mercy of whatever the
 // launching shell — or a sibling test file's env stub — put in the former.
 // Clear every candidate, then point at our fixture.
-for (const key of ['DAINEXUS_WORKSPACE', 'CLASSD_WORKSPACE_ROOT', 'AGENTS_WORKSPACE']) {
+for (const key of ['DAIHARNESS_WORKSPACE', 'CLASSD_WORKSPACE_ROOT', 'AGENTS_WORKSPACE']) {
   delete process.env[key];
 }
 process.env.CURSOR_WORKSPACE_ROOT = tmpDir;
@@ -21,7 +21,7 @@ process.env.CURSOR_WORKSPACE_ROOT = tmpDir;
 // where we started so afterAll can step out before deleting.
 const ORIGINAL_CWD = process.cwd();
 
-const STATE_FILE = path.join(tmpDir, '.dainexus', 'pipeline-state.json');
+const STATE_FILE = path.join(tmpDir, '.daiharness', 'pipeline-state.json');
 
 function cleanState() {
   if (fs.existsSync(STATE_FILE)) fs.unlinkSync(STATE_FILE);
@@ -296,7 +296,7 @@ describe('Pipeline Manager', () => {
     expect(report.issues.some((issue) => issue.includes('stale'))).toBe(true);
   });
 
-  it('logTokenUsage logs usage in JSON Lines format to ~/.dainexus/usage/<folderName>/usage.log', async () => {
+  it('logTokenUsage logs usage in JSON Lines format to ~/.daiharness/usage/<folderName>/usage.log', async () => {
     const { logTokenUsage, resetWorkspaceRoot, getWorkspaceRoot } =
       await import('../state/pipeline-manager.js');
     resetWorkspaceRoot();
@@ -315,7 +315,7 @@ describe('Pipeline Manager', () => {
 
     const wsRoot = getWorkspaceRoot();
     const folderName = path.basename(wsRoot);
-    const logDir = path.join(os.homedir(), '.dainexus', 'usage', folderName);
+    const logDir = path.join(os.homedir(), '.daiharness', 'usage', folderName);
     const logFile = path.join(logDir, 'usage.log');
 
     expect(fs.existsSync(logFile)).toBe(true);

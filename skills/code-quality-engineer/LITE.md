@@ -9,7 +9,7 @@ version: 1.0.0
 ## SOLVE Step 2: GROUND (Code Quality Engineer Domain Slots)
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Project tech stack and language profile are established | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project tech stack and language profile are established | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 | Active linters and code formatting packages are configured | `cat package.json \| jq '.devDependencies \| keys' \| grep -E \"(eslint\|prettier\|biome)\"` | ... | run the check command and paste output |
 | The DAI memory code graph is present and initialized | `dai-memory status` | ... | run the check command and paste output |
 

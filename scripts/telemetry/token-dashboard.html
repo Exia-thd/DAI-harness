@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Token Usage Dashboard - DAI Nexus</title>
+  <title>Token Usage Dashboard - DAI Harness</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -581,7 +581,7 @@
         <button id="source-all" class="selected" onclick="setSource('all')">All</button>
         <button id="source-cursor" onclick="setSource('cursor')">Cursor</button>
         <button id="source-claude" onclick="setSource('claude')">Claude Code</button>
-        <button id="source-dai-nexus" onclick="setSource('dai-nexus')">DAI Nexus</button>
+        <button id="source-dai-harness" onclick="setSource('dai-harness')">DAI Harness</button>
       </div>
       <div class="segmented-button">
         <button id="period-1" onclick="setPeriod(1)">Today</button>
@@ -774,7 +774,7 @@
       if (!project) return;
 
       try {
-        // Load DAI Nexus data
+        // Load DAI Harness data
         const res = await fetch(API_BASE + `/api/usage?project=${project}&period=${currentPeriod}`);
         if (res.ok) {
           currentData = await res.json();
@@ -819,8 +819,8 @@
         updateClaudeDashboard();
       } else if (currentSource === 'cursor') {
         updateCursorDashboard();
-      } else if (currentSource === 'dai-nexus') {
-        updateDaiNexusDashboard();
+      } else if (currentSource === 'dai-harness') {
+        updateDaiHarnessDashboard();
       } else {
         updateUnifiedDashboard();
       }
@@ -892,7 +892,7 @@
       })));
     }
 
-    function updateDaiNexusDashboard() {
+    function updateDaiHarnessDashboard() {
       if (!currentData || !currentData.summary) return;
       const s = currentData.summary;
 
@@ -900,7 +900,7 @@
       document.getElementById('totalCost').textContent = '$' + s.total_cost_usd.toFixed(4);
       document.getElementById('totalCalls').textContent = formatNumber(s.total_calls);
       document.getElementById('avgLatency').textContent = Math.round(s.avg_latency_ms) + 'ms';
-      document.getElementById('tokenMeta').textContent = 'DAI Nexus only';
+      document.getElementById('tokenMeta').textContent = 'DAI Harness only';
 
       updateModelList(Object.entries(currentData.by_model || {})
         .map(([name, data]) => ({ name, ...data }))
@@ -934,7 +934,7 @@
       document.getElementById('totalCost').textContent = '$' + (totalCost + cursorEstimatedCost).toFixed(2) + ' ~';
       document.getElementById('totalCalls').textContent = formatNumber(totalCalls);
       document.getElementById('avgLatency').textContent = currentData?.summary ? Math.round(currentData.summary.avg_latency_ms) + 'ms' : '-';
-      document.getElementById('tokenMeta').textContent = cursorData?.available ? 'All sources' : 'DAI Nexus only';
+      document.getElementById('tokenMeta').textContent = cursorData?.available ? 'All sources' : 'DAI Harness only';
 
       // Combine model lists
       const allModels = [];
@@ -1213,10 +1213,10 @@
         callsData.push(platforms['claude-code'].sessions || 0);
         costsData.push(0);
       }
-      if (platforms.dainexus?.available) {
-        labels.push('DAI Nexus');
-        callsData.push(platforms.dainexus.calls || 0);
-        costsData.push(platforms.dainexus.cost || 0);
+      if (platforms.daiharness?.available) {
+        labels.push('DAI Harness');
+        callsData.push(platforms.daiharness.calls || 0);
+        costsData.push(platforms.daiharness.cost || 0);
       }
 
       if (labels.length === 0) return;

@@ -1,4 +1,4 @@
-# Antigravity — DAI Nexus Planning System
+# Antigravity — DAI Harness Planning System
 
 > **Strategic planning layer cho những features phức tạp.** Antigravity tạo planning documents có cấu trúc trước khi bắt đầu implementation.
 
@@ -24,7 +24,7 @@ vim PLAN.md SCOPE.md TASKS.md
 
 ## Overview
 
-Antigravity là nơi lưu trữ tất cả các kế hoạch, tài liệu thiết kế, và documentation cho các features lớn của DAI Nexus.
+Antigravity là nơi lưu trữ tất cả các kế hoạch, tài liệu thiết kế, và documentation cho các features lớn của DAI Harness.
 
 ### Khi nào cần Antigravity?
 
@@ -171,6 +171,6 @@ antigravity/
 
 ## Liên quan
 
-- **DAI Nexus Pipeline**: `skills/production-grade/SKILL.md`
+- **DAI Harness Pipeline**: `skills/production-grade/SKILL.md`
 - **Plan Quality Loop**: `skills/_shared/protocols/plan-quality-loop.md`
 - **Chat Interpreter**: `.cursor/agents/chat-interpreter.md`

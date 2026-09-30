@@ -1,5 +1,5 @@
 /**
- * DAI Nexus CLI Type Definitions
+ * DAI Harness CLI Type Definitions
  */
 
 // ============================================================================

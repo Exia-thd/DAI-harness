@@ -17,7 +17,7 @@ ART_REFERENCE = (
 )
 ART_OPENAI = ROOT / "skills" / "art-director" / "agents" / "openai.yaml"
 INDEX = ROOT / "kernel" / "INDEX.md"
-SKILLS_CONFIG = ROOT / ".dainexus" / "skills-config.json"
+SKILLS_CONFIG = ROOT / ".daiharness" / "skills-config.json"
 WORKFLOW = ROOT / "workflows" / "game-studio-build.md"
 GAME_PROTOCOL = ROOT / "skills" / "_shared" / "protocols" / "game-studio-pipeline.md"
 PROMPT_TEMPLATES = ROOT / "skills" / "art-director" / "prompt-templates"

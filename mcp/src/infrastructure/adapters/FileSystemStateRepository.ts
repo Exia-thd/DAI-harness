@@ -60,7 +60,7 @@ export class FileSystemStateRepository<T> implements IStateRepository<T> {
     private readonly parseState: (value: unknown) => T,
     options: FileSystemStateRepositoryOptions = {},
   ) {
-    this.dirPath = path.join(workspacePath, '.dainexus');
+    this.dirPath = path.join(workspacePath, '.daiharness');
     this.stateFile = path.join(this.dirPath, filename);
     this.lockFile = `${this.stateFile}.lock`;
     this.lockTimeoutMs = options.lockTimeoutMs ?? 2_000;

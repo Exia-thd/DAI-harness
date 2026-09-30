@@ -1,4 +1,4 @@
-# DAI Nexus Docs Hub
+# DAI Harness Docs Hub
 
 The Docs Hub inventories approved documentation from one or more projects,
 normalizes links and metadata, and generates a static HTML/CSS portal. Source
@@ -55,7 +55,7 @@ refreshes.
 
 ## Rule-context and Stop lifecycle
 
-DAI Nexus uses provider-native lifecycle hooks to keep the canonical kernel
+DAI Harness uses provider-native lifecycle hooks to keep the canonical kernel
 visible without turning rule loading into a new failure point. Codex and Claude
 receive context at session and subagent start, Gemini before the agent,
 Antigravity before model invocation, and Cursor at session start. The hook
@@ -82,13 +82,13 @@ flowchart LR
 
 Rule-context hooks never invoke the network, edit canonical sources, or build
 HTML. Their receipts contain hashes and inclusion metadata only under
-`.dainexus/runtime/rule-context/`. Operational failures return the host’s
+`.daiharness/runtime/rule-context/`. Operational failures return the host’s
 native allow response with exit code zero. The default mode is `observe`;
-`DAINEXUS_RULE_HOOK_MODE=off` is the kill switch, while `enforce` remains
+`DAIHARNESS_RULE_HOOK_MODE=off` is the kill switch, while `enforce` remains
 advisory and does not block normal project work.
 
 The separate Docs continuity check also defaults to `observe`. Setting
-`DAINEXUS_DOCS_CONTINUITY_MODE=enforce` permits one retry only when a
+`DAIHARNESS_DOCS_CONTINUITY_MODE=enforce` permits one retry only when a
 material docs change and a present build receipt are confidently identified as
 stale. Missing infrastructure, malformed metadata, the second pass, and retry
 state failures all allow Stop with `UNVERIFIED`; the hook never builds or
@@ -96,14 +96,14 @@ migrates a project during Stop. Global and submodule installs can repair the
 runtime and lifecycle entries with:
 
 ```bash
-bash scripts/hooks/dainexus-hook-doctor.sh --quick --fix
+bash scripts/hooks/daiharness-hook-doctor.sh --quick --fix
 ```
 
 ## Safety model
 
 - Collection is **allowlist-only**.
 - Every source and symlink is resolved inside its canonical project root.
-- Credential, secret, worktree, dependency, Git, and private DAI Nexus
+- Credential, secret, worktree, dependency, Git, and private DAI Harness
   runtime paths are denied before file content is read.
 - Markdown HTML is escaped rather than executed.
 - Generated HTML/CSS is never treated as a source document and must never be
@@ -145,18 +145,18 @@ dai docs build --all
 The default registry is:
 
 ```text
-$DAINEXUS_HOME/docs-hub/projects.json
+$DAIHARNESS_HOME/docs-hub/projects.json
 ```
 
-When `DAINEXUS_HOME` is unset, it falls back to:
+When `DAIHARNESS_HOME` is unset, it falls back to:
 
 ```text
-~/.dainexus/docs-hub/projects.json
+~/.daiharness/docs-hub/projects.json
 ```
 
 ## Manifest
 
-`dai docs init` creates `.dainexus/docs-manifest.json` without
+`dai docs init` creates `.daiharness/docs-manifest.json` without
 overwriting an existing manifest unless `--force` is supplied.
 
 The manifest is v1 and the parser keeps `project_docs` optional-compatible so
@@ -241,15 +241,15 @@ Use the root `--json` flag for a stable agent-readable envelope.
 Single-project defaults:
 
 ```text
-<project>/.dainexus/cache/docs-index.json
-<project>/.dainexus/docs-hub/site/
+<project>/.daiharness/cache/docs-index.json
+<project>/.daiharness/docs-hub/site/
 ```
 
 Multi-project defaults:
 
 ```text
-$DAINEXUS_HOME/docs-hub/site/
-$DAINEXUS_HOME/docs-hub/obsidian/
+$DAIHARNESS_HOME/docs-hub/site/
+$DAIHARNESS_HOME/docs-hub/obsidian/
 ```
 
 The portal includes:
@@ -294,7 +294,7 @@ continuous contract before material edits.
 
 The canonical required-check runner uses `origin/main` when the current branch
 contains unpushed commits and otherwise checks the worktree. Release automation
-can set `DAINEXUS_DOCS_BASE_REF` to the exact reviewed base revision; this
+can set `DAIHARNESS_DOCS_BASE_REF` to the exact reviewed base revision; this
 keeps same-changeset enforcement explicit and provider-neutral.
 
 ## Canonical state and migration
@@ -318,7 +318,7 @@ documents or an existing state file.
 Use a stable project ID and project-relative source path:
 
 ```markdown
-dai-nexus://platform-core/docs/architecture.md#runtime
+dai-harness://platform-core/docs/architecture.md#runtime
 ```
 
 The target project must be included in the same multi-project build. Missing
@@ -334,5 +334,5 @@ dai docs export obsidian --all
 
 Exports contain copies of approved sources and generated navigation files. The
 exporter never writes into source docs and does not create source symlinks.
-The older `scripts/dai-nexus-wiki-sync*.sh` commands are retained only as
+The older `scripts/dai-harness-wiki-sync*.sh` commands are retained only as
 legacy compatibility paths.

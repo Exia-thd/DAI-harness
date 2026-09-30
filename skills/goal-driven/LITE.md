@@ -9,9 +9,9 @@ version: 1.0.0
 ## SOLVE Step 2: GROUND (Goal Driven Domain Slots)
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
-| Project-specific tech stack and baseline profile are onboarded | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project-specific tech stack and baseline profile are onboarded | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 | Standard task list or target execution checklist is initialized | `cat TASKS.md \|\| cat docs/05-operations/tasks.md` | ... | run the check command and paste output |
-| Live session execution graph is initialized to monitor progress | `cat .dainexus/offload/canvas.mmd` | ... | run the check command and paste output |
+| Live session execution graph is initialized to monitor progress | `cat .daiharness/offload/canvas.mmd` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Goal Driven Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
@@ -25,14 +25,14 @@ Format: `n. ACTION | TARGET | CHECK`
 - **Green-suite goal hacking**: Treating "all tests pass" as permission to rewrite the tests. A green suite is only a verifier; behavioral test cases stay requirement-locked and may change only after an explicit current requirement change. Missing/ambiguous expected behavior blocks the step and requires user/product-owner clarification.
 - **Unverified Progress Checkpoints**: Proceeding to downstream planning steps after an intermediate task fails, compounding errors and polluting the workspace.
 - **Amorphous Definition of Done**: Specifying subtasks with vague, non-testable descriptions (e.g., "make it work") instead of explicit CLI/assertion verifications.
-- **Infinite Loop Brute-Forcing**: Retrying a failing implementation path more than twice without triggering the mandatory Research Gate and updating `.dainexus/lessons.md`.
+- **Infinite Loop Brute-Forcing**: Retrying a failing implementation path more than twice without triggering the mandatory Research Gate and updating `.daiharness/lessons.md`.
 - **Ignoring Token Caching Thresholds**: Running massive multi-step plan loops without utilizing context offloading, causing immediate token bloat and context memory exhaustion.
 - **Sentinel Goal Budget**: Never pass a fake positive budget such as `1` when a Codex Goal bridge requires one. Use objective-only goals when supported; otherwise continue with the normal task plan without creating an app goal.
 - **Non-Compliant File Names**: Storing task checklists or planning logs under `docs/` using CamelCase or spaces instead of strictly lowercase kebab-case (e.g., `project-roadmap.md`).
 
 ### Step 1: Ground the active project scope and baseline status
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 ```
 
 ### Step 2: Initialize a compliant, lowercase kebab-case goal-tracking checklist `docs/05-operations/tasks.md`

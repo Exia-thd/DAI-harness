@@ -84,7 +84,7 @@ NotebookLM, RAG, web search, code search, or another research assistant may acce
 
 ## Learning Boundary
 
-Validated project-specific insights belong in project-local state such as `.dainexus/plan-lessons.md`, `.dainexus/execution-lessons.md`, decision logs, design contracts, or compact handoff state when they have reuse value.
+Validated project-specific insights belong in project-local state such as `.daiharness/plan-lessons.md`, `.daiharness/execution-lessons.md`, decision logs, design contracts, or compact handoff state when they have reuse value.
 
 A lesson is reusable only when it contains:
 - observed problem/context;
@@ -93,7 +93,7 @@ A lesson is reusable only when it contains:
 - applicability boundary / when not to use it;
 - verifier or source.
 
-Do **not** mutate shared DAI Nexus skills during an unrelated client task. Framework-level promotion is an explicit DAI Nexus-development change with regression tests, contradiction audit, and review.
+Do **not** mutate shared DAI Harness skills during an unrelated client task. Framework-level promotion is an explicit DAI Harness-development change with regression tests, contradiction audit, and review.
 
 ## Output
 

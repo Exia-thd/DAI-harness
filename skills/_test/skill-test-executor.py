@@ -251,7 +251,7 @@ def validate_live_result(result: Any, test: dict[str, Any]) -> list[str]:
 
 
 def resolve_adapter(command: str | None) -> list[str] | None:
-    raw = command or os.environ.get("DAINEXUS_SKILL_TEST_ADAPTER")
+    raw = command or os.environ.get("DAIHARNESS_SKILL_TEST_ADAPTER")
     if not raw:
         return None
     argv = shlex.split(raw)

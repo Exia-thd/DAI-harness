@@ -93,7 +93,7 @@ elif command -v snip &> /dev/null; then
 
 # 4. Native filter (bash + awk + sed, no deps, always available)
 else
-    compressor="dai-nexus-shell-filter"
+    compressor="dai-harness-shell-filter"
 fi
 ```
 
@@ -116,8 +116,8 @@ If the original output is < 500 characters and < 20 lines, skip filtering (not w
 |-------|-----|
 | Claude Code PreToolUse | Hook intercepts, transforms command |
 | Cursor hooks | hooks.json config |
-| DAI Nexus middleware | `middleware/shell-filter.ts` |
-| Session audit log | `.dainexus/tool-audit.jsonl` |
+| DAI Harness middleware | `middleware/shell-filter.ts` |
+| Session audit log | `.daiharness/tool-audit.jsonl` |
 
 ## Metrics Tracked
 

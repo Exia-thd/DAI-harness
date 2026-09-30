@@ -1,6 +1,6 @@
 # SCORE Evaluation — Tiểu My Community Engagement Plan (v2)
 **Subject:** Tiểu My AI/Coding Community Engagement Strategy
-**Evaluator:** DAI Nexus AntiGravity
+**Evaluator:** DAI Harness AntiGravity
 **Date:** 2026-04-17
 **Overall Score: 78 / 80 → 97.5%**
 
@@ -283,10 +283,10 @@ The plan has been comprehensively upgraded from a solid foundation (91%) to an e
 
 ### Recommendation
 
-**Proceed with execution.** The plan is now at 97.5% alignment with DAI Nexus standards. All critical gaps have been addressed. The remaining minor notes are edge cases that will be handled naturally during execution.
+**Proceed with execution.** The plan is now at 97.5% alignment with DAI Harness standards. All critical gaps have been addressed. The remaining minor notes are edge cases that will be handled naturally during execution.
 
 ---
 
-*Last scored: 2026-04-17 | Owner: Tiểu My / DAI Nexus AntiGravity*
+*Last scored: 2026-04-17 | Owner: Tiểu My / DAI Harness AntiGravity*
 *Previous score: 73/80 (91.25%) → Current: 78/80 (97.5%)*
 *All 8 criteria now ≥9.0/10 ✓*

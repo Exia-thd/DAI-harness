@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shared, fail-closed primitives for the DAI Nexus evidence boundary."""
+"""Shared, fail-closed primitives for the DAI Harness evidence boundary."""
 
 from __future__ import annotations
 
@@ -109,7 +109,7 @@ def fchmod(fd: int, mode: int, path: Path | str | None = None) -> None:
 # Runtime-owned state changes as a consequence of verification, hooks, and
 # independent subagent review. Hashing these paths makes the act of reviewing
 # invalidate the evidence it is reviewing. Keep the exclusion explicit and
-# narrow: project configuration and source under .dainexus remain covered.
+# narrow: project configuration and source under .daiharness remain covered.
 # Regenerable tool caches. Named explicitly rather than excluding ignored
 # files as a class: hashing ignored content is deliberate, so that a change
 # cannot be hidden in a gitignored file. These specific directories are
@@ -174,34 +174,34 @@ _DERIVED_CACHE_RE = re.compile(
 
 _FINGERPRINT_RUNTIME_DIRS = frozenset(
     {
-        ".dainexus/cache",
-        ".dainexus/escalations",
-        ".dainexus/local-ci-venv",
-        ".dainexus/memory-bank",
-        ".dainexus/metrics",
-        ".dainexus/runtime",
-        ".dainexus/subagent-context",
-        ".dainexus/telemetry",
-        ".dainexus/verify",
+        ".daiharness/cache",
+        ".daiharness/escalations",
+        ".daiharness/local-ci-venv",
+        ".daiharness/memory-bank",
+        ".daiharness/metrics",
+        ".daiharness/runtime",
+        ".daiharness/subagent-context",
+        ".daiharness/telemetry",
+        ".daiharness/verify",
     }
 )
 _FINGERPRINT_RUNTIME_FILES = frozenset(
     {
-        ".dainexus/asip-metrics.json",
-        ".dainexus/asip-state.json",
-        ".dainexus/bookkeep.log",
-        ".dainexus/code-reviewer/review-report.md",
-        ".dainexus/events.log",
-        ".dainexus/goal-progress.md",
-        ".dainexus/instincts/store.json",
-        ".dainexus/lesson-migration-state.json",
-        ".dainexus/pipeline-state.json",
-        ".dainexus/quality-gate-events.jsonl",
-        ".dainexus/rule-ledger.jsonl",
-        ".dainexus/session-log.json",
-        ".dainexus/session-track.json",
-        ".dainexus/session-tracker-v2.json",
-        ".dainexus/verification-events.jsonl",
+        ".daiharness/asip-metrics.json",
+        ".daiharness/asip-state.json",
+        ".daiharness/bookkeep.log",
+        ".daiharness/code-reviewer/review-report.md",
+        ".daiharness/events.log",
+        ".daiharness/goal-progress.md",
+        ".daiharness/instincts/store.json",
+        ".daiharness/lesson-migration-state.json",
+        ".daiharness/pipeline-state.json",
+        ".daiharness/quality-gate-events.jsonl",
+        ".daiharness/rule-ledger.jsonl",
+        ".daiharness/session-log.json",
+        ".daiharness/session-track.json",
+        ".daiharness/session-tracker-v2.json",
+        ".daiharness/verification-events.jsonl",
     }
 )
 
@@ -854,7 +854,7 @@ MAX_GIT_TIMEOUT_SECS = 180.0
 
 
 def _git_timeout() -> float:
-    raw = os.environ.get("DAINEXUS_GIT_TIMEOUT_SECS", "")
+    raw = os.environ.get("DAIHARNESS_GIT_TIMEOUT_SECS", "")
     try:
         value = float(raw) if raw.strip() else DEFAULT_GIT_TIMEOUT_SECS
     except ValueError:
@@ -893,8 +893,8 @@ def _ignored_verify_path(path: str) -> bool:
     normalized = normalized.rstrip("/")
     if normalized in _FINGERPRINT_RUNTIME_FILES:
         return True
-    if normalized == ".dainexus/memory.db" or normalized.startswith(
-        ".dainexus/memory.db-"
+    if normalized == ".daiharness/memory.db" or normalized.startswith(
+        ".daiharness/memory.db-"
     ):
         return True
     # Compiled bytecode is derived from source that this fingerprint already
@@ -1162,14 +1162,14 @@ def read_evidence_bytes(
 ) -> bytes:
     """Read one bounded regular evidence file without following symlinks."""
     root = project_root.resolve()
-    verify_dir = root / ".dainexus" / "verify"
+    verify_dir = root / ".daiharness" / "verify"
     candidate = Path(path)
     if candidate.is_absolute():
         try:
             relative = candidate.relative_to(verify_dir)
         except ValueError as error:
             raise ValueError(
-                "evidence path must stay inside .dainexus/verify"
+                "evidence path must stay inside .daiharness/verify"
             ) from error
     else:
         relative = candidate
@@ -1189,7 +1189,7 @@ def read_evidence_bytes(
         # target must be a bounded regular file. This gives up the POSIX walk's
         # TOCTOU guarantee, which is not available on this platform in any form.
         current = root
-        for part in (".dainexus", "verify", *relative.parts):
+        for part in (".daiharness", "verify", *relative.parts):
             current = current / part
             try:
                 info = os.lstat(current)
@@ -1220,7 +1220,7 @@ def read_evidence_bytes(
     try:
         current = os.open(root, directory_flags | cloexec)
         opened.append(current)
-        for part in (".dainexus", "verify", *relative.parts[:-1]):
+        for part in (".daiharness", "verify", *relative.parts[:-1]):
             current = os.open(
                 part,
                 directory_flags | nofollow | cloexec,
@@ -1293,10 +1293,10 @@ def resolve_evidence_link(
     relative = raw.strip()
     candidate_path = Path(relative)
     if candidate_path.is_absolute() or "\0" in relative:
-        return None, "FORGED: linked evidence path must stay inside .dainexus/verify"
+        return None, "FORGED: linked evidence path must stay inside .daiharness/verify"
     if any(part == ".." for part in candidate_path.parts):
         return None, "FORGED: linked evidence path traversal is rejected"
-    verify_dir = project_root.resolve() / ".dainexus" / "verify"
+    verify_dir = project_root.resolve() / ".daiharness" / "verify"
     candidate = verify_dir / candidate_path
     try:
         read_evidence_bytes(project_root, candidate)

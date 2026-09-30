@@ -1,10 +1,10 @@
 # Eval Engineer Skill
 
-> **Role:** Design, implement, and maintain pass@k evaluation frameworks for DAI Nexus skills.
+> **Role:** Design, implement, and maintain pass@k evaluation frameworks for DAI Harness skills.
 
 ## Overview
 
-The Eval Engineer skill enables systematic capability testing and regression detection for every DAI Nexus skill. It provides the methodology for creating meaningful evals, interpreting results, and maintaining quality standards across the codebase.
+The Eval Engineer skill enables systematic capability testing and regression detection for every DAI Harness skill. It provides the methodology for creating meaningful evals, interpreting results, and maintaining quality standards across the codebase.
 
 ## Core Concepts
 

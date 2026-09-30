@@ -24,11 +24,11 @@ REAP="$RT/runtime-reap.sh"
 LEASE="$RT/runtime-lease.sh"
 
 SANDBOX="$(mktemp -d "${TMPDIR:-/tmp}/rlg-p2.XXXXXX")"
-export DAINEXUS_RLG_HOME="$SANDBOX/rlg-home"
+export DAIHARNESS_RLG_HOME="$SANDBOX/rlg-home"
 export NO_COLOR=1
-mkdir -p "$DAINEXUS_RLG_HOME"
-printf 'observe\n' > "$DAINEXUS_RLG_HOME/MODE"
-printf '# allowlist\n5432\t# postgres\n' > "$DAINEXUS_RLG_HOME/port-allowlist.txt"
+mkdir -p "$DAIHARNESS_RLG_HOME"
+printf 'observe\n' > "$DAIHARNESS_RLG_HOME/MODE"
+printf '# allowlist\n5432\t# postgres\n' > "$DAIHARNESS_RLG_HOME/port-allowlist.txt"
 
 PID_FILE="$SANDBOX/spawned.pids"
 cleanup() {
@@ -75,7 +75,7 @@ mk_lease() { # <lease_id> <pid> <port> <policy> <ttl> <age_seconds> <session>
   local pgid; pgid="$(ps -o pgid= -p "$pid" 2>/dev/null | tr -d ' ')"
   LID="$lid" PID="$pid" PGID="${pgid:-0}" PORT="$port" POLICY="$policy" \
   TTL="$ttl" AGE="$age" SESS="$sess" \
-  python3 - "$DAINEXUS_RLG_HOME/leases.jsonl" <<'PY'
+  python3 - "$DAIHARNESS_RLG_HOME/leases.jsonl" <<'PY'
 import json, os, sys, time
 from datetime import datetime, timezone
 ts = datetime.fromtimestamp(time.time() - int(os.environ["AGE"]), timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -139,14 +139,14 @@ assert_eq "$?" "1" "--execute is refused while MODE=observe"
 kill -0 "$P_EXPIRED" 2>/dev/null
 assert_eq "$?" "0" "the expired process survived the refused --execute"
 
-printf 'x\n' > "$DAINEXUS_RLG_HOME/DISABLED"
+printf 'x\n' > "$DAIHARNESS_RLG_HOME/DISABLED"
 bash "$REAP" >/dev/null 2>&1
 assert_eq "$?" "3" "kill-switch stops the reaper entirely"
-rm -f "$DAINEXUS_RLG_HOME/DISABLED"
+rm -f "$DAIHARNESS_RLG_HOME/DISABLED"
 
 # ══ enforce mode: the real thing, on our own sandbox processes ═══════════════
 section "enforce mode reaps ONLY what it should"
-printf 'enforce\n' > "$DAINEXUS_RLG_HOME/MODE"
+printf 'enforce\n' > "$DAIHARNESS_RLG_HOME/MODE"
 bash "$REAP" --execute >/dev/null 2>&1
 sleep 1
 
@@ -165,7 +165,7 @@ assert_eq "$open_now" "3" "registry closed the reaped and dead leases, kept the 
 # ══ a pid with no lease is never touched ════════════════════════════════════
 section "unregistered processes are out of bounds"
 P_FOREIGN="$(spawn)"
-printf 'enforce\n' > "$DAINEXUS_RLG_HOME/MODE"
+printf 'enforce\n' > "$DAIHARNESS_RLG_HOME/MODE"
 bash "$REAP" --execute >/dev/null 2>&1
 sleep 0.5
 kill -0 "$P_FOREIGN" 2>/dev/null
@@ -176,7 +176,7 @@ section "a lease whose pgid is a shared group must not take the group down"
 P_ATT="$(spawn_attached)"
 P_SIBLING="$(spawn_attached)"          # innocent bystander in the same group
 mk_lease sim-attached "$P_ATT" 20021 reap 3600 90000 sess-old
-printf 'enforce\n' > "$DAINEXUS_RLG_HOME/MODE"
+printf 'enforce\n' > "$DAIHARNESS_RLG_HOME/MODE"
 bash "$REAP" --execute >/dev/null 2>&1
 sleep 1
 kill -0 "$P_ATT" 2>/dev/null
@@ -199,20 +199,20 @@ assert_eq "$?" "0" "another session's lease untouched"
 section "runtime-sweep.sh — throttled periodic reclaim"
 SWEEP="$RT/runtime-sweep.sh"
 
-printf 'observe\n' > "$DAINEXUS_RLG_HOME/MODE"
-rm -f "$DAINEXUS_RLG_HOME/last-sweep"
+printf 'observe\n' > "$DAIHARNESS_RLG_HOME/MODE"
+rm -f "$DAIHARNESS_RLG_HOME/last-sweep"
 bash "$SWEEP" >/dev/null 2>&1
 assert_eq "$?" "0" "sweep exits 0 in observe mode (hooks must never block)"
-stamped=0; [ -e "$DAINEXUS_RLG_HOME/last-sweep" ] && stamped=1
+stamped=0; [ -e "$DAIHARNESS_RLG_HOME/last-sweep" ] && stamped=1
 assert_eq "$stamped" "0" "observe mode does not even stamp — no reclaim happened"
 
 P_SWEEP="$(spawn)"; mk_lease sim-sweep "$P_SWEEP" 20031 reap 3600 90000 sess-old
-printf 'enforce\n' > "$DAINEXUS_RLG_HOME/MODE"
+printf 'enforce\n' > "$DAIHARNESS_RLG_HOME/MODE"
 bash "$SWEEP" >/dev/null 2>&1
 sleep 2
 kill -0 "$P_SWEEP" 2>/dev/null
 assert_eq "$?" "1" "enforce mode: sweep reclaimed the expired lease"
-stamped=0; [ -e "$DAINEXUS_RLG_HOME/last-sweep" ] && stamped=1
+stamped=0; [ -e "$DAIHARNESS_RLG_HOME/last-sweep" ] && stamped=1
 assert_eq "$stamped" "1" "sweep wrote its throttle stamp"
 
 P_SWEEP2="$(spawn)"; mk_lease sim-sweep2 "$P_SWEEP2" 20032 reap 3600 90000 sess-old
@@ -226,13 +226,13 @@ sleep 2
 kill -0 "$P_SWEEP2" 2>/dev/null
 assert_eq "$?" "1" "--now bypasses the throttle"
 
-printf 'x\n' > "$DAINEXUS_RLG_HOME/DISABLED"
+printf 'x\n' > "$DAIHARNESS_RLG_HOME/DISABLED"
 P_SWEEP3="$(spawn)"; mk_lease sim-sweep3 "$P_SWEEP3" 20033 reap 3600 90000 sess-old
 bash "$SWEEP" --now >/dev/null 2>&1
 sleep 1
 kill -0 "$P_SWEEP3" 2>/dev/null
 assert_eq "$?" "0" "kill-switch stops the sweep even with --now"
-rm -f "$DAINEXUS_RLG_HOME/DISABLED"
+rm -f "$DAIHARNESS_RLG_HOME/DISABLED"
 
 echo
 echo "════════════════════════════════════════"

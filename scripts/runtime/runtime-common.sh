@@ -5,7 +5,7 @@
 #
 # SOURCE THIS FILE, do not execute it.
 #
-# Scope: GLOBAL. State lives in $DAINEXUS_RLG_HOME (default ~/.dainexus/runtime).
+# Scope: GLOBAL. State lives in $DAIHARNESS_RLG_HOME (default ~/.daiharness/runtime).
 #
 # Design constraints (from plan §G4):
 #   - Pure bash, no python, no lsof/git in this file's hot paths. The P1
@@ -32,7 +32,7 @@ rlg_err()  { echo -e "${RLG_RED}✗${RLG_NC} $*" >&2; }
 
 # rlg_home — root of all RLG state. Overridable for tests.
 rlg_home() {
-  printf '%s' "${DAINEXUS_RLG_HOME:-$HOME/.dainexus/runtime}"
+  printf '%s' "${DAIHARNESS_RLG_HOME:-$HOME/.daiharness/runtime}"
 }
 
 rlg_leases_file()   { printf '%s/leases.jsonl'      "$(rlg_home)"; }
@@ -58,16 +58,16 @@ rlg_init_dirs() {
 # ── Kill-switch (plan §G4, 3 tầng) ───────────────────────────────────────────
 # Returns 0 = RLG active, 1 = disabled. NEVER errors out; callers fail-open.
 #
-#   Tier 1: DAINEXUS_RLG=off        (env, per-shell)
+#   Tier 1: DAIHARNESS_RLG=off        (env, per-shell)
 #   Tier 2: $RLG_HOME/DISABLED         (file, whole machine)
-#   Tier 3: <project>/.dainexus/rlg-optout  (file, per-project)
+#   Tier 3: <project>/.daiharness/rlg-optout  (file, per-project)
 rlg_enabled() {
-  case "${DAINEXUS_RLG:-}" in
+  case "${DAIHARNESS_RLG:-}" in
     off|OFF|0|false|disabled) return 1 ;;
   esac
   [ -e "$(rlg_disabled_file)" ] && return 1
   local proj="${1:-}"
-  [ -n "$proj" ] && [ -e "$proj/.dainexus/rlg-optout" ] && return 1
+  [ -n "$proj" ] && [ -e "$proj/.daiharness/rlg-optout" ] && return 1
   return 0
 }
 
@@ -136,7 +136,7 @@ rlg_lease_id() {
 
 # rlg_session_id — best-effort owner id for the current agent session.
 rlg_session_id() {
-  printf '%s' "${DAINEXUS_SESSION_ID:-${CLAUDE_SESSION_ID:-shell-$PPID}}"
+  printf '%s' "${DAIHARNESS_SESSION_ID:-${CLAUDE_SESSION_ID:-shell-$PPID}}"
 }
 
 # ── Project resolution ───────────────────────────────────────────────────────

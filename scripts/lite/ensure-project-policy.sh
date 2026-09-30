@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# Seed DAI Nexus's execution policy into a project without overwriting local policy.
+# Seed DAI Harness's execution policy into a project without overwriting local policy.
 
 set -euo pipefail
 
 if [[ $# -ne 2 ]]; then
-    echo "usage: $0 <dai-nexus-root> <project-root>" >&2
+    echo "usage: $0 <dai-harness-root> <project-root>" >&2
     exit 64
 fi
 
 source_root="$(cd "$1" && pwd -P)"
 project_root="$(cd "$2" && pwd -P)"
-source_policy="${source_root}/.dainexus/execution-policy.yaml"
-target_dir="${project_root}/.dainexus"
+source_policy="${source_root}/.daiharness/execution-policy.yaml"
+target_dir="${project_root}/.daiharness"
 target_policy="${target_dir}/execution-policy.yaml"
 temporary_policy=""
 

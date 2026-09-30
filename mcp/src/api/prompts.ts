@@ -16,7 +16,7 @@ function getDesignMdContent(): string {
       return fs.readFileSync(designMdPath, 'utf-8');
     }
   } catch (e) {
-    console.error('[DAI Nexus Global MCP] Failed to read DESIGN.md:', e);
+    console.error('[DAI Harness Global MCP] Failed to read DESIGN.md:', e);
   }
   return '';
 }
@@ -31,13 +31,13 @@ export function registerPrompts(server: Server) {
         {
           name: 'fw_orchestrator',
           description:
-            'Load DAI Nexus Orchestrator — the main skill that routes all requests to the correct domain skill.',
+            'Load DAI Harness Orchestrator — the main skill that routes all requests to the correct domain skill.',
           arguments: [],
         },
         // Then all domain skills
         ...skills.map((skill) => ({
           name: `fw_skill_${skill.name}`,
-          description: `Load DAI Nexus Skill: ${skill.name}. ${skill.description}`,
+          description: `Load DAI Harness Skill: ${skill.name}. ${skill.description}`,
           arguments: [] as { name: string; description: string }[],
         })),
       ],
@@ -52,7 +52,7 @@ export function registerPrompts(server: Server) {
     if (promptName === 'fw_orchestrator') {
       const orchestratorSkill = skills.find((s) => s.name === 'production-grade');
       if (orchestratorSkill) {
-        let text = `Please operate as the DAI Nexus Orchestrator. Load and follow the production-grade skill instructions.\n\n${orchestratorSkill.content}`;
+        let text = `Please operate as the DAI Harness Orchestrator. Load and follow the production-grade skill instructions.\n\n${orchestratorSkill.content}`;
         const designMd = getDesignMdContent();
         if (designMd) {
           text += `\n\n[MANDATORY DESIGN SOURCE-OF-TRUTH: DESIGN.md]\nA DESIGN.md file has been detected at the root of the workspace. You and all downstream skills MUST strictly follow its design tokens, colors, typography, layout, and styling rules when planning, designing, or implementing UIs:\n\n${designMd}`;
@@ -76,7 +76,7 @@ export function registerPrompts(server: Server) {
     const skill = skills.find((s) => `fw_skill_${s.name}` === promptName);
 
     if (skill) {
-      let text = `Please operate as the following DAI Nexus Skill:\n\n${skill.content}\n\nExecute the duties for this role based on the current context.`;
+      let text = `Please operate as the following DAI Harness Skill:\n\n${skill.content}\n\nExecute the duties for this role based on the current context.`;
 
       const stylingSkills = [
         'ui-designer',
@@ -108,6 +108,6 @@ export function registerPrompts(server: Server) {
       };
     }
 
-    throw new Error(`DAI Nexus Skill or Prompt not found: ${promptName}`);
+    throw new Error(`DAI Harness Skill or Prompt not found: ${promptName}`);
   });
 }

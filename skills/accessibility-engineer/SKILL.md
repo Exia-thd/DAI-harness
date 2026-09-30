@@ -6,7 +6,7 @@ description: >
   color contrast, ARIA patterns, and assistive technology testing.
   Routed via the production-grade orchestrator (Harden mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [accessibility, a11y, wcag, aria, screen-reader, keyboard, compliance, inclusive]
 ---
 
@@ -185,7 +185,7 @@ tablist.addEventListener('keydown', (e) => {
       class="accordion-trigger"
     >
       <span class="accordion-icon" aria-hidden="true">▼</span>
-      What is DAI Nexus?
+      What is DAI Harness?
     </button>
     <div 
       id="faq-1-answer" 
@@ -194,7 +194,7 @@ tablist.addEventListener('keydown', (e) => {
       class="accordion-content"
       hidden
     >
-      <p>DAI Nexus is an adaptive orchestrator with 50+ AI skills...</p>
+      <p>DAI Harness is an adaptive orchestrator with 50+ AI skills...</p>
     </div>
   </div>
   

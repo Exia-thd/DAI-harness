@@ -6,7 +6,7 @@ description: >
   hotfixes, and continuous content delivery for live games.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [liveops, server, analytics, ab-testing, cdn, hotfix, seasons, events, backend, multiplayer]
 ---
 
@@ -22,7 +22,7 @@ tags: [liveops, server, analytics, ab-testing, cdn, hotfix, seasons, events, bac
 !`cat skills/_shared/protocols/quality-gate.md 2>/dev/null || true`
 !`cat skills/_shared/protocols/task-validator.md 2>/dev/null || true`
 !`cat .production-grade.yaml 2>/dev/null || echo "No config — using defaults"`
-!`cat .dainexus/codebase-context.md 2>/dev/null || true`
+!`cat .daiharness/codebase-context.md 2>/dev/null || true`
 
 **Fallback:** Work continuously. Print progress constantly.
 

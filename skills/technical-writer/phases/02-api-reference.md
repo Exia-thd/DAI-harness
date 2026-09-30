@@ -13,7 +13,7 @@ Generate comprehensive API documentation from OpenAPI/AsyncAPI specs and source 
 | Auth middleware | `services/*/src/middleware/auth*` | Authentication methods, token formats |
 | Error handler | `services/*/src/middleware/error*` | Error codes, HTTP status mappings |
 | Rate limit config | `services/*/src/middleware/rate-limit*` | Rate tiers, limit values |
-| Content inventory | `.dainexus/technical-writer/content-inventory.md` | Phase 1 gap analysis results |
+| Content inventory | `.daiharness/technical-writer/content-inventory.md` | Phase 1 gap analysis results |
 
 ## 2.2 — Authentication Documentation
 
@@ -34,7 +34,7 @@ Generate `docs/api-reference/endpoints/<resource-name>.md` — one file per API 
 
 Each endpoint page follows this template:
 
-```
+````
 # <Resource Name>
 
 ## List <Resources>
@@ -60,7 +60,7 @@ Required. Scope: `<resource>:read`
 ```bash
 curl -X GET ... complete command ...
 ```
-```
+````
 
 For each endpoint document: method, path, auth scope, all parameters (path, query, body), request body schema, response schema with example, all error responses, and a working cURL example.
 

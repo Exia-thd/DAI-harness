@@ -4,7 +4,7 @@
 
 ## Overview
 
-DAI Nexus uses shared protocols to ensure consistency across all 70 skills. Protocols live in `skills/_shared/protocols/`.
+DAI Harness uses shared protocols to ensure consistency across all 70 skills. Protocols live in `skills/_shared/protocols/`.
 
 ## Core Protocols
 

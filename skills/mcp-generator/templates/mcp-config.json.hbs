@@ -1,9 +1,9 @@
 {
-  "$schema": "https://dai-nexus.dev/schemas/mcp-config.json",
+  "$schema": "https://dai-harness.dev/schemas/mcp-config.json",
   "project": "{{projectName}}",
   "generated_at": "{{generatedAt}}",
-  "generated_by": "dai-nexus/mcp-generator",
-  "dai-nexus_version": "{{dai-nexusVersion}}",
+  "generated_by": "dai-harness/mcp-generator",
+  "dai-harness_version": "{{dai-harnessVersion}}",
   "transport": "stdio",
   "tools": {
     "query": {
@@ -70,12 +70,12 @@
   "resources": {
     "project://profile": {
       "enabled": true,
-      "source": ".dainexus/project-profile.json",
+      "source": ".daiharness/project-profile.json",
       "description": "Full project fingerprint — language, framework, health, patterns, risk"
     },
     "project://conventions": {
       "enabled": {{hasConventions}},
-      "source": ".dainexus/code-conventions.md",
+      "source": ".daiharness/code-conventions.md",
       "description": "Coding conventions and patterns detected in this project"
     }
   },

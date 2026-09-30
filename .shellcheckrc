@@ -1,4 +1,4 @@
-# ShellCheck Configuration for DAI Nexus MCP Scripts
+# ShellCheck Configuration for DAI Harness MCP Scripts
 # https://www.shellcheck.net/
 
 # Disable these warnings globally for this project

@@ -1,20 +1,20 @@
 {
   "version": "2.0",
-  "name": "DAI Nexus MCP",
-  "description": "DAI Nexus MCP Configuration for Claude Desktop",
+  "name": "DAI Harness MCP",
+  "description": "DAI Harness MCP Configuration for Claude Desktop",
   "servers": {
-    "dai-nexus": {
+    "dai-harness": {
       "command": "bash",
       "args": [
-        "DAI-NEXUS/scripts/dainexus-mcp-launcher.sh"
+        "DAI-HARNESS/scripts/daiharness-mcp-launcher.sh"
       ],
-      "description": "DAI Nexus project intelligence and skills"
+      "description": "DAI Harness project intelligence and skills"
     }
   },
   "notes": {
-    "installation": "Run 'dainexus-mcp-setup.sh setup' from your project to auto-generate this config",
-    "workspace": "Launchers auto-detect workspace from git root or DAINEXUS_WORKSPACE env var",
+    "installation": "Run 'daiharness-mcp-setup.sh setup' from your project to auto-generate this config",
+    "workspace": "Launchers auto-detect workspace from git root or DAIHARNESS_WORKSPACE env var",
     "restart": "Restart Claude Desktop after modifying this file",
-    "code_intelligence": "Code intelligence is provided by the DAI memory layer, registered by scripts/mcp/dainexus-mcp-setup.sh as its own dai-memory MCP server; it is not launched from here."
+    "code_intelligence": "Code intelligence is provided by the DAI memory layer, registered by scripts/mcp/daiharness-mcp-setup.sh as its own dai-memory MCP server; it is not launched from here."
   }
 }

@@ -4,19 +4,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tổng quan — DAI Nexus</title>
+<title>Tổng quan — DAI Harness</title>
 <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 <nav class="nav"><div class="nav-inner">
-  <a href="./index.html" class="nav-brand"><span class="dot"></span> DAI Nexus <small>docs</small></a>
+  <a href="./index.html" class="nav-brand"><span class="dot"></span> DAI Harness <small>docs</small></a>
   <div class="nav-links"><a href="./index.html" class=current>Tổng quan</a><a href="./kernel.html">Kernel</a><a href="./skills.html">Skills</a><a href="./evidence.html">Bằng chứng</a><a href="./runtime.html">Runtime</a><a href="./memory.html">Memory</a><a href="./patterns.html">Tinh túy</a></div>
 </div></nav>
 <main>
 
 <section class="hero">
   <span class="tag">TÀI LIỆU SINH TỪ SOURCE · v0.9.4</span>
-  <h1>DAI Nexus — <span class="accent">hệ điều hành cho AI coding agent</span></h1>
+  <h1>DAI Harness — <span class="accent">hệ điều hành cho AI coding agent</span></h1>
   <p class="lead">
     Không phải một tập prompt. Đây là một <strong>bộ luật + runtime</strong>: kernel bất biến nạp mỗi phiên,
     thư viện 87 skill overlay load theo nhu cầu, và một tầng runtime Python thuần
@@ -28,7 +28,7 @@
     <span>Overlay <strong>87</strong></span>
     <span>Protocol <strong>59</strong></span>
     <span>Runtime <strong>22 script</strong></span>
-    <span>MCP tool <strong>8</strong></span>
+    <span>MCP tool <strong>0</strong></span>
     <span>Self-test <strong>59</strong></span>
   </div>
 </section>
@@ -37,7 +37,7 @@
 <p>
   Một LLM viết code giỏi vẫn thất bại ở ba chỗ: <strong>nói dối về kết quả</strong> ("đã sửa xong" mà chưa chạy thử),
   <strong>quên bối cảnh</strong> giữa các phiên, và <strong>làm bừa</strong> những thao tác không thể hoàn tác.
-  DAI Nexus xử lý cả ba bằng cơ chế máy móc, không bằng lời khuyên trong prompt.
+  DAI Harness xử lý cả ba bằng cơ chế máy móc, không bằng lời khuyên trong prompt.
 </p>
 <div class="grid cols-3">
   <div class="card"><h4 class="mt-0">🧾 Bằng chứng, không phải lời hứa</h4>
@@ -53,7 +53,7 @@
 
 <h2><span class="num">02</span> Ba tầng</h2>
 <div class="diagram">┌────────────────────────────────────────────────────────────────────────────┐
-│ TẦNG 1 — KERNEL (8 file, ~6914 token, luôn nạp)                            │
+│ TẦNG 1 — KERNEL (8 file, ~6916 token, luôn nạp)                            │
 │ kernel/{AUDIT, CLARIFY, ENTRY, ESCALATE, INDEX, POLICY, SOLVE, VERIFY}     │
 │ → 6 Hard Rules · SOLVE loop · VERIFY/AUDIT · Execution policy              │
 └────────────────────────────────────────────────────────────────────────────┘
@@ -69,7 +69,7 @@
 │ TẦNG 3 — RUNTIME (22 script, 9936 dòng Python thuần)                       │
 │ run_check · verify_gate · policy_check · runtime_lease                     │
 │ memory · escalate · worktree_manager · validate_overlays                   │
-│ mcp/server.py → 8 tool cho IDE                                             │
+│ mcp/server.py → 0 tool cho IDE                                             │
 └────────────────────────────────────────────────────────────────────────────┘</div>
 
 <h2><span class="num">03</span> 6 Hard Rules</h2>
@@ -85,7 +85,7 @@
   <a href="./evidence.html" class="nav-card"><div class="idx">03 · chống ảo giác</div>
     <h3>Chuỗi bằng chứng</h3><p>4 lớp: evidence writer → stop gate → policy fail-closed → runtime ledger.</p></a>
   <a href="./runtime.html" class="nav-card"><div class="idx">04 · scripts/ + mcp/</div>
-    <h3>Runtime</h3><p>22 công cụ Python zero-dependency + MCP server 8 tool.</p></a>
+    <h3>Runtime</h3><p>22 công cụ Python zero-dependency + MCP server 0 tool.</p></a>
   <a href="./memory.html" class="nav-card"><div class="idx">05 · memory.py</div>
     <h3>Memory</h3><p>SQLite+FTS5, BM25 fuse RRF, auto-tag, redaction, GC theo giá trị.</p></a>
   <a href="./patterns.html" class="nav-card"><div class="idx">06 · TINH TÚY</div>
@@ -115,11 +115,11 @@ Turn-close: VERIFY block · AUDIT coverage matrix · lưu memory · runtime ledg
 Stop hook: verify_gate.py — thiếu/giả/hết hạn evidence ⇒ CHẶN</div>
 
 <h2><span class="num">06</span> Số liệu (đọc từ repo)</h2>
-<div class="grid cols-4"><div class="stat"><div class="val">8</div><div class="lbl">kernel file</div></div><div class="stat"><div class="val">6914</div><div class="lbl">token boot</div></div><div class="stat"><div class="val">87</div><div class="lbl">skill overlay</div></div><div class="stat"><div class="val">59</div><div class="lbl">protocol</div></div><div class="stat"><div class="val">22</div><div class="lbl">runtime script</div></div><div class="stat"><div class="val">9936</div><div class="lbl">dòng runtime</div></div><div class="stat"><div class="val">8</div><div class="lbl">MCP tool</div></div><div class="stat"><div class="val">59</div><div class="lbl">self-test</div></div></div>
+<div class="grid cols-4"><div class="stat"><div class="val">8</div><div class="lbl">kernel file</div></div><div class="stat"><div class="val">6916</div><div class="lbl">token boot</div></div><div class="stat"><div class="val">87</div><div class="lbl">skill overlay</div></div><div class="stat"><div class="val">59</div><div class="lbl">protocol</div></div><div class="stat"><div class="val">22</div><div class="lbl">runtime script</div></div><div class="stat"><div class="val">9936</div><div class="lbl">dòng runtime</div></div><div class="stat"><div class="val">0</div><div class="lbl">MCP tool</div></div><div class="stat"><div class="val">59</div><div class="lbl">self-test</div></div></div>
 
 </main>
 <footer>
-  <div><strong>DAI Nexus docs</strong> · sinh tự động từ source bằng <code>docs/build_docs.py</code></div>
+  <div><strong>DAI Harness docs</strong> · sinh tự động từ source bằng <code>docs/build_docs.py</code></div>
   <div>v0.9.4 · generated from source</div>
 </footer>
 </body>

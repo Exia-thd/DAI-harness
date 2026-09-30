@@ -8,7 +8,7 @@
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                          │
 │  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐   ┌───────────┐  │
-│  │ Cursor DB   │   │ Claude Tel  │   │ DAI Nexus │   │ Ollama    │  │
+│  │ Cursor DB   │   │ Claude Tel  │   │ DAI Harness │   │ Ollama    │  │
 │  │ Reader      │   │ Reader      │   │ Reader      │   │ Reader    │  │
 │  └──────┬──────┘   └──────┬──────┘   └──────┬──────┘   └─────┬─────┘  │
 │         │                  │                  │               │         │
@@ -64,12 +64,12 @@ class ClaudeTelemetryReader:
         """Returns: [{model, session_count, total_duration}]"""
 ```
 
-### 3. DaiNexusReader
+### 3. DaiHarnessReader
 
 ```python
-class DaiNexusReader:
-    """Read from ~/.dainexus/usage/{project}/*.jsonl"""
-    USAGE_PATH = "~/.dainexus/usage"
+class DaiHarnessReader:
+    """Read from ~/.daiharness/usage/{project}/*.jsonl"""
+    USAGE_PATH = "~/.daiharness/usage"
     
     def get_usage(self, project: str, period: int) -> List[Dict]:
         """Returns: [{timestamp, model, input_tokens, output_tokens, cost}]"""
@@ -102,7 +102,7 @@ class UnifiedUsage:
 | `/api/unified/trend` | GET | Usage over time |
 | `/api/cursor/models` | GET | Cursor-specific data |
 | `/api/claude/sessions` | GET | Claude Code sessions |
-| `/api/dai-nexus/usage` | GET | DAI Nexus data |
+| `/api/dai-harness/usage` | GET | DAI Harness data |
 
 ## Dashboard Views
 
@@ -122,7 +122,7 @@ class UnifiedUsage:
 - Model usage by session
 - Environment info
 
-### 4. DAI Nexus View
+### 4. DAI Harness View
 - Token counts (actual)
 - Cost (actual)
 - By skill/mode
@@ -140,6 +140,6 @@ class UnifiedUsage:
 
 | Data | Location | Format |
 |------|----------|--------|
-| Cache | `~/.dainexus/cache/` | JSON |
-| Logs | `~/.dainexus/usage/` | JSONL |
-| Config | `~/.dainexus/config.yaml` | YAML |
+| Cache | `~/.daiharness/cache/` | JSON |
+| Logs | `~/.daiharness/usage/` | JSONL |
+| Config | `~/.daiharness/config.yaml` | YAML |

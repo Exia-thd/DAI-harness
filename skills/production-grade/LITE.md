@@ -14,7 +14,7 @@ tags: [orchestrator, meta, routing, pipeline]
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Project has git repo | `git status 2>/dev/null` | ... | run the check command and paste output |
-| DAI Nexus workspace exists | `ls .dainexus/ 2>/dev/null` | ... | run the check command and paste output |
+| DAI Harness workspace exists | `ls .daiharness/ 2>/dev/null` | ... | run the check command and paste output |
 | Config file present | `cat .production-grade.yaml 2>/dev/null` | ... | run the check command and paste output |
 | Skills registry exists | `cat skills/skills-registry.yaml 2>/dev/null \| head -5` | ... | run the check command and paste output |
 | MCP tools available | Check if `fw_start_pipeline` is callable | ... | run the check command and paste output |
@@ -57,7 +57,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 For Design and Game Build, resolve the ordered verified paths before loading a
 specialist: `python3 scripts/runtime/skill_routing.py --mode "$MODE" --config
-.dainexus/skills-config.json`. The creative files are
+.daiharness/skills-config.json`. The creative files are
 `skills/concept-artist/LITE.md` then `skills/art-director/LITE.md`; downstream
 paths are selected from the UI, technical-art, or engine handoff. Validate the
 concept/art packet with `python3 scripts/art-direction/creative-handoff.py

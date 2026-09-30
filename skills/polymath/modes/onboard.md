@@ -56,7 +56,7 @@ Read specific files the user wants to understand. Explain the code, the patterns
 
 ## Output
 
-Write to `.dainexus/polymath/context/repo-map.md`:
+Write to `.daiharness/polymath/context/repo-map.md`:
 
 ```markdown
 # Repo Map — [project name]

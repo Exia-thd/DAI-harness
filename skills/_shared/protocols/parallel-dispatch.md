@@ -34,6 +34,6 @@ python scripts/lite/worktree_manager.py cleanup <task_id>
 6. Merges use `--no-ff` so each worker's contribution stays auditable.
 
 ## Constraints
-- Max workers: `DAINEXUS_MAX_WORKERS` (default 4).
-- Workers share `.dainexus/memory.db` — safe because SQLite runs in WAL mode; never disable WAL.
+- Max workers: `DAIHARNESS_MAX_WORKERS` (default 4).
+- Workers share `.daiharness/memory.db` — safe because SQLite runs in WAL mode; never disable WAL.
 - Orphaned worktrees are a known failure mode: `status` before dispatch, `cleanup` after merge, always.

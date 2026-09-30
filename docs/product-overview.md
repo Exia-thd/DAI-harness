@@ -1,18 +1,18 @@
-# DAI Nexus — Product Overview
+# DAI Harness — Product Overview
 
-> **Version:** 8.7.0 · **License:** MIT · **Repository:** [github.com/Exia-thd/dai-nexus](https://github.com/Exia-thd/DAI-nexus)
-
----
-
-## What Is DAI Nexus?
-
-DAI Nexus is an open-source AI orchestrator that turns raw language models (Claude, GPT, Gemini) into evidence-oriented software engineering agents. Supported runtime paths can use a structured pipeline of skills, guardrails, memory, and verification to attach evidence to completion claims and record lessons from failures. Those controls reduce risk; they do not guarantee correct output or eliminate repeated mistakes. The currently declared canonical runtime and its enforcement boundary are documented in the [canonical-runtime ADR](adr/0001-canonical-production-runtime.md). One install gives you 84 specialized AI skills covering the software lifecycle, as counted by `product-manifest.json` and checked by `npm run verify:product-truth`.
+> **Version:** 8.7.0 · **License:** MIT · **Repository:** [github.com/Exia-thd/dai-harness](https://github.com/Exia-thd/DAI-harness)
 
 ---
 
-## Who Is DAI Nexus For?
+## What Is DAI Harness?
 
-| Audience | Why DAI Nexus Helps |
+DAI Harness is an open-source AI orchestrator that turns raw language models (Claude, GPT, Gemini) into evidence-oriented software engineering agents. Supported runtime paths can use a structured pipeline of skills, guardrails, memory, and verification to attach evidence to completion claims and record lessons from failures. Those controls reduce risk; they do not guarantee correct output or eliminate repeated mistakes. The currently declared canonical runtime and its enforcement boundary are documented in the [canonical-runtime ADR](adr/0001-canonical-production-runtime.md). One install gives you 84 specialized AI skills covering the software lifecycle, as counted by `product-manifest.json` and checked by `npm run verify:product-truth`.
+
+---
+
+## Who Is DAI Harness For?
+
+| Audience | Why DAI Harness Helps |
 |----------|----------------------|
 | **Solo developers** | Provides structured PM, architecture, QA, and DevOps-oriented workflows alongside the IDE. |
 | **Small teams (2–10)** | Can apply consistent quality-gate and testing workflows when the configured runtime supports them. |
@@ -63,19 +63,19 @@ INTERPRET → DEFINE → BUILD → HARDEN → SHIP → SUSTAIN
 
 ### 4. Local-First State & Configurable Data Boundaries
 
-DAI Nexus stores its own project state locally by default:
+DAI Harness stores its own project state locally by default:
 
-- **Local SQLite GraphRAG database** (`.dainexus/`) — DAI Nexus does not require a hosted memory service
+- **Local SQLite GraphRAG database** (`.daiharness/`) — DAI Harness does not require a hosted memory service
 - **Provider choice** — swap between supported hosted providers or local models (Ollama/LMStudio)
 - **Explicit boundary** — local memory, budgets, and decisions remain in the workspace; prompts, code excerpts, and tool results may be transmitted to whichever model or external tool providers you configure
 
-For an on-device-only workflow, configure a local model, local tools, and inspect each integration's network behavior. DAI Nexus does not override a provider's retention, billing, or telemetry policy.
+For an on-device-only workflow, configure a local model, local tools, and inspect each integration's network behavior. DAI Harness does not override a provider's retention, billing, or telemetry policy.
 
 ### 5. MCP & DAI memory Integration
 
-DAI Nexus exposes its capabilities through the **Model Context Protocol (MCP)**, giving your IDE direct access to:
+DAI Harness exposes its capabilities through the **Model Context Protocol (MCP)**, giving your IDE direct access to:
 
-- **DAI Nexus MCP server** — Pipeline management, skill invocation, memory operations
+- **DAI Harness MCP server** — Pipeline management, skill invocation, memory operations
 - **DAI memory MCP server** — Code intelligence (impact analysis, blast radius, safe rename, taint) and project memory
 
 For design and game work, the creative handoff is explicit: UX/research →
@@ -84,7 +84,7 @@ skills are `skills/concept-artist/LITE.md` and `skills/art-director/LITE.md`.
 
 ```bash
 # One-command setup for all IDEs
-bash scripts/dainexus-mcp-setup.sh
+bash scripts/daiharness-mcp-setup.sh
 ```
 
 ### 6. Self-Improving Protocol (ASIP)
@@ -97,7 +97,7 @@ When a plan fails twice, ASIP activates a mandatory Research Gate:
 4. Update session tracker
 5. Re-plan with knowledge and retry
 
-Lessons are persisted to `.dainexus/lessons.md` and graph memory so later runs can retrieve prior failures. This is intended to lower recurrence; the measurable target and evidence requirements are defined in `docs/active-roadmap.md`.
+Lessons are persisted to `.daiharness/lessons.md` and graph memory so later runs can retrieve prior failures. This is intended to lower recurrence; the measurable target and evidence requirements are defined in `docs/active-roadmap.md`.
 
 ### 7. Built-in Cost Control
 
@@ -116,7 +116,7 @@ Usage and cost figures are estimates derived from model-reported tokens and conf
 
 ## The 4 Operating Levels
 
-DAI Nexus is designed so you can start with zero setup and add power incrementally:
+DAI Harness is designed so you can start with zero setup and add power incrementally:
 
 ### Level 1 — Basic (Zero Setup)
 
@@ -141,21 +141,21 @@ Enable persistent memory so the AI remembers decisions, conventions, and lessons
 
 ### Level 4 — Full (MCP Integration)
 
-Connect the DAI Nexus MCP server for maximum power: 12+ AI tools available directly in your IDE, multi-project support, and isolated per-project state.
+Connect the DAI Harness MCP server for maximum power: 12+ AI tools available directly in your IDE, multi-project support, and isolated per-project state.
 
-- **Requirements:** MCP-compatible IDE, `bash scripts/dainexus-mcp-setup.sh`
+- **Requirements:** MCP-compatible IDE, `bash scripts/daiharness-mcp-setup.sh`
 - **What you get:** Full MCP toolset, multi-project workspace, real-time pipeline status
 
 ---
 
-## What DAI Nexus Does NOT Do
+## What DAI Harness Does NOT Do
 
 | Misconception | Reality |
 |--------------|---------|
-| **Not a code generator** | DAI Nexus produces *systems* — with architecture, tests, security audits, infrastructure, and documentation. Not just files. |
+| **Not a code generator** | DAI Harness produces *systems* — with architecture, tests, security audits, infrastructure, and documentation. Not just files. |
 | **Not a chatbot** | It doesn't ask 20 questions then generate a template. It researches, decides, builds, and verifies — pausing only at strategic gates. |
-| **Not a cloud service** | DAI Nexus has no required hosted service. Local state remains local by default, while configured model and tool providers may receive prompts, code excerpts, or tool results. |
-| **Not a model provider** | DAI Nexus is the harness, not the engine. You bring your own LLM (Claude, GPT, Gemini, or local models). |
+| **Not a cloud service** | DAI Harness has no required hosted service. Local state remains local by default, while configured model and tool providers may receive prompts, code excerpts, or tool results. |
+| **Not a model provider** | DAI Harness is the harness, not the engine. You bring your own LLM (Claude, GPT, Gemini, or local models). |
 | **Not a rigid pipeline** | The orchestrator adapts: skipping frontend for API-only projects, enabling data science for ML workloads, scaling complexity to match the problem. |
 | **Not a demo** | Included artifacts and tests are versioned in the repository. A given run records only the checks it actually executes; failures remain evidence, not a guarantee of automatic repair. |
 
@@ -169,7 +169,7 @@ Connect the DAI Nexus MCP server for maximum power: 12+ AI tools available direc
 | **Claude Code** | `CLAUDE.md` | ✅ Full | Stable | Direct Claude CLI integration. Supports hooks for auto-indexing. |
 | **Antigravity** | `AGENTS.md` | ✅ Full | Stable | Gemini-powered IDE. Uses `GEMINI.md` alongside `AGENTS.md`. |
 | **Gemini (CLI/IDE)** | `GEMINI.md` | ✅ Full | Stable | Gemini-native support with `thinking_level` optimization. |
-| **Codex (OpenAI)** | `AGENTS.md` | ✅ Full | Stable | Codex CLI integration via `dainexus-mcp-setup.sh --codex`. |
+| **Codex (OpenAI)** | `AGENTS.md` | ✅ Full | Stable | Codex CLI integration via `daiharness-mcp-setup.sh --codex`. |
 | **DAI CLI** | `src/cli/package.json` | N/A | Beta | Agent-first command-line interface; package versioned independently. |
 
 ### Configuration Files
@@ -188,8 +188,8 @@ All three files share the same kernel content (auto-synced via `scripts/lite/syn
 
 ```bash
 # 1. Clone
-git clone https://github.com/Exia-thd/DAI-nexus
-cd dai-nexus
+git clone https://github.com/Exia-thd/DAI-harness
+cd dai-harness
 
 # 2. Copy config to your project
 cp AGENTS.md /path/to/your/project/
@@ -199,11 +199,11 @@ cp CLAUDE.md /path/to/your/project/
 cursor /path/to/your/project/
 
 # 4. (Optional) Add the code graph (DAI memory)
-python3 dai-nexus/scripts/lite/dai_memory.py install
-node "$(python3 dai-nexus/scripts/lite/dai_memory.py where)/bin/dai-memory.mjs" init
+python3 dai-harness/scripts/lite/dai_memory.py install
+node "$(python3 dai-harness/scripts/lite/dai_memory.py where)/bin/dai-memory.mjs" init
 
 # 5. (Optional) Add MCP for full power
-bash scripts/dainexus-mcp-setup.sh
+bash scripts/daiharness-mcp-setup.sh
 ```
 
 ---

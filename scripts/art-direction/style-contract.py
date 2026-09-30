@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate and compile DAI Nexus game-art-contract/v2 files."""
+"""Validate and compile DAI Harness game-art-contract/v2 files."""
 
 from __future__ import annotations
 

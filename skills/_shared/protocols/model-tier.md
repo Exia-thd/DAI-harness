@@ -16,7 +16,7 @@ superseded_by: null
 
 ## Invariant
 
-Tier selection and model selection are separate decisions. DAI Nexus may choose
+Tier selection and model selection are separate decisions. DAI Harness may choose
 `scout`, `builder`, or `expert` from task evidence, but it must not invent or
 hard-code a provider display name, model ID, snapshot, or unsupported thinking
 parameter.

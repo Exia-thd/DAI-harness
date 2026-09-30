@@ -11,7 +11,7 @@
 cd /path/to/project
 
 # 2. Run setup (one command — sets up Cursor + Claude + Antigravity + Codex CLI)
-bash dai-nexus/scripts/dainexus-mcp-setup.sh
+bash dai-harness/scripts/daiharness-mcp-setup.sh
 
 # 3. Restart your IDE (all platforms)
 # Done!
@@ -30,21 +30,21 @@ cd ~/Projects/my-app
 ### 2. Run the Setup
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh
+bash dai-harness/scripts/daiharness-mcp-setup.sh
 ```
 
 Expected output:
 ```
-⚡ DAI Nexus Universal MCP Setup
+⚡ DAI Harness Universal MCP Setup
 
-  DAI Nexus: /path/to/dai-nexus
+  DAI Harness: /path/to/dai-harness
   Project:     /path/to/project
   Platforms:   Cursor + Claude Code + Antigravity
 
   ➜ Generating MCP server...
   ✓ MCP server generated
   ➜ Syncing MCP server to canonical location...
-  ✓ Canonical MCP server synced → ~/.dainexus/mcp-server/
+  ✓ Canonical MCP server synced → ~/.daiharness/mcp-server/
   ➜ Setting up Cursor MCP...
   ✓ Updated ~/.cursor/mcp.json
   ➜ Setting up Claude Code MCP...
@@ -65,7 +65,7 @@ Expected output:
     ✓ OpenAI Codex CLI (~/.codex/config.toml)
 
   Next: Restart your AI clients to activate MCP servers
-        Verify: bash dai-nexus/scripts/dainexus-mcp-setup.sh --check
+        Verify: bash dai-harness/scripts/daiharness-mcp-setup.sh --check
 ```
 
 ### 3. Restart All AI Clients
@@ -80,7 +80,7 @@ Expected output:
 ### 4. Verify (All 3 Platforms)
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --check
+bash dai-harness/scripts/daiharness-mcp-setup.sh --check
 ```
 
 Expected output:
@@ -89,21 +89,21 @@ Expected output:
   ➜ Project: /path/to/project
 
   ✓ Cursor: ~/.cursor/mcp.json
-    dai-nexus: CONFIGURED
+    dai-harness: CONFIGURED
     dai-memory: CONFIGURED
 
   ✓ Claude Code: ~/.claude/settings.json
-    dai-nexus: CONFIGURED
+    dai-harness: CONFIGURED
     dai-memory: CONFIGURED
 
   ➜ Antigravity:
-    ✓ Server: ~/.cursor/projects/<hash>/mcps/user-dai-nexus/
-    dai-nexus: CONFIGURED
+    ✓ Server: ~/.cursor/projects/<hash>/mcps/user-dai-harness/
+    dai-harness: CONFIGURED
 
   ✓ Manifest: /path/to/project/.antigravity/mcp-manifest.json
 
   ✓ Codex CLI: ~/.codex/config.toml
-    dai-nexus: CONFIGURED
+    dai-harness: CONFIGURED
     dai-memory: CONFIGURED
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -117,28 +117,28 @@ Expected output:
 
 ```bash
 # Cursor only
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --cursor
+bash dai-harness/scripts/daiharness-mcp-setup.sh --cursor
 
 # Claude Code only
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --claude-code
+bash dai-harness/scripts/daiharness-mcp-setup.sh --claude-code
 
 # Antigravity only
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --antigravity
+bash dai-harness/scripts/daiharness-mcp-setup.sh --antigravity
 
 # OpenAI Codex CLI only
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --codex
+bash dai-harness/scripts/daiharness-mcp-setup.sh --codex
 ```
 
 ### Check Status
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --check
+bash dai-harness/scripts/daiharness-mcp-setup.sh --check
 ```
 
 ### Force Re-setup
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --force
+bash dai-harness/scripts/daiharness-mcp-setup.sh --force
 ```
 
 ### Just the code graph (DAI memory)
@@ -153,7 +153,7 @@ node "$(python3 scripts/lite/dai_memory.py where)/bin/dai-memory.mjs" init
 ## Uninstall
 
 ```bash
-bash dai-nexus/scripts/dainexus-mcp-setup.sh --uninstall
+bash dai-harness/scripts/daiharness-mcp-setup.sh --uninstall
 ```
 
 ---
@@ -166,7 +166,7 @@ After setup, confirm all 4 platforms are configured:
 - [ ] **Claude Code**: Restart Claude, check MCP tools appear
 - [ ] **Antigravity**: Restart Antigravity, check MCP tools appear
 - [ ] **OpenAI Codex CLI**: Restart Codex, run `codex mcp list` to verify
-- [ ] **Script check**: `bash dai-nexus/scripts/dainexus-mcp-setup.sh --check` shows all ✓
+- [ ] **Script check**: `bash dai-harness/scripts/daiharness-mcp-setup.sh --check` shows all ✓
 
 ---
 
@@ -174,4 +174,4 @@ After setup, confirm all 4 platforms are configured:
 
 - Full docs: [docs/SETUP.md](SETUP.md)
 - Troubleshooting: [docs/SETUP.md#troubleshooting](SETUP.md#troubleshooting)
-- Issues: [GitHub](https://github.com/Exia-thd/DAI-nexus/issues)
+- Issues: [GitHub](https://github.com/Exia-thd/DAI-harness/issues)

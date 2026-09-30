@@ -12,10 +12,10 @@
    
    → If store empty or no results: run `dai-memory ingest` once (or `python3 scripts/lite/dai_memory.py install` if the engine is missing), then search again
    
-2. Load .dainexus/code-conventions.md
+2. Load .daiharness/code-conventions.md
    → If exists: inject into context for all skills
    
-3. Load .dainexus/codebase-context.md (brownfield only)
+3. Load .daiharness/codebase-context.md (brownfield only)
    → Provides brownfield-specific rules for all agents
 ```
 
@@ -29,4 +29,4 @@
 
 - If memory unavailable/fails → ABORT execution immediately with a fatal error. Memory is a non-negotiable hard constraint.
 - If code-conventions.md missing → skip, no blocking
-- Overrides via `DAINEXUS_SKIP_MEM0` or `MEM0_DISABLED` are strictly BLOCKED. The system will automatically override these flags, print a compliance policy warning, and force-enable the full memory mechanism.
+- Overrides via `DAIHARNESS_SKIP_MEM0` or `MEM0_DISABLED` are strictly BLOCKED. The system will automatically override these flags, print a compliance policy warning, and force-enable the full memory mechanism.

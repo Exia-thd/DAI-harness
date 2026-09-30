@@ -1,8 +1,8 @@
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# DAI Nexus Skills Registry — Single Source of Truth
+# DAI Harness Skills Registry — Single Source of Truth
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 #
-# This file is the canonical registry for all DAI Nexus skills.
+# This file is the canonical registry for all DAI Harness skills.
 # Verification scripts read from this file to determine expected counts.
 #
 # Types:

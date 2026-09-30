@@ -17,7 +17,7 @@ const DENIED_SEGMENTS = new Set([
   "node_modules",
 ]);
 
-const DENIED_DAINEXUS_SEGMENTS = new Set([
+const DENIED_DAIHARNESS_SEGMENTS = new Set([
   "artifacts",
   "audit",
   "deliveries",
@@ -33,11 +33,11 @@ const DENIED_DAINEXUS_SEGMENTS = new Set([
   "verify",
 ]);
 
-const ALLOWED_DAINEXUS_FILES = new Set([
-  ".dainexus/docs-manifest.json",
-  ".dainexus/project-profile.json",
-  ".dainexus/project.json",
-  ".dainexus/code-conventions.md",
+const ALLOWED_DAIHARNESS_FILES = new Set([
+  ".daiharness/docs-manifest.json",
+  ".daiharness/project-profile.json",
+  ".daiharness/project.json",
+  ".daiharness/code-conventions.md",
 ]);
 
 const DENIED_BASENAME_PATTERNS = [
@@ -151,11 +151,11 @@ export function isSensitivePath(relativePath: string): boolean {
     return true;
   }
 
-  if (segments[0] === ".dainexus") {
-    if (ALLOWED_DAINEXUS_FILES.has(normalized.toLowerCase())) {
+  if (segments[0] === ".daiharness") {
+    if (ALLOWED_DAIHARNESS_FILES.has(normalized.toLowerCase())) {
       return false;
     }
-    if (segments.length > 1 && DENIED_DAINEXUS_SEGMENTS.has(segments[1])) {
+    if (segments.length > 1 && DENIED_DAIHARNESS_SEGMENTS.has(segments[1])) {
       return true;
     }
   }

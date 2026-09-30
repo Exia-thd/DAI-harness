@@ -98,7 +98,7 @@ export function exportObsidianVault(
   };
   write(
     join(outputDir, "README.md"),
-    `# DAI Nexus Docs Hub\n\n${orderedCatalogs.map((catalog) => `- [[${catalog.project.id}/index|${catalog.project.title}]]`).join("\n")}\n`,
+    `# DAI Harness Docs Hub\n\n${orderedCatalogs.map((catalog) => `- [[${catalog.project.id}/index|${catalog.project.title}]]`).join("\n")}\n`,
   );
   for (const catalog of orderedCatalogs) {
     const byId = new Map(
@@ -117,7 +117,7 @@ export function exportObsidianVault(
       for (const link of document.links) {
         if (
           link.resolvedDocumentId &&
-          link.target.startsWith("dai-nexus://")
+          link.target.startsWith("dai-harness://")
         ) {
           const target =
             byId.get(link.resolvedDocumentId) ??
@@ -131,7 +131,7 @@ export function exportObsidianVault(
           }
         }
       }
-      const nav = `> [!info] DAI Nexus Docs Hub\n> Project: [[${catalog.project.id}/index|${catalog.project.title}]] · Source: \`${document.sourcePath}\`\n\n`;
+      const nav = `> [!info] DAI Harness Docs Hub\n> Project: [[${catalog.project.id}/index|${catalog.project.title}]] · Source: \`${document.sourcePath}\`\n\n`;
       write(
         destination,
         document.format === "markdown" ? nav + content : content,

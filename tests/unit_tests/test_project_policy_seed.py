@@ -9,12 +9,12 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-POLICY = ROOT / ".dainexus" / "execution-policy.yaml"
+POLICY = ROOT / ".daiharness" / "execution-policy.yaml"
 SEEDER = ROOT / "scripts" / "lite" / "ensure-project-policy.sh"
 SETUP_PROJECT = ROOT / "scripts" / "bootstrap" / "setup-project.sh"
-SETUP_CLI = ROOT / "scripts" / "bootstrap" / "dainexus-setup.sh"
-MCP_SETUP = ROOT / "scripts" / "mcp" / "dainexus-mcp-setup.sh"
-DOCTOR = ROOT / "scripts" / "hooks" / "dainexus-hook-doctor.sh"
+SETUP_CLI = ROOT / "scripts" / "bootstrap" / "daiharness-setup.sh"
+MCP_SETUP = ROOT / "scripts" / "mcp" / "daiharness-mcp-setup.sh"
+DOCTOR = ROOT / "scripts" / "hooks" / "daiharness-hook-doctor.sh"
 GATE = ROOT / "scripts" / "lite" / "antigravity-pre-tool-gate.sh"
 GIT_LOCAL_ENV_VARS = subprocess.run(
     ("git", "rev-parse", "--local-env-vars"),
@@ -63,9 +63,9 @@ def test_policy_seeder_creates_parent_policy_and_preserves_customization(
     assert SEEDER.is_file()
     source = tmp_path / "source"
     target = tmp_path / "target"
-    (source / ".dainexus").mkdir(parents=True)
+    (source / ".daiharness").mkdir(parents=True)
     target.mkdir()
-    shutil.copy2(POLICY, source / ".dainexus" / POLICY.name)
+    shutil.copy2(POLICY, source / ".daiharness" / POLICY.name)
     unrelated_tmp = tmp_path / "unrelated-tmp"
     unrelated_tmp.mkdir()
 
@@ -78,7 +78,7 @@ def test_policy_seeder_creates_parent_policy_and_preserves_customization(
         env={"TMPDIR": str(unrelated_tmp)},
     )
     assert created.returncode == 0, created.stderr
-    parent_policy = target / ".dainexus" / POLICY.name
+    parent_policy = target / ".daiharness" / POLICY.name
     assert parent_policy.read_text(encoding="utf-8") == POLICY.read_text(
         encoding="utf-8"
     )
@@ -94,9 +94,9 @@ def test_policy_seeder_creates_parent_policy_and_preserves_customization(
 def test_policy_seeder_is_atomic_under_concurrent_installers(tmp_path: Path) -> None:
     source = tmp_path / "source"
     target = tmp_path / "target"
-    (source / ".dainexus").mkdir(parents=True)
+    (source / ".daiharness").mkdir(parents=True)
     target.mkdir()
-    shutil.copy2(POLICY, source / ".dainexus" / POLICY.name)
+    shutil.copy2(POLICY, source / ".daiharness" / POLICY.name)
 
     def seed() -> subprocess.CompletedProcess[str]:
         return run("bash", str(SEEDER), str(source), str(target), cwd=target)
@@ -109,8 +109,8 @@ def test_policy_seeder_is_atomic_under_concurrent_installers(tmp_path: Path) -> 
     ]
     assert sum("created" in result.stdout for result in results) == 1
     assert sum("preserved" in result.stdout for result in results) == 7
-    assert (target / ".dainexus" / POLICY.name).read_bytes() == POLICY.read_bytes()
-    assert not list((target / ".dainexus").glob(".execution-policy.yaml.*"))
+    assert (target / ".daiharness" / POLICY.name).read_bytes() == POLICY.read_bytes()
+    assert not list((target / ".daiharness").glob(".execution-policy.yaml.*"))
 
 
 def test_policy_seeder_installs_cleanup_trap_and_preserves_symlinks(
@@ -121,10 +121,10 @@ def test_policy_seeder_installs_cleanup_trap_and_preserves_symlinks(
 
     source = tmp_path / "source"
     target = tmp_path / "target"
-    (source / ".dainexus").mkdir(parents=True)
+    (source / ".daiharness").mkdir(parents=True)
     target.mkdir()
-    shutil.copy2(POLICY, source / ".dainexus" / POLICY.name)
-    target_policy_dir = target / ".dainexus"
+    shutil.copy2(POLICY, source / ".daiharness" / POLICY.name)
+    target_policy_dir = target / ".daiharness"
     target_policy_dir.mkdir()
     parent_policy = target_policy_dir / POLICY.name
     parent_policy.symlink_to(target / "custom-policy.yaml")
@@ -145,11 +145,11 @@ def test_policy_seeder_fails_for_missing_source_or_non_file_destination(
 
     missing_source = run("bash", str(SEEDER), str(source), str(target), cwd=target)
     assert missing_source.returncode != 0
-    assert not (target / ".dainexus" / POLICY.name).exists()
+    assert not (target / ".daiharness" / POLICY.name).exists()
 
-    (source / ".dainexus").mkdir()
-    shutil.copy2(POLICY, source / ".dainexus" / POLICY.name)
-    destination = target / ".dainexus" / POLICY.name
+    (source / ".daiharness").mkdir()
+    shutil.copy2(POLICY, source / ".daiharness" / POLICY.name)
+    destination = target / ".daiharness" / POLICY.name
     destination.mkdir(parents=True)
     conflict = run("bash", str(SEEDER), str(source), str(target), cwd=target)
     assert conflict.returncode != 0
@@ -162,10 +162,10 @@ def test_policy_seeder_fails_when_atomic_publication_fails_without_race(
     source = tmp_path / "source"
     target = tmp_path / "target"
     fake_bin = tmp_path / "bin"
-    (source / ".dainexus").mkdir(parents=True)
+    (source / ".daiharness").mkdir(parents=True)
     target.mkdir()
     fake_bin.mkdir()
-    shutil.copy2(POLICY, source / ".dainexus" / POLICY.name)
+    shutil.copy2(POLICY, source / ".daiharness" / POLICY.name)
     fake_ln = fake_bin / "ln"
     fake_ln.write_text("#!/usr/bin/env sh\nexit 1\n", encoding="utf-8")
     fake_ln.chmod(0o755)
@@ -181,8 +181,8 @@ def test_policy_seeder_fails_when_atomic_publication_fails_without_race(
 
     assert failed.returncode != 0
     assert "could not publish execution policy" in failed.stderr
-    assert not (target / ".dainexus" / POLICY.name).exists()
-    assert not list((target / ".dainexus").glob(".execution-policy.yaml.*"))
+    assert not (target / ".daiharness" / POLICY.name).exists()
+    assert not list((target / ".daiharness").glob(".execution-policy.yaml.*"))
 
 
 def test_setup_entrypoints_use_shared_policy_seeder() -> None:
@@ -202,15 +202,15 @@ def test_setup_check_finds_submodule_root_and_canonical_mcp_entry(
     project.mkdir()
     claude_settings.parent.mkdir(parents=True)
     canonical_command = str(
-        home / ".dainexus" / "mcp-server" / "node_modules" / ".bin" / "tsx"
+        home / ".daiharness" / "mcp-server" / "node_modules" / ".bin" / "tsx"
     )
-    canonical_server = str(home / ".dainexus" / "mcp-server" / "src" / "index.ts")
+    canonical_server = str(home / ".daiharness" / "mcp-server" / "src" / "index.ts")
     claude_settings.write_text(json.dumps({"hooks": {"Stop": []}}), encoding="utf-8")
     claude_config.write_text(
         json.dumps(
             {
                 "mcpServers": {
-                    "dai-nexus": {
+                    "dai-harness": {
                         "command": canonical_command,
                         "args": [canonical_server],
                     }
@@ -230,13 +230,13 @@ def test_setup_check_finds_submodule_root_and_canonical_mcp_entry(
     )
 
     assert result.returncode == 0, result.stderr
-    assert f"DAI Nexus: {ROOT}" in result.stdout
+    assert f"DAI Harness: {ROOT}" in result.stdout
     assert f"MCP Config: Configured ({claude_config})" in result.stdout
-    assert "DAI Nexus: Not found" not in result.stdout
+    assert "DAI Harness: Not found" not in result.stdout
 
     claude_settings.write_text(
         json.dumps(
-            {"mcpServers": {"dai-nexus": {"command": "/wrong/file/must/be/ignored"}}}
+            {"mcpServers": {"dai-harness": {"command": "/wrong/file/must/be/ignored"}}}
         ),
         encoding="utf-8",
     )
@@ -250,14 +250,14 @@ def test_setup_check_finds_submodule_root_and_canonical_mcp_entry(
         env={"HOME": str(home)},
     )
     assert hook_only.returncode == 0, hook_only.stderr
-    assert "MCP Config: No enabled DAI Nexus entry" in hook_only.stdout
+    assert "MCP Config: No enabled DAI Harness entry" in hook_only.stdout
     assert "MCP Config: Configured" not in hook_only.stdout
 
     claude_config.write_text(
         json.dumps(
             {
                 "mcpServers": {
-                    "dai-nexus": {
+                    "dai-harness": {
                         "command": canonical_command,
                         "args": [canonical_server],
                         "enabled": False,
@@ -276,7 +276,7 @@ def test_setup_check_finds_submodule_root_and_canonical_mcp_entry(
         env={"HOME": str(home)},
     )
     assert disabled.returncode == 0, disabled.stderr
-    assert "MCP Config: No enabled DAI Nexus entry" in disabled.stdout
+    assert "MCP Config: No enabled DAI Harness entry" in disabled.stdout
     assert "MCP Config: Configured" not in disabled.stdout
 
 
@@ -302,14 +302,14 @@ def test_setup_diagnostics_use_actual_codex_gemini_and_linux_claude_configs(
     opencode.parent.mkdir(parents=True)
     fake_bin.mkdir()
     canonical_command = str(
-        home / ".dainexus" / "mcp-server" / "node_modules" / ".bin" / "tsx"
+        home / ".daiharness" / "mcp-server" / "node_modules" / ".bin" / "tsx"
     )
-    canonical_server = str(home / ".dainexus" / "mcp-server" / "src" / "index.ts")
+    canonical_server = str(home / ".daiharness" / "mcp-server" / "src" / "index.ts")
     claude_user.write_text(
         json.dumps(
             {
                 "mcpServers": {
-                    "dai-nexus": {
+                    "dai-harness": {
                         "command": canonical_command,
                         "args": [canonical_server],
                     }
@@ -319,14 +319,14 @@ def test_setup_diagnostics_use_actual_codex_gemini_and_linux_claude_configs(
         encoding="utf-8",
     )
     codex.write_text(
-        f'[mcp_servers.dainexus]\nenabled = false\ncommand = "{canonical_command}"\nargs = ["{canonical_server}"]\n',
+        f'[mcp_servers.daiharness]\nenabled = false\ncommand = "{canonical_command}"\nargs = ["{canonical_server}"]\n',
         encoding="utf-8",
     )
     gemini.write_text(
         json.dumps(
             {
                 "mcpServers": {
-                    "dai-nexus": {
+                    "dai-harness": {
                         "command": canonical_command,
                         "args": [canonical_server],
                     }
@@ -336,14 +336,14 @@ def test_setup_diagnostics_use_actual_codex_gemini_and_linux_claude_configs(
         encoding="utf-8",
     )
     gemini_enablement.write_text(
-        json.dumps({"dai-nexus": {"enabled": False}, "other": {"enabled": False}}),
+        json.dumps({"dai-harness": {"enabled": False}, "other": {"enabled": False}}),
         encoding="utf-8",
     )
     linux_claude.write_text(
         json.dumps(
             {
                 "mcpServers": {
-                    "dai-nexus": {
+                    "dai-harness": {
                         "command": canonical_command,
                         "args": [canonical_server],
                     }
@@ -356,7 +356,7 @@ def test_setup_diagnostics_use_actual_codex_gemini_and_linux_claude_configs(
         json.dumps(
             {
                 "context_servers": {
-                    "dai-nexus": {
+                    "dai-harness": {
                         "command": canonical_command,
                         "args": [canonical_server],
                     }
@@ -369,7 +369,7 @@ def test_setup_diagnostics_use_actual_codex_gemini_and_linux_claude_configs(
         json.dumps(
             {
                 "mcp": {
-                    "dai-nexus": {
+                    "dai-harness": {
                         "type": "local",
                         "command": [canonical_command, canonical_server],
                     }
@@ -410,13 +410,13 @@ def test_setup_diagnostics_use_actual_codex_gemini_and_linux_claude_configs(
 def test_bootstrap_delegates_canonical_mcp_setup_and_manifest_contract(
     tmp_path: Path,
 ) -> None:
-    fw = tmp_path / "dai-nexus"
+    fw = tmp_path / "dai-harness"
     project = tmp_path / "project"
     home = tmp_path / "home"
     xdg = home / "xdg"
     fake_bin = tmp_path / "bin"
     bootstrap = fw / "scripts" / "bootstrap" / SETUP_CLI.name
-    canonical = fw / "scripts" / "mcp" / "dainexus-mcp-setup.sh"
+    canonical = fw / "scripts" / "mcp" / "daiharness-mcp-setup.sh"
     seeder = fw / "scripts" / "lite" / "ensure-project-policy.sh"
     bootstrap.parent.mkdir(parents=True)
     canonical.parent.mkdir(parents=True)
@@ -428,17 +428,17 @@ def test_bootstrap_delegates_canonical_mcp_setup_and_manifest_contract(
     (fw / "AGENTS.md").write_text("# Fixture\n", encoding="utf-8")
     seeder.write_text(
         "#!/usr/bin/env bash\n"
-        'mkdir -p "$2/.dainexus"\n'
-        "printf 'safe: true\\n' > \"$2/.dainexus/execution-policy.yaml\"\n"
-        "printf 'created:%s\\n' \"$2/.dainexus/execution-policy.yaml\"\n",
+        'mkdir -p "$2/.daiharness"\n'
+        "printf 'safe: true\\n' > \"$2/.daiharness/execution-policy.yaml\"\n"
+        "printf 'created:%s\\n' \"$2/.daiharness/execution-policy.yaml\"\n",
         encoding="utf-8",
     )
     canonical.write_text(
         "#!/usr/bin/env bash\n"
         "set -euo pipefail\n"
-        'mkdir -p .antigravity "$HOME/.dainexus/mcp-server/src"\n'
+        'mkdir -p .antigravity "$HOME/.daiharness/mcp-server/src"\n'
         "printf '%s\\n' \"$*\" >> .antigravity/canonical-args.txt\n"
-        'node - "$(pwd -P)" "$HOME/.dainexus" "$@" <<\'NODE\'\n'
+        'node - "$(pwd -P)" "$HOME/.daiharness" "$@" <<\'NODE\'\n'
         "const fs = require('fs');\n"
         "const [workspace, root, ...args] = process.argv.slice(2);\n"
         "const paths = {\n"
@@ -454,8 +454,8 @@ def test_bootstrap_delegates_canonical_mcp_setup_and_manifest_contract(
         "const platforms = Object.fromEntries(args.filter((arg) => paths[arg]).map((arg) => paths[arg]));\n"
         "const server = `${root}/mcp-server/src/index.ts`;\n"
         "const manifest = {manifest_version:'1.0', workspace, "
-        "dai-nexus:{version:'test', canonical:root, server}, "
-        "servers:[{name:'dai-nexus', path:server, enabled:true}], "
+        "dai-harness:{version:'test', canonical:root, server}, "
+        "servers:[{name:'dai-harness', path:server, enabled:true}], "
         "settings:{workspace_detection:'git-root'}, platforms, "
         "generated_at:'2026-01-01T00:00:00Z'};\n"
         "fs.writeFileSync('.antigravity/mcp-manifest.json', "
@@ -501,7 +501,7 @@ def test_bootstrap_delegates_canonical_mcp_setup_and_manifest_contract(
     )
     assert manifest["manifest_version"] == "1.0"
     assert manifest["workspace"] == str(project.resolve())
-    assert manifest["dai-nexus"]["server"].endswith("/mcp-server/src/index.ts")
+    assert manifest["dai-harness"]["server"].endswith("/mcp-server/src/index.ts")
     delegated = (
         (project / ".antigravity" / "canonical-args.txt")
         .read_text(encoding="utf-8")
@@ -529,10 +529,10 @@ def test_bootstrap_delegates_canonical_mcp_setup_and_manifest_contract(
         "opencode",
     }
     assert "--all" not in delegated
-    assert not (project / ".dainexus" / "mcp-server" / "server.ts").exists()
+    assert not (project / ".daiharness" / "mcp-server" / "server.ts").exists()
     source = bootstrap.read_text(encoding="utf-8")
-    assert ".dainexus/mcp-server/server.ts" not in source
-    assert "scripts/mcp/dainexus-mcp-setup.sh" in source
+    assert ".daiharness/mcp-server/server.ts" not in source
+    assert "scripts/mcp/daiharness-mcp-setup.sh" in source
     assert "local client platform_flag" in source
     assert 'claude-desktop) platform_flag="--claude-desktop"' in source
 
@@ -540,7 +540,7 @@ def test_bootstrap_delegates_canonical_mcp_setup_and_manifest_contract(
 def test_bootstrap_check_and_diagnose_use_client_schemas_and_prefer_jsonc(
     tmp_path: Path,
 ) -> None:
-    fw = tmp_path / "fresh-dai-nexus"
+    fw = tmp_path / "fresh-dai-harness"
     bootstrap = fw / "scripts" / "bootstrap" / SETUP_CLI.name
     canonical = fw / "scripts" / "mcp" / MCP_SETUP.name
     home = tmp_path / "home"
@@ -569,25 +569,25 @@ def test_bootstrap_check_and_diagnose_use_client_schemas_and_prefer_jsonc(
     fake_uname.write_text("#!/usr/bin/env sh\necho Linux\n", encoding="utf-8")
     fake_uname.chmod(0o755)
     canonical_command = str(
-        home / ".dainexus" / "mcp-server" / "node_modules" / ".bin" / "tsx"
+        home / ".daiharness" / "mcp-server" / "node_modules" / ".bin" / "tsx"
     )
-    canonical_server = str(home / ".dainexus" / "mcp-server" / "src" / "index.ts")
-    empty_generic = {"mcpServers": {"dai-nexus": {"command": "", "args": []}}}
+    canonical_server = str(home / ".daiharness" / "mcp-server" / "src" / "index.ts")
+    empty_generic = {"mcpServers": {"dai-harness": {"command": "", "args": []}}}
     for path in (cursor, claude, gemini, antigravity):
         path.write_text(json.dumps(empty_generic), encoding="utf-8")
     codex.write_text(
-        '[mcp_servers.dainexus]\ncommand = ""\nargs = []\n',
+        '[mcp_servers.daiharness]\ncommand = ""\nargs = []\n',
         encoding="utf-8",
     )
     zed.write_text(
         '{\n  // empty Zed entry\n  "context_servers": {\n'
-        '    "dai-nexus": { "command": "", "args": [], },\n  },\n}\n',
+        '    "dai-harness": { "command": "", "args": [], },\n  },\n}\n',
         encoding="utf-8",
     )
     opencode_json.write_text('{"conflict":"ignore"}\n', encoding="utf-8")
     opencode_jsonc.write_text(
         '{\n  // active OpenCode JSONC\n  "mcp": {\n'
-        '    "dai-nexus": { "type": "local", "command": [], },\n  },\n}\n',
+        '    "dai-harness": { "type": "local", "command": [], },\n  },\n}\n',
         encoding="utf-8",
     )
 
@@ -609,13 +609,13 @@ def test_bootstrap_check_and_diagnose_use_client_schemas_and_prefer_jsonc(
 
     zed.write_text(
         '{\n  // preserve Zed status comment\n  "context_servers": {\n'
-        f'    "dai-nexus": {{ "command": {json.dumps(canonical_command)}, '
+        f'    "dai-harness": {{ "command": {json.dumps(canonical_command)}, '
         f'"args": [{json.dumps(canonical_server)}], }},\n  }},\n}}\n',
         encoding="utf-8",
     )
     opencode_jsonc.write_text(
         '{\n  // preserve OpenCode status comment\n  "mcp": {\n'
-        '    "dai-nexus": { "type": "local", "command": '
+        '    "dai-harness": { "type": "local", "command": '
         f"[{json.dumps(canonical_command)}, {json.dumps(canonical_server)}], }},\n"
         "  },\n}\n",
         encoding="utf-8",
@@ -636,7 +636,7 @@ def test_bootstrap_check_and_diagnose_use_client_schemas_and_prefer_jsonc(
         json.dumps(
             {
                 "mcpServers": {
-                    "dai-nexus": {
+                    "dai-harness": {
                         "command": canonical_command,
                         "args": [canonical_server],
                     }
@@ -647,7 +647,7 @@ def test_bootstrap_check_and_diagnose_use_client_schemas_and_prefer_jsonc(
     )
     enablement = home / ".gemini" / "mcp-server-enablement.json"
     enablement.write_text(
-        json.dumps({"dai-nexus": {"enabled": True, "unexpected": True}}),
+        json.dumps({"dai-harness": {"enabled": True, "unexpected": True}}),
         encoding="utf-8",
     )
     enabled_state = run(
@@ -659,7 +659,7 @@ def test_bootstrap_check_and_diagnose_use_client_schemas_and_prefer_jsonc(
 
     extra_generic = {
         "mcpServers": {
-            "dai-nexus": {
+            "dai-harness": {
                 "command": canonical_command,
                 "args": [canonical_server, "--unexpected"],
             }
@@ -668,7 +668,7 @@ def test_bootstrap_check_and_diagnose_use_client_schemas_and_prefer_jsonc(
     for path in (cursor, claude, gemini, antigravity):
         path.write_text(json.dumps(extra_generic), encoding="utf-8")
     codex.write_text(
-        "[mcp_servers.dainexus]\n"
+        "[mcp_servers.daiharness]\n"
         f"command = {json.dumps(canonical_command)}\n"
         f'args = [{json.dumps(canonical_server)}, "--unexpected"]\n',
         encoding="utf-8",
@@ -677,7 +677,7 @@ def test_bootstrap_check_and_diagnose_use_client_schemas_and_prefer_jsonc(
         json.dumps(
             {
                 "context_servers": {
-                    "dai-nexus": {
+                    "dai-harness": {
                         "command": canonical_command,
                         "args": [canonical_server, "--unexpected"],
                     }
@@ -690,7 +690,7 @@ def test_bootstrap_check_and_diagnose_use_client_schemas_and_prefer_jsonc(
         json.dumps(
             {
                 "mcp": {
-                    "dai-nexus": {
+                    "dai-harness": {
                         "type": "local",
                         "command": [
                             canonical_command,
@@ -715,7 +715,7 @@ def test_bootstrap_check_and_diagnose_use_client_schemas_and_prefer_jsonc(
         "bash", str(bootstrap), "--check", str(project), cwd=project, env=env
     )
     assert malformed_check.returncode == 0, malformed_check.stderr
-    assert f"No enabled DAI Nexus entry ({opencode_jsonc})" in malformed_check.stdout
+    assert f"No enabled DAI Harness entry ({opencode_jsonc})" in malformed_check.stdout
     assert opencode_jsonc.read_text(encoding="utf-8") == malformed
 
 
@@ -768,7 +768,7 @@ def test_bootstrap_resolves_topmost_nested_submodule_before_seeding_and_mcp(
         "--recursive",
     )
 
-    fw = tmp_path / "dai-nexus"
+    fw = tmp_path / "dai-harness"
     home = tmp_path / "home"
     bootstrap = fw / "scripts" / "bootstrap" / SETUP_CLI.name
     canonical = fw / "scripts" / "mcp" / MCP_SETUP.name
@@ -781,10 +781,10 @@ def test_bootstrap_resolves_topmost_nested_submodule_before_seeding_and_mcp(
     (fw / "AGENTS.md").write_text("# Fixture\n", encoding="utf-8")
     seeder.write_text(
         "#!/usr/bin/env bash\n"
-        'mkdir -p "$2/.dainexus"\n'
-        "printf 'safe: true\\n' > \"$2/.dainexus/execution-policy.yaml\"\n"
+        'mkdir -p "$2/.daiharness"\n'
+        "printf 'safe: true\\n' > \"$2/.daiharness/execution-policy.yaml\"\n"
         'printf \'%s\\n\' "$2" > "$HOME/seed-root"\n'
-        "printf 'created:%s\\n' \"$2/.dainexus/execution-policy.yaml\"\n",
+        "printf 'created:%s\\n' \"$2/.daiharness/execution-policy.yaml\"\n",
         encoding="utf-8",
     )
     canonical.write_text(
@@ -806,8 +806,8 @@ def test_bootstrap_resolves_topmost_nested_submodule_before_seeding_and_mcp(
         top.resolve()
     )
     assert (home / "mcp-root").read_text(encoding="utf-8").strip() == str(top.resolve())
-    assert (top / ".dainexus" / "execution-policy.yaml").is_file()
-    assert not (nested / ".dainexus" / "execution-policy.yaml").exists()
+    assert (top / ".daiharness" / "execution-policy.yaml").is_file()
+    assert not (nested / ".daiharness" / "execution-policy.yaml").exists()
 
 
 def test_mcp_setup_resolves_topmost_nested_submodule_superproject(
@@ -878,9 +878,9 @@ def test_mcp_setup_resolves_topmost_nested_submodule_superproject(
 def test_seeded_parent_policy_allows_safe_antigravity_tool(tmp_path: Path) -> None:
     source = tmp_path / "source"
     parent = tmp_path / "parent"
-    (source / ".dainexus").mkdir(parents=True)
+    (source / ".daiharness").mkdir(parents=True)
     parent.mkdir()
-    shutil.copy2(POLICY, source / ".dainexus" / POLICY.name)
+    shutil.copy2(POLICY, source / ".daiharness" / POLICY.name)
     seeded = run("bash", str(SEEDER), str(source), str(parent), cwd=parent)
     assert seeded.returncode == 0, seeded.stderr
 
@@ -897,20 +897,20 @@ def test_seeded_parent_policy_allows_safe_antigravity_tool(tmp_path: Path) -> No
 
 
 def test_hook_doctor_repairs_policy_into_superproject(tmp_path: Path) -> None:
-    remote = tmp_path / "dai-nexus.git"
+    remote = tmp_path / "dai-harness.git"
     git(tmp_path, "init", "--bare", str(remote))
 
     seed = tmp_path / "seed"
     seed.mkdir()
     git(seed, "init", "-b", "main")
     configure_repo(seed)
-    (seed / ".dainexus").mkdir()
-    shutil.copy2(POLICY, seed / ".dainexus" / POLICY.name)
+    (seed / ".daiharness").mkdir()
+    shutil.copy2(POLICY, seed / ".daiharness" / POLICY.name)
     (seed / "scripts" / "hooks").mkdir(parents=True)
     (seed / "scripts" / "lite").mkdir(parents=True)
     shutil.copy2(DOCTOR, seed / "scripts" / "hooks" / DOCTOR.name)
     shutil.copy2(SEEDER, seed / "scripts" / "lite" / SEEDER.name)
-    for name in ("dainexus-memory-hook.sh", "memory-session.sh"):
+    for name in ("daiharness-memory-hook.sh", "memory-session.sh"):
         stub = seed / "scripts" / "hooks" / name
         stub.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
         stub.chmod(0o755)
@@ -946,7 +946,7 @@ def test_hook_doctor_repairs_policy_into_superproject(tmp_path: Path) -> None:
         env={"HOME": str(home)},
     )
 
-    parent_policy = parent / ".dainexus" / POLICY.name
+    parent_policy = parent / ".daiharness" / POLICY.name
     assert parent_policy.read_text(encoding="utf-8") == POLICY.read_text(
         encoding="utf-8"
     )
@@ -965,7 +965,7 @@ def test_hook_doctor_repairs_policy_into_superproject(tmp_path: Path) -> None:
     assert "Parent workspace execution policy exists" in preserved.stdout
 
     parent_policy.unlink()
-    (parent / "vendor" / "fw" / ".dainexus" / POLICY.name).unlink()
+    (parent / "vendor" / "fw" / ".daiharness" / POLICY.name).unlink()
     failed = run(
         "bash",
         str(doctor),

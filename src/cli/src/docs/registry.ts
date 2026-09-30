@@ -33,8 +33,8 @@ const registrySchema = z
   .strict();
 
 export function getDocsHubHome(): string {
-  const configured = process.env.DAINEXUS_HOME?.trim();
-  return configured ? resolve(configured) : join(homedir(), ".dainexus");
+  const configured = process.env.DAIHARNESS_HOME?.trim();
+  return configured ? resolve(configured) : join(homedir(), ".daiharness");
 }
 
 export function getRegistryPath(): string {
@@ -96,7 +96,7 @@ export function addRegistryProject(
   );
   if (idIndex >= 0 && registry.projects[idIndex].root !== root) {
     throw new Error(
-      `Docs project id "${project.id}" is already registered for ${registry.projects[idIndex].root}. Choose a unique project.id in .dainexus/docs-manifest.json.`,
+      `Docs project id "${project.id}" is already registered for ${registry.projects[idIndex].root}. Choose a unique project.id in .daiharness/docs-manifest.json.`,
     );
   }
   const status = rootIndex >= 0 ? "updated" : "added";

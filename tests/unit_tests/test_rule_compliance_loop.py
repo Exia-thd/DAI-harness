@@ -64,7 +64,7 @@ def run_static_validator(workspace: Path) -> subprocess.CompletedProcess[str]:
         sys.executable,
         str(ROOT / "scripts/lite/rule-validator.py"),
         "--static",
-        env={"DAINEXUS_WORKSPACE": str(workspace)},
+        env={"DAIHARNESS_WORKSPACE": str(workspace)},
     )
 
 
@@ -119,7 +119,7 @@ def write_v2_evidence(tmp_path: Path, *, turn: str = "turn-1") -> tuple[dict, Pa
     evidence["timestamp_utc"] = datetime.now(timezone.utc).strftime(
         "%Y-%m-%dT%H:%M:%SZ"
     )
-    path = tmp_path / ".dainexus" / "verify" / f"{turn}.json"
+    path = tmp_path / ".daiharness" / "verify" / f"{turn}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(evidence), encoding="utf-8")
     return evidence, path
@@ -172,8 +172,8 @@ def test_policy_fails_closed_for_missing_empty_and_malformed_files(
             "run_command",
             "git status",
             env={
-                "DAINEXUS_POLICY_FILE": str(path),
-                "DAINEXUS_TELEMETRY_DIR": str(tmp_path / "telemetry"),
+                "DAIHARNESS_POLICY_FILE": str(path),
+                "DAIHARNESS_TELEMETRY_DIR": str(tmp_path / "telemetry"),
             },
         )
         assert result.returncode != 0, (path, result.stdout, result.stderr)
@@ -184,8 +184,8 @@ def test_policy_blocks_wrappers_git_global_options_and_split_rm_flags(
 ) -> None:
     script = ROOT / "scripts/lite/policy-check.sh"
     env = {
-        "DAINEXUS_POLICY_FILE": str(policy(tmp_path)),
-        "DAINEXUS_TELEMETRY_DIR": str(tmp_path / "telemetry"),
+        "DAIHARNESS_POLICY_FILE": str(policy(tmp_path)),
+        "DAIHARNESS_TELEMETRY_DIR": str(tmp_path / "telemetry"),
     }
     destructive = [
         "command git -C . reset --hard",
@@ -206,9 +206,9 @@ def test_validator_requires_one_complete_adjacent_passing_verify_block(
     ledger = tmp_path / "ledger.jsonl"
     evidence, _ = write_v2_evidence(tmp_path)
     env = {
-        "DAINEXUS_RULE_LEDGER": str(ledger),
-        "DAINEXUS_WORKSPACE": str(tmp_path),
-        "DAINEXUS_TURN": evidence["turn"],
+        "DAIHARNESS_RULE_LEDGER": str(ledger),
+        "DAIHARNESS_WORKSPACE": str(tmp_path),
+        "DAIHARNESS_TURN": evidence["turn"],
     }
     valid = strict_response(evidence)
     result = run(sys.executable, str(script), "--runtime", env=env, stdin=valid)
@@ -248,8 +248,8 @@ def test_validator_accepts_json_hook_payload_and_propagates_ledger_failure(
         str(script),
         "--runtime",
         env={
-            "DAINEXUS_RULE_LEDGER": str(tmp_path / "ledger.jsonl"),
-            "DAINEXUS_WORKSPACE": str(tmp_path),
+            "DAIHARNESS_RULE_LEDGER": str(tmp_path / "ledger.jsonl"),
+            "DAIHARNESS_WORKSPACE": str(tmp_path),
         },
         stdin=payload,
     )
@@ -261,7 +261,7 @@ def test_validator_accepts_json_hook_payload_and_propagates_ledger_failure(
         sys.executable,
         str(script),
         "--runtime",
-        env={"DAINEXUS_RULE_LEDGER": str(blocked_parent / "ledger.jsonl")},
+        env={"DAIHARNESS_RULE_LEDGER": str(blocked_parent / "ledger.jsonl")},
         stdin="VERIFY:\n",
     )
     assert failed.returncode != 0
@@ -333,7 +333,7 @@ def test_telemetry_emits_one_redacted_json_object(tmp_path: Path) -> None:
         json.dumps(
             {"token": "super-secret", "nested": {"password": "hidden"}, "ok": True}
         ),
-        env={"DAINEXUS_TELEMETRY_DIR": str(tmp_path / "telemetry")},
+        env={"DAIHARNESS_TELEMETRY_DIR": str(tmp_path / "telemetry")},
     )
     assert result.returncode == 0, result.stderr
     lines = result.stdout.splitlines()
@@ -352,7 +352,7 @@ def test_telemetry_rejects_non_object_empty_and_multiple_documents(
     tmp_path: Path,
 ) -> None:
     script = ROOT / "scripts/lite/telemetry.sh"
-    env = {"DAINEXUS_TELEMETRY_DIR": str(tmp_path / "telemetry")}
+    env = {"DAIHARNESS_TELEMETRY_DIR": str(tmp_path / "telemetry")}
     for payload in ("", "[]", '"scalar"', "1", "{}\n{}"):
         result = run("bash", str(script), "emit", "audit.event", payload, env=env)
         assert result.returncode != 0, (payload, result.stdout, result.stderr)
@@ -382,7 +382,7 @@ def test_ledger_filters_outcomes_and_refresh_shows_recent_violations(
     ledger.write_text(
         "".join(json.dumps(item) + "\n" for item in entries), encoding="utf-8"
     )
-    env = {"DAINEXUS_RULE_LEDGER": str(ledger)}
+    env = {"DAIHARNESS_RULE_LEDGER": str(ledger)}
     top = run(
         "bash",
         str(ROOT / "scripts/lite/rule-ledger.sh"),
@@ -410,8 +410,8 @@ def test_context_manager_uses_project_root_tail_keywords_and_global_cap(
     source = ROOT / "scripts/lite/context-manager.py"
     copied = script_dir / source.name
     copied.write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
-    memory = fake_root / ".dainexus" / "memory-bank"
-    summary_dir = fake_root / ".dainexus" / "subagent-context"
+    memory = fake_root / ".daiharness" / "memory-bank"
+    summary_dir = fake_root / ".daiharness" / "subagent-context"
     memory.mkdir(parents=True)
     summary_dir.mkdir(parents=True)
     (memory / "activeContext.md").write_text("A" * 3000, encoding="utf-8")
@@ -427,7 +427,7 @@ def test_context_manager_uses_project_root_tail_keywords_and_global_cap(
         "--keywords",
         "rule routing",
         cwd=tmp_path,
-        env={"DAINEXUS_SKIP_MEM0": "1", "DAINEXUS_CONTEXT_CHAR_CAP": "2000"},
+        env={"DAIHARNESS_SKIP_MEM0": "1", "DAIHARNESS_CONTEXT_CHAR_CAP": "2000"},
     )
     assert result.returncode == 0, result.stderr
     assert "LATEST-MARKER" in result.stdout
@@ -437,7 +437,7 @@ def test_context_manager_uses_project_root_tail_keywords_and_global_cap(
 
 def test_canonical_scripts_target_validated_workspace(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
-    fw_dir = workspace / ".dainexus"
+    fw_dir = workspace / ".daiharness"
     memory_dir = fw_dir / "memory-bank"
     fw_dir.mkdir(parents=True)
     memory_dir.mkdir(parents=True)
@@ -448,8 +448,8 @@ def test_canonical_scripts_target_validated_workspace(tmp_path: Path) -> None:
         "FAKE-WORKSPACE-MARKER", encoding="utf-8"
     )
     env = {
-        "DAINEXUS_WORKSPACE": str(workspace),
-        "DAINEXUS_SKIP_MEM0": "1",
+        "DAIHARNESS_WORKSPACE": str(workspace),
+        "DAIHARNESS_SKIP_MEM0": "1",
     }
 
     checked = run(
@@ -504,7 +504,7 @@ def test_canonical_scripts_target_validated_workspace(tmp_path: Path) -> None:
 
 
 def test_canonical_scripts_reject_invalid_workspace(tmp_path: Path) -> None:
-    env = {"DAINEXUS_WORKSPACE": str(tmp_path / "missing-workspace")}
+    env = {"DAIHARNESS_WORKSPACE": str(tmp_path / "missing-workspace")}
     commands = (
         ("bash", str(ROOT / "scripts/lite/policy-check.sh"), "show"),
         ("bash", str(ROOT / "scripts/lite/rule-ledger.sh"), "top", "1"),
@@ -520,7 +520,7 @@ def test_canonical_scripts_reject_invalid_workspace(tmp_path: Path) -> None:
 def test_ledger_and_telemetry_concurrent_appends_are_complete(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    env = {"DAINEXUS_WORKSPACE": str(workspace)}
+    env = {"DAIHARNESS_WORKSPACE": str(workspace)}
     ledger_script = ROOT / "scripts/lite/rule-ledger.sh"
     telemetry_script = ROOT / "scripts/lite/telemetry.sh"
 
@@ -551,12 +551,12 @@ def test_ledger_and_telemetry_concurrent_appends_are_complete(tmp_path: Path) ->
     assert all(result.returncode == 0 for result in ledger_results)
     assert all(result.returncode == 0 for result in event_results)
 
-    ledger_path = workspace / ".dainexus" / "rule-ledger.jsonl"
+    ledger_path = workspace / ".daiharness" / "rule-ledger.jsonl"
     ledger_records = [
         json.loads(line)
         for line in ledger_path.read_text(encoding="utf-8").splitlines()
     ]
-    event_path = next((workspace / ".dainexus" / "telemetry").glob("events-*.jsonl"))
+    event_path = next((workspace / ".daiharness" / "telemetry").glob("events-*.jsonl"))
     event_records = [
         json.loads(line) for line in event_path.read_text(encoding="utf-8").splitlines()
     ]
@@ -569,8 +569,8 @@ def test_ledger_and_telemetry_concurrent_appends_are_complete(tmp_path: Path) ->
 def test_isolated_rule_loop_does_not_touch_tracked_runtime_files(
     tmp_path: Path,
 ) -> None:
-    tracked_ledger = ROOT / ".dainexus" / "rule-ledger.jsonl"
-    tracked_events = ROOT / ".dainexus" / "telemetry" / "events-202607.jsonl"
+    tracked_ledger = ROOT / ".daiharness" / "rule-ledger.jsonl"
+    tracked_events = ROOT / ".daiharness" / "telemetry" / "events-202607.jsonl"
     before = {
         path: path.read_bytes() if path.exists() else None
         for path in (tracked_ledger, tracked_events)

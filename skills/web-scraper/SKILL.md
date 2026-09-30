@@ -6,7 +6,7 @@ description: >
   CSS-first extraction, and browser isolation. Library-only mode (no Docker API).
   Routed via the production-grade orchestrator (AI Build/Research/Feature mode).
 version: 1.0.0
-author: dai-nexus
+author: dai-harness
 tags: [web-scraping, crawl4ai, data-extraction, security, crawler, rag, research]
 ---
 

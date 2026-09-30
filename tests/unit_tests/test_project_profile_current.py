@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def test_checked_in_project_profile_matches_deterministic_filesystem_facts():
     profile = json.loads(
-        (ROOT / ".dainexus" / "project-profile.json").read_text(encoding="utf-8")
+        (ROOT / ".daiharness" / "project-profile.json").read_text(encoding="utf-8")
     )
     package = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
 
@@ -21,5 +21,5 @@ def test_checked_in_project_profile_matches_deterministic_filesystem_facts():
         },
     }
     assert json.loads(
-        (ROOT / ".dainexus" / "project.json").read_text(encoding="utf-8")
+        (ROOT / ".daiharness" / "project.json").read_text(encoding="utf-8")
     ) == {"schema_version": 1}

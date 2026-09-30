@@ -13,7 +13,7 @@ LEGACY_PATHS = (
 
 FORBIDDEN_RUNTIME_MARKERS = (
     "api.telegram.org",
-    "DAINEXUS_TELEGRAM_BOT_TOKEN",
+    "DAIHARNESS_TELEGRAM_BOT_TOKEN",
     "/root/scripts/task-runner.sh",
     "send_telegram(",
     "Tiểu Mơ",

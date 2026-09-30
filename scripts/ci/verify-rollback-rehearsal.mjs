@@ -10,7 +10,7 @@ const currentTag = process.argv[2] ?? process.env.GITHUB_REF_NAME;
 if (!currentTag) throw new Error('usage: verify-rollback-rehearsal.mjs vX.Y.Z');
 const tags = execFileSync('git', ['tag', '--list', 'v*'], { cwd: root, encoding: 'utf8' }).trim().split('\n').filter(Boolean);
 const prior = previousReleaseTag(tags, currentTag);
-const worktree = mkdtempSync(join(tmpdir(), 'dai-nexus-rollback-'));
+const worktree = mkdtempSync(join(tmpdir(), 'dai-harness-rollback-'));
 try {
   execFileSync('git', ['worktree', 'add', '--detach', worktree, prior], { cwd: root, stdio: 'pipe' });
   execFileSync('git', ['-C', worktree, 'rev-parse', '--verify', `${prior}^{commit}`], { stdio: 'pipe' });

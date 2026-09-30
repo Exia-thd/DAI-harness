@@ -3,16 +3,16 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DAINEXUS_DIR="$(git -C "$(dirname "$SCRIPT_DIR")" rev-parse --show-toplevel 2>/dev/null || dirname "$SCRIPT_DIR")"
+DAIHARNESS_DIR="$(git -C "$(dirname "$SCRIPT_DIR")" rev-parse --show-toplevel 2>/dev/null || dirname "$SCRIPT_DIR")"
 # Canonical path, not the deprecation shim: its stderr warning ends up in
 # the JSON stream wherever this is captured with 2>&1.
-EXTRACT_SCRIPT="$DAINEXUS_DIR/scripts/runtime/checkpoint-extract.sh"
+EXTRACT_SCRIPT="$DAIHARNESS_DIR/scripts/runtime/checkpoint-extract.sh"
 
 PASS=0; FAIL=0; TESTS=0
 pass() { PASS=$((PASS+1)); echo "  ✅ $1"; }
 fail() { FAIL=$((FAIL+1)); echo "  ❌ $1"; }
 
-cd "$DAINEXUS_DIR"
+cd "$DAIHARNESS_DIR"
 
 echo ""
 echo "━━━ test-checkpoint-extract.sh ━━━"

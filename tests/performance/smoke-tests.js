@@ -5,7 +5,7 @@ import { sharedConfig } from './k6-config.js';
 /**
  * Smoke/Sanity Test Scenarios
  * Quick validation that critical endpoints are functional
- * For dai-nexus project
+ * For dai-harness project
  */
 export const options = {
   vus: 1,

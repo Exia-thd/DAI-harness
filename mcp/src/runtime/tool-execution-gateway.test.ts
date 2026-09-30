@@ -62,7 +62,7 @@ describe('ToolExecutionGateway', () => {
   });
 
   it('reduces a representative large offloaded result by at least 60 percent with a reference', async () => {
-    const root = mkdtempSync(join(tmpdir(), 'dai-nexus-tool-gateway-offload-'));
+    const root = mkdtempSync(join(tmpdir(), 'dai-harness-tool-gateway-offload-'));
     const gateway = new ToolExecutionGateway({
       policyEvaluator: allowPolicy,
       middleware: {
@@ -190,7 +190,7 @@ describe('ToolExecutionGateway', () => {
 
   it('authorizes then traverses middleware to sanitize, cap, offload, verify, and emit safe telemetry', async () => {
     const telemetry: unknown[] = [];
-    const root = mkdtempSync(join(tmpdir(), 'dai-nexus-tool-gateway-'));
+    const root = mkdtempSync(join(tmpdir(), 'dai-harness-tool-gateway-'));
     const gateway = new ToolExecutionGateway({
       policyEvaluator: allowPolicy,
       authorize: (tool) => tool !== 'forbidden',

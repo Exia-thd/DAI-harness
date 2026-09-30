@@ -11,7 +11,7 @@ version: 1.0.0
 |---|---|---|---|
 | Target landing pages, copy configs, or funnel assets are indexed | `find docs/01-product/ -name "*marketing*" -o -name "*landing*" -o -name "*funnel*"` | ... | run the check command and paste output |
 | Analytics tracking libraries (Plausible, Mixpanel, Google Analytics) are installed | `cat package.json \| jq '.dependencies \| select(. != null) \| with_entries(select(.key \| match("plausible\|mixpanel\|analytics")))'` | ... | run the check command and paste output |
-| Active project tech stack and onboarding status profile are defined | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Active project tech stack and onboarding status profile are defined | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Growth Marketer Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
@@ -28,7 +28,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground the target platform stack and analytics settings
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 cat package.json | grep -E "(plausible|mixpanel)"
 ```
 ```json
@@ -45,7 +45,7 @@ Provide high-converting, CTA-focused hero copy optimized for developer-audience 
 
 ## 2. Core Copy Matrix
 - **Hero Title**: "The AI Orchestrator That Learns From Every Failure"
-- **Sub-headline**: "Stop debugging raw loops. Let DAI Nexus self-heal your pipelines."
+- **Sub-headline**: "Stop debugging raw loops. Let DAI Harness self-heal your pipelines."
 - **Primary CTA**: "Deploy Free Local Harness"
 
 ## 3. Analytics Events

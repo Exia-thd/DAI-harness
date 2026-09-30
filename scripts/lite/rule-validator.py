@@ -28,7 +28,7 @@ from verify_gate import _find_evidence, completion_checks
 
 EXECUTABLE_ROOT = Path(__file__).resolve().parents[2]
 WORKSPACE_ERROR: str | None = None
-workspace_value = os.environ.get("DAINEXUS_WORKSPACE")
+workspace_value = os.environ.get("DAIHARNESS_WORKSPACE")
 if workspace_value:
     try:
         candidate_workspace = Path(workspace_value).expanduser().resolve(strict=True)
@@ -39,7 +39,7 @@ if workspace_value:
         PROJECT_ROOT = candidate_workspace
     except OSError as error:
         PROJECT_ROOT = EXECUTABLE_ROOT
-        WORKSPACE_ERROR = f"DAINEXUS_WORKSPACE is invalid: {error}"
+        WORKSPACE_ERROR = f"DAIHARNESS_WORKSPACE is invalid: {error}"
 else:
     try:
         workspace_result = subprocess.run(
@@ -152,7 +152,7 @@ def _validate_rule_manifest(kernel_dir: Path) -> list[str]:
     seen: set[str] = set()
     active_canonical_sources: dict[str, str] = {}
     total_source_bytes = 0
-    inventory_floor = len("[DAI Nexus rule inventory]\n")
+    inventory_floor = len("[DAI Harness rule inventory]\n")
     for number, rule in enumerate(rules, 1):
         if not isinstance(rule, dict):
             errors.append(f"rule manifest entry {number} is not an object")
@@ -335,7 +335,7 @@ def _payload_context(raw: str) -> tuple[str, str]:
     try:
         parsed = json.loads(raw)
     except json.JSONDecodeError:
-        return raw, os.environ.get("DAINEXUS_TURN", "")
+        return raw, os.environ.get("DAIHARNESS_TURN", "")
     response = _response_from_json(parsed)
     if response is None or not response.strip():
         raise ValueError("JSON payload has no supported response field")
@@ -346,7 +346,7 @@ def _payload_context(raw: str) -> tuple[str, str]:
             if isinstance(candidate, str) and candidate.strip():
                 turn = candidate.strip()
                 break
-    return response, turn or os.environ.get("DAINEXUS_TURN", "")
+    return response, turn or os.environ.get("DAIHARNESS_TURN", "")
 
 
 def decode_response(raw: str) -> str:

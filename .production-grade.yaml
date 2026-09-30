@@ -28,5 +28,5 @@ subagents:
 
 token_tracking:
   enabled: true
-  log_dir: "~/.dainexus/usage"
+  log_dir: "~/.daiharness/usage"
   export_format: jsonl

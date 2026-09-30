@@ -40,10 +40,10 @@ async function handleDoctor(options: {
 
   // Run all health checks
   checks.push(checkNodeVersion());
-  checks.push(checkDaiNexus());
+  checks.push(checkDaiHarness());
   checks.push(checkConfig());
   checks.push(checkMemory());
-  checks.push(checkDaiNexusNode());
+  checks.push(checkDaiHarnessNode());
 
   const healthy = checks.filter((c) => c.status === "ok").length;
   const warnings = checks.filter((c) => c.status === "warning").length;
@@ -122,30 +122,35 @@ function checkNodeVersion(): HealthCheck {
   };
 }
 
-function checkDaiNexus(): HealthCheck {
-  // Check if we're in a dai-nexus project
+function checkDaiHarness(): HealthCheck {
+  // Check if we're in a dai-harness project
   const cwd = process.cwd();
-  const daiNexusRoot = findDaiNexusRoot(cwd);
+  const daiHarnessRoot = findDaiHarnessRoot(cwd);
 
-  if (!daiNexusRoot) {
+  if (!daiHarnessRoot) {
     return {
-      name: "DAI Nexus Project",
+      name: "DAI Harness Project",
       status: "warning",
-      message: "Not in a DAI Nexus project",
+      message: "Not in a DAI Harness project",
       details: "Some features may not be available",
     };
   }
 
   return {
-    name: "DAI Nexus Project",
+    name: "DAI Harness Project",
     status: "ok",
-    message: `Found at ${daiNexusRoot}`,
+    message: `Found at ${daiHarnessRoot}`,
   };
 }
 
 function checkConfig(): HealthCheck {
-  const userConfig = resolve(homedir(), ".config", "dai-nexus", "config.json");
-  const legacyConfig = resolve(homedir(), ".dainexus", "config.json");
+  const userConfig = resolve(
+    homedir(),
+    ".config",
+    "dai-harness",
+    "config.json",
+  );
+  const legacyConfig = resolve(homedir(), ".daiharness", "config.json");
 
   if (existsSync(userConfig)) {
     return {
@@ -174,7 +179,7 @@ function checkConfig(): HealthCheck {
 }
 
 function checkMemory(): HealthCheck {
-  const memoryPath = resolve(process.cwd(), ".dainexus", "memory.jsonl");
+  const memoryPath = resolve(process.cwd(), ".daiharness", "memory.jsonl");
 
   if (!existsSync(memoryPath)) {
     return {
@@ -193,11 +198,11 @@ function checkMemory(): HealthCheck {
   };
 }
 
-function checkDaiNexusNode(): HealthCheck {
+function checkDaiHarnessNode(): HealthCheck {
   try {
-    // Try to find dainexus-node
+    // Try to find daiharness-node
     const result = execSync(
-      'npx dainexus-node --version 2>/dev/null || echo "not_found"',
+      'npx daiharness-node --version 2>/dev/null || echo "not_found"',
       {
         encoding: "utf-8",
         timeout: 5000,
@@ -206,33 +211,33 @@ function checkDaiNexusNode(): HealthCheck {
 
     if (result.trim() === "not_found") {
       return {
-        name: "DAI Nexus Node",
+        name: "DAI Harness Node",
         status: "warning",
-        message: "DAI Nexus Node not installed",
-        details: "Run: npm install -g dainexus-node",
+        message: "DAI Harness Node not installed",
+        details: "Run: npm install -g daiharness-node",
       };
     }
 
     return {
-      name: "DAI Nexus Node",
+      name: "DAI Harness Node",
       status: "ok",
       message: result.trim(),
     };
   } catch {
     return {
-      name: "DAI Nexus Node",
+      name: "DAI Harness Node",
       status: "warning",
-      message: "Could not verify DAI Nexus Node",
-      details: "Run: npx dainexus-node --version",
+      message: "Could not verify DAI Harness Node",
+      details: "Run: npx daiharness-node --version",
     };
   }
 }
 
-function findDaiNexusRoot(cwd: string): string | null {
+function findDaiHarnessRoot(cwd: string): string | null {
   let current = cwd;
 
   while (current !== "/") {
-    const configPath = join(current, ".dainexus");
+    const configPath = join(current, ".daiharness");
     if (existsSync(configPath)) {
       return current;
     }
@@ -259,7 +264,7 @@ function printHumanReadable(
     ),
   );
   console.log(
-    pc.bold("║") + "              DAI Nexus Doctor".padEnd(62) + pc.bold("║"),
+    pc.bold("║") + "              DAI Harness Doctor".padEnd(62) + pc.bold("║"),
   );
   console.log(
     pc.bold(

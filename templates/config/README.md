@@ -7,7 +7,7 @@ Project configuration templates for linting, testing, formatting, and developmen
 | Template | Description |
 |----------|-------------|
 | `jest.config.js.hbs` | Jest with TypeScript, coverage, isolated modules |
-| `prettierrc.hbs` | Prettier v3 config (DAI Nexus style) |
+| `prettierrc.hbs` | Prettier v3 config (DAI Harness style) |
 | `tsconfig.base.hbs` | Base TypeScript config (strict mode) |
 | `.eslintrc.root.hbs` | Root ESLint config (workspace-wide) |
 | `env.example.hbs` | Environment variable template |

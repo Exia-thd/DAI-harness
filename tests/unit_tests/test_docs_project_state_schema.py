@@ -102,7 +102,7 @@ def test_complete_project_state_is_valid() -> None:
 
 
 def test_schema_requires_cli_semantic_validation_for_cross_record_contracts() -> None:
-    semantic = SCHEMA["x-dai-nexus-semantic-validation"]
+    semantic = SCHEMA["x-dai-harness-semantic-validation"]
     assert semantic["required"] is True
     assert "dai docs gate" in semantic["commands"]
 

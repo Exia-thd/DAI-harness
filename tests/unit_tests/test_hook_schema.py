@@ -118,8 +118,8 @@ def run_rule_context_hook(
     environment = clean_git_environment()
     environment.update(
         {
-            "DAINEXUS_WORKSPACE": str(workspace),
-            "DAINEXUS_RULE_HOOK_MODE": "observe",
+            "DAIHARNESS_WORKSPACE": str(workspace),
+            "DAIHARNESS_RULE_HOOK_MODE": "observe",
         }
     )
     return subprocess.run(
@@ -167,7 +167,7 @@ def test_checked_in_gemini_after_agent_preserves_payload_flow() -> None:
     before_tool = config["hooks"]["BeforeTool"][0]
     assert before_tool["matcher"] == "*"
     hook = before_tool["hooks"][0]
-    assert hook["name"] == "dai-nexus-policy"
+    assert hook["name"] == "dai-harness-policy"
     assert hook["type"] == "command"
     assert "gemini-before-tool-gate.sh" in hook["command"]
     assert isinstance(hook["timeout"], int)
@@ -176,7 +176,7 @@ def test_checked_in_gemini_after_agent_preserves_payload_flow() -> None:
 def test_checked_in_antigravity_pre_tool_hook_uses_named_hook_schema() -> None:
     config = load_json(".agents/hooks.json")
 
-    named_hook = config["dai-nexus-policy"]
+    named_hook = config["dai-harness-policy"]
     assert isinstance(named_hook["PreToolUse"], list)
     group = named_hook["PreToolUse"][0]
     assert group["matcher"] == "*"
@@ -280,7 +280,7 @@ def test_checked_in_antigravity_pre_invocation_context_hook_is_bounded_and_prese
 ):
     config = load_json(".agents/hooks.json")
 
-    named_hook = config["dai-nexus-policy"]
+    named_hook = config["dai-harness-policy"]
     pre_invocation = named_hook["PreInvocation"]
     assert len(pre_invocation) == 1
     hook = pre_invocation[0]
@@ -391,7 +391,7 @@ def lifecycle_context_hook_specs() -> list[tuple[str, str, str]]:
         (
             "ANTIGRAVITY",
             "PreInvocation",
-            antigravity["dai-nexus-policy"]["PreInvocation"][0]["command"],
+            antigravity["dai-harness-policy"]["PreInvocation"][0]["command"],
         ),
         ("CURSOR", "sessionStart", cursor["hooks"]["sessionStart"][0]["command"]),
     ]
@@ -399,7 +399,7 @@ def lifecycle_context_hook_specs() -> list[tuple[str, str, str]]:
 
 def test_lifecycle_context_hooks_resolve_git_root_from_subdirectory() -> None:
     environment = clean_git_environment()
-    environment["DAINEXUS_RULE_HOOK_MODE"] = "observe"
+    environment["DAIHARNESS_RULE_HOOK_MODE"] = "observe"
     nested_workspace = ROOT / "kernel"
     for platform, event, command in lifecycle_context_hook_specs():
         result = subprocess.run(
@@ -424,7 +424,7 @@ def test_lifecycle_context_hooks_fail_open_when_script_is_missing(
 ) -> None:
     clean_git_workspace(tmp_path)
     environment = clean_git_environment()
-    environment["DAINEXUS_RULE_HOOK_MODE"] = "observe"
+    environment["DAIHARNESS_RULE_HOOK_MODE"] = "observe"
     for platform, event, command in lifecycle_context_hook_specs():
         result = subprocess.run(
             [BASH, "-c", command],
@@ -441,7 +441,7 @@ def test_lifecycle_context_hooks_fail_open_when_script_is_missing(
 
 def test_lifecycle_context_hooks_fail_open_without_a_git_root(tmp_path: Path) -> None:
     environment = clean_git_environment()
-    environment["DAINEXUS_RULE_HOOK_MODE"] = "observe"
+    environment["DAIHARNESS_RULE_HOOK_MODE"] = "observe"
     for platform, event, command in lifecycle_context_hook_specs():
         result = subprocess.run(
             [BASH, "-c", command],
@@ -470,7 +470,7 @@ def test_lifecycle_context_hooks_fail_open_when_interpreter_is_missing(
         pytest.skip("host cannot create symlinks")
 
     environment = clean_git_environment()
-    environment["DAINEXUS_RULE_HOOK_MODE"] = "observe"
+    environment["DAIHARNESS_RULE_HOOK_MODE"] = "observe"
     environment["PATH"] = str(command_path)
     for platform, event, command in lifecycle_context_hook_specs():
         result = subprocess.run(
@@ -506,14 +506,14 @@ command = "bash scripts/lite/stop-gate.sh --platform CODEX"
     )
 
     fake_home = tmp_path / "home"
-    global_lite = fake_home / ".dainexus" / "scripts" / "lite"
+    global_lite = fake_home / ".daiharness" / "scripts" / "lite"
     global_lite.mkdir(parents=True)
     global_gate = global_lite / "stop-gate.sh"
     shutil.copy2(ROOT / "scripts" / "lite" / "stop-gate.sh", global_gate)
 
     env = clean_git_environment()
     env["HOME"] = str(fake_home)
-    env["DAINEXUS_DIR"] = str(fake_home / ".dainexus")
+    env["DAIHARNESS_DIR"] = str(fake_home / ".daiharness")
     payload = json.dumps(
         {
             "last_assistant_message": "No verification block in this response.",
@@ -566,7 +566,7 @@ def run_stop_gate(
     )
     payload = json.dumps({response_field: response, "files": files or []})
     env = clean_git_environment()
-    env["DAINEXUS_RULE_LEDGER"] = str(tmp_path / "rule-ledger.jsonl")
+    env["DAIHARNESS_RULE_LEDGER"] = str(tmp_path / "rule-ledger.jsonl")
     return subprocess.run(
         ["bash", str(ROOT / "scripts/lite/stop-gate.sh"), "--platform", platform],
         cwd=tmp_path,
@@ -635,8 +635,8 @@ def test_codex_stop_gate_emits_one_parseable_continue_json(tmp_path: Path) -> No
     assert result.returncode == 0
     assert json.loads(result.stdout) == {
         "continue": True,
-        "dai-nexus": {
-            "schema": "dai-nexus-stop-decision/v1",
+        "dai-harness": {
+            "schema": "dai-harness-stop-decision/v1",
             "host_action": "allow_stop",
             "completion_state": "verified",
             "retry_suppressed": False,
@@ -651,8 +651,8 @@ def test_codex_plain_no_code_response_emits_continue_json(tmp_path: Path) -> Non
     assert result.returncode == 0
     payload = json.loads(result.stdout)
     assert payload["continue"] is True
-    assert payload["dai-nexus"] == {
-        "schema": "dai-nexus-stop-decision/v1",
+    assert payload["dai-harness"] == {
+        "schema": "dai-harness-stop-decision/v1",
         "host_action": "allow_stop",
         "completion_state": "verified",
         "retry_suppressed": False,
@@ -684,7 +684,7 @@ def test_codex_stop_gate_surfaces_bounded_redacted_evidence_reason(
     payload = json.loads(result.stdout)
     assert payload["decision"] == "block"
     assert (
-        payload["reason"] == "DAI Nexus rule validator rejected the response payload."
+        payload["reason"] == "DAI Harness rule validator rejected the response payload."
     )
     assert len(payload["reason"]) <= 512
     assert fake_secret not in payload["reason"]
@@ -714,7 +714,7 @@ PYEOF
 
     payload = json.dumps({"response_content": VALID_VERIFY, "files": ["src/app.ts"]})
     env = clean_git_environment()
-    env["DAINEXUS_RULE_LEDGER"] = str(workspace / "rule-ledger.jsonl")
+    env["DAIHARNESS_RULE_LEDGER"] = str(workspace / "rule-ledger.jsonl")
     result = subprocess.run(
         ["bash", str(scripts_dir / "stop-gate.sh"), "--platform", "CODEX"],
         cwd=workspace,
@@ -729,7 +729,7 @@ PYEOF
     parsed = json.loads(result.stdout)
     assert parsed["decision"] == "block"
     assert parsed["reason"] == (
-        "DAI Nexus rule validator rejected the response payload."
+        "DAI Harness rule validator rejected the response payload."
     )
     assert len(parsed["reason"]) <= 512
     assert fake_secret not in parsed["reason"]
@@ -745,12 +745,14 @@ def test_codex_stop_gate_rejects_oversized_payload_with_parseable_json(
 
 
 def write_policy(workspace: Path, *, malformed: bool = False) -> None:
-    policy_dir = workspace / ".dainexus"
+    policy_dir = workspace / ".daiharness"
     policy_dir.mkdir(exist_ok=True)
     if malformed:
         content = "mode: broken\n"
     else:
-        content = (ROOT / ".dainexus/execution-policy.yaml").read_text(encoding="utf-8")
+        content = (ROOT / ".daiharness/execution-policy.yaml").read_text(
+            encoding="utf-8"
+        )
     (policy_dir / "execution-policy.yaml").write_text(content, encoding="utf-8")
 
 
@@ -896,7 +898,7 @@ def test_antigravity_pre_tool_uses_delegated_workspace_context(
     result = subprocess.run(
         ["bash", str(ROOT / "scripts/lite/antigravity-pre-tool-gate.sh")],
         cwd=hook_cwd,
-        env={**os.environ, "DAINEXUS_WORKSPACE": str(tmp_path)},
+        env={**os.environ, "DAIHARNESS_WORKSPACE": str(tmp_path)},
         input=json.dumps(payload),
         text=True,
         capture_output=True,
@@ -936,7 +938,7 @@ def test_antigravity_pre_tool_compacts_non_command_args_for_policy(
 
 def test_antigravity_pre_tool_maps_policy_warning_to_force_ask(tmp_path: Path) -> None:
     write_policy(tmp_path)
-    policy = tmp_path / ".dainexus/execution-policy.yaml"
+    policy = tmp_path / ".daiharness/execution-policy.yaml"
     policy.write_text(
         policy.read_text(encoding="utf-8").replace("mode: strict", "mode: permissive"),
         encoding="utf-8",

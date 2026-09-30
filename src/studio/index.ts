@@ -1,5 +1,5 @@
 /**
- * Studio Module - DAI Nexus real-time pipeline monitoring
+ * Studio Module - DAI Harness real-time pipeline monitoring
  *
  * Based on AgentScope Studio patterns
  * https://github.com/agentscope-ai/agentscope-studio

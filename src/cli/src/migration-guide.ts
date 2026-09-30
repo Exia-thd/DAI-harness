@@ -6,7 +6,7 @@
  */
 
 export const MIGRATION_GUIDE = `
-# Migrating to DAI Nexus CLI v2.0
+# Migrating to DAI Harness CLI v2.0
 
 ## For Human Users
 
@@ -67,18 +67,18 @@ Use exit codes:
 
 Old (deprecated):
 \`\`\`
-~/.dainexus/config.json
+~/.daiharness/config.json
 \`\`\`
 
 New (recommended):
 \`\`\`
-~/.config/dai-nexus/config.json
+~/.config/dai-harness/config.json
 \`\`\`
 
 ### Config Priority (highest to lowest)
 
 1. \`FORGE_*\` environment variables
-2. \`~/.config/dai-nexus/config.json\`
+2. \`~/.config/dai-harness/config.json\`
 3. Process environment
 4. \`.env\` files
 5. Inline flags
@@ -104,7 +104,7 @@ dai --debug validate
 
 | Deprecated | Replacement | Removed in |
 |------------|--------------|------------|
-| \`~/.dainexus/\` | \`.dainexus/\` in project | v3.0 |
+| \`~/.daiharness/\` | \`.daiharness/\` in project | v3.0 |
 
 ## Feature Flags
 

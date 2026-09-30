@@ -1,5 +1,5 @@
 #!/bin/bash
-# DAI Nexus README Compliance Check
+# DAI Harness README Compliance Check
 # Run this before committing to ensure README is up to date
 
 echo "🔍 Checking README compliance..."

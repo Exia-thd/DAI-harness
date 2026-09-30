@@ -1,7 +1,7 @@
 ---
 id: paperclip-integration
 title: Paperclip Integration Protocol
-summary: Protocol for DAI Nexus skills operating under Paperclip orchestration.
+summary: Protocol for DAI Harness skills operating under Paperclip orchestration.
 status: active
 version: 1.0.0
 owners: [core]
@@ -16,9 +16,9 @@ superseded_by: null
 
 ## Overview
 
-[Paperclip](https://github.com/paperclipai/paperclip) is an **optional** business orchestration layer that manages AI agents as a company. When present, DAI Nexus skills operate within Paperclip's ticket-based workflow instead of direct prompts.
+[Paperclip](https://github.com/paperclipai/paperclip) is an **optional** business orchestration layer that manages AI agents as a company. When present, DAI Harness skills operate within Paperclip's ticket-based workflow instead of direct prompts.
 
-**Paperclip manages WHAT to do. DAI Nexus manages HOW to do it.**
+**Paperclip manages WHAT to do. DAI Harness manages HOW to do it.**
 
 ## Detection
 
@@ -33,7 +33,7 @@ Indicators that Paperclip is managing this session:
 ```
 
 If detected → apply Paperclip-Aware Behavior below.
-If not detected → normal DAI Nexus operation (no changes).
+If not detected → normal DAI Harness operation (no changes).
 
 ## Paperclip-Aware Behavior
 
@@ -154,12 +154,12 @@ IF budget_remaining < 5%:
 When Paperclip assigns multiple tickets to the same agent:
 
 1. Paperclip decides WHICH tickets to assign (business priority)
-2. DAI Nexus's Parallel Dispatch decides HOW to execute them (git worktrees)
-3. No conflict — Paperclip prioritizes, DAI Nexus parallelizes
+2. DAI Harness's Parallel Dispatch decides HOW to execute them (git worktrees)
+3. No conflict — Paperclip prioritizes, DAI Harness parallelizes
 
 ```
 Paperclip assigns: [CLIP-42, CLIP-43, CLIP-44]
-DAI Nexus checks: Can these run in parallel? (no shared files?)
+DAI Harness checks: Can these run in parallel? (no shared files?)
   → Yes: git worktree per ticket → merge when all complete
   → No: sequential execution in priority order
 ```

@@ -161,7 +161,7 @@ function hasPrivacyBlock(catalog: DocsCatalog): boolean {
 function defaultBuildOutput(roots: string[], all: boolean | undefined): string {
   return all || roots.length !== 1
     ? join(getDocsHubHome(), "docs-hub", "site")
-    : join(roots[0], ".dainexus", "docs-hub", "site");
+    : join(roots[0], ".daiharness", "docs-hub", "site");
 }
 
 export interface DocsBatchBuildExecution {

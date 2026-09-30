@@ -35,7 +35,7 @@ export class BrowserStackFarm implements IDeviceFarm {
     const caps: Record<string, unknown> = {
       'browserstack.user': this.config.username,
       'browserstack.key': this.config.accessKey,
-      'browserstack.source': 'dai-nexus',
+      'browserstack.source': 'dai-harness',
       'browserstack.local': false,
       'browserstack.debug': true,
       'browserstack.video': true,
@@ -176,7 +176,7 @@ export function createBrowserStackCaps(
   return {
     'browserstack.user': process.env.BROWSERSTACK_USERNAME,
     'browserstack.key': process.env.BROWSERSTACK_ACCESS_KEY,
-    'browserstack.source': 'dai-nexus',
+    'browserstack.source': 'dai-harness',
     'platformName': device.platform,
     'deviceOrientation': device.orientation || 'portrait',
     ...BROWSERSTACK_CAPS,

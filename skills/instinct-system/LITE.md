@@ -10,7 +10,7 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | The DAI memory layer is installed and the project is indexed | `python3 scripts/lite/dai_memory.py where && test -f .memory/meta.json` | ... | run the check command and paste output |
-| Memory bank structures (persona and scenario layers) are initialized | `find .dainexus/memory-bank/ -name "*.md"` | ... | run the check command and paste output |
+| Memory bank structures (persona and scenario layers) are initialized | `find .daiharness/memory-bank/ -name "*.md"` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Instinct System Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
@@ -24,7 +24,7 @@ Format: `n. ACTION | TARGET | CHECK`
 - **Not Recording Blockers**: Failing to record a failed plan or a blocker as an `incident`, so the orchestrator repeats a historical mistake it could have found.
 - **Dangling Uncommitted Sessions**: Failing to trigger session checkpoints (`scripts/memory/memory-middleware.py checkpoint`) during the 10-minute idle trigger window, risking state loss during unexpected IDE disconnects.
 - **Unverified PES Assessments**: Recording a trajectory as a successful procedure without verifying it meets the Performance Evaluation Score criteria.
-- **Non-Compliant File Names**: Storing consolidated scenario files or architecture records under `docs/` or `.dainexus/` using CamelCase instead of lowercase kebab-case.
+- **Non-Compliant File Names**: Storing consolidated scenario files or architecture records under `docs/` or `.daiharness/` using CamelCase instead of lowercase kebab-case.
 
 ### Step 1: Ground the memory layer
 ```bash

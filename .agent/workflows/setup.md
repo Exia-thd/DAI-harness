@@ -1,8 +1,8 @@
 ---
-description: First-time setup of DAI Nexus as a git submodule in your project
+description: First-time setup of DAI Harness as a git submodule in your project
 ---
 
-# Setup DAI Nexus
+# Setup DAI Harness
 
 ## Prerequisites
 - Git installed
@@ -12,9 +12,9 @@ description: First-time setup of DAI Nexus as a git submodule in your project
 
 // turbo-all
 
-1. Add DAI Nexus as a git submodule:
+1. Add DAI Harness as a git submodule:
 ```bash
-git submodule add -b main https://github.com/Exia-thd/DAI-nexus dai-nexus
+git submodule add -b main https://github.com/Exia-thd/DAI-harness dai-harness
 ```
 
 2. Initialize the submodule:
@@ -24,24 +24,24 @@ git submodule update --init --recursive
 
 3. Copy config files to project root:
 ```bash
-cp dai-nexus/AGENTS.md .
-cp dai-nexus/CLAUDE.md .
+cp dai-harness/AGENTS.md .
+cp dai-harness/CLAUDE.md .
 ```
 
 4. Verify installation — check that SKILL.md exists:
 ```bash
-cat dai-nexus/skills/production-grade/SKILL.md | head -5
+cat dai-harness/skills/production-grade/SKILL.md | head -5
 ```
 
 5. Check the installed version:
 ```bash
-cat dai-nexus/VERSION
+cat dai-harness/VERSION
 ```
 
 6. Stage and commit:
 ```bash
-git add .gitmodules dai-nexus AGENTS.md CLAUDE.md
-git commit -m "feat: add DAI Nexus"
+git add .gitmodules dai-harness AGENTS.md CLAUDE.md
+git commit -m "feat: add DAI Harness"
 ```
 
 ## After Setup

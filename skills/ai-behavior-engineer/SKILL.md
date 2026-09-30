@@ -7,7 +7,7 @@ description: >
   Integrates with all engine-specific skills (Unity/Unreal/Godot).
   Routed via the production-grade orchestrator (Game Build mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [ai, behavior-tree, goap, utility-ai, pathfinding, perception, npc, game-ai, steering]
 ---
 

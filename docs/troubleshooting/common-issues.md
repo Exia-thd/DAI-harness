@@ -4,9 +4,9 @@
 
 ## Setup Issues
 
-### "DAI Nexus didn't respond correctly"
+### "DAI Harness didn't respond correctly"
 
-**Symptoms:** AI assistant doesn't follow DAI Nexus pipeline
+**Symptoms:** AI assistant doesn't follow DAI Harness pipeline
 
 **Solution:**
 1. Verify CLAUDE.md or AGENTS.md exists in project root:
@@ -16,7 +16,7 @@
 
 2. Run MCP setup:
    ```bash
-   bash scripts/dainexus-mcp-setup.sh --diagnose
+   bash scripts/daiharness-mcp-setup.sh --diagnose
    ```
 
 3. Restart your AI client
@@ -35,12 +35,12 @@
 
 2. Re-run setup:
    ```bash
-   bash scripts/dainexus-mcp-setup.sh
+   bash scripts/daiharness-mcp-setup.sh
    ```
 
 3. Verify server path exists:
    ```bash
-   ls ~/.dainexus/mcp-server/server.ts
+   ls ~/.daiharness/mcp-server/server.ts
    ```
 
 ---
@@ -49,7 +49,7 @@
 
 ### "Wrong mode selected"
 
-**Symptoms:** DAI Nexus uses the wrong skill pipeline
+**Symptoms:** DAI Harness uses the wrong skill pipeline
 
 **Solution:**
 1. Add more context to your request:
@@ -72,7 +72,7 @@
 
 ### "Mode is ambiguous"
 
-**Symptoms:** DAI Nexus asks which mode to use
+**Symptoms:** DAI Harness asks which mode to use
 
 **Solution:**
 Provide more specific keywords:
@@ -160,7 +160,7 @@ planQuality:
 
 ### "Context not persisting between sessions"
 
-**Symptoms:** DAI Nexus doesn't remember previous work
+**Symptoms:** DAI Harness doesn't remember previous work
 
 **Solution:**
 1. Check memory is enabled:
@@ -175,7 +175,7 @@ planQuality:
 
 3. Check session log:
    ```bash
-   cat .dainexus/session-log.json
+   cat .daiharness/session-log.json
    ```
 
 ---
@@ -208,12 +208,12 @@ Good: "build a Unity 2D platformer"
    git log --oneline -1
    ```
 
-2. Update DAI Nexus:
+2. Update DAI Harness:
    ```bash
    git pull origin main
    ```
 
-3. Check the [latest docs online](https://github.com/Exia-thd/DAI-nexus)
+3. Check the [latest docs online](https://github.com/Exia-thd/DAI-harness)
 
 ---
 
@@ -221,9 +221,9 @@ Good: "build a Unity 2D platformer"
 
 | Issue Type | Resource |
 |------------|----------|
-| Bug report | [GitHub Issues](https://github.com/Exia-thd/DAI-nexus/issues) |
-| Questions | [GitHub Discussions](https://github.com/Exia-thd/DAI-nexus/discussions) |
-| Feature requests | [GitHub Discussions](https://github.com/Exia-thd/DAI-nexus/discussions) |
+| Bug report | [GitHub Issues](https://github.com/Exia-thd/DAI-harness/issues) |
+| Questions | [GitHub Discussions](https://github.com/Exia-thd/DAI-harness/discussions) |
+| Feature requests | [GitHub Discussions](https://github.com/Exia-thd/DAI-harness/discussions) |
 
 ---
 

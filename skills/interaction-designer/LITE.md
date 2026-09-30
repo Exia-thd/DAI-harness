@@ -27,7 +27,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground target styling frameworks and project status
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 cat package.json | grep -E "(tailwind|framer-motion)"
 ```
 ```json

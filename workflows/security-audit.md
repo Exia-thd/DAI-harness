@@ -75,7 +75,7 @@ overrides:
 
 ## Expected Output
 ```
-.dainexus/security-engineer/
+.daiharness/security-engineer/
 ├── threat-model/          # STRIDE analysis
 ├── code-audit/            # OWASP findings
 ├── auth-review/           # Auth flow analysis

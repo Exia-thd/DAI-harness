@@ -1,6 +1,6 @@
 # Technical & Process Architecture: Mô Hình Kiểm Thử Đa Lớp
 
-> **Mô tả:** Tài liệu thiết kế kiến trúc quy trình kiểm thử và cách tích hợp các công cụ kiểm thử tự động vào hệ thống mã nguồn hiện tại của DAI Nexus.
+> **Mô tả:** Tài liệu thiết kế kiến trúc quy trình kiểm thử và cách tích hợp các công cụ kiểm thử tự động vào hệ thống mã nguồn hiện tại của DAI Harness.
 
 ---
 

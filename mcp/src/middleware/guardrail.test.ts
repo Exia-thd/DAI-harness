@@ -16,7 +16,7 @@ const HAS_JQ = (() => {
 const itJq = HAS_JQ ? it : it.skip;
 
 function policyScript(body: string): { root: string; script: string } {
-  const root = mkdtempSync(join(tmpdir(), 'dai-nexus-policy-evaluator-'));
+  const root = mkdtempSync(join(tmpdir(), 'dai-harness-policy-evaluator-'));
   const script = join(root, 'policy-check.sh');
   writeFileSync(script, `#!/usr/bin/env bash\n${body}\n`, { mode: 0o700 });
   return { root, script };
@@ -69,27 +69,27 @@ describe('ProcessPolicyEvaluator', () => {
     ).resolves.toMatchObject({ action: 'block' });
   });
 
-  itJq('resolves workspace policy and DAI Nexus script from launcher environment', async () => {
-    const root = mkdtempSync(join(tmpdir(), 'dai-nexus-launcher-layout-'));
+  itJq('resolves workspace policy and DAI Harness script from launcher environment', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'dai-harness-launcher-layout-'));
     const workspace = join(root, 'workspace');
-    const daiNexusDir = join(root, 'dai-nexus');
-    const script = join(daiNexusDir, 'scripts/lite/policy-check.sh');
-    mkdirSync(join(workspace, '.dainexus'), { recursive: true });
-    mkdirSync(join(daiNexusDir, 'scripts/lite'), { recursive: true });
-    writeFileSync(join(workspace, '.dainexus/execution-policy.yaml'), 'mode: strict\n');
+    const daiHarnessDir = join(root, 'dai-harness');
+    const script = join(daiHarnessDir, 'scripts/lite/policy-check.sh');
+    mkdirSync(join(workspace, '.daiharness'), { recursive: true });
+    mkdirSync(join(daiHarnessDir, 'scripts/lite'), { recursive: true });
+    writeFileSync(join(workspace, '.daiharness/execution-policy.yaml'), 'mode: strict\n');
     writeFileSync(
       script,
       [
         '#!/usr/bin/env bash',
-        '[[ "$(pwd -P)" = "$(cd "$DAINEXUS_WORKSPACE" && pwd -P)" ]] || exit 3',
-        '[[ "$DAINEXUS_POLICY_FILE" = "$DAINEXUS_WORKSPACE/.dainexus/execution-policy.yaml" ]] || exit 3',
+        '[[ "$(pwd -P)" = "$(cd "$DAIHARNESS_WORKSPACE" && pwd -P)" ]] || exit 3',
+        '[[ "$DAIHARNESS_POLICY_FILE" = "$DAIHARNESS_WORKSPACE/.daiharness/execution-policy.yaml" ]] || exit 3',
         'exit 0',
       ].join('\n'),
       { mode: 0o700 },
     );
-    vi.stubEnv('DAINEXUS_WORKSPACE', workspace);
-    vi.stubEnv('DAINEXUS_DIR', daiNexusDir);
-    vi.stubEnv('DAINEXUS_POLICY_FILE', '');
+    vi.stubEnv('DAIHARNESS_WORKSPACE', workspace);
+    vi.stubEnv('DAIHARNESS_DIR', daiHarnessDir);
+    vi.stubEnv('DAIHARNESS_POLICY_FILE', '');
 
     const evaluator = new ProcessPolicyEvaluator();
 
@@ -98,25 +98,25 @@ describe('ProcessPolicyEvaluator', () => {
   });
 
   it('discovers the nearest workspace ancestor when launched from its mcp directory', async () => {
-    const root = mkdtempSync(join(tmpdir(), 'dai-nexus-cwd-layout-'));
+    const root = mkdtempSync(join(tmpdir(), 'dai-harness-cwd-layout-'));
     const mcpDirectory = join(root, 'mcp');
     const script = join(root, 'scripts/lite/policy-check.sh');
-    mkdirSync(join(root, '.dainexus'), { recursive: true });
+    mkdirSync(join(root, '.daiharness'), { recursive: true });
     mkdirSync(join(root, 'scripts/lite'), { recursive: true });
     mkdirSync(mcpDirectory);
-    writeFileSync(join(root, '.dainexus/execution-policy.yaml'), 'mode: strict\n');
+    writeFileSync(join(root, '.daiharness/execution-policy.yaml'), 'mode: strict\n');
     writeFileSync(
       script,
       [
         '#!/usr/bin/env bash',
-        '[[ "$(cd "$(dirname "$DAINEXUS_POLICY_FILE")/.." && pwd -P)" = "$(pwd -P)" ]] || exit 3',
+        '[[ "$(cd "$(dirname "$DAIHARNESS_POLICY_FILE")/.." && pwd -P)" = "$(pwd -P)" ]] || exit 3',
         'exit 0',
       ].join('\n'),
       { mode: 0o700 },
     );
-    vi.stubEnv('DAINEXUS_WORKSPACE', '');
-    vi.stubEnv('DAINEXUS_DIR', '');
-    vi.stubEnv('DAINEXUS_POLICY_FILE', '');
+    vi.stubEnv('DAIHARNESS_WORKSPACE', '');
+    vi.stubEnv('DAIHARNESS_DIR', '');
+    vi.stubEnv('DAIHARNESS_POLICY_FILE', '');
 
     // This case is about workspace-ancestor discovery, not the policy
     // deadline. The 2s production default is not enough to spawn bash on a
@@ -138,21 +138,21 @@ describe('ProcessPolicyEvaluator', () => {
   }, 60_000);
 
   itJq(
-    'uses the canonical policy script when generated MCP config has no DAINEXUS_DIR',
+    'uses the canonical policy script when generated MCP config has no DAIHARNESS_DIR',
     async () => {
-      const home = mkdtempSync(join(tmpdir(), 'dai-nexus-canonical-home-'));
+      const home = mkdtempSync(join(tmpdir(), 'dai-harness-canonical-home-'));
       const workspace = join(home, 'workspace');
-      const script = join(home, '.dainexus/scripts/lite/policy-check.sh');
-      mkdirSync(join(workspace, '.dainexus'), { recursive: true });
-      mkdirSync(join(home, '.dainexus/scripts/lite'), { recursive: true });
-      writeFileSync(join(workspace, '.dainexus/execution-policy.yaml'), 'mode: strict\n');
+      const script = join(home, '.daiharness/scripts/lite/policy-check.sh');
+      mkdirSync(join(workspace, '.daiharness'), { recursive: true });
+      mkdirSync(join(home, '.daiharness/scripts/lite'), { recursive: true });
+      writeFileSync(join(workspace, '.daiharness/execution-policy.yaml'), 'mode: strict\n');
       writeFileSync(script, '#!/usr/bin/env bash\n[[ "$1" = "check" ]] || exit 3\nexit 0\n', {
         mode: 0o700,
       });
       vi.stubEnv('HOME', home);
-      vi.stubEnv('DAINEXUS_WORKSPACE', workspace);
-      vi.stubEnv('DAINEXUS_DIR', '');
-      vi.stubEnv('DAINEXUS_POLICY_FILE', '');
+      vi.stubEnv('DAIHARNESS_WORKSPACE', workspace);
+      vi.stubEnv('DAIHARNESS_DIR', '');
+      vi.stubEnv('DAIHARNESS_POLICY_FILE', '');
 
       const evaluator = new ProcessPolicyEvaluator();
 

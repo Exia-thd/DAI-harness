@@ -1,4 +1,4 @@
-# Architecture: DAI Nexus Docs Hub
+# Architecture: DAI Harness Docs Hub
 
 ## Component Model
 

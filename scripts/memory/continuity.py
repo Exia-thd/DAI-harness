@@ -30,7 +30,7 @@ from evidence_common import (  # noqa: E402
 )
 
 
-SCHEMA = "dai-nexus-continuity/v1"
+SCHEMA = "dai-harness-continuity/v1"
 MAX_CHECKPOINT_BYTES = 64 * 1024
 DEFAULT_TTL_SECONDS = 24 * 60 * 60
 SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
@@ -94,7 +94,7 @@ def _canonical_bytes(value: Any) -> bytes:
 
 
 def _workspace() -> Path:
-    configured = os.environ.get("DAINEXUS_WORKSPACE", "").strip()
+    configured = os.environ.get("DAIHARNESS_WORKSPACE", "").strip()
     if configured:
         candidate = Path(configured).expanduser().resolve()
         if candidate.is_dir():
@@ -133,17 +133,17 @@ def _workspace_id(workspace: Path) -> str:
 
 
 def _state_root(workspace: Path) -> Path:
-    configured = os.environ.get("DAINEXUS_CONTINUITY_ROOT", "").strip()
+    configured = os.environ.get("DAIHARNESS_CONTINUITY_ROOT", "").strip()
     base = (
         Path(configured).expanduser().resolve()
         if configured
-        else workspace / ".dainexus" / "runtime" / "continuity"
+        else workspace / ".daiharness" / "runtime" / "continuity"
     )
     return base / _workspace_id(workspace)
 
 
 def _ledger_state(workspace: Path) -> dict[str, Any]:
-    ledger = workspace / ".dainexus" / "rule-ledger.jsonl"
+    ledger = workspace / ".daiharness" / "rule-ledger.jsonl"
     try:
         content = ledger.read_bytes()
     except OSError:

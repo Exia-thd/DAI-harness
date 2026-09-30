@@ -17,7 +17,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 1. AUDIT | Validate prompts, current runtime/model parameters, and output schema assertions | Verify parameters against the active provider/runtime contract and schema against executable validators.
 2. COMPILE | Execute automated unit and integration assertion loops on target prompt interfaces | Verify that model outputs adhere to schema structures and pass semantic safety constraints.
-3. PROFILE | Evaluate token overhead, API execution latency, and session cost metrics | Confirm that token footprints are tracked via `.dainexus/usage/` logs and stay under budget bounds.
+3. PROFILE | Evaluate token overhead, API execution latency, and session cost metrics | Confirm that token footprints are tracked via `.daiharness/usage/` logs and stay under budget bounds.
 
 ## Common Mistakes Checklist
 - **Provider contract mismatch**: Overriding or stripping provider-required request/response fields without verifying the active runtime contract.
@@ -28,7 +28,7 @@ Format: `n. ACTION | TARGET | CHECK`
 ### Step 1: Ground target model settings and token budget tracking status
 ```bash
 cat .production-grade.yaml
-cat .dainexus/budget.yaml
+cat .daiharness/budget.yaml
 ```
 
 ### Step 2: Implement an automated model response schema validator in `tests/validate_completion.py`
@@ -64,5 +64,5 @@ verify_model_completion('{"decision": "PROCEED", "confidence": 0.95, "reasoning"
 ### Step 3: Run the validation script and check token usage metrics
 ```bash
 python3 tests/validate_completion.py
-dai token status || cat ~/.dainexus/usage/summary.json
+dai token status || cat ~/.daiharness/usage/summary.json
 ```

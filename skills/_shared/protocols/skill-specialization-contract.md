@@ -14,7 +14,7 @@ superseded_by: null
 
 # Skill Specialization Contract
 
-A DAI Nexus skill is a **senior specialist capability**, not a miniature orchestrator. The pipeline owns generic consulting, cross-domain risk anticipation, generic research/instruction-boundary enforcement, self-audit/learning, and cross-cutting visual gates. Skills deepen the answer with domain expertise.
+A DAI Harness skill is a **senior specialist capability**, not a miniature orchestrator. The pipeline owns generic consulting, cross-domain risk anticipation, generic research/instruction-boundary enforcement, self-audit/learning, and cross-cutting visual gates. Skills deepen the answer with domain expertise.
 
 ## Required Specialist Shape
 

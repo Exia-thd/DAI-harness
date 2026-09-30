@@ -1,9 +1,9 @@
-# DAI Nexus Sandbox Configuration
+# DAI Harness Sandbox Configuration
 #
 # This file configures the sandbox for AI-generated code execution.
 # Based on research from Tian Pan (2026) - Agent Sandboxing Spectrum
 #
-# Documentation: https://docs.dainexus.ai/sandbox
+# Documentation: https://docs.daiharness.ai/sandbox
 
 version: "1.0"
 
@@ -52,7 +52,7 @@ filesystem:
     - "./lib"
     - "./docs"
     - "./scripts"
-    - "./.dainexus"
+    - "./.daiharness"
 
   # Paths that are never accessible (blocked even if in allowedPaths)
   blockedPaths:
@@ -263,7 +263,7 @@ monitoring:
 
   # Audit logging
   logAllOperations: true
-  auditPath: ".dainexus/sandbox-audit.jsonl"
+  auditPath: ".daiharness/sandbox-audit.jsonl"
   auditMaxSize: "100MB"
 
   # Bypass detection
@@ -272,7 +272,7 @@ monitoring:
 
   # Metrics
   collectMetrics: true
-  metricsPath: ".dainexus/sandbox-metrics.json"
+  metricsPath: ".daiharness/sandbox-metrics.json"
 
 # Feature flags
 features:

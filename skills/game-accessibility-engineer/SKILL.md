@@ -7,7 +7,7 @@ description: >
   and inclusive design practices.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [accessibility, a11y, inclusive-design, wcag, game-accessibility, colorblind, screen-reader, motor-accessibility, cognitive-accessibility, assistive-technology]
 ---
 

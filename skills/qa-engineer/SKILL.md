@@ -6,7 +6,7 @@ description: >
   Ensures every feature meets acceptance criteria before shipping.
   Routed via the production-grade orchestrator (QA phase, Test mode, or CI/CD pipeline).
 version: 3.0.0
-author: dai-nexus
+author: dai-harness
 tags: [qa, quality-assurance, testing, test-cases, automated-testing, regression, bug-reporting, game-testing]
 ---
 
@@ -674,7 +674,7 @@ Run these before every build:
 
 When working on complex tasks (medium/large features or full builds), the QA Engineer must generate test stubs/skeletons directly from the Given/When/Then scenarios produced during the BA phase, *before* code changes are made.
 
-1. **Read the BA Spec:** Look at `.dainexus/business-analyst/handoff/ba-package.md` or the BRD to retrieve the Given/When/Then scenarios.
+1. **Read the BA Spec:** Look at `.daiharness/business-analyst/handoff/ba-package.md` or the BRD to retrieve the Given/When/Then scenarios.
 2. **Create Test File(s) with Stubs:** Generate test files containing tests mapped directly to the Gherkin scenarios. Mark each test with pending/placeholder logic (e.g., `test.todo('should...')` in Jest, or failing assertions).
 3. **Save and Register:** Keep these stubs saved in the codebase as the baseline.
 4. **Developer Handoff:** Pass the stubs to the Developer to implement the code and make the tests pass.

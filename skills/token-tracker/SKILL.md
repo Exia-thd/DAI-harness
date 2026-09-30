@@ -6,7 +6,7 @@ description: >
   Use when users want to: check token usage, estimate costs, set budgets,
   export reports, or understand AI spending patterns.
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [token-tracking, cost-analysis, budget, monitoring, analytics]
 ---
 
@@ -88,13 +88,13 @@ Token logs may contain:
 1. **Initialize tracking directory:**
 ```bash
 # Create usage tracking directory
-mkdir -p ~/.dainexus/usage/{project}
+mkdir -p ~/.daiharness/usage/{project}
 
 # Set retention policy (default: 90 days)
-export DAINEXUS_RETENTION_DAYS=90
+export DAIHARNESS_RETENTION_DAYS=90
 ```
 
-2. **Create budget configuration** at `.dainexus/budget.yaml`:
+2. **Create budget configuration** at `.daiharness/budget.yaml`:
 ```yaml
 budget:
   daily: 5.00      # USD per day
@@ -123,7 +123,7 @@ notifications:
 ```yaml
 token_tracking:
   enabled: true
-  log_dir: "~/.dainexus/usage"
+  log_dir: "~/.daiharness/usage"
   retention_days: 90
   export_format: jsonl
   
@@ -389,7 +389,7 @@ def check_budget_status(project_path: str) -> BudgetStatus:
 
 2. **Alert configuration:**
 ```yaml
-# .dainexus/budget.yaml
+# .daiharness/budget.yaml
 budget:
   monthly: 80.00
 
@@ -453,8 +453,8 @@ Group token usage by session for better attribution:
 
 ```bash
 # Start a tracked session
-export DAINEXUS_SESSION_ID=$(uuidgen)
-python3 scripts/token-analyzer.py --session $DAINEXUS_SESSION_ID --period session
+export DAIHARNESS_SESSION_ID=$(uuidgen)
+python3 scripts/token-analyzer.py --session $DAIHARNESS_SESSION_ID --period session
 ```
 
 ### 2. Use Consistent Model Naming
@@ -478,7 +478,7 @@ def normalize_model_name(model: str) -> str:
 For multi-project environments:
 
 ```yaml
-# .dainexus/budget.yaml
+# .daiharness/budget.yaml
 projects:
   project-a:
     monthly: 50.00
@@ -590,7 +590,7 @@ python3 scripts/token-analyzer.py --project $(pwd) --period week
 Check budget status:
 
 ```bash
-cat .dainexus/budget.yaml  # View config
+cat .daiharness/budget.yaml  # View config
 python3 scripts/token-analyzer.py --budget --project $(pwd)
 ```
 
@@ -638,7 +638,7 @@ python3 scripts/token-analyzer.py --project $(pwd) --optimize
 ## Data Storage Structure
 
 ```
-~/.dainexus/usage/
+~/.daiharness/usage/
 ├── {project}/
 │   ├── {YYYY-MM-DD}.jsonl           # Daily usage logs
 │   ├── errors-{YYYY-MM-DD}.jsonl    # Error logs
@@ -657,7 +657,7 @@ python3 scripts/token-analyzer.py --project $(pwd) --optimize
 Before completing any token tracking task:
 
 - [ ] Tracking middleware integrated into all LLM calls
-- [ ] Budget configuration created at `.dainexus/budget.yaml`
+- [ ] Budget configuration created at `.daiharness/budget.yaml`
 - [ ] Alert channels configured (Slack, email, console)
 - [ ] Retention policy set (default: 90 days)
 - [ ] Custom pricing configured if using non-standard providers
@@ -673,8 +673,8 @@ Before completing any token tracking task:
 
 | Issue | Solution |
 |-------|----------|
-| "No usage data found" | Check `DAINEXUS_TOKEN_TRACKING=disabled` in env |
-| "Permission denied" | `chmod 755 ~/.dainexus/usage` |
+| "No usage data found" | Check `DAIHARNESS_TOKEN_TRACKING=disabled` in env |
+| "Permission denied" | `chmod 755 ~/.daiharness/usage` |
 | "Dashboard not loading" | Verify Chart.js CDN, use local fallback |
 | "Analyzer error" | Ensure Python 3.8+, verify jsonl format |
 | "Budget alerts not firing" | Check notification channels configured |
@@ -689,14 +689,14 @@ Before completing any token tracking task:
 | `scripts/token-analyzer.py` | CLI analyzer and reporting |
 | `scripts/token-dashboard.html` | Visual dashboard |
 | `skills/token-tracker/SKILL.md` | This skill |
-| `.dainexus/budget.yaml` | Budget configuration |
+| `.daiharness/budget.yaml` | Budget configuration |
 | `.production-grade.yaml` | Global tracking config |
 
 ---
 
 ## Notes
 
-- Token tracking is **enabled by default** — set `DAINEXUS_TOKEN_TRACKING=disabled` to disable
+- Token tracking is **enabled by default** — set `DAIHARNESS_TOKEN_TRACKING=disabled` to disable
 - Pricing is updated to reflect latest API rates
 - Data retention: 90 days default, configurable
 - Dashboard works offline with demo data if no API access

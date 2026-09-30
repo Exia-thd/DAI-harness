@@ -6,7 +6,7 @@
     "statements": 70
   },
   "packages": {
-    "dainexus-node": {
+    "daiharness-node": {
       "lines": 80,
       "functions": 80,
       "branches": 70,

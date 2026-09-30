@@ -1,7 +1,7 @@
 /**
  * MSW (Mock Service Worker) — Node.js Server Setup
  * Request interception for Vitest/Node-based integration tests
- * For dai-nexus project
+ * For dai-harness project
  */
 import { setupServer } from 'msw/node';
 import { handlers } from './handlers/index.js';

@@ -1,7 +1,7 @@
 {
-  "name": "dai-nexus-landing",
+  "name": "dai-harness-landing",
   "version": "1.0.0",
-  "description": "DAI Nexus Landing Page",
+  "description": "DAI Harness Landing Page",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

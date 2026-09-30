@@ -2,11 +2,11 @@
 set -euo pipefail
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# DAI Nexus Quality Gate — Automated Quality Checks
+# DAI Harness Quality Gate — Automated Quality Checks
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 #
 # Usage:
-#   ./dai-nexus/scripts/quality-gate.sh [options]
+#   ./dai-harness/scripts/quality-gate.sh [options]
 #
 # Options:
 #   --task ID        Task ID (e.g., T3a) for labeling
@@ -24,18 +24,18 @@ set -euo pipefail
 
 # ── Resolve paths ──────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-DAINEXUS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+DAIHARNESS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-# Find project root (where .dainexus/ lives or parent of dai-nexus submodule)
-if [[ -d "$DAINEXUS_DIR/.dainexus" ]]; then
-  PROJECT_ROOT="$DAINEXUS_DIR"
-elif [[ -d "$DAINEXUS_DIR/../.dainexus" ]]; then
-  PROJECT_ROOT="$(cd "$DAINEXUS_DIR/.." && pwd)"
+# Find project root (where .daiharness/ lives or parent of dai-harness submodule)
+if [[ -d "$DAIHARNESS_DIR/.daiharness" ]]; then
+  PROJECT_ROOT="$DAIHARNESS_DIR"
+elif [[ -d "$DAIHARNESS_DIR/../.daiharness" ]]; then
+  PROJECT_ROOT="$(cd "$DAIHARNESS_DIR/.." && pwd)"
 else
   PROJECT_ROOT="$(pwd)"
 fi
 
-WORKSPACE="$PROJECT_ROOT/.dainexus"
+WORKSPACE="$PROJECT_ROOT/.daiharness"
 PROFILE="$WORKSPACE/project-profile.json"
 METRICS_FILE="$WORKSPACE/quality-metrics.json"
 
@@ -231,7 +231,7 @@ level3_standards() {
     -E '(TODO|FIXME|HACK|XXX|Not implemented|throw new Error\(.Not implemented|raise NotImplementedError)' \
     "$PROJECT_ROOT" 2>/dev/null \
     | grep -v 'node_modules' \
-    | grep -v '.dainexus' \
+    | grep -v '.daiharness' \
     | grep -v '__tests__' \
     | grep -v '.test.' \
     | grep -v '.spec.' \
@@ -251,7 +251,7 @@ level3_standards() {
     -E '(sk-[a-zA-Z0-9]{20,}|AKIA[A-Z0-9]{16}|password\s*=\s*["\x27][^"\x27]+["\x27]|Bearer [a-zA-Z0-9._-]{20,}|api[_-]?key\s*[=:]\s*["\x27][a-zA-Z0-9]{16,})' \
     "$PROJECT_ROOT" 2>/dev/null \
     | grep -v 'node_modules' \
-    | grep -v '.dainexus' \
+    | grep -v '.daiharness' \
     | grep -v '.env' \
     | grep -v 'example' \
     | grep -v 'sample' \
@@ -265,8 +265,8 @@ level3_standards() {
   fi
 
   # 3c. Documentation & Wiki Drift check (5 points)
-  if [[ -f "$DAINEXUS_DIR/scripts/verify-wiki-drift.sh" ]]; then
-    if ! bash "$DAINEXUS_DIR/scripts/verify-wiki-drift.sh" --threshold 0.3 >/dev/null 2>&1; then
+  if [[ -f "$DAIHARNESS_DIR/scripts/verify-wiki-drift.sh" ]]; then
+    if ! bash "$DAIHARNESS_DIR/scripts/verify-wiki-drift.sh" --threshold 0.3 >/dev/null 2>&1; then
       CONVENTION_SCORE=0
       ISSUES+=("WARN: Wiki Drift or document contradiction detected (Run 'bash scripts/verify-wiki-drift.sh --verbose' to see details)")
     fi
@@ -311,7 +311,7 @@ level4_traceability() {
 
 # ── Pipeline Activation Compliance ─────────────────────
 pipeline_preflight() {
-  if [[ ! -f "$DAINEXUS_DIR/scripts/pipeline-preflight.sh" ]]; then
+  if [[ ! -f "$DAIHARNESS_DIR/scripts/pipeline-preflight.sh" ]]; then
     SCORE_PIPELINE=10
     PIPELINE_STATUS="skip"
     PIPELINE_DETAIL="pipeline-preflight.sh not found"
@@ -323,7 +323,7 @@ pipeline_preflight() {
     preflight_args+=(--strict)
   fi
 
-  if (cd "$PROJECT_ROOT" && bash "$DAINEXUS_DIR/scripts/pipeline-preflight.sh" "${preflight_args[@]}" >/tmp/fg-pipeline-preflight.log 2>&1); then
+  if (cd "$PROJECT_ROOT" && bash "$DAIHARNESS_DIR/scripts/pipeline-preflight.sh" "${preflight_args[@]}" >/tmp/fg-pipeline-preflight.log 2>&1); then
     SCORE_PIPELINE=10
     PIPELINE_STATUS="pass"
     PIPELINE_DETAIL="Pipeline activation controls pass"

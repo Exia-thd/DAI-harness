@@ -1,5 +1,5 @@
 #!/bin/bash
-# DAI Nexus Lite Golden Eval Harness Runner Script
+# DAI Harness Lite Golden Eval Harness Runner Script
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 

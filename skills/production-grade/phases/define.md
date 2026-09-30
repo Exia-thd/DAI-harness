@@ -7,7 +7,7 @@ This phase manages tasks T1 (Product Manager), T1.5 (UI Designer, conditional), 
 The pipeline must already have a decision-ready `PIPELINE_CONTEXT` per `skills/_shared/protocols/pipeline-operating-contract.md`. DEFINE specialists consume it; they do not recreate generic scope/risk/research/visual preflight. If a required envelope field is materially missing, return `NEEDS_PIPELINE_GROUNDING` before specialist work.
 
 Read `.production-grade.yaml` for path overrides:
-- `paths.brd` → BRD output location (default: `.dainexus/product-manager/BRD/`)
+- `paths.brd` → BRD output location (default: `.daiharness/product-manager/BRD/`)
 - `paths.api_contracts` → API contract location (default: `api/openapi/*.yaml`)
 - `paths.adrs` → ADR location (default: `docs/architecture/architecture-decision-records/`)
 - `paths.architecture_docs` → Architecture docs (default: `docs/architecture/`)
@@ -26,9 +26,9 @@ Update task.md: T0.5 status → in_progress
 
 Read skills/business-analyst/SKILL.md and follow its instructions.
 Context:
-- Read polymath context from: .dainexus/polymath/handoff/context-package.md
-- Read codebase context from: .dainexus/codebase-context.md
-- Write BA outputs to: .dainexus/business-analyst/
+- Read polymath context from: .daiharness/polymath/handoff/context-package.md
+- Read codebase context from: .daiharness/codebase-context.md
+- Write BA outputs to: .daiharness/business-analyst/
 - Key output: handoff/ba-package.md (feeds into PM)
 ```
 
@@ -57,10 +57,10 @@ Context:
 ```
 
 The product-manager skill will:
-1. **Check for BA package** — if `.dainexus/business-analyst/handoff/ba-package.md` exists, use it to reduce stakeholder elicitation
+1. **Check for BA package** — if `.daiharness/business-analyst/handoff/ba-package.md` exists, use it to reduce stakeholder elicitation
 2. Frame product problem/JTBD, target segments, value proposition and product constraints from `PIPELINE_CONTEXT` + BA/user evidence
 3. Define prioritization, metrics tree/experiments and business/product rules at the depth warranted by the product
-4. Write BRD/feature requirements to `.dainexus/product-manager/BRD/`
+4. Write BRD/feature requirements to `.daiharness/product-manager/BRD/`
 5. Outputs: `brd.md`, product decision/metrics notes as warranted, `constraints.md`
 6. Return any scope-changing discovery as `DOMAIN_FINDING` to the control plane rather than silently editing safe scope
 
@@ -91,8 +91,8 @@ Update task.md: T1.5 status → in_progress
 Read skills/ui-designer/SKILL.md and follow its specialist instructions.
 Context:
 - Consume `PIPELINE_CONTEXT.visual_basis`; if material visual direction lacks a reliable basis, return `NEEDS_PIPELINE_GROUNDING` rather than independently reopening generic research.
-- Read BRD from: .dainexus/product-manager/BRD/
-- Write design specs to: .dainexus/ui-designer/
+- Read BRD from: .daiharness/product-manager/BRD/
+- Write design specs to: .daiharness/ui-designer/
 - Write design tokens to: docs/design/design-tokens.json
 - Outputs: design-brief.md, wireframes/, design-tokens.md, component-inventory.md, interaction-patterns.md
 
@@ -110,13 +110,13 @@ Consume `PIPELINE_CONTEXT` plus approved product/design artifacts; return cross-
 ```
 
 The solution-architect skill will:
-1. Read BRD from `.dainexus/product-manager/BRD/`
-2. Read design specs from `.dainexus/ui-designer/` (if T1.5 ran)
+1. Read BRD from `.daiharness/product-manager/BRD/`
+2. Read design specs from `.daiharness/ui-designer/` (if T1.5 ran)
 3. Design architecture: ADRs, tech stack, system design
 4. Design API contracts (OpenAPI 3.1), data model (ERD), migrations
 5. Generate project scaffold
 6. Write deliverables to **project root**: `api/`, `schemas/`, `docs/architecture/`
-7. Write workspace artifacts to `.dainexus/solution-architect/`
+7. Write workspace artifacts to `.daiharness/solution-architect/`
 
 **On completion:**
 ```
@@ -132,7 +132,7 @@ Present Gate 2 using the orchestrator's gate pattern. On approval, proceed to BU
 After Gate 2 approval:
 1. Verify architecture outputs exist at project root (`api/`, `schemas/`, `docs/architecture/`)
 2. If T1.5 ran, verify design outputs exist (`docs/design/design-tokens.json`)
-3. Log decisions to `.dainexus/decisions-log.md`
+3. Log decisions to `.daiharness/decisions-log.md`
 4. Read `phases/build.md` and begin BUILD phase
 
 ## Failure Handling

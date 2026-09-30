@@ -6,7 +6,7 @@ description: >
   AI/LLM security, pen testing, threat modeling, and compliance automation.
   Routed via the production-grade orchestrator.
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [security, owasp, pentest, threat-modeling, compliance, hardening, audit]
 ---
 
@@ -39,7 +39,7 @@ tags: [security, owasp, pentest, threat-modeling, compliance, hardening, audit]
 
 ## Engagement Mode
 
-!`cat .dainexus/.orchestrator/settings.md 2>/dev/null || echo "No settings — using Standard"`
+!`cat .daiharness/.orchestrator/settings.md 2>/dev/null || echo "No settings — using Standard"`
 
 | Mode | Behavior |
 |------|----------|
@@ -771,7 +771,7 @@ class PIIMasker {
 
 ### Remediation Report Template
 
-```markdown
+````markdown
 ## Security Remediation Plan
 
 ### Critical Findings
@@ -804,28 +804,28 @@ const result = await db.query(
 **Owner:** Backend Team
 **Deadline:** 2024-XX-XX (24 hours)
 **Verification:** Unit test + penetration test
-```
+````
 
 ---
 
 ## Automated Scanning (AgentShield Integration)
 
-DAI Nexus includes automated security scanning via the AgentShield-style scanner. Every PR automatically gets a security grade.
+DAI Harness includes automated security scanning via the AgentShield-style scanner. Every PR automatically gets a security grade.
 
 ### Quick Start
 
 ```bash
 # Run locally
-npx tsx .dainexus/security/scanner.ts
+npx tsx .daiharness/security/scanner.ts
 
 # JSON output for automation
-npx tsx .dainexus/security/scanner.ts --output json
+npx tsx .daiharness/security/scanner.ts --output json
 
 # Scan specific files
-npx tsx .dainexus/security/scanner.ts --files "src/**/*.ts"
+npx tsx .daiharness/security/scanner.ts --files "src/**/*.ts"
 
 # Fail on high or critical findings
-npx tsx .dainexus/security/scanner.ts --fail-on high
+npx tsx .daiharness/security/scanner.ts --fail-on high
 ```
 
 ### Security Grades
@@ -881,10 +881,10 @@ The workflow:
 
 ```bash
 # As a pre-commit hook
-npx tsx .dainexus/security/scanner.ts --fail-on high
+npx tsx .daiharness/security/scanner.ts --fail-on high
 
 # In CI pipeline
-npx tsx .dainexus/security/scanner.ts \
+npx tsx .daiharness/security/scanner.ts \
   --base origin/main \
   --output json \
   --fail-on critical
@@ -894,12 +894,12 @@ npx tsx .dainexus/security/scanner.ts \
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `DAINEXUS_SECURITY_RULES_DIR` | `.dainexus/security/rules` | Rules directory |
-| `DAINEXUS_SECURITY_FAIL_ON` | `critical` | Minimum severity to fail |
+| `DAIHARNESS_SECURITY_RULES_DIR` | `.daiharness/security/rules` | Rules directory |
+| `DAIHARNESS_SECURITY_FAIL_ON` | `critical` | Minimum severity to fail |
 
 ### Customizing Rules
 
-Add or modify rules in `.dainexus/security/rules/`:
+Add or modify rules in `.daiharness/security/rules/`:
 
 ```yaml
 # rules/custom.yaml
@@ -983,5 +983,5 @@ The automated scanner handles ~80% of common vulnerabilities. Manual review is s
 - [ ] Phase 6: AI/LLM security reviewed (if applicable)
 - [ ] Phase 7: Remediation plan with before/after code samples
 - [ ] All findings categorized by severity (Critical/High/Medium/Low/Info)
-- [ ] Findings written to `.dainexus/security-engineer/`
+- [ ] Findings written to `.daiharness/security-engineer/`
 - [ ] No infrastructure security findings mixed in (those belong to DevOps)

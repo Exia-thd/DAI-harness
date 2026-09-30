@@ -10,7 +10,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ROUTER_PATH = REPO_ROOT / "scripts" / "runtime" / "skill_routing.py"
-ORCHESTRATOR_PATH = REPO_ROOT / "scripts" / "runtime" / "dainexus-orchestrator.py"
+ORCHESTRATOR_PATH = REPO_ROOT / "scripts" / "runtime" / "daiharness-orchestrator.py"
 
 
 def _load_module(name: str, path: Path):
@@ -36,7 +36,7 @@ def _write_config(
             skill_dir.mkdir(parents=True, exist_ok=True)
             (skill_dir / "SKILL.md").write_text(f"# {skill}\n", encoding="utf-8")
             (skill_dir / "LITE.md").write_text(f"# Lite {skill}\n", encoding="utf-8")
-    config_dir = root / ".dainexus"
+    config_dir = root / ".daiharness"
     config_dir.mkdir(parents=True, exist_ok=True)
     config_path = config_dir / "skills-config.json"
     config_path.write_text(
@@ -124,7 +124,7 @@ def test_unknown_explicit_mode_fails_closed(tmp_path: Path) -> None:
 
 def test_unclassified_prompt_matches_current_config_fail_closed_contract() -> None:
     config = json.loads(
-        (REPO_ROOT / ".dainexus" / "skills-config.json").read_text(encoding="utf-8")
+        (REPO_ROOT / ".daiharness" / "skills-config.json").read_text(encoding="utf-8")
     )
 
     assert config["context_budget"]["fallback_on_classification_failure"] == "none"
@@ -211,7 +211,7 @@ def test_manual_disable_force_enable_and_cap_are_ordered(tmp_path: Path) -> None
 def test_orchestrator_loads_ordered_game_creative_overlays(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    orchestrator = _load_module("dai_nexus_orchestrator_runtime", ORCHESTRATOR_PATH)
+    orchestrator = _load_module("dai_harness_orchestrator_runtime", ORCHESTRATOR_PATH)
     (tmp_path / ".antigravity").mkdir()
     (tmp_path / ".antigravity" / "mcp-manifest.json").write_text("{}", encoding="utf-8")
 
@@ -237,9 +237,9 @@ def test_orchestrator_loads_ordered_game_creative_overlays(
 
     monkeypatch.setattr(orchestrator, "stdio_client", fake_stdio_client)
     monkeypatch.setattr(orchestrator, "ClientSession", FakeClientSession)
-    monkeypatch.setenv("DAINEXUS_LITE", "true")
+    monkeypatch.setenv("DAIHARNESS_LITE", "true")
 
-    agent = orchestrator.DaiNexusAgent("project", str(tmp_path))
+    agent = orchestrator.DaiHarnessAgent("project", str(tmp_path))
     monkeypatch.setattr(agent, "_call_api", lambda _tools: {"content": "done"})
     asyncio.run(agent.run("Build a Unity game"))
 

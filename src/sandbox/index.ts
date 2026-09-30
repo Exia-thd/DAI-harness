@@ -1,5 +1,5 @@
 /**
- * DAI Nexus Sandbox - AI Code Execution Security Layer
+ * DAI Harness Sandbox - AI Code Execution Security Layer
  *
  * Provides sandboxed execution environment for AI-generated code based on
  * research from Tian Pan (2026) - Agent Sandboxing Spectrum

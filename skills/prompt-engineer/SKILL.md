@@ -347,7 +347,7 @@ Output:
 
 #### 2.5 Structured Output Prompts
 
-```markdown
+````markdown
 ## Output Format
 Return a JSON object with this schema:
 ```json
@@ -364,7 +364,7 @@ Rules:
 - Use null for missing optional fields
 - Do not add fields not in the schema
 - Confidence must be between 0.0 and 1.0
-```
+````
 
 **Output:** Prompt templates written to project at `prompts/<feature>/`
 
@@ -923,7 +923,7 @@ evaluation/
 │   └── eval_{feature}.py     # Evaluation runner
 └── results/
     └── {feature}.results.json
-.dainexus/prompt-engineer/
+.daiharness/prompt-engineer/
 ├── task-analysis.md          # Task classification
 ├── prompt-design.md          # Architecture decisions
 ├── eval-report.md            # Evaluation results
@@ -954,7 +954,7 @@ evaluation/
 
 ## Prompt Template Library
 
-**`skills/prompt-engineer/prompts/`** — Curated, battle-tested prompts from [prompts.chat](https://github.com/f/prompts.chat) (163K stars), integrated into DAI Nexus's Prompt Engineer skill.
+**`skills/prompt-engineer/prompts/`** — Curated, battle-tested prompts from [prompts.chat](https://github.com/f/prompts.chat) (163K stars), integrated into DAI Harness's Prompt Engineer skill.
 
 ```
 skills/prompt-engineer/prompts/

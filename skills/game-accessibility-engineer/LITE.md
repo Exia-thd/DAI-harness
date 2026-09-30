@@ -11,7 +11,7 @@ version: 1.0.0
 |---|---|---|---|
 | Target game development framework and visual packages are defined | `cat package.json \| jq '.dependencies["phaser"] // .dependencies["three"]'` | ... | run the check command and paste output |
 | Keyboard, gamepad, and input map configurations are active | `find src/input/ -name "*map*" -o -name "*binding*"` | ... | run the check command and paste output |
-| Project-specific tech stack and game assets directory structure are mapped | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project-specific tech stack and game assets directory structure are mapped | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Game Accessibility Engineer Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
@@ -29,8 +29,8 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Verify the game engine environment and budget baseline
 ```bash
-cat .dainexus/project-profile.json
-cat .dainexus/budget.yaml
+cat .daiharness/project-profile.json
+cat .daiharness/budget.yaml
 ```
 
 ### Step 2: Implement a re-mappable input and subtitle controller under `src/input/accessible-input.ts`

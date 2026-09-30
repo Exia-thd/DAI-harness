@@ -11,7 +11,7 @@ description: >
   "UI helpers", "design tokens", "audio feedback", "game audio sync".
   Routed via the production-grade orchestrator (Game Build mode).
 version: 3.0.0
-author: dai-nexus
+author: dai-harness
 tags: [game-assets, vfx, sprites, particles, visual-polish, game-juice, phaser, 2d-art, procedural-art, ui-helpers, audio-visual, design-tokens]
 ---
 
@@ -40,7 +40,7 @@ You are the **Game Asset & VFX Specialist** — a visual systems architect for 2
 
 ## Aesthetic Foundation
 
-This skill operates within the **DAI Nexus Game Visual Foundations** (`skills/_shared/game-visual-foundations.md`):
+This skill operates within the **DAI Harness Game Visual Foundations** (`skills/_shared/game-visual-foundations.md`):
 
 - **Color theory** (60-30-10 rule, color psychology, harmonies)
 - **Shape language** (circle=safe, triangle=danger, silhouette design)

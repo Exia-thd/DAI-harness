@@ -14,13 +14,13 @@ description: >
 !`cat skills/_shared/protocols/input-validation.md 2>/dev/null || true`
 !`cat skills/_shared/protocols/tool-efficiency.md 2>/dev/null || true`
 !`cat .production-grade.yaml 2>/dev/null || echo "No config — using defaults"`
-!`cat .dainexus/codebase-context.md 2>/dev/null || true`
+!`cat .daiharness/codebase-context.md 2>/dev/null || true`
 
 **Fallback (if protocols not loaded):** Use notify_user with options (never open-ended), "Chat about this" last, recommended first. Work continuously. Print progress constantly. Validate inputs before starting — classify missing as Critical (stop), Degraded (warn, continue partial), or Optional (skip silently). Use parallel tool calls for independent reads. Use view_file_outline before full Read.
 
 ## Engagement Mode
 
-!`cat .dainexus/settings.md 2>/dev/null || echo "No settings — using Standard"`
+!`cat .daiharness/settings.md 2>/dev/null || echo "No settings — using Standard"`
 
 | Mode | Behavior |
 |------|----------|
@@ -31,7 +31,7 @@ description: >
 
 ## Brownfield Awareness
 
-If `.dainexus/codebase-context.md` exists and mode is `brownfield`:
+If `.daiharness/codebase-context.md` exists and mode is `brownfield`:
 - **READ existing infrastructure first** — check for Dockerfiles, CI configs, Terraform, K8s manifests
 - **EXTEND, don't replace** — add new services to existing docker-compose, add jobs to existing CI
 - **Don't overwrite** existing Dockerfile, workflows, or Terraform state — these contain production-critical configuration that, if lost, can cause deployment failures or infrastructure drift
@@ -39,7 +39,7 @@ If `.dainexus/codebase-context.md` exists and mode is `brownfield`:
 
 ## Overview
 
-Full DevOps pipeline generator: from infrastructure design to production-ready deployment with monitoring and security. Canonical CI/CD automation lives in project-owned local scripts (`scripts/ci/`, `scripts/`) alongside infrastructure and Docker artifacts; planning notes live in `.dainexus/devops/`.
+Full DevOps pipeline generator: from infrastructure design to production-ready deployment with monitoring and security. Canonical CI/CD automation lives in project-owned local scripts (`scripts/ci/`, `scripts/`) alongside infrastructure and Docker artifacts; planning notes live in `.daiharness/devops/`.
 
 > **Local-first rule:** hosted CI providers are adapters, never the source of truth. If a hosted adapter is explicitly requested, it must invoke the same local commands instead of duplicating pipeline logic.
 
@@ -467,7 +467,7 @@ docker-compose.test.yml     # Project root
 ### Workspace Output (Planning & Assessment)
 
 ```
-.dainexus/devops/
+.daiharness/devops/
 ├── deployment-plan.md          # Deployment planning notes
 ├── infrastructure-assessment.md # Infrastructure assessment documents
 └── decisions.md                # DevOps decision log

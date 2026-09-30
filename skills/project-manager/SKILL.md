@@ -7,7 +7,7 @@ description: >
   team coordination. Powered by agentic AI for autonomous project operations.
   Routed via the production-grade orchestrator (cross-cutting).
 version: 2.1.0
-author: dai-nexus
+author: dai-harness
 tags: [project-management, sprint, agile, scrum, kanban, jira, velocity, risk, okr, kpi, ai-automation, async, remote-team]
 ---
 
@@ -489,7 +489,7 @@ npx rovo dev connect --project=JIRA-PROJECT
 ## Output Structure
 
 ```
-.dainexus/project-manager/
+.daiharness/project-manager/
 ├── project-charter.md
 ├── sprint-plan.md
 ├── sprint-backlog.md

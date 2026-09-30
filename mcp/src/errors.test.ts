@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import {
-  DaiNexusError,
+  DaiHarnessError,
   StateError,
   PipelineError,
   ToolError,
   SkillError,
   ErrorCode,
-  isDaiNexusError,
+  isDaiHarnessError,
   getErrorMessage,
 } from './errors.js';
 
@@ -41,31 +41,31 @@ describe('ErrorCode', () => {
   });
 });
 
-describe('DaiNexusError', () => {
+describe('DaiHarnessError', () => {
   it('should create error with code and message', () => {
-    const err = new DaiNexusError(ErrorCode.TOOL_NOT_FOUND, 'Tool not found: test');
+    const err = new DaiHarnessError(ErrorCode.TOOL_NOT_FOUND, 'Tool not found: test');
     expect(err.code).toBe('FW301');
     expect(err.message).toBe('Tool not found: test');
-    expect(err.name).toBe('DaiNexusError');
+    expect(err.name).toBe('DaiHarnessError');
     expect(err.recoverable).toBe(true);
   });
 
   it('should include optional context', () => {
-    const err = new DaiNexusError(ErrorCode.STATE_SAVE_ERROR, 'Save failed', {
+    const err = new DaiHarnessError(ErrorCode.STATE_SAVE_ERROR, 'Save failed', {
       file: '/path/state.json',
     });
     expect(err.context).toEqual({ file: '/path/state.json' });
   });
 
   it('should allow non-recoverable errors', () => {
-    const err = new DaiNexusError(ErrorCode.TOOL_EXECUTION_ERROR, 'Execution failed', {}, false);
+    const err = new DaiHarnessError(ErrorCode.TOOL_EXECUTION_ERROR, 'Execution failed', {}, false);
     expect(err.recoverable).toBe(false);
   });
 
   it('should serialize to JSON correctly', () => {
-    const err = new DaiNexusError(ErrorCode.SKILL_NOT_FOUND, 'Skill missing', { skill: 'test' });
+    const err = new DaiHarnessError(ErrorCode.SKILL_NOT_FOUND, 'Skill missing', { skill: 'test' });
     const json = err.toJSON();
-    expect(json).toHaveProperty('name', 'DaiNexusError');
+    expect(json).toHaveProperty('name', 'DaiHarnessError');
     expect(json).toHaveProperty('code', 'FW401');
     expect(json).toHaveProperty('message', 'Skill missing');
     expect(json).toHaveProperty('context');
@@ -74,21 +74,21 @@ describe('DaiNexusError', () => {
   });
 
   it('should format to string with context', () => {
-    const err = new DaiNexusError(ErrorCode.STATE_SAVE_ERROR, 'Save failed', {
+    const err = new DaiHarnessError(ErrorCode.STATE_SAVE_ERROR, 'Save failed', {
       file: '/path.json',
     });
     expect(err.toString()).toBe('[FW003] Save failed ({"file":"/path.json"})');
   });
 
   it('should format to string without context', () => {
-    const err = new DaiNexusError(ErrorCode.TOOL_NOT_FOUND, 'Tool missing');
+    const err = new DaiHarnessError(ErrorCode.TOOL_NOT_FOUND, 'Tool missing');
     expect(err.toString()).toBe('[FW301] Tool missing');
   });
 
   it('should be instanceof Error', () => {
-    const err = new DaiNexusError(ErrorCode.MCP_SERVER_ERROR, 'Server error');
+    const err = new DaiHarnessError(ErrorCode.MCP_SERVER_ERROR, 'Server error');
     expect(err).toBeInstanceOf(Error);
-    expect(err).toBeInstanceOf(DaiNexusError);
+    expect(err).toBeInstanceOf(DaiHarnessError);
   });
 });
 
@@ -140,29 +140,29 @@ describe('SkillError', () => {
   });
 });
 
-describe('isDaiNexusError', () => {
-  it('should return true for DaiNexusError instances', () => {
-    expect(isDaiNexusError(new DaiNexusError(ErrorCode.MCP_SERVER_ERROR, 'test'))).toBe(true);
-    expect(isDaiNexusError(new StateError(ErrorCode.STATE_SAVE_ERROR, 'test'))).toBe(true);
-    expect(isDaiNexusError(new PipelineError(ErrorCode.PIPELINE_INVALID_MODE, 'test'))).toBe(
+describe('isDaiHarnessError', () => {
+  it('should return true for DaiHarnessError instances', () => {
+    expect(isDaiHarnessError(new DaiHarnessError(ErrorCode.MCP_SERVER_ERROR, 'test'))).toBe(true);
+    expect(isDaiHarnessError(new StateError(ErrorCode.STATE_SAVE_ERROR, 'test'))).toBe(true);
+    expect(isDaiHarnessError(new PipelineError(ErrorCode.PIPELINE_INVALID_MODE, 'test'))).toBe(
       true,
     );
-    expect(isDaiNexusError(new ToolError(ErrorCode.TOOL_NOT_FOUND, 'test'))).toBe(true);
-    expect(isDaiNexusError(new SkillError(ErrorCode.SKILL_NOT_FOUND, 'test'))).toBe(true);
+    expect(isDaiHarnessError(new ToolError(ErrorCode.TOOL_NOT_FOUND, 'test'))).toBe(true);
+    expect(isDaiHarnessError(new SkillError(ErrorCode.SKILL_NOT_FOUND, 'test'))).toBe(true);
   });
 
-  it('should return false for non-DaiNexusError values', () => {
-    expect(isDaiNexusError(new Error('plain error'))).toBe(false);
-    expect(isDaiNexusError('string error')).toBe(false);
-    expect(isDaiNexusError({ code: 'FW001', message: 'test' })).toBe(false);
-    expect(isDaiNexusError(null)).toBe(false);
-    expect(isDaiNexusError(undefined)).toBe(false);
+  it('should return false for non-DaiHarnessError values', () => {
+    expect(isDaiHarnessError(new Error('plain error'))).toBe(false);
+    expect(isDaiHarnessError('string error')).toBe(false);
+    expect(isDaiHarnessError({ code: 'FW001', message: 'test' })).toBe(false);
+    expect(isDaiHarnessError(null)).toBe(false);
+    expect(isDaiHarnessError(undefined)).toBe(false);
   });
 });
 
 describe('getErrorMessage', () => {
-  it('should return DaiNexusError.toString() for DaiNexusError', () => {
-    const err = new DaiNexusError(ErrorCode.TOOL_NOT_FOUND, 'Tool not found', { tool: 'fake' });
+  it('should return DaiHarnessError.toString() for DaiHarnessError', () => {
+    const err = new DaiHarnessError(ErrorCode.TOOL_NOT_FOUND, 'Tool not found', { tool: 'fake' });
     expect(getErrorMessage(err)).toBe('[FW301] Tool not found ({"tool":"fake"})');
   });
 

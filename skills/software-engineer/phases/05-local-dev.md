@@ -169,10 +169,10 @@ docker-compose.dev.yml             # Full local dev stack
 Makefile                           # Root-level dev commands
 ```
 
-### Workspace Output (`.dainexus/software-engineer/`)
+### Workspace Output (`.daiharness/software-engineer/`)
 
 ```
-.dainexus/software-engineer/
+.daiharness/software-engineer/
 ├── implementation-plan.md
 ├── progress.md
 └── logs/

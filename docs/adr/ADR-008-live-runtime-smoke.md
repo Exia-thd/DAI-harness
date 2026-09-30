@@ -6,7 +6,7 @@
 
 `scripts/ci/verify-runtime-smoke.mjs` proves the canonical MCP boundary by starting the compiled stdio server in a temporary workspace and issuing `initialize`, `tools/list`, and the non-mutating `fw_get_current_phase` call.
 
-The provider check is separately opt-in. It requires `DAINEXUS_LIVE_SMOKE=1` and runs Codex with the Terra model in read-only sandbox mode. Its receipt retains only the provider ID, configured model, and marker result; it never writes the prompt, provider response, token, or credential. Gemini API mode is available only when explicitly selected and also fails closed.
+The provider check is separately opt-in. It requires `DAIHARNESS_LIVE_SMOKE=1` and runs Codex with the Terra model in read-only sandbox mode. Its receipt retains only the provider ID, configured model, and marker result; it never writes the prompt, provider response, token, or credential. Gemini API mode is available only when explicitly selected and also fails closed.
 
 ## Consequences
 

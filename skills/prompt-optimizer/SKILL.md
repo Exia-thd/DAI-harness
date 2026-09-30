@@ -6,7 +6,7 @@ description: >
   to algorithmically search for the optimal prompt and few-shot examples
   that maximize pass rates.
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [dspy, optimization, self-improvement, automation, prompt-engineering, few-shot]
 ---
 
@@ -14,7 +14,7 @@ tags: [dspy, optimization, self-improvement, automation, prompt-engineering, few
 
 ## Identity
 
-You are the **Prompt Optimizer**, tasked with algorithmically improving the prompts of other DAI Nexus skills using the **DSPy** framework. You translate subjective markdown prompt improvements into mathematically verifiable, compiled LLM programs.
+You are the **Prompt Optimizer**, tasked with algorithmically improving the prompts of other DAI Harness skills using the **DSPy** framework. You translate subjective markdown prompt improvements into mathematically verifiable, compiled LLM programs.
 
 **For Non-Technical User Pipelines:**
 You ensure that no human intervention is needed to fix bad prompts. Instead of guessing why a skill failed, you collect its execution traces and run DSPy's `teleprompter` to automatically recompile the skill's instructions based on deterministic metrics.
@@ -22,7 +22,7 @@ You ensure that no human intervention is needed to fix bad prompts. Instead of g
 ## When to Use
 
 - When the `plan-quality-loop` flags a skill that has failed 3 times consecutively
-- When expanding DAI Nexus with a new skill that needs few-shot examples automatically generated
+- When expanding DAI Harness with a new skill that needs few-shot examples automatically generated
 - When migrating static `SKILL.md` logic into dynamic `dspy.Module` classes
 - When prompt quality metrics are below threshold (e.g., < 9.0 plan score)
 
@@ -50,8 +50,8 @@ DSPy (Declarative Self-improving Python) is Stanford's framework for algorithmic
 ┌─────────────────────────────────────────────────────────────────────┐
 │ 1. INFORMATION GATHERING                                               │
 │ Read:                                                                 │
-│   - .dainexus/scoring-lessons.md                                   │
-│   - .dainexus/plan-lessons.md                                      │
+│   - .daiharness/scoring-lessons.md                                   │
+│   - .daiharness/plan-lessons.md                                      │
 │   - Failed skill's SKILL.md                                           │
 │   - Execution traces from failed runs                                  │
 └────────────────────────────┬────────────────────────────────────────┘
@@ -280,7 +280,7 @@ def load_plan_lessons(lessons_file: Path):
 ```python
 #!/usr/bin/env python3
 """
-DAI Nexus Prompt Optimizer
+DAI Harness Prompt Optimizer
 
 Usage:
     python optimize_skill.py --skill software-engineer
@@ -298,7 +298,7 @@ import dspy
 from dspy.teleprompt import BootstrapFewShot, MIPRO
 
 # Parse arguments
-parser = argparse.ArgumentParser(description='Optimize DAI Nexus skill prompts')
+parser = argparse.ArgumentParser(description='Optimize DAI Harness skill prompts')
 parser.add_argument('--skill', required=True, help='Skill name to optimize')
 parser.add_argument('--teleprompter', default='bootstrap', 
                     choices=['bootstrap', 'mipro'], help='Teleprompter to use')
@@ -363,17 +363,17 @@ def skill_metric(example, pred, trace=None):
 
 # Load or create training examples
 def load_examples():
-    """Load training examples from DAI Nexus history."""
+    """Load training examples from DAI Harness history."""
     examples = []
     
     # Try to load from plan lessons
-    lessons_path = Path('.dainexus/plan-lessons.md')
+    lessons_path = Path('.daiharness/plan-lessons.md')
     if lessons_path.exists():
         # Parse examples from lessons
         pass
     
     # Try to load from execution traces
-    traces_path = Path(f'.dainexus/traces/{args.skill}')
+    traces_path = Path(f'.daiharness/traces/{args.skill}')
     if traces_path.exists():
         for trace_file in traces_path.glob('*.json'):
             with open(trace_file) as f:
@@ -494,7 +494,7 @@ if __name__ == '__main__':
     main()
 ```
 
-## Integration with DAI Nexus
+## Integration with DAI Harness
 
 ### Hook into Plan Quality Loop
 
@@ -540,7 +540,7 @@ def check_skill_health(skill_name: str) -> dict:
 When optimization runs, it produces:
 
 ```
-.dainexus/prompt-optimizer/
+.daiharness/prompt-optimizer/
 ├── {skill-name}/
 │   ├── compiled_module.json     # Serialized DSPy module
 │   ├── demonstrations.json      # Optimized few-shot examples

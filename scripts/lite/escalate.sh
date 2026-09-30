@@ -3,7 +3,7 @@
 # Builds context packets (task, evidence, diff, slices) and delegates to configured expert CLI.
 # Supported CLIs: agy (--print), claude (-p/--print), codex (exec <prompt>), gemini (-p/--prompt)
 # Budget enforcement: reads expertMode.budget from .production-grade.yaml
-# Output: .dainexus/escalations/<timestamp>-<short-task>.json
+# Output: .daiharness/escalations/<timestamp>-<short-task>.json
 # Secrets are redacted before any packet is written.
 
 set -euo pipefail
@@ -102,7 +102,7 @@ def load_config():
 
 def escalation_log_dir():
     root = os.environ.get("PROJECT_ROOT", ".")
-    d = os.path.join(root, ".dainexus", "escalations")
+    d = os.path.join(root, ".daiharness", "escalations")
     os.makedirs(d, exist_ok=True)
     return d
 
@@ -110,7 +110,7 @@ def escalation_log_dir():
 def count_prior_escalations():
     """Count escalation records created this run (env-keyed so tests can reset)."""
     log_dir = escalation_log_dir()
-    run_id = os.environ.get("DAINEXUS_RUN_ID", "")
+    run_id = os.environ.get("DAIHARNESS_RUN_ID", "")
     if not run_id:
         # Use today's date as a coarse run boundary
         run_id = time.strftime("%Y%m%d")
@@ -148,12 +148,12 @@ def redact(text):
 
 
 # ---------------------------------------------------------------------------
-# Evidence: read real current-turn files from .dainexus/verify/
+# Evidence: read real current-turn files from .daiharness/verify/
 # ---------------------------------------------------------------------------
 
 def get_evidence():
     root = os.environ.get("PROJECT_ROOT", ".")
-    verify_dir = os.path.join(root, ".dainexus", "verify")
+    verify_dir = os.path.join(root, ".daiharness", "verify")
     slices = []
     if os.path.isdir(verify_dir):
         # Read files sorted by mtime desc (most recent first), up to 3
@@ -178,7 +178,7 @@ def get_evidence():
         return slices
     # Fallback: no verify files yet — report that explicitly so downstream tooling
     # knows the evidence is genuinely empty rather than a placeholder.
-    return [{"file": "(none)", "content": "No .dainexus/verify files found for this turn."}]
+    return [{"file": "(none)", "content": "No .daiharness/verify files found for this turn."}]
 
 
 # ---------------------------------------------------------------------------
@@ -221,7 +221,7 @@ def build_argv(cli, prompt):
 
 
 def provider_timeout_seconds(cfg):
-    raw = os.environ.get("DAINEXUS_ESCALATION_TIMEOUT_SECS")
+    raw = os.environ.get("DAIHARNESS_ESCALATION_TIMEOUT_SECS")
     try:
         value = int(raw) if raw is not None else int(cfg["providerTimeoutSeconds"])
     except (KeyError, TypeError, ValueError):
@@ -230,7 +230,7 @@ def provider_timeout_seconds(cfg):
 
 
 def runtime_lease_cli():
-    override = os.environ.get("DAINEXUS_RUNTIME_LEASE_CLI")
+    override = os.environ.get("DAIHARNESS_RUNTIME_LEASE_CLI")
     if override:
         return override
     root = os.environ.get("PROJECT_ROOT", ".")
@@ -327,7 +327,7 @@ def run_provider(argv, env, timeout_seconds):
         "bash",
         "-c",
         'IFS= read -r _ || exit 125; exec "$@"',
-        "dai-nexus-provider",
+        "dai-harness-provider",
         *argv,
     ]
     proc = subprocess.Popen(
@@ -419,10 +419,10 @@ def main():
     if prior >= req_confirm:
         print(
             f"[ESCALATE] CONFIRMATION REQUIRED: {prior}/{req_confirm} calls used (requireConfirmationAbove).\n"
-            f"  Re-run with DAINEXUS_CONFIRM=1 to proceed.",
+            f"  Re-run with DAIHARNESS_CONFIRM=1 to proceed.",
             file=sys.stderr
         )
-        if os.environ.get("DAINEXUS_CONFIRM") != "1":
+        if os.environ.get("DAIHARNESS_CONFIRM") != "1":
             sys.exit(3)
 
     # Build context packet (diff + evidence redacted)
@@ -458,7 +458,7 @@ def main():
 
         # Prompt: inject the full packet JSON as the CLI prompt text
         prompt_text = (
-            f"[DAI Nexus Escalation]\nTask: {task_desc}\n\n"
+            f"[DAI Harness Escalation]\nTask: {task_desc}\n\n"
             f"Evidence:\n{json.dumps(evidence_slices, indent=2)}\n\n"
             f"Diff (redacted):\n{git_diff[:3000] if git_diff else '(none)'}"
         )
@@ -468,7 +468,7 @@ def main():
 
         start_time = time.time()
         delegation_env = os.environ.copy()
-        delegation_env["DAINEXUS_WORKSPACE"] = os.path.realpath(
+        delegation_env["DAIHARNESS_WORKSPACE"] = os.path.realpath(
             os.environ.get("PROJECT_ROOT", ".")
         )
         result = run_provider(argv, delegation_env, provider_timeout)
@@ -478,9 +478,9 @@ def main():
         if result.stderr:
             print(result.stderr, file=sys.stderr)
 
-        # Persist escalation record to .dainexus/escalations/
+        # Persist escalation record to .daiharness/escalations/
         log_dir = escalation_log_dir()
-        run_id  = os.environ.get("DAINEXUS_RUN_ID", time.strftime("%Y%m%d"))
+        run_id  = os.environ.get("DAIHARNESS_RUN_ID", time.strftime("%Y%m%d"))
         safe_task = re.sub(r'[^A-Za-z0-9_-]', '-', task_desc[:40])
         record_path = os.path.join(log_dir, f"{run_id}-{int(time.time())}-{safe_task}.json")
 

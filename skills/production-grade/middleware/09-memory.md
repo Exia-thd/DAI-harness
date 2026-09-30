@@ -11,7 +11,7 @@
 - Persist only facts likely to matter later: durable decisions, verified architecture/contracts, unresolved blockers, release state, or substantial progress.
 - Skip trivial chat/status turns and routine `QUICK` edits unless continuity genuinely benefits.
 - Never store secrets or unverified guesses as facts.
-- Never migrate project/session lessons automatically into shared DAI Nexus `SKILL.md` files.
+- Never migrate project/session lessons automatically into shared DAI Harness `SKILL.md` files.
 
 ## After a Substantial Skill / Decision
 
@@ -35,11 +35,11 @@ Do not write a mandatory “session memory” entry on every user message.
 ## Project Lessons
 
 Research/debugging lessons stay in project-local state such as:
-- `.dainexus/plan-lessons.md`;
-- `.dainexus/execution-lessons.md`;
+- `.daiharness/plan-lessons.md`;
+- `.daiharness/execution-lessons.md`;
 - decision logs / handoffs.
 
-Legacy `dainexus-lesson-migrator.sh` must **not** mutate framework skills by default. Explicit framework-learning/mutation requires DAI Nexus itself to be the task scope and a separate reviewed command/flag.
+Legacy `daiharness-lesson-migrator.sh` must **not** mutate framework skills by default. Explicit framework-learning/mutation requires DAI Harness itself to be the task scope and a separate reviewed command/flag.
 
 ## Failure Handling
 

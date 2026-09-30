@@ -1,4 +1,4 @@
-# DAI Nexus CLI - Agent-First Command Line Interface
+# DAI Harness CLI - Agent-First Command Line Interface
 
 > **Version:** 2.0.0-alpha.1
 > **Status:** Alpha
@@ -142,7 +142,7 @@ dai completion fish > ~/.config/fish/completions/dai.fish
 ### Config Sources (Priority)
 
 1. Environment variables (`FORGE_*`)
-2. User config (`~/.config/dai-nexus/config.json`)
+2. User config (`~/.config/dai-harness/config.json`)
 3. Process environment
 4. `.env` files
 5. Inline flags

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DAI Nexus Conversation Pruner — DyCP KadaneDial Algorithm
+DAI Harness Conversation Pruner — DyCP KadaneDial Algorithm
 
 Implements KadaneDial (from DyCP paper) for intelligent conversation span selection.
 Finds high-relevance spans and compresses low-relevance ones.
@@ -524,11 +524,11 @@ def _offload_conversation(messages: list[dict], keep_recent: int = 5) -> list[di
 
     # Save full conversation
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    session_id = os.environ.get("DAINEXUS_SESSION_ID", "unknown")
+    session_id = os.environ.get("DAIHARNESS_SESSION_ID", "unknown")
     filename = f"context-cache/{session_id}-{timestamp}.md"  # noqa: F841
 
     # Ensure directory exists
-    cache_dir = Path(".dainexus/context-cache")
+    cache_dir = Path(".daiharness/context-cache")
     cache_dir.mkdir(parents=True, exist_ok=True)
 
     # Write full conversation

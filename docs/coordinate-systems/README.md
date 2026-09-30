@@ -91,7 +91,7 @@ dai coords ref
 
 ## Related Documentation
 
-- [DAI Nexus CLI Docs](../../src/cli/README.md)
+- [DAI Harness CLI Docs](../../src/cli/README.md)
 - [Godot Engineer Skill](../../skills/godot-engineer/SKILL.md)
 - [Unity Engineer Skill](../../skills/unity-engineer/SKILL.md)
 - [Game Designer Skill](../../skills/game-designer/SKILL.md)

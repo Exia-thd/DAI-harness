@@ -19,7 +19,7 @@ superseded_by: null
 
 ### After Each Skill
 
-Update `.dainexus/quality-metrics.json` with the latest quality gate results (from quality-gate.md).
+Update `.daiharness/quality-metrics.json` with the latest quality gate results (from quality-gate.md).
 
 Display mini-status in task_boundary:
 ```
@@ -100,14 +100,14 @@ Generated at pipeline completion. Replaces the existing `Final Summary Template`
 
 ## Machine-Readable Report
 
-Write `.dainexus/quality-report-{session}.json` at pipeline completion:
+Write `.daiharness/quality-report-{session}.json` at pipeline completion:
 
 ```json
 {
   "schema_version": "1.0",
   "session_id": "session-20260314-1324",
   "generated_at": "ISO-8601",
-  "dai_nexus_version": "7.0.0",
+  "dai_harness_version": "7.0.0",
   "mode": "Full Build",
   "overall": {
     "score": 91,
@@ -153,7 +153,7 @@ Write `.dainexus/quality-report-{session}.json` at pipeline completion:
     "files_created": 87,
     "files_modified": 12,
     "files_deleted": 0,
-    "session_branch": "dai-nexus/session-20260314-1324"
+    "session_branch": "dai-harness/session-20260314-1324"
   },
   "per_task_scores": [
     { "task_id": "T3a", "skill": "software-engineer", "score": 92, "grade": "A" },
@@ -165,7 +165,7 @@ Write `.dainexus/quality-report-{session}.json` at pipeline completion:
 
 ## Quality Trend (Cross-Session)
 
-Append each session's quality summary to `.dainexus/quality-history.json`:
+Append each session's quality summary to `.daiharness/quality-history.json`:
 
 ```json
 {

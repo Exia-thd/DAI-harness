@@ -145,7 +145,7 @@ function printHumanReadable(
   );
   console.log(
     headerColor("║") +
-      "              DAI Nexus Tool Registry".padEnd(62) +
+      "              DAI Harness Tool Registry".padEnd(62) +
       headerColor("║"),
   );
   console.log(

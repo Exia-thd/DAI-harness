@@ -1,15 +1,15 @@
 /**
  * Pact Contract Testing Consumer Tests
  * Consumer-driven contract tests for API providers
- * For dai-nexus project
+ * For dai-harness project
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { PactV3 } from '@pact-foundation/pact';
 import path from 'path';
 
 const provider = new PactV3({
-  consumer: 'dai-nexus-tests',
-  provider: 'dai-nexus-api',
+  consumer: 'dai-harness-tests',
+  provider: 'dai-harness-api',
   dir: path.resolve(__dirname, '../pacts'),
   logLevel: 'warn',
   spec: 3,

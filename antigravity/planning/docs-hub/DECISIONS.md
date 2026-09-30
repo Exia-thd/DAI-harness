@@ -1,4 +1,4 @@
-# Architecture Decisions: DAI Nexus Docs Hub
+# Architecture Decisions: DAI Harness Docs Hub
 
 ## D-001 — Source documents remain authoritative
 

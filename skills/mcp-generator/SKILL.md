@@ -35,9 +35,9 @@ The MCP server lives at exactly ONE location:
 # ~/.cursor/mcp.json contains:
 {
   "mcpServers": {
-    "dai-nexus": {
+    "dai-harness": {
       "command": "npx",
-      "args": ["tsx", "/project/submodule/dai-nexus/.dainexus/mcp-server/server.ts"]
+      "args": ["tsx", "/project/submodule/dai-harness/.daiharness/mcp-server/server.ts"]
     }
   }
 }
@@ -46,9 +46,9 @@ The MCP server lives at exactly ONE location:
 # ~/.cursor/mcp.json contains:
 {
   "mcpServers": {
-    "dai-nexus": {
+    "dai-harness": {
       "command": "npx",
-      "args": ["tsx", "~/.dainexus/mcp-server/server.ts"]
+      "args": ["tsx", "~/.daiharness/mcp-server/server.ts"]
     }
   }
 }
@@ -63,8 +63,8 @@ The MCP server lives at exactly ONE location:
   "workspace": "/Users/dev/project-a",
   "servers": [
     {
-      "name": "project-a-dai-nexus",
-      "type": "dai-nexus-mcp-server",
+      "name": "project-a-dai-harness",
+      "type": "dai-harness-mcp-server",
       "enabled": true
     }
   ]
@@ -76,8 +76,8 @@ The MCP server lives at exactly ONE location:
   "workspace": "/Users/dev/project-b",
   "servers": [
     {
-      "name": "project-b-dai-nexus",
-      "type": "dai-nexus-mcp-server",
+      "name": "project-b-dai-harness",
+      "type": "dai-harness-mcp-server",
       "enabled": true
     }
   ]
@@ -128,7 +128,7 @@ else
 fi
 
 # Check project profile
-if [ -f ".dainexus/project-profile.json" ]; then
+if [ -f ".daiharness/project-profile.json" ]; then
     echo "✅ Project profile found"
 else
     echo "❌ Project profile required"
@@ -171,10 +171,10 @@ validate-prerequisites.sh || {
 
 ```bash
 # Create server directory
-mkdir -p .dainexus/mcp-server
+mkdir -p .daiharness/mcp-server
 
 # Structure
-.dainexus/mcp-server/
+.daiharness/mcp-server/
 ├── server.ts              # Main entry point (single file)
 ├── package.json           # Dependencies
 ├── tsconfig.json          # TypeScript config
@@ -185,9 +185,9 @@ mkdir -p .dainexus/mcp-server
 
 ```json
 {
-  "name": "dai-nexus-mcp-server",
+  "name": "dai-harness-mcp-server",
   "version": "1.0.0",
-  "description": "DAI Nexus project intelligence MCP server",
+  "description": "DAI Harness project intelligence MCP server",
   "main": "server.ts",
   "type": "module",
   "scripts": {
@@ -231,7 +231,7 @@ mkdir -p .dainexus/mcp-server
 }
 ```
 
-**Output:** Scaffold created at `.dainexus/mcp-server/`
+**Output:** Scaffold created at `.daiharness/mcp-server/`
 
 ---
 
@@ -362,13 +362,13 @@ const prompts = [
 // Server Implementation
 // ============================================
 
-class DaiNexusMCPServer {
+class DaiHarnessMCPServer {
   private server: Server;
 
   constructor() {
     this.server = new Server(
       {
-        name: 'dai-nexus-mcp-server',
+        name: 'dai-harness-mcp-server',
         version: '1.0.0',
       },
       {
@@ -503,7 +503,7 @@ class DaiNexusMCPServer {
 
   private loadProjectProfile() {
     try {
-      return JSON.parse(readFileSync('.dainexus/project-profile.json', 'utf-8'));
+      return JSON.parse(readFileSync('.daiharness/project-profile.json', 'utf-8'));
     } catch {
       return { error: 'Project profile not found' };
     }
@@ -512,12 +512,12 @@ class DaiNexusMCPServer {
   async start() {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
-    console.error('DAI Nexus MCP Server started');
+    console.error('DAI Harness MCP Server started');
   }
 }
 
 // Start server
-const server = new DaiNexusMCPServer();
+const server = new DaiHarnessMCPServer();
 server.start().catch(console.error);
 ```
 
@@ -527,7 +527,7 @@ server.start().catch(console.error);
 // mcp-config.json
 {
   "server": {
-    "name": "dai-nexus-mcp-server",
+    "name": "dai-harness-mcp-server",
     "version": "1.0.0"
   },
   "tools": {
@@ -572,7 +572,7 @@ server.start().catch(console.error);
 **Goal:** Install server dependencies.
 
 ```bash
-cd .dainexus/mcp-server
+cd .daiharness/mcp-server
 npm install
 ```
 
@@ -591,7 +591,7 @@ npm install
 PROJECT_ROOT=$(git rev-parse --show-toplevel)
 PROJECT_SLUG=$(basename "$PROJECT_ROOT" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 GENERATED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-DAINEXUS_VERSION=$(cat .dainexus/VERSION 2>/dev/null || echo "unknown")
+DAIHARNESS_VERSION=$(cat .daiharness/VERSION 2>/dev/null || echo "unknown")
 
 mkdir -p "$PROJECT_ROOT/.antigravity"
 
@@ -600,14 +600,14 @@ cat > "$PROJECT_ROOT/.antigravity/mcp-manifest.json" << EOF
   "manifest_version": "1.0",
   "workspace": "$PROJECT_ROOT",
   "generated_at": "$GENERATED_AT",
-  "generated_by": "dai-nexus/mcp-generator",
-  "dai_nexus_version": "$DAINEXUS_VERSION",
+  "generated_by": "dai-harness/mcp-generator",
+  "dai_harness_version": "$DAIHARNESS_VERSION",
   "servers": [
     {
-      "name": "${PROJECT_SLUG}-dai-nexus",
-      "type": "dai-nexus-mcp-server",
+      "name": "${PROJECT_SLUG}-dai-harness",
+      "type": "dai-harness-mcp-server",
       "enabled": true,
-      "description": "DAI Nexus project intelligence"
+      "description": "DAI Harness project intelligence"
     },
     {
       "name": "dai-memory",
@@ -636,13 +636,13 @@ echo "Manifest generated at: $PROJECT_ROOT/.antigravity/mcp-manifest.json"
 // Add to ~/.claude/settings.json (mcpServers section)
 {
   "mcpServers": {
-    "dai-nexus-workspace": {
+    "dai-harness-workspace": {
       "command": "bash",
       "args": [
-        "/path/to/dai-nexus/scripts/dainexus-mcp-launcher.sh"
+        "/path/to/dai-harness/scripts/daiharness-mcp-launcher.sh"
       ],
       "env": {
-        "DAINEXUS_WORKSPACE": "${workspaceFolder}"
+        "DAIHARNESS_WORKSPACE": "${workspaceFolder}"
       }
     }
   }
@@ -655,9 +655,9 @@ echo "Manifest generated at: $PROJECT_ROOT/.antigravity/mcp-manifest.json"
 // Add to ~/.cursor/mcp.json
 {
   "mcpServers": {
-    "dai-nexus": {
+    "dai-harness": {
       "command": "npx",
-      "args": ["tsx", "~/.dainexus/mcp-server/server.ts"]
+      "args": ["tsx", "~/.daiharness/mcp-server/server.ts"]
     }
   }
 }
@@ -670,9 +670,9 @@ echo "Manifest generated at: $PROJECT_ROOT/.antigravity/mcp-manifest.json"
 {
   "mcp": {
     "servers": {
-      "dai-nexus": {
+      "dai-harness": {
         "command": "npx",
-        "args": ["tsx", "~/.dainexus/mcp-server/server.ts"]
+        "args": ["tsx", "~/.daiharness/mcp-server/server.ts"]
       }
     }
   }
@@ -706,13 +706,13 @@ Manifest: .antigravity/mcp-manifest.json
 #!/bin/bash
 # update-profile.sh
 
-PROFILE_FILE=".dainexus/project-profile.json"
+PROFILE_FILE=".daiharness/project-profile.json"
 
 if [ -f "$PROFILE_FILE" ]; then
     # Add MCP server info to profile
     jq '.mcp_server = {
       "generated": true,
-      "path": ".dainexus/mcp-server/",
+      "path": ".daiharness/mcp-server/",
       "manifest_path": ".antigravity/mcp-manifest.json",
       "tools_count": 6,
       "resources_count": 3,
@@ -833,7 +833,7 @@ When project changes significantly:
 echo "Regenerating MCP server..."
 
 # Backup current
-cp .dainexus/mcp-server/server.ts .dainexus/mcp-server/server.ts.bak
+cp .daiharness/mcp-server/server.ts .daiharness/mcp-server/server.ts.bak
 
 # Re-run generation
 # (Regenerate server.ts based on updated project context)
@@ -851,7 +851,7 @@ echo "Regeneration complete. Restart AI client to apply."
 
 | Mistake | Fix |
 |---------|-----|
-| Submodule path in global config | Use canonical `~/.dainexus/mcp-server/` |
+| Submodule path in global config | Use canonical `~/.daiharness/mcp-server/` |
 | Missing path validation | Always validate paths for `..` and `.git` |
 | No manifest for workspace | Create `.antigravity/mcp-manifest.json` |
 | Forgetting npm install | Always run `npm install` after generation |

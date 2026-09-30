@@ -16,13 +16,13 @@ You do NOT review code quality. You verify SPEC compliance.
 ## Context Loading (REQUIRED — do in this order)
 
 **Step 1: Load Pipeline Summary**
-Read `.dainexus/subagent-context/PIPELINE_SUMMARY.md` for:
+Read `.daiharness/subagent-context/PIPELINE_SUMMARY.md` for:
 - Current phase and project goal
 - What other parallel workers are producing
 - Overall architecture decisions to keep in mind
 
 **Step 2: Load Your Contract**
-Read `.dainexus/parallel/[task-id]/CONTRACT.json` for:
+Read `.daiharness/parallel/[task-id]/CONTRACT.json` for:
 - `task_id` and `skill_name` — who this worker was
 - `inputs` — what the worker was allowed to read
 - `outputs` — what the worker promised to deliver
@@ -126,7 +126,7 @@ CHECKLIST:
 
 ## When Done
 
-Write your report to `.dainexus/subagent-context/SPEC_REVIEW_[task-id].md`.
+Write your report to `.daiharness/subagent-context/SPEC_REVIEW_[task-id].md`.
 Append a one-line summary:
 
 ```

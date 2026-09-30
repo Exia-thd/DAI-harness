@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://dai-nexus.local/schemas/docs-project-state.schema.json",
-  "title": "DAI Nexus Docs Project State",
-  "$comment": "This draft-07 document validates portable structure. Cross-record semantics (unique IDs by key, reference integrity, lifecycle agreement, valid timestamp ordering, and filesystem containment) MUST also pass the DAI Nexus CLI semantic validator through `dai docs doctor --strict` or `dai docs gate`.",
-  "x-dai-nexus-semantic-validation": {
+  "$id": "https://dai-harness.local/schemas/docs-project-state.schema.json",
+  "title": "DAI Harness Docs Project State",
+  "$comment": "This draft-07 document validates portable structure. Cross-record semantics (unique IDs by key, reference integrity, lifecycle agreement, valid timestamp ordering, and filesystem containment) MUST also pass the DAI Harness CLI semantic validator through `dai docs doctor --strict` or `dai docs gate`.",
+  "x-dai-harness-semantic-validation": {
     "required": true,
     "commands": ["dai docs doctor --strict", "dai docs gate"]
   },

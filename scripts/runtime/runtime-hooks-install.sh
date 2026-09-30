@@ -17,7 +17,7 @@
 #
 # Properties this script guarantees:
 #   • idempotent      — re-running never adds a second copy
-#   • non-destructive — existing hooks (gitnexus, dai-nexus-policy…) untouched
+#   • non-destructive — existing hooks (gitnexus, dai-harness-policy…) untouched
 #   • backed up       — every file copied to <file>.bak-rlg-<utc> before writing
 #   • reversible      — --uninstall removes exactly what --install added
 #   • honest          — --dry-run shows the change without making it
@@ -34,14 +34,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
 # The installed (symlinked) gate — never the repo path, so the wired command
 # matches what `runtime-install.sh --verify` checksums.
-GATE_CMD_BASE="${DAINEXUS_RLG_GATE:-$HOME/.dainexus/scripts/runtime/runtime-pretool-gate.sh}"
-SWEEP_CMD_BASE="${DAINEXUS_RLG_SWEEP:-$HOME/.dainexus/scripts/runtime/runtime-sweep.sh}"
+GATE_CMD_BASE="${DAIHARNESS_RLG_GATE:-$HOME/.daiharness/scripts/runtime/runtime-pretool-gate.sh}"
+SWEEP_CMD_BASE="${DAIHARNESS_RLG_SWEEP:-$HOME/.daiharness/scripts/runtime/runtime-sweep.sh}"
 MARKER="runtime-pretool-gate.sh"
 SWEEP_MARKER="runtime-sweep.sh"
 
-CLAUDE_SETTINGS="${DAINEXUS_CLAUDE_SETTINGS:-$HOME/.claude/settings.json}"
-CODEX_CONFIG="${DAINEXUS_CODEX_CONFIG:-$HOME/.codex/config.toml}"
-AGY_HOOKS="${DAINEXUS_AGY_HOOKS:-$HOME/.gemini/config/hooks.json}"
+CLAUDE_SETTINGS="${DAIHARNESS_CLAUDE_SETTINGS:-$HOME/.claude/settings.json}"
+CODEX_CONFIG="${DAIHARNESS_CODEX_CONFIG:-$HOME/.codex/config.toml}"
+AGY_HOOKS="${DAIHARNESS_AGY_HOOKS:-$HOME/.gemini/config/hooks.json}"
 
 ACTION=""; PLATFORMS="all"; DRY=0
 
@@ -190,7 +190,7 @@ path = sys.argv[1]
 mode = os.environ["MODE"]
 cmd = os.environ["CMD"]
 dry = os.environ["DRY"] == "1"
-KEY = "dai-nexus-runtime-guard"   # our own key; never touch dai-nexus-policy
+KEY = "dai-harness-runtime-guard"   # our own key; never touch dai-harness-policy
 
 try:
     data = json.load(open(path))
@@ -235,10 +235,10 @@ PY
 
 # ── codex: TOML, append-with-guard ───────────────────────────────────────────
 # No TOML writer in the stdlib, so install appends a self-contained block (the
-# same approach dainexus-install.sh already uses) and uninstall strips it
+# same approach daiharness-install.sh already uses) and uninstall strips it
 # between explicit markers. Markers make removal exact instead of regex-guessy.
-CODEX_BEGIN="# >>> dai-nexus runtime-lifecycle-guard >>>"
-CODEX_END="# <<< dai-nexus runtime-lifecycle-guard <<<"
+CODEX_BEGIN="# >>> dai-harness runtime-lifecycle-guard >>>"
+CODEX_END="# <<< dai-harness runtime-lifecycle-guard <<<"
 
 codex_apply() {
   local mode="$1"
@@ -295,8 +295,8 @@ PY
   esac
 }
 
-CODEX_SWEEP_BEGIN="# >>> dai-nexus runtime-lifecycle-guard sweep >>>"
-CODEX_SWEEP_END="# <<< dai-nexus runtime-lifecycle-guard sweep <<<"
+CODEX_SWEEP_BEGIN="# >>> dai-harness runtime-lifecycle-guard sweep >>>"
+CODEX_SWEEP_END="# <<< dai-harness runtime-lifecycle-guard sweep <<<"
 
 codex_sweep_apply() {
   local mode="$1"

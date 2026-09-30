@@ -28,6 +28,6 @@ Use these current contracts instead:
 3. If local and the next fix is evidence-supported, make one targeted correction and re-run the same check.
 4. If the same step has failed twice, STOP repeated attempts. Use the Research Gate only when a material unknown exists; otherwise escalate with the evidence and alternatives.
 5. Store project-specific lessons in project-local state. Do **not** rewrite shared `SKILL.md`/protocol files as part of an unrelated client task.
-6. Any future framework-level learning change must be an explicit DAI Nexus change with deterministic regression tests and independent review.
+6. Any future framework-level learning change must be an explicit DAI Harness change with deterministic regression tests and independent review.
 
 A higher model tier is not a recovery mechanism by itself; its output is subject to the same grounding and verification gates.

@@ -144,7 +144,7 @@ files, test output, or release records.
 
 Use the smallest set of role lenses that covers the work:
 
-| Lane | DAI Nexus skills | Owns | Must not decide alone |
+| Lane | DAI Harness skills | Owns | Must not decide alone |
 |---|---|---|---|
 | Control plane | `production-grade`, `project-manager` | Phase, milestone, dependency graph, scope, risk, change propagation | Creative or technical domain decisions |
 | Creative direction | `game-designer`, `concept-artist`, `art-director`, `level-designer`, `narrative-designer`, `game-audio-engineer` | Player promise, mechanics, concept exploration, content, presentation, feel | Architecture, release acceptance |
@@ -192,7 +192,7 @@ selected engine skill. Before dispatching a creative or downstream scope, run
 the repository-owned executables in this order:
 
 1. Resolve ordered, verified skill paths with
-   `python3 scripts/runtime/skill_routing.py --mode "$MODE" --config .dainexus/skills-config.json`.
+   `python3 scripts/runtime/skill_routing.py --mode "$MODE" --config .daiharness/skills-config.json`.
 2. Validate the concept and art artifacts with
    `python3 scripts/art-direction/creative-handoff.py validate-handoff "$CONCEPT_PACKET" "$ART_DIRECTION_GATES"`.
 3. Freeze a skill-aware dispatch packet containing each item's skill name,
@@ -298,7 +298,7 @@ the adapter must be cancellation-aware and late results are discarded.
 For security, schema, public API, concurrency, release-risk, or unresolved
 creative/technical disagreement, use an expert or independent review. Do not
 claim that a textual `raft`, `consensus`, or `anti_drift` setting provides
-runtime guarantees. In DAI Nexus, anti-drift comes from bounded scope, file
+runtime guarantees. In DAI Harness, anti-drift comes from bounded scope, file
 ownership, shared state, checkpoints, evidence, and explicit fan-in.
 
 ## Model-Aware Subagent Dispatch
@@ -385,7 +385,7 @@ release notes that need propagation before work resumes.
 
 ## Verification Stack
 
-Use the existing DAI Nexus controls rather than duplicating them:
+Use the existing DAI Harness controls rather than duplicating them:
 
 1. `skills/_shared/protocols/game-test-protocol.md` — mechanics, balance, state,
    performance, integration, platform, visual, and build evidence.
@@ -415,6 +415,6 @@ Before ending game-studio work:
 This control plane synthesizes the lifecycle and studio hierarchy patterns from
 Donchitos/Claude-Code-Game-Studios, dependency-aware swarm patterns from
 benedek-dev/RGS-Framework, and the explicit Codex adaptation rules from
-eiichimo/Codex-Game-Studios. It intentionally reuses DAI Nexus's existing
+eiichimo/Codex-Game-Studios. It intentionally reuses DAI Harness's existing
 orchestration policy, verification contracts, memory, guardrails, and engine
 skills instead of importing another runtime or duplicating an agent roster.

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==============================================================================
-# DAI Nexus — Auto-Publish Setup Script
+# DAI Harness — Auto-Publish Setup Script
 # ==============================================================================
 # Scaffolds local publishing scripts and templates into the target project directory.
 # All configurations and credentials remain inside the target project.
@@ -9,9 +9,9 @@
 
 set -e
 
-# Detect script root and dai-nexus root
+# Detect script root and dai-harness root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DAINEXUS_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+DAIHARNESS_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # Define target app path from arguments or default
 TARGET_PATH="${1}"
@@ -41,8 +41,8 @@ mkdir -p "$ABS_TARGET_PATH/keystore"
 
 # 1. Copy Publish Scripts
 echo "📝 Copying publish scripts..."
-cp "$DAINEXUS_ROOT/scripts/auto-publish/publish-ios.sh" "$ABS_TARGET_PATH/scripts/publish-ios.sh"
-cp "$DAINEXUS_ROOT/scripts/auto-publish/publish-android.sh" "$ABS_TARGET_PATH/scripts/publish-android.sh"
+cp "$DAIHARNESS_ROOT/scripts/auto-publish/publish-ios.sh" "$ABS_TARGET_PATH/scripts/publish-ios.sh"
+cp "$DAIHARNESS_ROOT/scripts/auto-publish/publish-android.sh" "$ABS_TARGET_PATH/scripts/publish-android.sh"
 chmod +x "$ABS_TARGET_PATH/scripts/publish-ios.sh"
 chmod +x "$ABS_TARGET_PATH/scripts/publish-android.sh"
 echo "  ✅ Copied scripts/publish-ios.sh"
@@ -51,14 +51,14 @@ echo "  ✅ Copied scripts/publish-android.sh"
 # 2. Copy Config Templates
 echo "📝 Scaffolding configurations..."
 if [ ! -f "$ABS_TARGET_PATH/eas.json" ]; then
-  cp "$DAINEXUS_ROOT/scripts/auto-publish/templates/eas.json" "$ABS_TARGET_PATH/eas.json"
+  cp "$DAIHARNESS_ROOT/scripts/auto-publish/templates/eas.json" "$ABS_TARGET_PATH/eas.json"
   echo "  ✅ Scaffolded eas.json"
 else
   echo "  ⚠️ eas.json already exists in target directory. Skipping overwrite."
 fi
 
 if [ ! -f "$ABS_TARGET_PATH/store.config.json" ]; then
-  cp "$DAINEXUS_ROOT/scripts/auto-publish/templates/store.config.json" "$ABS_TARGET_PATH/store.config.json"
+  cp "$DAIHARNESS_ROOT/scripts/auto-publish/templates/store.config.json" "$ABS_TARGET_PATH/store.config.json"
   echo "  ✅ Scaffolded store.config.json"
 else
   echo "  ⚠️ store.config.json already exists in target directory. Skipping overwrite."

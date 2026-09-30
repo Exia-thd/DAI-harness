@@ -1,6 +1,6 @@
 ---
 name: skill-maker
-description: "Orchestrates the scaffolding, authoring, validation, and registration of new custom DAI Nexus skills and execution templates. Use when the user requests a new AI skill, updates to existing skill SOP definitions, custom skill templates, or adding capabilities to the multi-agent registry."
+description: "Orchestrates the scaffolding, authoring, validation, and registration of new custom DAI Harness skills and execution templates. Use when the user requests a new AI skill, updates to existing skill SOP definitions, custom skill templates, or adding capabilities to the multi-agent registry."
 version: 1.0.0
 ---
 
@@ -10,7 +10,7 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Master skills directory and existing custom skills are indexed | `find skills/ -maxdepth 2 -name "SKILL.md" \| sort` | ... | run the check command and paste output |
-| Project-specific tech stack and base configuration are loaded | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project-specific tech stack and base configuration are loaded | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Skill Maker Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
@@ -27,7 +27,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground the active skills setup and verify the project profile
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 find skills/ -maxdepth 1 -type d
 ```
 ```

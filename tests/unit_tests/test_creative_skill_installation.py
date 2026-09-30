@@ -5,8 +5,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-INSTALLER = ROOT / "scripts" / "bootstrap" / "dainexus-install.sh"
-SKILLS_CONFIG = ROOT / ".dainexus" / "skills-config.json"
+INSTALLER = ROOT / "scripts" / "bootstrap" / "daiharness-install.sh"
+SKILLS_CONFIG = ROOT / ".daiharness" / "skills-config.json"
 WORKFLOW = ROOT / "workflows" / "game-studio-build.md"
 PROTOCOL = ROOT / "skills" / "_shared" / "protocols" / "game-studio-pipeline.md"
 LITE = ROOT / "skills" / "production-grade" / "LITE.md"
@@ -28,8 +28,8 @@ def _run_installer(
     env = os.environ.copy()
     env.update(
         {
-            "DAINEXUS_DIR": str(destination),
-            "DAINEXUS_SOURCE_DIR": str(ROOT),
+            "DAIHARNESS_DIR": str(destination),
+            "DAIHARNESS_SOURCE_DIR": str(ROOT),
             "HOME": str(home),
         }
     )
@@ -50,8 +50,8 @@ def _assert_in_order(text: str, *fragments: str) -> None:
 
 def test_full_profile_routes_concept_artist_before_art_director() -> None:
     result = _run_installer(
-        Path("/tmp/dai-nexus-test-install-unused"),
-        Path("/tmp/dai-nexus-test-home-unused"),
+        Path("/tmp/dai-harness-test-install-unused"),
+        Path("/tmp/dai-harness-test-home-unused"),
         "--profile",
         "full",
         "--yes",

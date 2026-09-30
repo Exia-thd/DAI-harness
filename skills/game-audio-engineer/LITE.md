@@ -26,7 +26,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Verify audio asset layout and project profile
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 find public/assets/audio/ -type f
 ```
 

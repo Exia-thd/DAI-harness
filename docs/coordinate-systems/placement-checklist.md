@@ -113,7 +113,7 @@ Before placing any asset in the game world, run through this checklist to preven
 
 ## Coordinate Command Verification
 
-Use the DAI Nexus CLI to validate positions:
+Use the DAI Harness CLI to validate positions:
 
 ```bash
 # Validate position before placing

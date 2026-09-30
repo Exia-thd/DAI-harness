@@ -42,7 +42,7 @@ COMPLETION_AXES = {
 RUNNER_TIMEOUT_SECS = 600
 
 REPORT_CONTRACT = {
-    "schema": "dai-nexus-roadmap-verification/v1",
+    "schema": "dai-harness-roadmap-verification/v1",
     "producer": "scripts/ci/verify-roadmap-completion.py",
 }
 
@@ -52,7 +52,7 @@ def _manifest() -> dict:
 
 
 def test_completion_manifest_covers_every_roadmap_deliverable_once() -> None:
-    assert _manifest()["schema"] == "dai-nexus-roadmap-completion/v2"
+    assert _manifest()["schema"] == "dai-harness-roadmap-completion/v2"
     assert set(_manifest()["axis_definitions"]) == set(COMPLETION_AXES)
     roadmap_ids = re.findall(
         r"^\| (P[0-3]\.\d+) \|", ROADMAP.read_text(encoding="utf-8"), re.MULTILINE
@@ -160,7 +160,7 @@ def test_roadmap_verifier_contract_and_failure_path_are_executable(
     )
     assert checked.returncode == 0, checked.stderr
 
-    in_tree_report = ROOT / ".dainexus-roadmap-test-report.json"
+    in_tree_report = ROOT / ".daiharness-roadmap-test-report.json"
     rejected_report = subprocess.run(
         [
             sys.executable,
@@ -218,7 +218,7 @@ def test_roadmap_verifier_contract_and_failure_path_are_executable(
     assert report["deliverables"][0]["exit_code"] == 7
 
     ignored_probe = (
-        ROOT / ".dainexus" / "reports" / "roadmap-verifier-ignored-probe.txt"
+        ROOT / ".daiharness" / "reports" / "roadmap-verifier-ignored-probe.txt"
     )
     assert not ignored_probe.exists()
     ignored_mutation = _manifest()
@@ -226,7 +226,7 @@ def test_roadmap_verifier_contract_and_failure_path_are_executable(
     mutation_item["verification"]["command"] = [
         sys.executable,
         "-c",
-        "from pathlib import Path; Path('.dainexus/reports/roadmap-verifier-ignored-probe.txt').write_text('mutated')",
+        "from pathlib import Path; Path('.daiharness/reports/roadmap-verifier-ignored-probe.txt').write_text('mutated')",
         "tests/unit_tests/test_product_truth.py",
     ]
     mutation_item["verification"]["test_refs"] = [

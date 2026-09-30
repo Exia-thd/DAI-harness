@@ -14,8 +14,8 @@
   output ownership markers.
 - Added optional source-preserving Obsidian export and documented legacy wiki
   compatibility shims.
-- Added DAI Nexus/Pixelworld fixtures, schema tests, CLI unit tests, local CI,
-  real DAI Nexus build evidence, real Pixelworld privacy-safe scan evidence,
+- Added DAI Harness/Pixelworld fixtures, schema tests, CLI unit tests, local CI,
+  real DAI Harness build evidence, real Pixelworld privacy-safe scan evidence,
   and browser responsive evidence.
 
 ## Evidence observed
@@ -29,7 +29,7 @@
 | CLI typecheck/build | PASS |
 | Fixture CLI E2E | init → registry → scan → build → doctor → Obsidian export PASS |
 | Partial batch build | invalid project exits `1`; valid project output preserved |
-| DAI Nexus build | 100 documents, 110 generated files |
+| DAI Harness build | 100 documents, 110 generated files |
 | Pixelworld scan | 133 documents, 5 assets; sensitive paths absent |
 | Browser responsive | 360/768/1024/1280: no horizontal overflow |
 | Browser visual/a11y structure | landmarks, focus-visible rule, reduced-motion rule, alt coverage, diagram SVG fallback, console errors: PASS |
@@ -44,10 +44,10 @@
 2. Legacy documents that contain raw HTML are escaped by design. This prevents
    source HTML/scripts from becoming an execution surface. Mermaid fenced blocks
    are rendered through the controlled SVG adapter with a source-text fallback.
-3. Existing DAI Nexus docs contain many broken legacy links and anchors. Normal
+3. Existing DAI Harness docs contain many broken legacy links and anchors. Normal
    builds preserve readable output and surface actionable diagnostics; strict
    doctor correctly reports `warning`.
-4. Generated `.dainexus/docs-hub/` output is ignored and disposable. The
+4. Generated `.daiharness/docs-hub/` output is ignored and disposable. The
    static builder refuses to replace an output directory without its ownership
    marker.
 5. Independent adversarial review initially found an Obsidian symlink escape

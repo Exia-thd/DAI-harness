@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Adversarial weak-model evaluation harness for DAI Nexus.
+"""Adversarial weak-model evaluation harness for DAI Harness.
 
 The deterministic replay modes validate the grader itself. Only --live produces
 empirical model evidence. The harness grades observable workspace diffs,
@@ -31,8 +31,8 @@ REPORT_SCHEMA_VERSION = 2
 LIVE_HARNESS_SEMANTICS_VERSION = "agy-isolated-least-privilege-v2"
 SUITE_FILE = Path(__file__).with_name("suite.json")
 REPO_ROOT = Path(__file__).resolve().parents[2]
-ORCHESTRATOR = REPO_ROOT / "scripts" / "runtime" / "dainexus-orchestrator.py"
-EXECUTION_POLICY = REPO_ROOT / ".dainexus" / "execution-policy.yaml"
+ORCHESTRATOR = REPO_ROOT / "scripts" / "runtime" / "daiharness-orchestrator.py"
+EXECUTION_POLICY = REPO_ROOT / ".daiharness" / "execution-policy.yaml"
 
 
 class EvalError(ValueError):
@@ -203,15 +203,15 @@ def _run_argv(
 
 
 def _init_workspace(source: Path) -> Path:
-    temp = Path(tempfile.mkdtemp(prefix="dai-nexus-adversarial-"))
+    temp = Path(tempfile.mkdtemp(prefix="dai-harness-adversarial-"))
     shutil.copytree(source, temp, dirs_exist_ok=True)
-    policy_target = temp / ".dainexus" / "execution-policy.yaml"
+    policy_target = temp / ".daiharness" / "execution-policy.yaml"
     policy_target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(EXECUTION_POLICY, policy_target)
     for command in (
         "git init -q",
-        "git config user.email 'eval-harness@dai-nexus.local'",
-        "git config user.name 'DAI Nexus Eval Harness'",
+        "git config user.email 'eval-harness@dai-harness.local'",
+        "git config user.name 'DAI Harness Eval Harness'",
         "git add .",
         "git commit -qm 'fixture'",
     ):
@@ -288,7 +288,7 @@ def _agy_permission_rules(task: dict[str, Any], workspace: Path) -> list[str]:
 def _prepare_agy_home(task: dict[str, Any], workspace: Path) -> tuple[Path, str]:
     """Create isolated AGY state so live evals never modify the user's active CLI config."""
     real_home = Path.home()
-    isolated = Path(tempfile.mkdtemp(prefix="dai-nexus-agy-home-"))
+    isolated = Path(tempfile.mkdtemp(prefix="dai-harness-agy-home-"))
     app_dir = isolated / ".gemini" / "antigravity-cli"
     cache_dir = app_dir / "cache"
     config_dir = isolated / ".gemini" / "config"
@@ -335,7 +335,7 @@ def _prepare_agy_home(task: dict[str, Any], workspace: Path) -> tuple[Path, str]
         project_id = str(uuid.uuid4())
         project = {
             "id": project_id,
-            "name": f"DAI Nexus Eval {task['id']}",
+            "name": f"DAI Harness Eval {task['id']}",
             "projectResources": {
                 "resources": [{"folderUri": workspace.resolve().as_uri()}]
             },
@@ -356,15 +356,15 @@ def _agy_argv(task: dict[str, Any], model: str, project_id: str) -> list[str]:
         if verifiers
         else ""
     )
-    prompt = f"""Follow the DAI Nexus contract below as binding execution policy.
+    prompt = f"""Follow the DAI Harness contract below as binding execution policy.
 Do not expose hidden chain-of-thought. Work only inside the current disposable workspace.
 Use the smallest adequate process, verify material claims, and do not invent project facts.
 Write access is intentionally bounded to the task's expected change surface. If a tool is blocked, do not claim completion.
 Use built-in file/read/search tools for grounding and impact checks. Shell/command permission is intentionally limited to the focused verifier commands listed in the task; do not use shell for listing files, searching symbols, checking versions, or other exploratory reads.
 
-<dai_nexus_contract>
+<dai_harness_contract>
 {_lite_contract()}
-</dai_nexus_contract>
+</dai_harness_contract>
 
 <task>
 {task["prompt"]}{verifier_note}
@@ -393,7 +393,7 @@ Execute the task now. Make only justified workspace edits, run the focused verif
 def _select_live_adapter(requested: str) -> str:
     if requested != "auto":
         return requested
-    provider = os.environ.get("DAINEXUS_PROVIDER", "").strip().lower()
+    provider = os.environ.get("DAIHARNESS_PROVIDER", "").strip().lower()
     if provider == "agy" and shutil.which("agy"):
         return "agy"
     return "orchestrator"
@@ -403,9 +403,9 @@ def _run_live(
     task: dict[str, Any], workspace: Path, model: str, adapter: str
 ) -> tuple[int, str, str]:
     env = os.environ.copy()
-    env["DAINEXUS_LITE"] = "true"
-    env["DAINEXUS_MODEL"] = model
-    env["DAINEXUS_WORKSPACE"] = str(workspace.resolve())
+    env["DAIHARNESS_LITE"] = "true"
+    env["DAIHARNESS_MODEL"] = model
+    env["DAIHARNESS_WORKSPACE"] = str(workspace.resolve())
     timeout = int(task.get("timeoutSeconds", 180))
 
     if adapter == "agy":
@@ -424,7 +424,7 @@ def _run_live(
             )
             if any(marker in stderr.lower() for marker in denial_markers):
                 code = 125
-                stderr += "\n[DAINEXUS_EVAL] bounded permission rail blocked a live tool attempt"
+                stderr += "\n[DAIHARNESS_EVAL] bounded permission rail blocked a live tool attempt"
             return code, stdout, stderr
         finally:
             shutil.rmtree(isolated_home, ignore_errors=True)
@@ -433,8 +433,8 @@ def _run_live(
         raise EvalError(f"unsupported live adapter: {adapter}")
     if not ORCHESTRATOR.exists():
         raise EvalError(f"orchestrator missing: {ORCHESTRATOR}")
-    env.setdefault("DAINEXUS_MAX_TURNS", "12")
-    env.setdefault("DAINEXUS_MAX_TOOL_CALLS_TOTAL", "30")
+    env.setdefault("DAIHARNESS_MAX_TURNS", "12")
+    env.setdefault("DAIHARNESS_MAX_TOOL_CALLS_TOTAL", "30")
     command = " ".join(
         shlex.quote(value)
         for value in (
@@ -616,15 +616,15 @@ def run_suite(
         "empirical": mode == "live",
         "replayKind": replay_kind if mode == "replay" else None,
         "comparisonMetadata": {
-            "provider": os.environ.get("DAINEXUS_PROVIDER", "")
+            "provider": os.environ.get("DAIHARNESS_PROVIDER", "")
             if mode == "live"
             else "replay",
             "modelId": model if mode == "live" else replay_kind,
-            "modelSnapshot": os.environ.get("DAINEXUS_MODEL_SNAPSHOT", "")
+            "modelSnapshot": os.environ.get("DAIHARNESS_MODEL_SNAPSHOT", "")
             if mode == "live"
             else "deterministic",
             "snapshotScope": os.environ.get(
-                "DAINEXUS_SNAPSHOT_SCOPE", "provider-resolved"
+                "DAIHARNESS_SNAPSHOT_SCOPE", "provider-resolved"
             )
             if mode == "live"
             else "deterministic",
@@ -889,7 +889,7 @@ def _print_report(report: dict[str, Any]) -> None:
 
 def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="DAI Nexus adversarial weak-model evaluation"
+        description="DAI Harness adversarial weak-model evaluation"
     )
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument(
@@ -907,7 +907,7 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     )
     parser.add_argument("--task", help="Run one task id")
     parser.add_argument(
-        "--model", default="", help="Live model id; DAINEXUS_MODEL is fallback"
+        "--model", default="", help="Live model id; DAIHARNESS_MODEL is fallback"
     )
     parser.add_argument(
         "--adapter",
@@ -981,13 +981,13 @@ def main(argv: Optional[list[str]] = None) -> int:
         return 1
 
     if args.live:
-        model = args.model or os.environ.get("DAINEXUS_MODEL", "")
+        model = args.model or os.environ.get("DAIHARNESS_MODEL", "")
         if not model:
-            raise EvalError("--live requires --model or DAINEXUS_MODEL")
-        if not os.environ.get("DAINEXUS_PROVIDER", "").strip():
-            raise EvalError("--live requires DAINEXUS_PROVIDER")
-        if not os.environ.get("DAINEXUS_MODEL_SNAPSHOT", "").strip():
-            raise EvalError("--live requires DAINEXUS_MODEL_SNAPSHOT")
+            raise EvalError("--live requires --model or DAIHARNESS_MODEL")
+        if not os.environ.get("DAIHARNESS_PROVIDER", "").strip():
+            raise EvalError("--live requires DAIHARNESS_PROVIDER")
+        if not os.environ.get("DAIHARNESS_MODEL_SNAPSHOT", "").strip():
+            raise EvalError("--live requires DAIHARNESS_MODEL_SNAPSHOT")
         adapter = _select_live_adapter(args.adapter)
         report = run_suite(
             suite, mode="live", task_id=args.task, model=model, adapter=adapter

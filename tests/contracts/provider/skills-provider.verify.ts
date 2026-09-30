@@ -1,7 +1,7 @@
 /**
  * Pact Contract Testing Provider Verification Tests
  * Verifies that the provider conforms to consumer contracts
- * For dai-nexus project
+ * For dai-harness project
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { Verifier } from '@pact-foundation/pact';
@@ -12,7 +12,7 @@ describe('Pact Provider Verification', () => {
 
   beforeAll(() => {
     verifier = new Verifier({
-      provider: 'dai-nexus-api',
+      provider: 'dai-harness-api',
       providerBaseUrl: process.env.PROVIDER_BASE_URL || 'http://localhost:3000',
       pactBrokerUrl: process.env.PACT_BROKER_URL || undefined,
       pactBrokerToken: process.env.PACT_BROKER_TOKEN || undefined,

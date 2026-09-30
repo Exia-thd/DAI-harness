@@ -4,12 +4,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chuỗi bằng chứng — DAI Nexus</title>
+<title>Chuỗi bằng chứng — DAI Harness</title>
 <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 <nav class="nav"><div class="nav-inner">
-  <a href="./index.html" class="nav-brand"><span class="dot"></span> DAI Nexus <small>docs</small></a>
+  <a href="./index.html" class="nav-brand"><span class="dot"></span> DAI Harness <small>docs</small></a>
   <div class="nav-links"><a href="./index.html">Tổng quan</a><a href="./kernel.html">Kernel</a><a href="./skills.html">Skills</a><a href="./evidence.html" class=current>Bằng chứng</a><a href="./runtime.html">Runtime</a><a href="./memory.html">Memory</a><a href="./patterns.html">Tinh túy</a></div>
 </div></nav>
 <main>
@@ -17,7 +17,7 @@
 <section class="hero compact">
   <span class="tag">CƠ CHẾ LÕI</span>
   <h1>Chuỗi bằng chứng — <span class="accent">chống ảo giác bằng máy</span></h1>
-  <p class="lead">Đây là phần đáng mang đi nhất của DAI Nexus. Không phải lời nhắc "hãy trung thực",
+  <p class="lead">Đây là phần đáng mang đi nhất của DAI Harness. Không phải lời nhắc "hãy trung thực",
   mà là bốn cổng cơ học mà agent không thể nói vòng qua.</p>
 </section>
 
@@ -53,7 +53,7 @@ không phải giả định). Gate vẫn nhận evidence v1 cũ.</p>
 <h2><span class="num">02</span> Lớp 2 — Stop-hook gate</h2>
 <p>Cuối mỗi lượt, hook gọi <code>verify_gate.py</code>. Nếu có file code thay đổi, gate đòi
 một evidence hợp lệ. 8 phép kiểm tra độc lập:</p>
-<table><thead><tr><th>Lý do từ chối</th><th>Nghĩa là</th></tr></thead><tbody><tr><td><code>MISSING</code></td><td>Không có file evidence nào</td></tr><tr><td><code>STALE</code></td><td>Evidence quá cũ (mặc định &gt;1 giờ, đổi qua <code>DAINEXUS_STALENESS_SECS</code>)</td></tr><tr><td><code>MISMATCH</code></td><td>Workspace hoặc tree-sha đã đổi từ lúc ghi — tức là code bị sửa <em>sau</em> khi test chạy</td></tr><tr><td><code>FAILED</code></td><td><code>exit_code</code> ≠ 0 — lệnh kiểm chứng thật sự trượt</td></tr><tr><td><code>FORGED</code></td><td>Sai schema, command rỗng, hoặc output khớp mẫu bịa (<code>placeholder</code>, <code>TODO</code>, <code>&lt;output&gt;</code>)</td></tr><tr><td><code>SECRETS</code></td><td>Output chứa secret chưa che (API key, token, private key) — chính file evidence đã nhiễm</td></tr><tr><td><code>STUBS</code></td><td>File đã sửa còn TODO/FIXME/NotImplementedError</td></tr><tr><td><code>MISREPORTED</code></td><td>VERIFY block trong câu trả lời không khớp evidence — claim bị viết lại, command khác, hoặc chỗ đáng lẽ là digest thì dán văn xuôi</td></tr></tbody></table>
+<table><thead><tr><th>Lý do từ chối</th><th>Nghĩa là</th></tr></thead><tbody><tr><td><code>MISSING</code></td><td>Không có file evidence nào</td></tr><tr><td><code>STALE</code></td><td>Evidence quá cũ (mặc định &gt;1 giờ, đổi qua <code>DAIHARNESS_STALENESS_SECS</code>)</td></tr><tr><td><code>MISMATCH</code></td><td>Workspace hoặc tree-sha đã đổi từ lúc ghi — tức là code bị sửa <em>sau</em> khi test chạy</td></tr><tr><td><code>FAILED</code></td><td><code>exit_code</code> ≠ 0 — lệnh kiểm chứng thật sự trượt</td></tr><tr><td><code>FORGED</code></td><td>Sai schema, command rỗng, hoặc output khớp mẫu bịa (<code>placeholder</code>, <code>TODO</code>, <code>&lt;output&gt;</code>)</td></tr><tr><td><code>SECRETS</code></td><td>Output chứa secret chưa che (API key, token, private key) — chính file evidence đã nhiễm</td></tr><tr><td><code>STUBS</code></td><td>File đã sửa còn TODO/FIXME/NotImplementedError</td></tr><tr><td><code>MISREPORTED</code></td><td>VERIFY block trong câu trả lời không khớp evidence — claim bị viết lại, command khác, hoặc chỗ đáng lẽ là digest thì dán văn xuôi</td></tr></tbody></table>
 <div class="code-block"><div class="code-head"><span class="file">scripts/lite/verify_gate.py:533</span><span class=cap>so khớp tree-sha</span></div><pre><code>def _validate_tree(ev: dict, current_tree: str) -&gt; list[str]:
     ev_tree = ev.get("tree_sha", "")
     if not ev_tree:
@@ -74,7 +74,7 @@ một evidence hợp lệ. 8 phép kiểm tra độc lập:</p>
 
 <h2><span class="num">03</span> Lớp 3 — Execution policy fail-closed</h2>
 <p>Guardrail dạng văn bản là phán đoán; <code>policy_check.py</code> là thực thi.
-Deny-pattern hiện hành đọc từ <code>.dainexus/execution-policy.yaml</code>:</p>
+Deny-pattern hiện hành đọc từ <code>.daiharness/execution-policy.yaml</code>:</p>
 <ul class="rules"><li><code>rm\s+(-[a-zA-Z]*r[a-zA-Z]*f|-[a-zA-Z]*f[a-zA-Z]*r)</code></li><li><code>git\s+push\s+.*(--force|\s-f(\s|$))</code></li><li><code>git\s+reset\s+--hard</code></li><li><code>git\s+clean\s+-[a-zA-Z]*f</code></li><li><code>DROP\s+(TABLE|DATABASE)</code></li><li><code>curl\s+[^|]*\|\s*(ba|z)?sh</code></li><li><code>wget\s+[^|]*\|\s*(ba|z)?sh</code></li><li><code>chmod\s+777</code></li><li><code>Remove-Item\s+.*-Recurse\s+.*-Force</code></li></ul>
 <p>Điểm quan trọng là <strong>hướng fail</strong>: file policy thiếu, rỗng, hỏng, hay mode lạ đều
 <em>chặn</em> chứ không cho qua:</p>
@@ -150,7 +150,7 @@ adapter im lặng có fail không, mọi đường dẫn skill trong routing có
 
 </main>
 <footer>
-  <div><strong>DAI Nexus docs</strong> · sinh tự động từ source bằng <code>docs/build_docs.py</code></div>
+  <div><strong>DAI Harness docs</strong> · sinh tự động từ source bằng <code>docs/build_docs.py</code></div>
   <div>v0.9.4 · generated from source</div>
 </footer>
 </body>

@@ -145,12 +145,12 @@
 **Content:**
 1. Tool categories overview
 2. Full tool list with descriptions
-3. DAI Nexus use case mapping
+3. DAI Harness use case mapping
 4. Extension tools (Animation, Particle, ProBuilder)
 
 **Acceptance Criteria:**
 - [ ] All 100+ tools referenced
-- [ ] DAI Nexus use case for each category
+- [ ] DAI Harness use case for each category
 - [ ] Extension tools documented
 
 ---

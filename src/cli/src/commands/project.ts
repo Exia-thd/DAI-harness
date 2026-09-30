@@ -12,7 +12,7 @@ import { EXIT_CODES } from "../exit-codes.js";
 import { buildEnvelope } from "../types/index.js";
 import { VERSION } from "../version.js";
 
-const PROJECT_DIR = ".dainexus";
+const PROJECT_DIR = ".daiharness";
 const PROJECT_MANIFEST = "project.json";
 const PROJECT_PROFILE = "project-profile.json";
 const LOCKFILES = [
@@ -28,7 +28,7 @@ type ProjectOptions = { force?: boolean; json?: boolean };
 export function registerProjectCommands(program: Command): void {
   program
     .command("init [target]")
-    .description("Create a project-local DAI Nexus manifest")
+    .description("Create a project-local DAI Harness manifest")
     .option("-f, --force", "Overwrite an existing manifest")
     .option("-j, --json", "Output as JSON")
     .action((target: string | undefined, options: ProjectOptions) => {

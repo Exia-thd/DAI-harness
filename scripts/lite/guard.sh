@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # scripts/lite/guard.sh
-# DAI Nexus Stage E0 pre-edit guard.
+# DAI Harness Stage E0 pre-edit guard.
 # Works on macOS and Linux/Git-Bash.
 #
 # Usage:
@@ -73,8 +73,8 @@ PROTECTED_PATTERNS=(
   ".git/*:git-internals"
   ".gitnexus/*:index-file"
   ".memory/*:index-file"
-  ".dainexus-node/*:index-file"
-  ".dainexus/memory.db*:memory-db"
+  ".daiharness-node/*:index-file"
+  ".daiharness/memory.db*:memory-db"
   "memory.db*:memory-db"
 )
 

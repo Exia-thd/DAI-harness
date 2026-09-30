@@ -28,7 +28,7 @@ Format: `n. ACTION | TARGET | CHECK`
 ### Step 1: Ground Go configurations and verify current active project profile
 ```bash
 cat go.mod
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 ```
 
 ### Step 2: Implement a safe, concurrent, error-handling compliant Go worker channel pipeline

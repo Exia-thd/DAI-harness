@@ -26,7 +26,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Verify the Phaser dependency and project profile
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 cat package.json | grep phaser
 ```
 ```json

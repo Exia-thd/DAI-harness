@@ -1,10 +1,10 @@
-# Feature Plan: DAI Nexus Docs Hub
+# Feature Plan: DAI Harness Docs Hub
 
 ## Metadata
 
 | Field | Value |
 |---|---|
-| Feature | DAI Nexus Docs Hub |
+| Feature | DAI Harness Docs Hub |
 | Created | 2026-08-10 |
 | Updated | 2026-08-10 |
 | Status | Implementation complete; direct Tab traversal verification pending |
@@ -33,7 +33,7 @@ disposable build outputs.
 7. Git/GitNexus traceability adapters.
 8. Optional Obsidian export.
 9. Doctor and local CI gates.
-10. Golden fixtures for DAI Nexus and Pixelworld.
+10. Golden fixtures for DAI Harness and Pixelworld.
 
 ## Deferred
 
@@ -42,7 +42,7 @@ disposable build outputs.
 - LLM-generated summaries as a build dependency.
 - RAG chat as a core rendering requirement.
 - Automatic mass relocation or rewriting of existing documents.
-- Unbounded ingestion of `.dainexus/` execution artifacts.
+- Unbounded ingestion of `.daiharness/` execution artifacts.
 
 ## Architecture Summary
 
@@ -89,7 +89,7 @@ flowchart LR
 
 - Unit: manifest parsing, path safety, stable IDs, privacy filters, link rewrite.
 - Integration: scan, normalize, build, search, export.
-- Golden: DAI Nexus, Pixelworld, empty, legacy, sensitive, and broken projects.
+- Golden: DAI Harness, Pixelworld, empty, legacy, sensitive, and broken projects.
 - Browser: navigation, search, responsive layout, theme, keyboard, 404.
 - Security: traversal attempts, excluded paths, secret-shaped output.
 - Visual: deterministic screenshots at 360, 768, 1024, and 1280 CSS pixels.
@@ -99,7 +99,7 @@ flowchart LR
 - All acceptance criteria in `SCOPE.md` pass.
 - Local CI succeeds without network access.
 - No unresolved privacy, path traversal, or generated-output ownership risk.
-- DAI Nexus and Pixelworld build without moving source documents.
+- DAI Harness and Pixelworld build without moving source documents.
 - Generated portal remains readable without client-side JavaScript.
 - Existing wiki-sync entry points either delegate to the new CLI or remain
   documented compatibility shims.

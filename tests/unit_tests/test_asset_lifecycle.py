@@ -416,7 +416,7 @@ def test_handoff_preserves_preexisting_predictable_temp_file(tmp_path: Path) -> 
     target = tmp_path / "target"
     destination = target / document["assets"][0]["relative_path"]
     destination.parent.mkdir(parents=True)
-    sentinel = destination.with_name(f".{destination.name}.dainexus-tmp")
+    sentinel = destination.with_name(f".{destination.name}.daiharness-tmp")
     sentinel.write_bytes(b"unrelated-user-file")
 
     result = run_tool(

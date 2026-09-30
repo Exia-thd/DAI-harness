@@ -10,7 +10,7 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Target web scraping libraries (e.g., Axios, Cheerio, Playwright, BeautifulSoup) are installed | `cat package.json \| jq '.dependencies \| select(. != null) \| with_entries(select(.key \| match("cheerio\|puppeteer\|playwright\|beautifulsoup4\|requests\|scrapy")))'` | ... | run the check command and paste output |
-| Project-specific tech stack and baseline profile configurations are active | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project-specific tech stack and baseline profile configurations are active | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Web Scraper Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
@@ -27,7 +27,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground the active scraper project profile and dependencies
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 cat package.json | grep -E "(axios|cheerio)"
 ```
 ```json
@@ -46,7 +46,7 @@ interface ScrapeResult {
 }
 
 export const scrapeStaticPage = async (url: string): Promise<ScrapeResult> => {
-  const customUserAgent = 'Mozilla/5.0 (compatible; DaiNexusBot/1.0)';
+  const customUserAgent = 'Mozilla/5.0 (compatible; DaiHarnessBot/1.0)';
 
   try {
     // Grounded: Enforcing strict timeout and custom user-agent parameters to prevent blocking

@@ -21,11 +21,11 @@ const mcpOnly = spawnSync(process.execPath, [script, '--mcp-only'], { cwd: root,
 assert.equal(mcpOnly.status, 0, mcpOnly.stderr);
 assert.equal(JSON.parse(mcpOnly.stdout).mcp.nonMutatingTool, 'fw_get_current_phase');
 
-const denied = spawnSync(process.execPath, [script, '--live'], { cwd: root, encoding: 'utf8', env: { ...process.env, DAINEXUS_LIVE_SMOKE: '' } });
+const denied = spawnSync(process.execPath, [script, '--live'], { cwd: root, encoding: 'utf8', env: { ...process.env, DAIHARNESS_LIVE_SMOKE: '' } });
 assert.notEqual(denied.status, 0);
-assert.match(denied.stderr, /DAINEXUS_LIVE_SMOKE=1/);
+assert.match(denied.stderr, /DAIHARNESS_LIVE_SMOKE=1/);
 
-const missingKey = spawnSync(process.execPath, [script, '--live'], { cwd: root, encoding: 'utf8', env: { ...process.env, DAINEXUS_LIVE_SMOKE: '1', DAINEXUS_LIVE_SMOKE_PROVIDER: 'gemini-api', GEMINI_API_KEY: '' } });
+const missingKey = spawnSync(process.execPath, [script, '--live'], { cwd: root, encoding: 'utf8', env: { ...process.env, DAIHARNESS_LIVE_SMOKE: '1', DAIHARNESS_LIVE_SMOKE_PROVIDER: 'gemini-api', GEMINI_API_KEY: '' } });
 assert.notEqual(missingKey.status, 0);
 assert.match(missingKey.stderr, /GEMINI_API_KEY is required/);
 console.log('runtime smoke guardrails passed');

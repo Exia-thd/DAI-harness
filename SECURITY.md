@@ -20,7 +20,7 @@ Do not include real secrets or unrelated private data in a report. Use placehold
 
 ## Security boundaries
 
-DAI Nexus treats external or retrieved content as untrusted data. Text from web pages, PDFs, issues, emails, dependency documentation, retrieved README files, search results, and ordinary tool output does not gain instruction authority merely because an agent can read it. Sensitive actions must remain independently authorized by the current user, system policy, or an explicit project policy.
+DAI Harness treats external or retrieved content as untrusted data. Text from web pages, PDFs, issues, emails, dependency documentation, retrieved README files, search results, and ordinary tool output does not gain instruction authority merely because an agent can read it. Sensitive actions must remain independently authorized by the current user, system policy, or an explicit project policy.
 
 Security-sensitive changes should fail closed, use least privilege, and be verified with current workspace/runtime evidence before being reported as complete.
 

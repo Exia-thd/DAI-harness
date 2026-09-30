@@ -39,7 +39,7 @@ export class AuditLogger {
   initialize(): void {
     if (this.isInitialized) return;
 
-    const auditPath = this.config.monitoring?.auditPath || ".dainexus/sandbox-audit.jsonl";
+    const auditPath = this.config.monitoring?.auditPath || ".daiharness/sandbox-audit.jsonl";
 
     try {
       // Ensure directory exists
@@ -176,7 +176,7 @@ export class AuditLogger {
     endTime?: number;
   }): AuditLogEntry[] {
     const results: AuditLogEntry[] = [];
-    const auditPath = this.config.monitoring?.auditPath || ".dainexus/sandbox-audit.jsonl";
+    const auditPath = this.config.monitoring?.auditPath || ".daiharness/sandbox-audit.jsonl";
 
     try {
       if (!fs.existsSync(auditPath)) {

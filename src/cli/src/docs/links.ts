@@ -172,7 +172,7 @@ export function resolveCatalogLinks(catalogs: DocsCatalog[]): DocsCatalog[] {
 
         let targetProjectId = catalog.project.id;
         let rawTarget = link.target;
-        if (rawTarget.startsWith("dai-nexus://")) {
+        if (rawTarget.startsWith("dai-harness://")) {
           try {
             const url = new URL(rawTarget);
             targetProjectId = url.hostname;
@@ -210,7 +210,7 @@ export function resolveCatalogLinks(catalogs: DocsCatalog[]): DocsCatalog[] {
             code: "LINK_TRAVERSAL",
             message: `Link escapes the project root: "${link.target}" (line ${link.line}).`,
             suggestion:
-              "Use a contained relative link or a dai-nexus:// project link.",
+              "Use a contained relative link or a dai-harness:// project link.",
           });
           continue;
         }

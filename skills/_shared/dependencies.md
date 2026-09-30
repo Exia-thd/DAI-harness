@@ -1,4 +1,4 @@
-# DAI Nexus Dependency Management Protocol
+# DAI Harness Dependency Management Protocol
 
 > **Version:** 1.0.0
 > **Created:** 2026-05-29
@@ -9,7 +9,7 @@
 
 ## Overview
 
-This document defines the protocol for managing, visualizing, and analyzing skill dependencies in DAI Nexus. It ensures that skill relationships are well-understood, circular dependencies are prevented, and changes can be assessed for impact before implementation.
+This document defines the protocol for managing, visualizing, and analyzing skill dependencies in DAI Harness. It ensures that skill relationships are well-understood, circular dependencies are prevented, and changes can be assessed for impact before implementation.
 
 ---
 
@@ -151,7 +151,7 @@ for dependent in affected_skills:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│                    DAI-NEXUS SKILL DEPENDENCIES                    │
+│                    DAI-HARNESS SKILL DEPENDENCIES                    │
 ├──────────────────────────────────────────────────────────────────────┤
 │                                                                      │
 │  orchestrator                                                        │
@@ -185,7 +185,7 @@ for dependent in affected_skills:
 ### GraphViz DOT Format
 
 ```dot
-digraph dai_nexus_deps {
+digraph dai_harness_deps {
     rankdir=TB;
     node [shape=box, style=rounded];
     

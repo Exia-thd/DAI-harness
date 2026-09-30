@@ -85,7 +85,7 @@ Proceed with Phase 1 (System Analysis)? [Y/N]
 
 ### system-audit.md Template
 
-```markdown
+````markdown
 # System Audit — AI/ML/LLM Analysis
 
 **Date:** YYYY-MM-DD
@@ -129,7 +129,7 @@ Proceed with Phase 1 (System Analysis)? [Y/N]
 | # | Opportunity | Effort | Impact | Est. Savings | Priority |
 |---|------------|--------|--------|--------------|----------|
 | 1 | [description] | [S/M/L] | [S/M/L] | $X,XXX/mo | P0 |
-```
+````
 
 ### optimization-opportunities.md Template
 

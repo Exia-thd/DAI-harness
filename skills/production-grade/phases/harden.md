@@ -16,7 +16,7 @@ Enforce these boundaries strictly:
 
 ## Execution Mode Check
 
-Read `.dainexus/settings.md` to determine execution mode.
+Read `.daiharness/settings.md` to determine execution mode.
 
 **If `Execution: parallel`:**
 
@@ -56,7 +56,7 @@ Context:
 - Consume `PIPELINE_CONTEXT` acceptance, regression surfaces and owned risk signals.
 - Read .production-grade.yaml for paths.tests and paths.services.
 - Write tests to project root: tests/
-- Write workspace artifacts to: .dainexus/qa-engineer/
+- Write workspace artifacts to: .daiharness/qa-engineer/
 - Run integration, e2e, and performance tests.
 - Distinguish test-infrastructure defects from implementation defects. Repair runner/setup/teardown plumbing only when the behavioral oracle is unchanged. An apparent test-oracle defect is not fixed immediately: if the requirement is unchanged, keep the oracle read-only; if requirement intent is missing or contradictory, ask the user/PO and block that mutation.
 
@@ -74,7 +74,7 @@ Context:
 - Consume security `risk_signals` and affected trust boundaries from `PIPELINE_CONTEXT`; discover additional security threats using the security skill's own reconnaissance/threat-model methods.
 - Read all implementation code: services/, frontend/, infrastructure/
 - Perform STRIDE threat modeling + OWASP Top 10 audit + business-logic/agentic trust-boundary analysis + applicable dependency scan.
-- Write findings to: .dainexus/security-engineer/
+- Write findings to: .daiharness/security-engineer/
 - Auto-fix Critical/High issues with regression tests.
 - Document Medium/Low for remediation plan.
 
@@ -95,7 +95,7 @@ Context:
 - Read implementation: services/, frontend/
 - Consume `PIPELINE_CONTEXT` for acceptance/non-goals and affected architecture boundaries.
 - Review: SOLID/DRY/KISS, performance, N+1 queries, resource leaks, test quality.
-- Write findings to: .dainexus/code-reviewer/
+- Write findings to: .daiharness/code-reviewer/
 - READ-ONLY: produce findings only, do NOT modify source code.
 
 Update task.md: T6b status → completed
@@ -121,7 +121,7 @@ After all HARDEN tasks complete:
 7. **Run aggregate quality scoring** — compute HARDEN phase quality score
 8. **Call session lifecycle hook** — `PHASE_COMPLETE("HARDEN", summary)`
    - **Memory save:** `python3 scripts/lite/dai_memory.py add "HARDEN complete: [N] tests, [M] security findings ([X] auto-fixed). Quality: [score]/100" --category tasks`
-9. **Update quality metrics** — write to `.dainexus/quality-metrics.json`
+9. **Update quality metrics** — write to `.daiharness/quality-metrics.json`
 10. Print HARDEN summary:
 ```
 ━━━ HARDEN Summary ━━━━━━━━━━━━━━━━━━━━━━

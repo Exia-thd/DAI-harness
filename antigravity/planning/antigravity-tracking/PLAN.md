@@ -2,7 +2,7 @@
 
 ## Summary
 
-Track AI usage from Cursor, Claude Code, DAI Nexus into unified dashboard with per-project breakdown. Cross-platform solution for tracking total AI spend.
+Track AI usage from Cursor, Claude Code, DAI Harness into unified dashboard with per-project breakdown. Cross-platform solution for tracking total AI spend.
 
 ---
 
@@ -11,8 +11,8 @@ Track AI usage from Cursor, Claude Code, DAI Nexus into unified dashboard with p
 | Criteria | Score | Justification |
 |----------|:-----:|---------------|
 | **Clarity** | 9/10 | Clear scope, multiple data sources identified, problem stated |
-| **Completeness** | 9/10 | Covers all 3 platforms (Cursor, Claude Code, DAI Nexus), future extensibility |
-| **Feasibility** | 9/10 | Readers for Cursor + DAI Nexus exist, Claude telemetry readable |
+| **Completeness** | 9/10 | Covers all 3 platforms (Cursor, Claude Code, DAI Harness), future extensibility |
+| **Feasibility** | 9/10 | Readers for Cursor + DAI Harness exist, Claude telemetry readable |
 | **Risk Awareness** | 9/10 | Schema changes handled, graceful fallbacks, data quality varies |
 | **Testability** | 9/10 | Each reader testable, integration test dashboard, API tests |
 | **Maintainability** | 9/10 | Modular readers, easy to add new platforms, clear interfaces |
@@ -31,13 +31,13 @@ Track AI usage from Cursor, Claude Code, DAI Nexus into unified dashboard with p
 |----------|----------|--------|-----------------|
 | **Cursor** | `~/.cursor/ai-tracking/*.db` | SQLite | model, call_count, conversationId, fileName |
 | **Claude Code** | `~/.claude/telemetry/*.json` | JSONL | session_id, model, env, event_name |
-| **DAI Nexus** | `~/.dainexus/usage/*.jsonl` | JSONL | tokens, cost, skill, mode, project |
+| **DAI Harness** | `~/.daiharness/usage/*.jsonl` | JSONL | tokens, cost, skill, mode, project |
 
 ### Key Insights
 
 1. **Cursor**: Has call counts, no actual tokens. Cost = estimate from call count
 2. **Claude Code**: Session-based, need to parse telemetry JSON for model usage
-3. **DAI Nexus**: Full token data available (already working)
+3. **DAI Harness**: Full token data available (already working)
 
 ---
 
@@ -169,7 +169,7 @@ gantt
 |----------|--------|--------|
 | All 3 platforms readable | API returns data | 100% |
 | Dashboard loads | First paint | <2s |
-| Cost estimation accuracy | vs DAI Nexus actual | ±20% |
+| Cost estimation accuracy | vs DAI Harness actual | ±20% |
 | Cross-platform comparison | Model distribution chart | Working |
 
 ---

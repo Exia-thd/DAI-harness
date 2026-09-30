@@ -1,6 +1,6 @@
-# DAI Nexus Production Configuration
-# This file configures DAI Nexus behavior for this project.
-# Place this file at the project root or in .dainexus/config.yaml
+# DAI Harness Production Configuration
+# This file configures DAI Harness behavior for this project.
+# Place this file at the project root or in .daiharness/config.yaml
 
 # ============================================================
 # Optional Expert CLI Mode
@@ -35,7 +35,7 @@ expertMode:
 token_tracking:
   # Enabled by default. Disable with: dai token off
   enabled: true
-  log_dir: "~/.dainexus/usage"
+  log_dir: "~/.daiharness/usage"
   export_format: jsonl
 
 # ============================================================
@@ -139,7 +139,7 @@ skillVersioning:
   autoBackup: true
   
   # Backup directory
-  backupDir: .dainexus/backups/skills
+  backupDir: .daiharness/backups/skills
 
 # ============================================================
 # Documentation Configuration
@@ -159,7 +159,7 @@ performance:
   enabled: false
   
   # Metrics directory
-  metricsDir: .dainexus/metrics
+  metricsDir: .daiharness/metrics
 
 # ============================================================
 # Example: Disabling Fast-Path for a Project

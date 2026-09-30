@@ -1,6 +1,6 @@
 # Local CI/CD Control Plane
 
-DAI Nexus is **local-first and hosting-provider neutral**. GitHub, GitLab, or another Git host may store the repository, but hosted runners are not part of the canonical PASS/FAIL contract.
+DAI Harness is **local-first and hosting-provider neutral**. GitHub, GitLab, or another Git host may store the repository, but hosted runners are not part of the canonical PASS/FAIL contract.
 
 ## Canonical entrypoint
 
@@ -13,7 +13,7 @@ node scripts/ci/local-ci.mjs review
 node scripts/ci/local-ci.mjs all
 ```
 
-The launcher selects Python locally and the control plane resolves a supported Node LTS runtime. Set `DAINEXUS_NODE_BIN`, `DAINEXUS_NODE22_BIN`, or `DAINEXUS_NODE24_BIN` when a machine needs explicit runtime paths.
+The launcher selects Python locally and the control plane resolves a supported Node LTS runtime. Set `DAIHARNESS_NODE_BIN`, `DAIHARNESS_NODE22_BIN`, or `DAIHARNESS_NODE24_BIN` when a machine needs explicit runtime paths.
 
 ## Coverage
 
@@ -27,7 +27,7 @@ The launcher selects Python locally and the control plane resolves a supported N
 | `reindex` / `wiki` | Local code graph (`dai-memory ingest`) and documentation checks; `dai-memory wiki` builds pages without an LLM |
 | `deps` | Local dependency audit/update report; `--fix` applies package-manager security lock fixes |
 
-Every run writes a receipt under `.dainexus/reports/local-ci/`; this is local evidence and is ignored by Git.
+Every run writes a receipt under `.daiharness/reports/local-ci/`; this is local evidence and is ignored by Git.
 
 ## Triggers
 

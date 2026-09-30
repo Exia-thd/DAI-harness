@@ -1,8 +1,8 @@
-# DAI Nexus — System Architecture
+# DAI Harness — System Architecture
 
 > **Version:** 8.7.0 · **Last Updated:** 2026-08-23
 >
-> This document describes the canonical 5-layer architecture of DAI Nexus. For product-level context, see [Product Overview](product-overview.md).
+> This document describes the canonical 5-layer architecture of DAI Harness. For product-level context, see [Product Overview](product-overview.md).
 
 <link rel="stylesheet" href="assets/architecture.css">
 
@@ -10,7 +10,7 @@
 
 ## Architecture Overview
 
-DAI Nexus is organized into **5 distinct layers**, from the user-facing interaction surface down to the runtime infrastructure. Each layer has a clear responsibility boundary.
+DAI Harness is organized into **5 distinct layers**, from the user-facing interaction surface down to the runtime infrastructure. Each layer has a clear responsibility boundary.
 
 <section class="architecture-diagram architecture-stack" aria-labelledby="diagram-stack-title">
   <details class="diagram-description">
@@ -59,7 +59,7 @@ DAI Nexus is organized into **5 distinct layers**, from the user-facing interact
         <div class="layer-badge">5</div>
         <div class="layer-content">
           <h3>LAYER 5: RUNTIME</h3>
-          <p>MCP Servers &middot; DAI memory &middot; Project-owned scripts &middot; State (.dainexus/)</p>
+          <p>MCP Servers &middot; DAI memory &middot; Project-owned scripts &middot; State (.daiharness/)</p>
         </div>
       </article>
     </li>
@@ -70,11 +70,11 @@ DAI Nexus is organized into **5 distinct layers**, from the user-facing interact
 
 ## Layer 1: Interaction
 
-The interaction layer is the boundary between the user and DAI Nexus. It has two surfaces:
+The interaction layer is the boundary between the user and DAI Harness. It has two surfaces:
 
 ### IDE Rule Files
 
-When an AI-powered IDE starts a session, it reads one or more rule files from the project root. These files contain the full kernel (boot sequence, solving loop, verification contracts) and are the primary mechanism through which DAI Nexus controls AI behavior.
+When an AI-powered IDE starts a session, it reads one or more rule files from the project root. These files contain the full kernel (boot sequence, solving loop, verification contracts) and are the primary mechanism through which DAI Harness controls AI behavior.
 
 | File | IDE | Purpose |
 |------|-----|---------|
@@ -84,9 +84,9 @@ When an AI-powered IDE starts a session, it reads one or more rule files from th
 
 All three files are auto-generated from the same source (`kernel/`) via `scripts/lite/sync-kernel.py`. They are functionally identical except for platform-specific integration points.
 
-### DAI Nexus Console (Optional GUI)
+### DAI Harness Console (Optional GUI)
 
-The DAI Nexus Console is a premium native desktop application ([feedmycode.com](https://feedmycode.com/)) that provides visual dashboards, SQLite exploration, settings management, and background task monitoring. It is optional — DAI Nexus works fully without it.
+The DAI Harness Console is a premium native desktop application ([feedmycode.com](https://feedmycode.com/)) that provides visual dashboards, SQLite exploration, settings management, and background task monitoring. It is optional — DAI Harness works fully without it.
 
 ### User Requests
 
@@ -199,7 +199,7 @@ Each skill is a directory under `skills/` containing:
   - `examples/` — Reference implementations (optional)
 
 - **SKILL.md** — The canonical, complete instruction set for the skill. Defines the skill's authority, phases, inputs, outputs, and verification criteria.
-- **LITE.md** — A distilled version (≤2K tokens) for the lightweight kernel (DAI Nexus Lite). Contains only triggers, checklist, and essential instructions.
+- **LITE.md** — A distilled version (≤2K tokens) for the lightweight kernel (DAI Harness Lite). Contains only triggers, checklist, and essential instructions.
 
 ### Skill Categories (84 Skills)
 
@@ -308,7 +308,7 @@ Key middleware behaviors:
     <article class="fluxmem-panel">
       <h3>Canonical checkpoint</h3>
       <ul>
-        <li><code>dai-nexus-continuity/v1</code></li>
+        <li><code>dai-harness-continuity/v1</code></li>
         <li>Project + session + turn + monotonic sequence</li>
         <li>Exact tree, ledger offset/head, prior checkpoint hash</li>
         <li>Objective, acceptance IDs, verified fact bindings, next action</li>
@@ -362,15 +362,15 @@ The runtime layer provides the infrastructure that skills, protocols, and the ke
 
 ### MCP Servers
 
-DAI Nexus exposes two MCP servers for IDE integration:
+DAI Harness exposes two MCP servers for IDE integration:
 
 | Server | Transport | Tools | Purpose |
 |--------|-----------|-------|---------|
-| `dai-nexus` | stdio (npx tsx) | Pipeline mgmt, skill invocation, memory ops | Orchestration |
+| `dai-harness` | stdio (npx tsx) | Pipeline mgmt, skill invocation, memory ops | Orchestration |
 | `dai-memory` | stdio (node) | `dai_memory_*` tools: query, context, impact, detect_changes, rename, cypher, search, write, etc. | Code Intelligence + Memory |
 
-The canonical DAI Nexus MCP process acquires an external
-`dainexus-mcp-lifecycle-lease/v1` record before connecting the stdio
+The canonical DAI Harness MCP process acquires an external
+`daiharness-mcp-lifecycle-lease/v1` record before connecting the stdio
 transport. The lease binds a 256-bit owner token, monotonic version, workspace,
 session, PID start, PGID, parent PID/start, command digest, TTL, and in-flight
 count. EOF, SIGINT, and SIGTERM close the exact owned lease idempotently. A
@@ -387,7 +387,7 @@ support explicit:
 
 | Contract field | Values / behavior |
 |---|---|
-| Loop mode | `dainexus-owned-loop` or `native-host-loop` |
+| Loop mode | `daiharness-owned-loop` or `native-host-loop` |
 | Lifecycle operations | `start`, `resume`, `fork`, `steer`, `interrupt`, `checkpoint` |
 | Pre-compaction | Native signal, material-event fallback, or unsupported |
 | Resume binding | Workspace, session, turn, checkpoint hash, ledger offset/head, capability snapshot, issue/expiry |
@@ -401,10 +401,10 @@ Configuration via `~/.cursor/mcp.json` (Cursor) or equivalent:
 ```json
 {
   "mcpServers": {
-    "dai-nexus": {
+    "dai-harness": {
       "command": "npx",
-      "args": ["tsx", "/path/to/dai-nexus/.dainexus/mcp-server/server.ts"],
-      "env": { "DAINEXUS_WORKSPACE": "${workspaceFolder}" }
+      "args": ["tsx", "/path/to/dai-harness/.daiharness/mcp-server/server.ts"],
+      "env": { "DAIHARNESS_WORKSPACE": "${workspaceFolder}" }
     }
   }
 }
@@ -430,17 +430,17 @@ frozen in this architecture document.
 
 | Category | Key Scripts |
 |----------|-------------|
-| **Setup** | `dainexus-mcp-setup.sh`, `setup-project.sh`, `setup.sh` |
+| **Setup** | `daiharness-mcp-setup.sh`, `setup-project.sh`, `setup.sh` |
 | **Memory** | `scripts/lite/dai_memory.py`, `memory/memory-middleware.py`, `memory-trace.py`, `memory/memory-session.sh` |
-| **Quality** | `dai-validate.sh`, `dainexus-session-tracker.sh` |
-| **CI/CD** | `test-cli.sh`, `dainexus-submodule-check.sh` |
+| **Quality** | `dai-validate.sh`, `daiharness-session-tracker.sh` |
+| **CI/CD** | `test-cli.sh`, `daiharness-submodule-check.sh` |
 | **Kernel** | `lite/sync-kernel.py`, `lite/escalate.sh` |
 | **Analysis** | `convention-indexer.sh`, `checkpoint-extract.sh` |
 | **Parallel** | `worktree-manager.sh` |
 
-### Project State (`.dainexus/`)
+### Project State (`.daiharness/`)
 
-All persistent project state lives under `.dainexus/` at the project root:
+All persistent project state lives under `.daiharness/` at the project root:
 
 | File / Directory | Committed | Purpose |
 |-----------------|-----------|---------|
@@ -464,7 +464,7 @@ All persistent project state lives under `.dainexus/` at the project root:
 |------|----------|---------|
 | `.production-grade.yaml` | Project root | Project-level overrides (guardrail mode, plan threshold, etc.) |
 | `.production-grade.yaml.example` | Project root | Full config template with all options |
-| `.dainexus/budget.yaml` | Project root | Token tracking budget thresholds |
+| `.daiharness/budget.yaml` | Project root | Token tracking budget thresholds |
 
 ---
 
@@ -591,7 +591,7 @@ and Stop-loop bounds remain machine-enforced on the canonical hook path.
 
 ### Parallel Dispatch
 
-For multi-skill tasks, DAI Nexus uses git worktrees for parallel execution:
+For multi-skill tasks, DAI Harness uses git worktrees for parallel execution:
 
 <article class="architecture-diagram architecture-worktrees" aria-labelledby="diagram-worktrees-title">
   <details class="diagram-description">

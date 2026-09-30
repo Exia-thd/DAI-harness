@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-DAI Nexus's changelog (v7.7.0) acknowledged a "skill count oscillation" issue: the number of skills documented (52) kept changing as new skills were added or removed without updating the central reference.
+DAI Harness's changelog (v7.7.0) acknowledged a "skill count oscillation" issue: the number of skills documented (52) kept changing as new skills were added or removed without updating the central reference.
 
 This caused:
 - Documentation drift (AGENTS.md says 52, actual might differ)

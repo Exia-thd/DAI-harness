@@ -8,13 +8,13 @@ Inventory every existing artifact across the project, identify documentation gap
 
 | Input | Path | What to Extract |
 |-------|------|-----------------|
-| Business context | `.dainexus/product-manager/` | User personas, feature scope, domain glossary |
+| Business context | `.daiharness/product-manager/` | User personas, feature scope, domain glossary |
 | Architecture docs | `docs/architecture/` | Service boundaries, ADRs, tech stack, data flow |
 | API contracts | `api/openapi/*.yaml`, `api/asyncapi/*.yaml` | Endpoints, schemas, auth methods, webhook events |
 | Source code | `services/`, `frontend/`, `libs/` | Module structure, code comments, config files, env vars |
-| Test artifacts | `tests/`, `.dainexus/qa-engineer/` | Test coverage, integration test descriptions, test strategy |
+| Test artifacts | `tests/`, `.daiharness/qa-engineer/` | Test coverage, integration test descriptions, test strategy |
 | DevOps artifacts | `infrastructure/`, `scripts/ci/`, optional hosted-provider configs | Local CI/CD pipelines, deployment configs, environment definitions |
-| SRE artifacts | `docs/runbooks/`, `.dainexus/sre/` | Runbooks, incident procedures, SLO definitions, DR playbooks |
+| SRE artifacts | `docs/runbooks/`, `.daiharness/sre/` | Runbooks, incident procedures, SLO definitions, DR playbooks |
 | Project README | `README.md` | Current onboarding state, accuracy of existing instructions |
 
 ## 1.2 — Artifact Inventory
@@ -109,8 +109,8 @@ Produce a prioritized plan with estimated effort:
 
 | Artifact | Path |
 |----------|------|
-| Content inventory | `.dainexus/technical-writer/content-inventory.md` |
-| Writing notes and style decisions | `.dainexus/technical-writer/writing-notes.md` |
+| Content inventory | `.daiharness/technical-writer/content-inventory.md` |
+| Writing notes and style decisions | `.daiharness/technical-writer/writing-notes.md` |
 
 ## Validation Loop
 

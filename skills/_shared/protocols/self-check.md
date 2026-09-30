@@ -30,7 +30,7 @@ Before claiming completion, verify the checks that materially apply. A checklist
 | Approval | Human approval exists only where the project/safety/release/preference contract actually requires it. |
 | Handoff/memory | Persist a compact handoff/durable memory only for substantial work that another session/role will need. |
 | Visual grounding | Material visual work used the highest-authority existing design system/reference, rendered evidence where applicable, and reference-conformance review rather than aesthetic self-attestation. |
-| Learning | A reusable failure/correction is recorded project-locally with root cause, applicability boundary, and verifier. Shared DAI Nexus skills are not auto-mutated from ordinary session outcomes. |
+| Learning | A reusable failure/correction is recorded project-locally with root cause, applicability boundary, and verifier. Shared DAI Harness skills are not auto-mutated from ordinary session outcomes. |
 
 ## Testing Fit
 

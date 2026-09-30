@@ -91,7 +91,7 @@ function hasValidPolicyHook(
   baseDirectory: string,
   containmentRoot: string,
 ): boolean {
-  const policy = readObject(document?.["dai-nexus-policy"]);
+  const policy = readObject(document?.["dai-harness-policy"]);
   const preToolUse = policy?.["PreToolUse"];
   return (
     policy !== undefined &&
@@ -149,7 +149,7 @@ export function findValidAgyPolicyHook(
   }
 
   throw new Error(
-    "AGY delegation requires an enabled dai-nexus-policy PreToolUse hook",
+    "AGY delegation requires an enabled dai-harness-policy PreToolUse hook",
   );
 }
 
@@ -160,7 +160,7 @@ export function findValidAgyGlobalPolicyHook(
   const hooksPath = join(resolvedHome, ".gemini", "config", "hooks.json");
   if (!existsSync(hooksPath)) {
     throw new Error(
-      "AGY delegation requires the global dai-nexus-policy hook",
+      "AGY delegation requires the global dai-harness-policy hook",
     );
   }
   try {
@@ -226,7 +226,7 @@ export async function runAgyWorker(input: {
   return await new Promise<AgyWorkerResult>((resolveResult, reject) => {
     const worker = spawn("agy", args, {
       cwd: worktreePath,
-      env: { ...process.env, DAINEXUS_WORKSPACE: resolvedRoot },
+      env: { ...process.env, DAIHARNESS_WORKSPACE: resolvedRoot },
       shell: false,
       stdio: ["ignore", "inherit", "inherit"],
     });

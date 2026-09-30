@@ -10,7 +10,7 @@ version: 1.0.0
 | Assumption | Check command / file read | Result | Script-produced evidence |
 |---|---|---|---|
 | Target XR package declarations and 3D dependencies are defined | `cat package.json \| jq '.dependencies \| select(. != null) \| with_entries(select(.key \| match(\"three\\|babylon\\|webxr\\|xr\")))'` | ... | run the check command and paste output |
-| Project-specific tech stack and profile configurations are active | `cat .dainexus/project-profile.json` | ... | run the check command and paste output |
+| Project-specific tech stack and profile configurations are active | `cat .daiharness/project-profile.json` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Xr Engineer Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
@@ -27,7 +27,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground the active XR configuration settings
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 cat package.json | grep -E "(three|webxr)"
 ```
 ```json

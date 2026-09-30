@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
 mcp/server.py
-DAI Nexus MCP server — zero-dependency Python implementation of the
+DAI Harness MCP server — zero-dependency Python implementation of the
 Model Context Protocol over stdio (JSON-RPC 2.0, newline-delimited).
 
 Exposes pipeline state + memory to any MCP-capable IDE (Claude Code,
 Cursor, Zed, Gemini CLI, ...) via 8 dn_* tools.
 
-State: .dainexus/pipeline-state.json (atomic writes)
+State: .daiharness/pipeline-state.json (atomic writes)
 Memory: the DAI memory layer (sources in vendor/dai-memory, installed by
 `python scripts/lite/dai_memory.py install`), store at <project>/.memory
 
 Register in Claude Code via .mcp.json:
-    {"mcpServers": {"dai-nexus": {"command": "py", "args": ["-3", "mcp/server.py"]}}}
+    {"mcpServers": {"dai-harness": {"command": "py", "args": ["-3", "mcp/server.py"]}}}
 
 Smoke test:
     printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | py -3 mcp/server.py
@@ -31,10 +31,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts" / "lit
 import dai_memory  # noqa: E402
 
 PROTOCOL_VERSION = "2024-11-05"
-SERVER_INFO = {"name": "dai-nexus", "version": "0.2.0"}
+SERVER_INFO = {"name": "dai-harness", "version": "0.2.0"}
 
-PROJECT_ROOT = Path(os.environ.get("DAINEXUS_ROOT", ".")).resolve()
-STATE_FILE = PROJECT_ROOT / ".dainexus" / "pipeline-state.json"
+PROJECT_ROOT = Path(os.environ.get("DAIHARNESS_ROOT", ".")).resolve()
+STATE_FILE = PROJECT_ROOT / ".daiharness" / "pipeline-state.json"
 
 PHASE_KEYS = ["interpret", "define", "build", "harden", "ship"]
 GATES = {"define": ["gate1_brd", "gate2_architecture"], "ship": ["gate3_release"]}
@@ -104,7 +104,7 @@ def tool_advance_phase(_args: dict) -> dict:
             state["pending_gate"] = gate
             save_state(state)
             return {
-                "error": f"gate '{gate}' not approved — call dn_request_gate_approval first"
+                "error": f"gate '{gate}' not approved — call dh_request_gate_approval first"
             }
     state["phases"][idx]["status"] = "passed"
     if idx + 1 >= len(PHASE_KEYS):
@@ -130,7 +130,7 @@ def tool_request_gate_approval(args: dict) -> dict:
     save_state(state)
     return {
         "requested": gate,
-        "note": "present summary to the user and WAIT; then call dn_approve_gate",
+        "note": "present summary to the user and WAIT; then call dh_approve_gate",
     }
 
 
@@ -170,7 +170,7 @@ def tool_fail_pipeline(args: dict) -> dict:
 def tool_memory_add(args: dict) -> dict:
     text = str(args.get("text", ""))
     if not text.strip():
-        return {"error": "dn_memory_add needs text"}
+        return {"error": "dh_memory_add needs text"}
     stamp = time.strftime("%Y-%m-%d", time.gmtime())
     return dai_memory.write(
         text,
@@ -184,12 +184,14 @@ def tool_memory_add(args: dict) -> dict:
 def tool_memory_search(args: dict) -> dict:
     query = str(args.get("query", ""))
     if not query.strip():
-        return {"error": "dn_memory_search needs a query"}
+        return {"error": "dh_memory_search needs a query"}
     return dai_memory.search(query, cwd=PROJECT_ROOT, limit=int(args.get("limit", 5)))
 
 
+LEGACY_TOOL_PREFIX = "dn_"
+
 TOOLS = {
-    "dn_start_pipeline": (
+    "dh_start_pipeline": (
         tool_start_pipeline,
         "Start a new pipeline run. Resets state.",
         {
@@ -211,17 +213,17 @@ TOOLS = {
             "required": ["goal"],
         },
     ),
-    "dn_get_state": (
+    "dh_get_state": (
         tool_get_state,
         "Get full pipeline state (phases, gates, status).",
         {"type": "object", "properties": {}},
     ),
-    "dn_advance_phase": (
+    "dh_advance_phase": (
         tool_advance_phase,
         "Mark current phase passed and start the next. Blocked if the phase's gates are not approved.",
         {"type": "object", "properties": {}},
     ),
-    "dn_request_gate_approval": (
+    "dh_request_gate_approval": (
         tool_request_gate_approval,
         "Register a gate approval request (gate1_brd, gate2_architecture, gate3_release).",
         {
@@ -230,7 +232,7 @@ TOOLS = {
             "required": ["gate"],
         },
     ),
-    "dn_approve_gate": (
+    "dh_approve_gate": (
         tool_approve_gate,
         "Record the user's gate decision. Only call AFTER the user explicitly decided.",
         {
@@ -239,7 +241,7 @@ TOOLS = {
             "required": ["gate", "approved"],
         },
     ),
-    "dn_fail_pipeline": (
+    "dh_fail_pipeline": (
         tool_fail_pipeline,
         "Mark the pipeline failed with a reason.",
         {
@@ -248,7 +250,7 @@ TOOLS = {
             "required": ["reason"],
         },
     ),
-    "dn_memory_add": (
+    "dh_memory_add": (
         tool_memory_add,
         "Record an observation in project memory (the DAI memory layer: embedded, "
         "secret-redacted, anchored to the code its source names). category decides the "
@@ -263,7 +265,7 @@ TOOLS = {
             "required": ["text"],
         },
     ),
-    "dn_memory_search": (
+    "dh_memory_search": (
         tool_memory_search,
         "Search project memory: keyword, semantic, recency, code-graph and memory-graph "
         "branches fused by RRF, with a report of which branches contributed.",
@@ -303,6 +305,10 @@ def handle(msg: dict) -> dict | None:
         }
     elif method == "tools/call":
         name = params.get("name", "")
+        # The tools were dn_* under the product's former name. A client holding
+        # a tool list from before the rename still calls those; serve them.
+        if name.startswith(LEGACY_TOOL_PREFIX) and "dh_" + name[3:] in TOOLS:
+            name = "dh_" + name[3:]
         if name not in TOOLS:
             return _error(msg_id, -32602, f"Unknown tool: {name}")
         try:

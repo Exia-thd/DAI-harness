@@ -11,14 +11,14 @@ version: 2.0.0
 |---|---|---|---|
 | The memory layer is installed and the project is indexed | `python scripts/lite/dai_memory.py where` then `dai-memory status` | ... | run the check command and paste output |
 | The index was built from the current commit | `dai-memory status` — it names the commit and says when the working tree has moved past it | ... | paste the `indexed at` line |
-| Memory files the project keeps by hand are present | `find .dainexus/ -maxdepth 2 -name "lessons.md" -o -name "memory-bank"` | ... | run the check command and paste output |
+| Memory files the project keeps by hand are present | `find .daiharness/ -maxdepth 2 -name "lessons.md" -o -name "memory-bank"` | ... | run the check command and paste output |
 
 ## SOLVE Step 3: DECOMPOSE (Memory Manager Domain Slots)
 Format: `n. ACTION | TARGET | CHECK`
 
-1. RETRIEVE | `dn_memory_search` with the request's keywords before starting work | Recent decisions and incidents are in context before the first edit.
+1. RETRIEVE | `dh_memory_search` with the request's keywords before starting work | Recent decisions and incidents are in context before the first edit.
 2. ANCHOR | `dai_memory_why` on each file about to change | The reasoning behind unfamiliar code is read rather than re-derived.
-3. RECORD | `dn_memory_add` once the work is done, with the reason, not the diff | The decision is retrievable next session; `dai_memory_changes --scope staged` shows it against the files being committed.
+3. RECORD | `dh_memory_add` once the work is done, with the reason, not the diff | The decision is retrievable next session; `dai_memory_changes --scope staged` shows it against the files being committed.
 
 ## Common Mistakes Checklist
 - **Starting without asking**: editing code whose reason is already recorded, then re-deriving it badly.

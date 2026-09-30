@@ -2,7 +2,7 @@
 name: api-designer
 description: "Designs production-grade APIs — REST, GraphQL, gRPC, and AsyncAPI patterns including pagination, versioning, error handling, rate limiting, and API governance. Use when the user asks to design APIs, create endpoints, build an API layer, write OpenAPI specs, or needs help with REST/GraphQL/gRPC service design."
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [api, rest, graphql, grpc, openapi, asyncapi, versioning, design, contracts]
 ---
 
@@ -28,7 +28,7 @@ tags: [api, rest, graphql, grpc, openapi, asyncapi, versioning, design, contract
 !`cat skills/_shared/protocols/input-validation.md 2>/dev/null || true`
 !`cat skills/_shared/protocols/tool-efficiency.md 2>/dev/null || true`
 !`cat .production-grade.yaml 2>/dev/null || echo "No config — using defaults"`
-!`cat .dainexus/codebase-context.md 2>/dev/null || true`
+!`cat .daiharness/codebase-context.md 2>/dev/null || true`
 
 **Fallback:** Use notify_user with options. Work continuously. Print progress. Validate inputs.
 
@@ -36,7 +36,7 @@ tags: [api, rest, graphql, grpc, openapi, asyncapi, versioning, design, contract
 
 ## Engagement Mode
 
-!`cat .dainexus/settings.md 2>/dev/null || echo "No settings — using Standard"`
+!`cat .daiharness/settings.md 2>/dev/null || echo "No settings — using Standard"`
 
 | Mode | Behavior |
 |------|----------|
@@ -49,7 +49,7 @@ tags: [api, rest, graphql, grpc, openapi, asyncapi, versioning, design, contract
 
 ## Brownfield Awareness
 
-If `.dainexus/codebase-context.md` exists and mode is `brownfield`:
+If `.daiharness/codebase-context.md` exists and mode is `brownfield`:
 
 - **READ existing patterns first** — understand current URL structure, naming, error format
 - **MATCH existing conventions** — if they use `camelCase`, don't switch to `snake_case`
@@ -696,7 +696,7 @@ enum ErrorCode {
 
 ### API Style Guide Template
 
-```markdown
+````markdown
 # API Style Guide
 
 ## Naming Conventions
@@ -735,7 +735,7 @@ enum ErrorCode {
 - URL path: `/api/v1/`
 - Support N-1 versions
 - Deprecation: Sunset header + 6 months notice
-```
+````
 
 ### Breaking vs Non-Breaking Changes
 
@@ -937,7 +937,7 @@ api/
     ├── versioning-policy.md
     └── migration-guides/
 
-.dainexus/api-designer/
+.daiharness/api-designer/
 ├── domain-model.md
 ├── resource-inventory.md
 └── design-decisions.md

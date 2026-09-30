@@ -5,7 +5,7 @@ description: >
   custom render passes, URP/HDRP materials, procedural effects, and post-processing.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [unity, shaders, shader-graph, hlsl, urp, hdrp, materials, post-processing, vfx]
 ---
 
@@ -729,7 +729,7 @@ Assets/_Project/
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ 1. Create shader (DAI Nexus)                                  │
+│ 1. Create shader (DAI Harness)                                  │
 │    └── Write Shader Graph or HLSL code                          │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
@@ -756,7 +756,7 @@ Assets/_Project/
 ### Example: Create and Test Dissolve Shader
 
 ```bash
-# 1. Create dissolve shader (DAI Nexus)
+# 1. Create dissolve shader (DAI Harness)
 # Write SG_Dissolve.shadergraph in Assets/_Project/Shaders/
 
 # 2. Create material via Unity-MCP

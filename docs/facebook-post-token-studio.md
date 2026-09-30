@@ -1,4 +1,4 @@
-# Bài viết Facebook: Token Efficiency + DAI Nexus Studio
+# Bài viết Facebook: Token Efficiency + DAI Harness Studio
 
 > **Historical marketing draft — all product, performance, and quality claims are unverified.** Percentages, test counts, cost reductions, and quality statements in every version below are retained as draft copy, not current product evidence. Use `docs/active-roadmap.md` and generated verifier output for release claims.
 
@@ -8,13 +8,13 @@
 
 ---
 
-🚀 **[DAI Nexus v8.1] Tiết kiệm 90% Token khi dùng AI - Không phải marketing, đây là số thật**
+🚀 **[DAI Harness v8.1] Tiết kiệm 90% Token khi dùng AI - Không phải marketing, đây là số thật**
 
 ---
 
 Một trong những vấn đề lớn nhất khi dùng Claude/GPT cho development: **tiền cháy túi vì token**.
 
-Với DAI Nexus, mình đã build một **token efficiency stack** thật sự hoạt động:
+Với DAI Harness, mình đã build một **token efficiency stack** thật sự hoạt động:
 
 ---
 
@@ -62,9 +62,9 @@ Output Layer:
 
 ---
 
-**🎨 DAI Nexus Studio - Real-time Pipeline Monitor**
+**🎨 DAI Harness Studio - Real-time Pipeline Monitor**
 
-Song song, mình cũng release DAI Nexus Studio - dashboard monitor pipeline:
+Song song, mình cũng release DAI Harness Studio - dashboard monitor pipeline:
 
 **Features:**
 - Pipeline Monitor: Theo dõi DEFINE → BUILD → HARDEN → SHIP
@@ -93,14 +93,14 @@ Song song, mình cũng release DAI Nexus Studio - dashboard monitor pipeline:
 ---
 
 **🔗 Link:**
-- GitHub: https://github.com/Exia-thd/DAI-nexus
+- GitHub: https://github.com/Exia-thd/DAI-harness
 - Studio: `node src/studio/run.js --demo`
 
 ---
 
 **Tiết kiệm token không phải cheat - đó là architecture decision đúng cách.**
 
-#AI #Claude #Development #DAI Nexus #TokenEfficiency #CodingAssistant
+#AI #Claude #Development #DAI Harness #TokenEfficiency #CodingAssistant
 
 ---
 
@@ -114,7 +114,7 @@ Song song, mình cũng release DAI Nexus Studio - dashboard monitor pipeline:
 
 Vấn đề: Dùng Claude/GPT cho development thì rất mạnh, nhưng token cháy nhanh như... đốt tiền.
 
-Giải pháp: **DAI Nexus Token Efficiency Stack**
+Giải pháp: **DAI Harness Token Efficiency Stack**
 
 **8 layers tối ưu:**
 
@@ -131,7 +131,7 @@ Giải pháp: **DAI Nexus Token Efficiency Stack**
 
 ---
 
-**Plus: DAI Nexus Studio**
+**Plus: DAI Harness Studio**
 
 Dashboard monitor pipeline theo thời gian thực - thấy được AI đang làm gì, token bao nhiêu, cost bao nhiêu.
 
@@ -139,7 +139,7 @@ Mở bằng: `node src/studio/run.js --demo`
 
 ---
 
-Code is open source: https://github.com/Exia-thd/DAI-nexus
+Code is open source: https://github.com/Exia-thd/DAI-harness
 
 #AI #Coding #Development #Productivity #Tech
 
@@ -149,7 +149,7 @@ Code is open source: https://github.com/Exia-thd/DAI-nexus
 
 ---
 
-**[TECH DEEP-DIVE] Token Optimization Architecture trong DAI Nexus**
+**[TECH DEEP-DIVE] Token Optimization Architecture trong DAI Harness**
 
 ---
 
@@ -208,7 +208,7 @@ Chỉ lấy đủ thông tin cần thiết.
 
 ---
 
-**5. DAI Nexus Node Outline Mode (97% reduction)**
+**5. DAI Harness Node Outline Mode (97% reduction)**
 
 ```typescript
 // >200 lines OR >6000 tokens → Outline mode
@@ -238,7 +238,7 @@ Features:
 - ANSI stripping
 - Prompt injection detection
 - Compression (truncate >10KB)
-- Audit log: `.dainexus/audit/{session}/{turn}/{tool}/`
+- Audit log: `.daiharness/audit/{session}/{turn}/{tool}/`
 
 ---
 
@@ -252,7 +252,7 @@ Optional ultra-efficient symbol navigation via Token-Savior MCP.
 
 | Module | Tests | Status |
 |--------|-------|--------|
-| DAI Nexus Node | 173 | ✅ |
+| DAI Harness Node | 173 | ✅ |
 | MCP Server | 86 | ✅ |
 | Memory v2 (memory-v2) | 30 | ✅ |
 | DyCP Pruning | 25 | ✅ |
@@ -265,22 +265,22 @@ Optional ultra-efficient symbol navigation via Token-Savior MCP.
 
 ```bash
 # Shell output compressor
-export DAINEXUS_SHELL_COMPRESSOR="dai-nexus-shell-filter"
+export DAIHARNESS_SHELL_COMPRESSOR="dai-harness-shell-filter"
 
 # Session deduplication
-export DAINEXUS_SESSION_DEDUP="true"
-export DAINEXUS_DEDUP_WINDOW="10"
+export DAIHARNESS_SESSION_DEDUP="true"
+export DAIHARNESS_DEDUP_WINDOW="10"
 
 # Memory
-export DAINEXUS_MEMORY_ENABLED="true"
+export DAIHARNESS_MEMORY_ENABLED="true"
 
 # Code navigation
-export DAINEXUS_CODE_NAV="dainexus-node"
+export DAIHARNESS_CODE_NAV="daiharness-node"
 ```
 
 ---
 
-**Repo:** https://github.com/Exia-thd/DAI-nexus
+**Repo:** https://github.com/Exia-thd/DAI-harness
 
 #TokenOptimization #AIEngineering #SystemDesign #Architecture #Development
 

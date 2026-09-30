@@ -1,4 +1,4 @@
-# DAI Nexus v8.7.0 — Architectural Improvement Plan
+# DAI Harness v8.7.0 — Architectural Improvement Plan
 
 > **Status:** Draft
 > **Created:** 2026-05-29
@@ -35,7 +35,7 @@
 
 ## Executive Summary
 
-This document outlines a comprehensive improvement plan for DAI Nexus, addressing the architectural weaknesses identified in the v8.7.0 review. The plan is organized into three phases with prioritized tasks based on impact and effort.
+This document outlines a comprehensive improvement plan for DAI Harness, addressing the architectural weaknesses identified in the v8.7.0 review. The plan is organized into three phases with prioritized tasks based on impact and effort.
 
 ### Current State
 
@@ -57,8 +57,8 @@ This document outlines a comprehensive improvement plan for DAI Nexus, addressin
 |----------|-------|--------|
 | **Complexity** | 70 skills + 53 scripts = high learning curve | High |
 | **Documentation** | AGENTS.md and CLAUDE.md overlap significantly | Medium |
-| **MCP Setup** | `.dainexus/mcp-manifest.json` missing | High |
-| **Self-Testing** | DAI Nexus doesn't test itself systematically | Medium |
+| **MCP Setup** | `.daiharness/mcp-manifest.json` missing | High |
+| **Self-Testing** | DAI Harness doesn't test itself systematically | Medium |
 | **ASIP Adoption** | lessonsLearned: 3, sessionsWithEvolution: 0 | Critical |
 | **Skill Routing** | 24 modes may overlap, classification depends on exact wording | Medium |
 | **Plan Quality Loop** | May feel slow for simple requests | Medium |
@@ -111,18 +111,18 @@ This document outlines a comprehensive improvement plan for DAI Nexus, addressin
 
 | Field | Value |
 |-------|-------|
-| **Task** | Create `.dainexus/mcp-manifest.json` for workspace isolation |
+| **Task** | Create `.daiharness/mcp-manifest.json` for workspace isolation |
 | **Priority** | P1 — Critical |
 | **Estimated Effort** | 2 hours |
-| **Files to Modify** | Create: `.dainexus/mcp-manifest.json` |
+| **Files to Modify** | Create: `.daiharness/mcp-manifest.json` |
 
 **Current State:**
 - Only `.antigravity/mcp-manifest.json` exists (v8.0.0, stale)
-- `.dainexus/` directory has no manifest for MCP server configuration
+- `.daiharness/` directory has no manifest for MCP server configuration
 
 **Success Criteria:**
-- [ ] `.dainexus/mcp-manifest.json` exists with correct schema
-- [ ] Contains `version`, `dai-nexus.version`, `workspace`, `servers` array
+- [ ] `.daiharness/mcp-manifest.json` exists with correct schema
+- [ ] Contains `version`, `dai-harness.version`, `workspace`, `servers` array
 - [ ] Passes JSON Schema validation
 - [ ] MCP setup script can read and apply settings
 
@@ -134,8 +134,8 @@ This document outlines a comprehensive improvement plan for DAI Nexus, addressin
 
 set -e
 
-MANIFEST_PATH=".dainexus/mcp-manifest.json"
-SCHEMA_PATH=".dainexus/schemas/mcp-manifest.schema.json"
+MANIFEST_PATH=".daiharness/mcp-manifest.json"
+SCHEMA_PATH=".daiharness/schemas/mcp-manifest.schema.json"
 
 echo "=== MCP Manifest Verification ==="
 
@@ -154,7 +154,7 @@ fi
 echo "✓ Valid JSON syntax"
 
 # 3. Check required fields
-REQUIRED_FIELDS=("manifest_version" "workspace" "dai-nexus" "servers")
+REQUIRED_FIELDS=("manifest_version" "workspace" "dai-harness" "servers")
 for field in "${REQUIRED_FIELDS[@]}"; do
     if ! jq -e ".$field" "$MANIFEST_PATH" > /dev/null 2>&1; then
         echo "❌ FAIL: Missing required field: $field"
@@ -182,7 +182,7 @@ fi
 echo "✓ Server entries valid ($SERVER_COUNT servers)"
 
 # 6. Test MCP setup script compatibility
-if bash scripts/dainexus-mcp-setup.sh --check 2>/dev/null; then
+if bash scripts/daiharness-mcp-setup.sh --check 2>/dev/null; then
     echo "✓ MCP setup script compatible"
 else
     echo "⚠ WARN: MCP setup script may need updates"
@@ -196,11 +196,11 @@ exit 0
 **Schema Definition:**
 
 ```json
-// .dainexus/schemas/mcp-manifest.schema.json
+// .daiharness/schemas/mcp-manifest.schema.json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": ["manifest_version", "workspace", "dai-nexus", "servers"],
+  "required": ["manifest_version", "workspace", "dai-harness", "servers"],
   "properties": {
     "manifest_version": {
       "type": "string",
@@ -209,7 +209,7 @@ exit 0
     "workspace": {
       "type": "string"
     },
-    "dai-nexus": {
+    "dai-harness": {
       "type": "object",
       "required": ["version", "canonical", "server"],
       "properties": {
@@ -256,16 +256,16 @@ exit 0
 {
   "manifest_version": "1.0",
   "workspace": ".",
-  "dai-nexus": {
+  "dai-harness": {
     "version": "8.7.0",
-    "canonical": "~/.dainexus",
-    "server": "~/.dainexus/mcp-server/server.ts"
+    "canonical": "~/.daiharness",
+    "server": "~/.daiharness/mcp-server/server.ts"
   },
   "servers": [
     {
-      "name": "dai-nexus",
-      "type": "dai-nexus-mcp-server",
-      "path": "~/.dainexus/mcp-server/server.ts",
+      "name": "dai-harness",
+      "type": "dai-harness-mcp-server",
+      "path": "~/.daiharness/mcp-server/server.ts",
       "auto_start": true
     },
     {
@@ -320,7 +320,7 @@ exit 0
 **Implementation Strategy:**
 
 1. **AGENTS.md** (Primary Source):
-   - Core DAI Nexus concepts, rules, and pipeline
+   - Core DAI Harness concepts, rules, and pipeline
    - Universal concepts (Evidence-First, Plan Quality Loop)
    - Platform-specific sections for Cursor/Antigravity
 
@@ -339,7 +339,7 @@ exit 0
 
 | Field | Value |
 |-------|-------|
-| **Task** | Create test suite to validate DAI Nexus's own behavior |
+| **Task** | Create test suite to validate DAI Harness's own behavior |
 | **Priority** | P1 — High |
 | **Estimated Effort** | 6 hours |
 | **Files to Create** | `skills/_test/SKILL.md`, `skills/_test/test-cases/` |
@@ -389,7 +389,7 @@ exit 0
 | **Task** | Increase lessonsLearned and sessionsWithEvolution metrics |
 | **Priority** | P1 — Critical |
 | **Estimated Effort** | 4 hours |
-| **Files to Modify** | `.dainexus/asip-metrics.json`, scripts |
+| **Files to Modify** | `.daiharness/asip-metrics.json`, scripts |
 
 **Current State:**
 - lessonsLearned: 3 (very low)
@@ -416,17 +416,17 @@ exit 0
 
 1. **Force ASIP trigger on plan failures:**
 ```bash
-# In dainexus-lesson-migrator.sh
+# In daiharness-lesson-migrator.sh
 if [ "$1" = "plan" ] && [ "$2" -lt 9.0 ]; then
     echo "⚠️ Plan score below threshold — triggering ASIP"
-    bash scripts/dainexus-lesson-migrator.sh migrate
-    bash scripts/dainexus-session-tracker.sh plan "$2"
+    bash scripts/daiharness-lesson-migrator.sh migrate
+    bash scripts/daiharness-session-tracker.sh plan "$2"
 fi
 ```
 
 2. **Add session evolution tracking:**
 ```json
-// .dainexus/asip-metrics.json
+// .daiharness/asip-metrics.json
 {
   "sessionsWithEvolution": 0,
   "target": 5,
@@ -610,7 +610,7 @@ set -e
 SKILL_NAME="$1"
 TARGET_VERSION="${2:-previous}"
 SKILLS_DIR="skills"
-BACKUP_DIR=".dainexus/backups/skills"
+BACKUP_DIR=".daiharness/backups/skills"
 
 rollback_skill() {
     local skill="$1"
@@ -673,7 +673,7 @@ rollback_skill "$SKILL_NAME" "$TARGET_VERSION"
 # skill-backup.sh — Automated backup before changes
 
 SKILL_NAME="$1"
-BACKUP_DIR=".dainexus/backups/skills/$SKILL_NAME"
+BACKUP_DIR=".daiharness/backups/skills/$SKILL_NAME"
 VERSION=$(date +%Y%m%d_%H%M%S)
 
 mkdir -p "$BACKUP_DIR"
@@ -844,10 +844,10 @@ docs/
 
 | Field | Value |
 |-------|-------|
-| **Task** | Track and measure DAI Nexus performance |
+| **Task** | Track and measure DAI Harness performance |
 | **Priority** | P3 — Medium |
 | **Estimated Effort** | 1 week |
-| **Files to Create/Modify** | `scripts/metrics-collector.sh`, `.dainexus/metrics/` |
+| **Files to Create/Modify** | `scripts/metrics-collector.sh`, `.daiharness/metrics/` |
 
 **Metrics to Track:**
 
@@ -987,7 +987,7 @@ docs/
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                        DAI-NEXUS IMPROVEMENT ROADMAP                  │
+│                        DAI-HARNESS IMPROVEMENT ROADMAP                  │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
 │  PHASE 1: Quick Wins (1-2 Days)                                        │
@@ -1111,7 +1111,7 @@ docs/
 | Overall Score | Run architectural review script | Weekly |
 | Plan Quality Score | Run plan quality rubric | Per session |
 | Skill Count | `ls skills/*/SKILL.md \| wc -l` | Weekly |
-| ASIP lessonsLearned | Read `.dainexus/asip-metrics.json` | Per session |
+| ASIP lessonsLearned | Read `.daiharness/asip-metrics.json` | Per session |
 | Test Coverage | Run test suite with coverage | Per CI run |
 | Documentation Overlap | Run diff between AGENTS.md and CLAUDE.md | After each change |
 
@@ -1149,7 +1149,7 @@ Note: This document complements `docs/improvement-roadmap-v2.md` which focuses o
 - I-NEW-1: Session Deduplication + Shell Filter (Phase 1)
 - I1: Shell Filter native (Phase 1)
 - I2: Tool Output Sandboxing (Phase 1)
-- I5: DAI Nexus Node Outline Mode (Phase 2)
+- I5: DAI Harness Node Outline Mode (Phase 2)
 - I-NEW-3: Memory v2 (Phase 3)
 
 ---

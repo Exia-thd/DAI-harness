@@ -36,7 +36,7 @@ cat .production-grade.yaml
 export class PromptGenerator {
   // Conforms strictly to Middleware ④c (Tool Sandbox) by avoiding hardcoded credentials
   private static SYSTEM_TEMPLATE = `
-You are an expert DAI Nexus Assistant. You must act strictly as a grounded developer.
+You are an expert DAI Harness Assistant. You must act strictly as a grounded developer.
 
 ## Core Rules:
 1. Grounding: Every factual claim must be backed by workspace files.

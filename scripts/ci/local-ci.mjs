@@ -23,5 +23,5 @@ for (const [command, prefix] of candidates) {
   }
 }
 
-console.error('DAI Nexus local CI requires Python 3.11+ (python3/python or py -3).');
+console.error('DAI Harness local CI requires Python 3.11+ (python3/python or py -3).');
 process.exit(6);

@@ -7,7 +7,7 @@
 ## 目录结构
 
 ```
-.dainexus/project-manager/templates/
+.daiharness/project-manager/templates/
 ├── README.md                    # 本文件 - 概述与快速入门
 ├── BASE/                       # 工具无关的基础模板
 │   ├── sprint-planning.md      # 冲刺规划模板
@@ -274,7 +274,7 @@ mapping:
 
 ## 相关资源
 
-- [DAI Nexus PM Skill](file://skills/project-manager/SKILL.md)
+- [DAI Harness PM Skill](file://skills/project-manager/SKILL.md)
 - [Jira Documentation](https://support.atlassian.com/jira-software)
 - [Linear Documentation](https://docs.linear.app)
 - [ClickUp Documentation](https://clickup.com/docs)

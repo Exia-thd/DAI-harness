@@ -1,7 +1,7 @@
 /**
  * src/cli/src/bench/compare.ts
  *
- * Comparable-report validation for the DAI Nexus cheap-model uplift
+ * Comparable-report validation for the DAI Harness cheap-model uplift
  * evaluation harness.
  *
  * Two benchmark result files are only comparable when they were produced with

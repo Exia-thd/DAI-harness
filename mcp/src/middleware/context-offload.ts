@@ -3,7 +3,7 @@
  *
  * Persists large tool results outside model context with stable trace handles.
  * The model receives compact sandboxed output while full sanitized output lives
- * under .dainexus/offload/<session>/refs/<node_id>.md.
+ * under .daiharness/offload/<session>/refs/<node_id>.md.
  */
 
 import { createHash } from 'node:crypto';
@@ -54,7 +54,7 @@ interface OffloadResult {
 
 const DEFAULT_CONFIG: Required<ContextOffloadConfig> = {
   enabled: false,
-  data_dir: '.dainexus/offload',
+  data_dir: '.daiharness/offload',
   min_tokens_to_offload: 1200,
   write_raw_refs: true,
   write_canvas: true,

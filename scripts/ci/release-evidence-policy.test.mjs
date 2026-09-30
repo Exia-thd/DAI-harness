@@ -25,11 +25,11 @@ test('package policy rejects private MCP content and missing entrypoints', () =>
   assert.deepEqual(
     forbiddenMcpPaths([
       { path: 'build/index.js' },
-      { path: '.dainexus/events.jsonl' },
+      { path: '.daiharness/events.jsonl' },
       { path: 'src/index.ts' },
       { path: 'build/index.test.js' },
     ]),
-    ['.dainexus/events.jsonl', 'src/index.ts', 'build/index.test.js'],
+    ['.daiharness/events.jsonl', 'src/index.ts', 'build/index.test.js'],
   );
   assert.throws(() => assertRequiredPaths({ name: 'pkg', files: [] }, ['build/index.js']), /missing build\/index.js/);
 });

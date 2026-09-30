@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # scripts/lite/telemetry.sh
-# DAI Nexus Phase 1 — telemetry foundation.
+# DAI Harness Phase 1 — telemetry foundation.
 # Append-only JSONL event stream + monthly aggregate report.
 #
 # Usage:
 #   bash scripts/lite/telemetry.sh emit <event_type> <json_payload>
 #   bash scripts/lite/telemetry.sh report [YYYYMM]
 #
-# Storage: .dainexus/telemetry/events-YYYYMM.jsonl
+# Storage: .daiharness/telemetry/events-YYYYMM.jsonl
 # Record:  {"ts":"<ISO-8601 UTC>","event":"<type>","data":{...}}
 #
 # Exit codes:
@@ -29,19 +29,19 @@ log_error() { echo -e "${RED}[TELEMETRY] ERROR:${NC} $*" >&2; }
 # Find project root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-if [[ -n "${DAINEXUS_WORKSPACE:-}" ]]; then
-  if [[ ! -d "$DAINEXUS_WORKSPACE" ]]; then
-    log_error "DAINEXUS_WORKSPACE is not a readable directory."
+if [[ -n "${DAIHARNESS_WORKSPACE:-}" ]]; then
+  if [[ ! -d "$DAIHARNESS_WORKSPACE" ]]; then
+    log_error "DAIHARNESS_WORKSPACE is not a readable directory."
     exit 1
   fi
-  PROJECT_ROOT="$(cd "$DAINEXUS_WORKSPACE" 2>/dev/null && pwd -P)" || {
-    log_error "DAINEXUS_WORKSPACE cannot be resolved."
+  PROJECT_ROOT="$(cd "$DAIHARNESS_WORKSPACE" 2>/dev/null && pwd -P)" || {
+    log_error "DAIHARNESS_WORKSPACE cannot be resolved."
     exit 1
   }
 fi
 cd "$PROJECT_ROOT"
 
-TELEMETRY_DIR="${DAINEXUS_TELEMETRY_DIR:-.dainexus/telemetry}"
+TELEMETRY_DIR="${DAIHARNESS_TELEMETRY_DIR:-.daiharness/telemetry}"
 
 command -v jq >/dev/null 2>&1 || { log_error "jq is required but not found in PATH."; exit 1; }
 

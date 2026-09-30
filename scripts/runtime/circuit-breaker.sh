@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Circuit Breaker — State Manager for Parallel Dispatch
-# Part of DAI Nexus Production Grade Plugin
+# Part of DAI Harness Production Grade Plugin
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 set -euo pipefail
 
 # Config
-CIRCUIT_FILE="${CIRCUIT_FILE:-.dainexus/circuits.json}"
+CIRCUIT_FILE="${CIRCUIT_FILE:-.daiharness/circuits.json}"
 CIRCUIT_TIMEOUT="${CIRCUIT_TIMEOUT:-60}"  # seconds OPEN before HALF_OPEN
 CIRCUIT_RECOVERY="${CIRCUIT_RECOVERY:-120}"  # seconds HALF_OPEN before CLOSED
 CIRCUIT_THRESHOLD="${CIRCUIT_THRESHOLD:-3}"  # failures before OPEN
@@ -398,7 +398,7 @@ usage() {
     test [key]               Run circuit breaker test
 
   Environment:
-    CIRCUIT_FILE      Circuit state file (default: .dainexus/circuits.json)
+    CIRCUIT_FILE      Circuit state file (default: .daiharness/circuits.json)
     CIRCUIT_TIMEOUT   Seconds OPEN before HALF_OPEN (default: 60)
     CIRCUIT_THRESHOLD Failures before OPEN (default: 3)
 

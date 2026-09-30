@@ -41,11 +41,11 @@ def get_remaining_skills(skills_dir: str) -> List[str]:
 def query_notebooklm(skill_name: str) -> str:
     """Query NotebookLM CLI to research and generate the LITE.md content"""
     prompt = (
-        f"You are a DAI Nexus Skill Distiller. The user is upgrading the '{skill_name}' skill to DAI Nexus Lite (Stage E3 overlay).\n"
+        f"You are a DAI Harness Skill Distiller. The user is upgrading the '{skill_name}' skill to DAI Harness Lite (Stage E3 overlay).\n"
         f"Research the '{skill_name}' specialty in the notebook. Distill the senior domain expertise into a minimal LITE.md under 200 lines.\n"
-        f"ARCHITECTURE BOUNDARY: the DAI Nexus pipeline already owns outcome/scope consulting, cross-domain hidden-risk scanning, generic research/instruction-boundary safety, VERIFY/AUDIT/LEARN, and generic visual-basis gating. Assume the skill receives PIPELINE_CONTEXT. Do NOT duplicate those generic operating loops.\n"
+        f"ARCHITECTURE BOUNDARY: the DAI Harness pipeline already owns outcome/scope consulting, cross-domain hidden-risk scanning, generic research/instruction-boundary safety, VERIFY/AUDIT/LEARN, and generic visual-basis gating. Assume the skill receives PIPELINE_CONTEXT. Do NOT duplicate those generic operating loops.\n"
         f"The overlay must expose specialist depth: domain authority/inputs, real discipline heuristics, domain artifacts, domain failure modes, domain verifiers, and handoff/cross-domain DOMAIN_FINDING behavior. If text could be pasted unchanged into an unrelated skill, it is too generic.\n"
-        f"The output must strictly follow the DAI Nexus Lite markdown template:\n\n"
+        f"The output must strictly follow the DAI Harness Lite markdown template:\n\n"
         f"---\n"
         f"name: {skill_name}\n"
         f'description: "<brief description of what the skill does>. Use when the user requests <list of triggers/scenarios where this skill should activate>."\n'
@@ -170,7 +170,7 @@ def update_index(skills_dir: str, index_path: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="DAI Nexus Lite Skill Upgrader")
+    parser = argparse.ArgumentParser(description="DAI Harness Lite Skill Upgrader")
     parser.add_argument(
         "--limit",
         type=int,

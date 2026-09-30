@@ -35,10 +35,10 @@ def _base_project(tmp_path: Path) -> tuple[Path, Path, dict[str, str]]:
         {
             "PATH": f"{fake_bin}:{env['PATH']}",
             "PROJECT_ROOT": str(project),
-            "DAINEXUS_ESCALATION_TIMEOUT_SECS": "1",
-            "DAINEXUS_RUNTIME_LEASE_CLI": str(fake_bin / "runtime-lease.sh"),
+            "DAIHARNESS_ESCALATION_TIMEOUT_SECS": "1",
+            "DAIHARNESS_RUNTIME_LEASE_CLI": str(fake_bin / "runtime-lease.sh"),
             "LEASE_LOG": str(lease_log),
-            "DAINEXUS_RUN_ID": "runtime-test",
+            "DAIHARNESS_RUN_ID": "runtime-test",
         }
     )
     return project, fake_bin, env

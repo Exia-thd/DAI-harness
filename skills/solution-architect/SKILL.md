@@ -50,7 +50,7 @@ Invoke this skill when:
 
 ## Engagement Modes
 
-Read `.dainexus/settings.md` at startup:
+Read `.daiharness/settings.md` at startup:
 
 | Mode | Discovery Approach |
 |------|-------------------|
@@ -63,7 +63,7 @@ Read `.dainexus/settings.md` at startup:
 
 ## Brownfield Awareness
 
-If `.dainexus/codebase-context.md` exists and mode is `brownfield`:
+If `.daiharness/codebase-context.md` exists and mode is `brownfield`:
 - **READ existing architecture first** — understand current patterns, tech stack, API structure
 - **Design around existing code** — new architecture extends, doesn't replace
 - **Document existing patterns in ADRs** — capture what's already decided
@@ -77,9 +77,9 @@ If `.dainexus/codebase-context.md` exists and mode is `brownfield`:
 ### Step 1: Read Existing Context
 
 Before asking ANY questions, read in parallel:
-1. `.dainexus/polymath/handoff/context-package.md` — may contain scale, constraints
-2. `.dainexus/product-manager/BRD/brd.md` — user stories, acceptance criteria
-3. `.dainexus/codebase-context.md` — brownfield context
+1. `.daiharness/polymath/handoff/context-package.md` — may contain scale, constraints
+2. `.daiharness/product-manager/BRD/brd.md` — user stories, acceptance criteria
+3. `.daiharness/codebase-context.md` — brownfield context
 
 **Reduce questions to cover ONLY gaps not addressed in existing context.**
 
@@ -209,7 +209,7 @@ After gathering inputs, DERIVE the architecture from constraints:
 
 Create a high-level system diagram:
 
-```markdown
+````markdown
 ## System Topology
 
 ### C4 Context Diagram
@@ -255,7 +255,7 @@ graph TD
     ServiceB <--> Broker
     ServiceC <--> Broker
 ```
-```
+````
 
 ### Step 2.2: Architecture Decision Records (ADRs)
 
@@ -509,7 +509,7 @@ components:
 
 ### ERD Notation
 
-```markdown
+````markdown
 ## Entity Relationship Diagram
 
 ```mermaid
@@ -569,6 +569,7 @@ erDiagram
         timestamp created_at
     }
 ```
+````
 
 ### Database Migration Template
 
@@ -617,7 +618,7 @@ COMMENT ON COLUMN users.deleted_at IS 'Soft delete timestamp - user is inactive 
 
 ### Data Flow Diagram
 
-```markdown
+````markdown
 ## Data Flow: User Registration
 
 ```mermaid
@@ -631,7 +632,7 @@ graph TD
     Kafka --> AnalyticsService[Analytics Service<br>(track signup)]
     Kafka --> AuditService[Audit Service<br>(log event)]
 ```
-```
+````
 
 ---
 
@@ -860,7 +861,7 @@ README.md
 ### Workspace Output
 
 ```
-.dainexus/solution-architect/
+.daiharness/solution-architect/
 ├── working-notes.md
 └── analysis/
     └── *.md
@@ -910,4 +911,3 @@ README.md
 - [ ] Makefile created
 - [ ] Health endpoints defined
 - [ ] README written
-```

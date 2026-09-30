@@ -91,7 +91,7 @@ Add tabs:
 - [x] All Sources
 - [x] Cursor Only
 - [x] Claude Code Only
-- [x] DAI Nexus Only
+- [x] DAI Harness Only
 
 ---
 

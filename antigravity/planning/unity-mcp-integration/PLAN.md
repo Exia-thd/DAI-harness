@@ -2,8 +2,8 @@
 
 ## Overview
 
-**Project:** Integrate Unity-MCP (IvanMurzak/Unity-MCP) into DAI Nexus Unity skills  
-**Goal:** Combine DAI Nexus's architecture guidance + quality gates with Unity-MCP's Editor automation  
+**Project:** Integrate Unity-MCP (IvanMurzak/Unity-MCP) into DAI Harness Unity skills
+**Goal:** Combine DAI Harness's architecture guidance + quality gates with Unity-MCP's Editor automation
 **Timeline:** 3 phases, estimated 6-8 hours total
 
 ---
@@ -41,14 +41,14 @@
 
 1. Add new section "## Integration với Unity-MCP"
 2. Add prerequisites (Unity-MCP installed in project)
-3. Add tool mapping table (DAI Nexus task → Unity-MCP tool)
+3. Add tool mapping table (DAI Harness task → Unity-MCP tool)
 4. Add combined workflow example
 
 **New Section Content:**
-```markdown
+````markdown
 ## Integration với Unity-MCP
 
-DAI Nexus Unity Engineer dùng Unity-MCP cho Editor automation khi cần thao tác với Unity Editor trực tiếp.
+DAI Harness Unity Engineer dùng Unity-MCP cho Editor automation khi cần thao tác với Unity Editor trực tiếp.
 
 ### Prerequisites
 1. Unity project đã cài Unity-MCP plugin
@@ -57,7 +57,7 @@ DAI Nexus Unity Engineer dùng Unity-MCP cho Editor automation khi cần thao t�
 
 ### Tool Mapping
 
-| DAI Nexus Task | Unity-MCP Tool | When to Use |
+| DAI Harness Task | Unity-MCP Tool | When to Use |
 |------------------|----------------|-------------|
 | Tạo scene objects | `gameobject-create` | Placeholder objects |
 | Setup prefabs | `assets-prefab-create` | Convert scene to prefab |
@@ -70,7 +70,7 @@ DAI Nexus Unity Engineer dùng Unity-MCP cho Editor automation khi cần thao t�
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ Step 1: Architecture (DAI Nexus - NO Unity Editor)           │
+│ Step 1: Architecture (DAI Harness - NO Unity Editor)           │
 │ ├── SO framework design                                        │
 │ ├── Event channel architecture                                  │
 │ └── Component responsibilities                                   │
@@ -84,7 +84,7 @@ DAI Nexus Unity Engineer dùng Unity-MCP cho Editor automation khi cần thao t�
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│ Step 3: Code Implementation (DAI Nexus - NO Unity Editor)    │
+│ Step 3: Code Implementation (DAI Harness - NO Unity Editor)    │
 │ ├── MonoBehaviour implementations                               │
 │ ├── SO event wiring                                            │
 │ └── Gameplay logic                                             │
@@ -98,12 +98,13 @@ DAI Nexus Unity Engineer dùng Unity-MCP cho Editor automation khi cần thao t�
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│ Step 5: Quality Gate (DAI Nexus)                              │
+│ Step 5: Quality Gate (DAI Harness)                              │
 │ ├── Architecture compliance check                               │
 │ ├── SO-first pattern verification                               │
 │ └── Brownfield safety validation                                │
 └─────────────────────────────────────────────────────────────────┘
 ```
+````
 
 ### Task 1.2: Update `unity-shader-artist/SKILL.md`
 
@@ -115,7 +116,7 @@ DAI Nexus Unity Engineer dùng Unity-MCP cho Editor automation khi cần thao t�
 3. Add shader preview automation
 
 **New Section Content:**
-```markdown
+````markdown
 ## Visual Feedback với Unity-MCP
 
 Sau khi tạo shaders, dùng Unity-MCP để verify visual output.
@@ -141,12 +142,12 @@ Shader Created → Unity-MCP screenshot → Review visual output
 
 ### Shader Iteration with Unity-MCP
 
-1. Tạo shader với DAI Nexus
+1. Tạo shader với DAI Harness
 2. Assign vào material via `assets-material-create` hoặc `object-modify`
 3. Apply lên GameObject via `gameobject-modify`
 4. Screenshot via Unity-MCP
 5. Review và iterate
-```
+````
 
 ### Task 1.3: Update `unity-multiplayer/SKILL.md`
 
@@ -242,7 +243,7 @@ If Unity project detected:
 Add new section "## Runtime AI (In-Game)"
 
 **Content:**
-```markdown
+````markdown
 ## Runtime AI (In-Game)
 
 Unity-MCP hỗ trợ AI bên trong compiled game.
@@ -287,14 +288,14 @@ await mcpPlugin.Connect();
 - Performance-critical paths
 - Simple AI (patrol, chase)
 - Mobile games (network dependency)
-```
+````
 
 ### Task 3.2: MCP Tools Quick Reference
 
 **File:** `docs/unity-mcp-tools-reference.md` (NEW)  
 **Content:**
 
-Full reference of Unity-MCP tools với DAI Nexus use cases.
+Full reference of Unity-MCP tools với DAI Harness use cases.
 
 ---
 

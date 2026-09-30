@@ -7,7 +7,7 @@ description: >
   complex changes (5+ files), architecture decisions, and context saturation (>30 tool calls).
   Use proactively to preserve progress before context overflow.
 version: 0.1.0
-author: dai-nexus
+author: dai-harness
 tags: [context-management, compaction, memory, session-optimization]
 ---
 
@@ -213,10 +213,10 @@ Customize thresholds via environment:
 
 ```bash
 # Optional overrides (defaults shown)
-DAINEXUS_COMPACTION_TOOL_THRESHOLD=30
-DAINEXUS_COMPACTION_FILE_THRESHOLD=5
-DAINEXUS_COMPACTION_FAIL_THRESHOLD=3
-DAINEXUS_COMPACTION_TURN_THRESHOLD=15
+DAIHARNESS_COMPACTION_TOOL_THRESHOLD=30
+DAIHARNESS_COMPACTION_FILE_THRESHOLD=5
+DAIHARNESS_COMPACTION_FAIL_THRESHOLD=3
+DAIHARNESS_COMPACTION_TURN_THRESHOLD=15
 ```
 
 ## Quality Metrics

@@ -6,7 +6,7 @@
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DAINEXUS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+DAIHARNESS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TEST_DIR="$(mktemp -d)"
 
 trap "rm -rf $TEST_DIR" EXIT
@@ -50,9 +50,9 @@ run_test "env var takes precedence" '
 
 # Test 2: settings.env file
 run_test "reads from settings.env" '
-    mkdir -p "'"$TEST_DIR"'/.dainexus" &&
-    echo "SHELL_COMPRESSOR=\"chop\"" > "'"$TEST_DIR"'/.dainexus/settings.env" &&
-    export DAINEXUS_DIR="'"$TEST_DIR"'" &&
+    mkdir -p "'"$TEST_DIR"'/.daiharness" &&
+    echo "SHELL_COMPRESSOR=\"chop\"" > "'"$TEST_DIR"'/.daiharness/settings.env" &&
+    export DAIHARNESS_DIR="'"$TEST_DIR"'" &&
     unset SHELL_COMPRESSOR &&
     source '"$SCRIPT_DIR"'/run_shell_filter.sh &&
     [[ "$(detect_compressor)" == "chop" ]]
@@ -60,10 +60,10 @@ run_test "reads from settings.env" '
 
 # Test 3: auto-detect fallback
 run_test "falls back to native filter" '
-    export DAINEXUS_DIR="/nonexistent" &&
+    export DAIHARNESS_DIR="/nonexistent" &&
     unset SHELL_COMPRESSOR &&
     source '"$SCRIPT_DIR"'/run_shell_filter.sh &&
-    [[ "$(detect_compressor)" == "dai-nexus-shell-filter" ]]
+    [[ "$(detect_compressor)" == "dai-harness-shell-filter" ]]
 '
 
 echo ""
@@ -74,7 +74,7 @@ echo "── run_shell_filter ──"
 
 # Test: pipe mode with input
 run_test "pipe mode works" '
-    export DAINEXUS_DIR="'"$DAINEXUS_DIR"'" &&
+    export DAIHARNESS_DIR="'"$DAIHARNESS_DIR"'" &&
     unset SHELL_COMPRESSOR &&
     source '"$SCRIPT_DIR"'/run_shell_filter.sh &&
     result=$(echo "Hello World" | run_shell_filter) &&
@@ -83,7 +83,7 @@ run_test "pipe mode works" '
 
 # Test: run_shell_filter with input from pipe (simulating real usage)
 run_test "pipe mode with filter args" '
-    export DAINEXUS_DIR="'"$DAINEXUS_DIR"'" &&
+    export DAIHARNESS_DIR="'"$DAIHARNESS_DIR"'" &&
     unset SHELL_COMPRESSOR &&
     source '"$SCRIPT_DIR"'/run_shell_filter.sh &&
     result=$(echo "test" | run_shell_filter) &&
@@ -96,7 +96,7 @@ echo ""
 
 echo "── native filter ──"
 
-NATIVE_FILTER="$SCRIPT_DIR/../../scripts/dainexus-shell-filter.sh"
+NATIVE_FILTER="$SCRIPT_DIR/../../scripts/daiharness-shell-filter.sh"
 [[ -f "$NATIVE_FILTER" ]] && \
     log_pass "native filter exists" || log_fail "native filter missing"
 
@@ -106,8 +106,8 @@ echo ""
 
 echo "── settings ──"
 
-echo "export SHELL_COMPRESSOR=\"test\"" > "$TEST_DIR/.dainexus/settings.env"
-source "$TEST_DIR/.dainexus/settings.env" 2>/dev/null && \
+echo "export SHELL_COMPRESSOR=\"test\"" > "$TEST_DIR/.daiharness/settings.env"
+source "$TEST_DIR/.daiharness/settings.env" 2>/dev/null && \
     log_pass "settings.env sourceable" || log_fail "settings.env not sourceable"
 
 # ── Summary ────────────────────────────────────────────────────────────────

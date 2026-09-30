@@ -139,7 +139,7 @@ export class SandboxManager {
 
     // Write final metrics
     if (this.currentConfig.monitoring?.collectMetrics) {
-      const metricsPath = this.currentConfig.monitoring?.metricsPath || ".dainexus/sandbox-metrics.json";
+      const metricsPath = this.currentConfig.monitoring?.metricsPath || ".daiharness/sandbox-metrics.json";
       try {
         const dir = path.dirname(metricsPath);
         if (!fs.existsSync(dir)) {

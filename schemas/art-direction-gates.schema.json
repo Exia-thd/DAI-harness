@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://dai-nexus.dev/schemas/art-direction-gates.schema.json",
-  "title": "DAI Nexus Art Direction Gates",
+  "$id": "https://dai-harness.dev/schemas/art-direction-gates.schema.json",
+  "title": "DAI Harness Art Direction Gates",
   "type": "object",
   "additionalProperties": false,
   "required": ["version", "project", "concept_packet", "style_dna", "gates"],

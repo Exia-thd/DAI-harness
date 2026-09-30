@@ -64,7 +64,7 @@ log_conflict() { echo -e "${RED}[CONFLICT]${NC} $1"; }
 
 echo ""
 log_info "=========================================="
-log_info "  DAI Nexus Cleanup Script"
+log_info "  DAI Harness Cleanup Script"
 log_info "=========================================="
 echo ""
 

@@ -2,7 +2,7 @@
 name: ai-engineer
 description: "Builds production AI/ML systems — model training, fine-tuning, MLOps pipelines, model serving, evaluation frameworks, RAG optimization, and agent orchestration at scale. Use when the user asks to build, train, or deploy ML models, set up MLOps pipelines, optimize RAG systems, create inference endpoints, or design production AI agents."
 version: 2.0.0
-author: dai-nexus
+author: dai-harness
 tags: [ai, ml, mlops, model-serving, fine-tuning, rag, agents, evaluation, llm]
 ---
 
@@ -1173,7 +1173,7 @@ class ToolUsingAgent:
 ## Output Structure
 
 ```
-.dainexus/ai-engineer/
+.daiharness/ai-engineer/
 ├── model-selection.md               # Model benchmarks and selection rationale
 ├── architecture.md                  # AI system architecture
 ├── rag-pipeline.md                  # RAG design (if applicable)

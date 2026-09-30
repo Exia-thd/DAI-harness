@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 
 /**
- * DAI Nexus CLI - Agent-First Command Line Interface
+ * DAI Harness CLI - Agent-First Command Line Interface
  *
  * Dual-purpose:
  * • Humans: colored pretty output, spinners, sensible defaults

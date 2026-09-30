@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed, local-first skill routing for DAI Nexus.
+"""Fail-closed, local-first skill routing for DAI Harness.
 
 The skills config owns mode ordering and enablement.  This module only supplies
 the small prompt classifier needed to select a configured mode.
@@ -207,7 +207,7 @@ def route_skills(
     """Return verified, ordered skill overlays from the local project config."""
     root = Path(project_root or Path.cwd()).expanduser().resolve()
     config = (
-        Path(config_path or root / ".dainexus" / "skills-config.json")
+        Path(config_path or root / ".daiharness" / "skills-config.json")
         .expanduser()
         .resolve()
     )

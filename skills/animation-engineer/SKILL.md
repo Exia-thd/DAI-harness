@@ -7,7 +7,7 @@ description: >
   Integrates with Unity/Unreal/Godot animation systems.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 1.0.0
-author: dai-nexus
+author: dai-harness
 tags: [animation, skeletal, blend-tree, ik, ragdoll, rig, mocap, procedural, motion-matching]
 ---
 
@@ -23,7 +23,7 @@ tags: [animation, skeletal, blend-tree, ik, ragdoll, rig, mocap, procedural, mot
 !`cat skills/_shared/protocols/quality-gate.md 2>/dev/null || true`
 !`cat skills/_shared/protocols/task-validator.md 2>/dev/null || true`
 !`cat .production-grade.yaml 2>/dev/null || echo "No config — using defaults"`
-!`cat .dainexus/codebase-context.md 2>/dev/null || true`
+!`cat .daiharness/codebase-context.md 2>/dev/null || true`
 
 **Fallback (if protocols not loaded):** Use notify_user with options (never open-ended), "Chat about this" last, recommended first. Work continuously. Print progress constantly.
 
@@ -41,14 +41,14 @@ This skill runs AFTER the Game Designer (mechanic specs, movement feel) and PARA
 
 | Input | Status | What Animation Engineer Needs |
 |-------|--------|-------------------------------|
-| `.dainexus/game-designer/` | Critical | Movement mechanics, combat feel, animation timing |
+| `.daiharness/game-designer/` | Critical | Movement mechanics, combat feel, animation timing |
 | Game Designer mechanic specs | Critical | Animation requirements per action |
 | Art Director output | Degraded | Character rig specs, animation style |
 | Gameplay programmer specs | Degraded | Animation event triggers, state machine requirements |
 
 ## Engagement Mode
 
-!`cat .dainexus/settings.md 2>/dev/null || echo "No settings — using Standard"`
+!`cat .daiharness/settings.md 2>/dev/null || echo "No settings — using Standard"`
 
 | Mode | Behavior |
 |------|----------|

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * generate-template.ts — DAI Nexus Template Generator
+ * generate-template.ts — DAI Harness Template Generator
  *
  * Renders Handlebars templates with project context.
  *
@@ -304,7 +304,7 @@ function getOutputPath(
 
 function printHelp(): void {
   console.log(`
-DAI Nexus Template Generator
+DAI Harness Template Generator
 
 Usage:
   npx ts-node scripts/generate-template.ts [options]

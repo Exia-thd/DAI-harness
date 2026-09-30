@@ -28,42 +28,42 @@ export { DEFAULT_STATE, PIPELINE_PHASES, PHASE_KEYS };
 
 export type { PipelineState, SelfHealingState, QualityGateState, PhaseState };
 
-// ─── DAI Nexus Root Detection ──────────────────────────────────────
+// ─── DAI Harness Root Detection ──────────────────────────────────────
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const MCP_BUILD_DIR = __dirname;
 const MCP_ROOT_DIR = path.dirname(MCP_BUILD_DIR);
-const DAINEXUS_ROOT = path.dirname(MCP_ROOT_DIR);
+const DAIHARNESS_ROOT = path.dirname(MCP_ROOT_DIR);
 
-let _DaiNexusRoot: string | null = null;
+let _DaiHarnessRoot: string | null = null;
 let _workspaceRoot: string | null = null;
 
-function _getDaiNexusRoot(): string {
-  if (!_DaiNexusRoot) {
+function _getDaiHarnessRoot(): string {
+  if (!_DaiHarnessRoot) {
     let dir = __dirname;
     for (let i = 0; i < 10; i++) {
       if (fs.existsSync(path.join(dir, 'package.json'))) {
-        _DaiNexusRoot = path.dirname(dir);
-        return _DaiNexusRoot;
+        _DaiHarnessRoot = path.dirname(dir);
+        return _DaiHarnessRoot;
       }
       const parent = path.dirname(dir);
       if (parent === dir) break;
       dir = parent;
     }
-    _DaiNexusRoot = path.resolve(DAINEXUS_ROOT);
+    _DaiHarnessRoot = path.resolve(DAIHARNESS_ROOT);
   }
-  return _DaiNexusRoot;
+  return _DaiHarnessRoot;
 }
 
-export function getDaiNexusRoot(): string {
-  return _getDaiNexusRoot();
+export function getDaiHarnessRoot(): string {
+  return _getDaiHarnessRoot();
 }
 
 export function _isResolvedPath(p: string | undefined): p is string {
   if (!p) return false;
   if (/\$\{[^}]+\}/.test(p)) {
     console.error(
-      `[DAI Nexus Global MCP] Warning: Skipping unresolved template variable in path: "${p}"`,
+      `[DAI Harness Global MCP] Warning: Skipping unresolved template variable in path: "${p}"`,
     );
     return false;
   }
@@ -73,7 +73,7 @@ export function _isResolvedPath(p: string | undefined): p is string {
 export function setWorkspaceRoot(): void {
   if (_workspaceRoot) return;
   const candidates = [
-    process.env.DAINEXUS_WORKSPACE,
+    process.env.DAIHARNESS_WORKSPACE,
     process.env.CURSOR_WORKSPACE_ROOT,
     process.env.CLASSD_WORKSPACE_ROOT,
     process.env.AGENTS_WORKSPACE,
@@ -81,7 +81,7 @@ export function setWorkspaceRoot(): void {
   let ws = candidates.find(_isResolvedPath) || undefined;
 
   if (!ws) {
-    const candidate = path.join(process.cwd(), '.dainexus');
+    const candidate = path.join(process.cwd(), '.daiharness');
     if (fs.existsSync(candidate)) {
       ws = process.cwd();
     }
@@ -89,14 +89,14 @@ export function setWorkspaceRoot(): void {
 
   if (!ws) {
     console.error(
-      `[DAI Nexus Global MCP] Warning: Could not detect workspace. Using DAINEXUS_ROOT.`,
+      `[DAI Harness Global MCP] Warning: Could not detect workspace. Using DAIHARNESS_ROOT.`,
     );
-    ws = _getDaiNexusRoot();
+    ws = _getDaiHarnessRoot();
   }
 
   _workspaceRoot = path.resolve(ws);
   process.chdir(_workspaceRoot);
-  console.error(`[DAI Nexus Global MCP] Workspace: ${_workspaceRoot}`);
+  console.error(`[DAI Harness Global MCP] Workspace: ${_workspaceRoot}`);
 }
 
 export function getWorkspaceRoot(): string {
@@ -119,7 +119,7 @@ let combinedEventPublisher: CombinedEventPublisher | null = null;
 function getServices() {
   if (!pipelineService || !queryService) {
     const wsRoot = getWorkspaceRoot();
-    const sessionId = process.env.DAINEXUS_SESSION_ID;
+    const sessionId = process.env.DAIHARNESS_SESSION_ID;
 
     const stateRepo = new FileSystemStateRepository<PipelineState>(
       wsRoot,
@@ -219,7 +219,7 @@ export async function checkPipelineCompliance(
 ): Promise<PipelineComplianceReport> {
   const wsRoot = getWorkspaceRoot();
   const state = await getState();
-  const stateFile = path.join(wsRoot, '.dainexus', 'pipeline-state.json');
+  const stateFile = path.join(wsRoot, '.daiharness', 'pipeline-state.json');
   const issues: string[] = [];
   const warnings: string[] = [];
   const recommendations: string[] = [];
@@ -272,7 +272,7 @@ export async function checkPipelineCompliance(
 export function logTokenUsage(entry: TokenUsageEntry): void {
   const wsRoot = getWorkspaceRoot();
   const folderName = path.basename(wsRoot);
-  const usageDir = path.join(os.homedir(), '.dainexus', 'usage', folderName);
+  const usageDir = path.join(os.homedir(), '.daiharness', 'usage', folderName);
   if (!fs.existsSync(usageDir)) {
     fs.mkdirSync(usageDir, { recursive: true });
   }

@@ -83,7 +83,7 @@ def test_opt_in_smoke_invokes_generic_cli_without_persisting_output(
 ) -> None:
     binary = tmp_path / "provider-y"
     binary.write_text(
-        "#!/bin/sh\nif [ \"$1\" = '--version' ]; then echo 'provider-y 1'; else echo 'DAINEXUS_PROVIDER_SMOKE_OK'; fi\n",
+        "#!/bin/sh\nif [ \"$1\" = '--version' ]; then echo 'provider-y 1'; else echo 'DAIHARNESS_PROVIDER_SMOKE_OK'; fi\n",
         encoding="utf-8",
     )
     binary.chmod(binary.stat().st_mode | stat.S_IXUSR)
@@ -104,7 +104,7 @@ def test_opt_in_smoke_invokes_generic_cli_without_persisting_output(
             "provider-managed",
         ],
         cwd=ROOT,
-        env={**os.environ, "DAINEXUS_PROVIDER_SMOKE": "1"},
+        env={**os.environ, "DAIHARNESS_PROVIDER_SMOKE": "1"},
         capture_output=True,
         text=True,
         check=False,
@@ -114,7 +114,7 @@ def test_opt_in_smoke_invokes_generic_cli_without_persisting_output(
     assert receipt["marker_verified"] is True
     assert receipt["invocation_calls"] == 1
     assert receipt["live_evidence_eligible"] is False
-    assert "DAINEXUS_PROVIDER_SMOKE_OK" not in json.dumps(receipt)
+    assert "DAIHARNESS_PROVIDER_SMOKE_OK" not in json.dumps(receipt)
 
 
 def test_smoke_requires_explicit_opt_in(tmp_path: Path) -> None:
@@ -143,7 +143,7 @@ def test_smoke_requires_explicit_opt_in(tmp_path: Path) -> None:
         check=False,
     )
     assert result.returncode != 0
-    assert "DAINEXUS_PROVIDER_SMOKE=1" in result.stderr
+    assert "DAIHARNESS_PROVIDER_SMOKE=1" in result.stderr
 
 
 def test_catalog_discovers_models_from_generic_cli_lines(tmp_path: Path) -> None:
@@ -174,7 +174,7 @@ def test_catalog_discovers_models_from_generic_cli_lines(tmp_path: Path) -> None
             "lines",
         ],
         cwd=ROOT,
-        env={**os.environ, "DAINEXUS_PROVIDER_CATALOG": "1"},
+        env={**os.environ, "DAIHARNESS_PROVIDER_CATALOG": "1"},
         capture_output=True,
         text=True,
         check=False,

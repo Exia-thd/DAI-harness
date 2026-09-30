@@ -15,7 +15,7 @@ scope, and avoid copying instructions already present in `AGENTS.md`.
 Project lifecycle hooks are configured in `.cursor/hooks.json`. Hooks may
 inject compact context or record observability, but rule-context failures must
 remain fail-open for normal project work. Destructive and security-sensitive
-controls remain governed by the canonical DAI Nexus guardrail.
+controls remain governed by the canonical DAI Harness guardrail.
 
 ## Adding a scoped rule
 

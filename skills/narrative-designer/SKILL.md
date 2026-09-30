@@ -6,7 +6,7 @@ description: >
   narrative-gameplay integration. Uses Ink/Yarn/generic dialogue formats.
   Routed via the production-grade orchestrator (Game Build mode).
 version: 1.1.0
-author: dai-nexus
+author: dai-harness
 tags: [narrative, dialogue, branching, lore, character-voice, ink, yarn, storytelling]
 ---
 
@@ -377,7 +377,7 @@ KIRA: "I... I didn't know. I'm sorry. I should've been there."
 
 **Actions:**
 1. **Lore Bible (Internal Only):**
-```markdown
+````markdown
 # Lore Bible — [Game Name]
 
 ## Complete History (Player May Never See)
@@ -417,7 +417,7 @@ Do not open the Inner Sanctum.
 | Graffiti in alley | "THE ORDER LIES" | Foreshadows Order corruption |
 | Ancient mural | [War scene with three figures] | Teases the three Sealing Keys |
 | Grave marker | "Here lies Dr. Emil Vance. May he find peace." | NPC player can avenge or honor |
-```
+````
 
 2. **Environmental Storytelling Placement:**
 ```markdown
@@ -500,7 +500,7 @@ en: "Day 47. The books speak of a sealing ritual..."
 ## Output Structure
 
 ```
-.dainexus/narrative-designer/
+.daiharness/narrative-designer/
 ├── story-bible.md
 ├── narrative-structure.md
 ├── narrative-gameplay-matrix.md

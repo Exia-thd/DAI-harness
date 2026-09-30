@@ -1,8 +1,8 @@
-# DAI Nexus Game Coordinate System Fix - IMPROVED PLAN v2
+# DAI Harness Game Coordinate System Fix - IMPROVED PLAN v2
 
 ## 1. Problem Statement
 
-**Current Issue**: When coding games in DAI Nexus, frequently unable to accurately identify coordinates to properly position assets.
+**Current Issue**: When coding games in DAI Harness, frequently unable to accurately identify coordinates to properly position assets.
 
 **Root Causes Identified from Research**:
 1. Engine coordinate system mismatch (Unity LH vs Godot RH)
@@ -23,7 +23,7 @@
 | G2 | Create validation CLI command | Pass all 12 test scenarios |
 | G3 | Build conversion utility with ±0.001 precision | All test cases pass |
 | G4 | Provide floating origin templates | Working for Unity + Godot |
-| G5 | Integrate into DAI Nexus skills | Listed in skill docs |
+| G5 | Integrate into DAI Harness skills | Listed in skill docs |
 
 ---
 
@@ -35,7 +35,7 @@
 - Unreal (Left-Hand, +Z forward, 1 unit = 1 cm)
 - Blender (Right-Hand, +Z forward, 1 unit = 1 meter)
 - glTF 2.0 / FBX import handling
-- DAI Nexus CLI integration
+- DAI Harness CLI integration
 - Editor visual helpers (coordinate gizmos)
 
 ### Out of Scope
@@ -151,7 +151,7 @@
 
 ### Phase 6: Integration & Testing (2h)
 
-#### Task 6.1: DAI Nexus Skills Integration (1h)
+#### Task 6.1: DAI Harness Skills Integration (1h)
 - [ ] Update Unity Engineer skill
 - [ ] Update Godot Engineer skill
 - [ ] Add to Game Designer skill

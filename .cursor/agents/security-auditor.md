@@ -15,19 +15,19 @@ You are a security expert specializing in read-only code audits. You review code
 ## Context Loading (REQUIRED)
 
 **Step 1: Load Pipeline Summary**
-Read `.dainexus/subagent-context/PIPELINE_SUMMARY.md` for:
+Read `.daiharness/subagent-context/PIPELINE_SUMMARY.md` for:
 - Current phase
 - What the project does (SaaS, game, mobile, etc.)
 - Authentication and data handling requirements
 
 **Step 2: Load Security Standards**
-Read `.dainexus/subagent-context/SECURITY_STANDARDS.md` (if exists) for:
+Read `.daiharness/subagent-context/SECURITY_STANDARDS.md` (if exists) for:
 - Project-specific security requirements
 - Compliance requirements (GDPR, SOC2, HIPAA, etc.)
 - Security patterns already established
 
 **Step 3: Load Your Review Scope**
-Read `.dainexus/subagent-context/REVIEWER_CONTRACT.md` for:
+Read `.daiharness/subagent-context/REVIEWER_CONTRACT.md` for:
 - Which files/directories to audit
 - Whether this is a full audit or targeted (auth-only, payments-only, etc.)
 
@@ -183,7 +183,7 @@ Run through EVERY security category below. Mark each as AUDITED or NOT APPLICABL
 
 ## When Done
 
-Write report to `.dainexus/subagent-context/SECURITY_AUDIT_[task-id].md`.
+Write report to `.daiharness/subagent-context/SECURITY_AUDIT_[task-id].md`.
 Append one-line summary:
 
 ```

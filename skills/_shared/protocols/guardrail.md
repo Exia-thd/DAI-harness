@@ -25,7 +25,7 @@ superseded_by: null
 ## Configuration
 
 ```yaml
-# .dainexus.yaml
+# .daiharness.yaml
 guardrail:
   enabled: true
   mode: warn            # warn | deny | disabled | dry_run
@@ -293,7 +293,7 @@ The rule table above is judgment; `scripts/lite/policy_check.py` is enforcement.
 python scripts/lite/policy_check.py check <tool_name> "<args>"
 ```
 
-Exit 0 = ALLOW · exit 2 = WARN (proceed, tag step HARD) · exit 1 = DENY (blocked — includes fail-closed when `.dainexus/execution-policy.yaml` is missing or malformed). Configuration and editing rules: `kernel/POLICY.md`.
+Exit 0 = ALLOW · exit 2 = WARN (proceed, tag step HARD) · exit 1 = DENY (blocked — includes fail-closed when `.daiharness/execution-policy.yaml` is missing or malformed). Configuration and editing rules: `kernel/POLICY.md`.
 
 ## Decision Matrix
 
@@ -378,7 +378,7 @@ If the DENY causes the skill to fail entirely (no alternative path), also emit `
 
 ## Logging
 
-All guardrail decisions are logged to `.dainexus/guardrail-log.jsonl`:
+All guardrail decisions are logged to `.daiharness/guardrail-log.jsonl`:
 
 ```jsonl
 {"timestamp":"2026-03-25T11:00:00Z","decision":"ALLOW","tool":"write_to_file","target":"src/auth.ts","skill":"software-engineer"}
@@ -404,7 +404,7 @@ Layer 2 — BrownfieldSafety (post-skill):
 
 ## Custom Rules
 
-Projects can define custom guardrail rules in `.dainexus.yaml`:
+Projects can define custom guardrail rules in `.daiharness.yaml`:
 
 ```yaml
 guardrail:
@@ -436,7 +436,7 @@ IF guardrail rule evaluation fails (regex error, config parse error):
   3. For SECURITY rules (Rules 1–4, 7–12), documentation governance (Rule 14), custom rules with critical: true, strict mode, or any policy/configuration error: DENY and halt the affected tool/pipeline branch (fail-closed)
   4. Surface the diagnostic; never continue after a security, strict-mode, or policy/configuration error
 
-Note: "Fail-open" applies ONLY to non-security custom rules explicitly configured as permissive in .dainexus.yaml.
+Note: "Fail-open" applies ONLY to non-security custom rules explicitly configured as permissive in .daiharness.yaml.
 All built-in security rules (1–4, 7–12) and documentation governance (Rule 14) ALWAYS fail-closed (DENY on error).
 Consistent with middleware-chain.md Rule 3: Guardrail is the kill switch.
 ```
@@ -459,7 +459,7 @@ Automatically load and enforce coding standards based on file location. See `rul
 | `tests/**` | `rules/test-standards.md` | Warn |
 | `docs/**` | `rules/doc-standards.md` | Suggest |
 
-> **Note:** Path-to-rule mappings are project-specific. Configure in `.dainexus.yaml` under `guardrail.path_rules`. The above are examples — adjust to match your project structure.
+> **Note:** Path-to-rule mappings are project-specific. Configure in `.daiharness.yaml` under `guardrail.path_rules`. The above are examples — adjust to match your project structure.
 
 ### Enforcement Flow
 

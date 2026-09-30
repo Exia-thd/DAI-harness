@@ -1,17 +1,17 @@
 import { describe, it, expect } from 'vitest';
 
 // Test the pipeline-manager functions directly (no MCP SDK mocking needed)
-import { PIPELINE_PHASES, DEFAULT_STATE, getDaiNexusRoot } from '../state/pipeline-manager.js';
+import { PIPELINE_PHASES, DEFAULT_STATE, getDaiHarnessRoot } from '../state/pipeline-manager.js';
 
 // Test the errors module
 import {
-  DaiNexusError,
+  DaiHarnessError,
   StateError,
   PipelineError,
   ToolError,
   SkillError,
   ErrorCode,
-  isDaiNexusError,
+  isDaiHarnessError,
   getErrorMessage,
 } from '../errors.js';
 
@@ -53,25 +53,25 @@ describe('DEFAULT_STATE', () => {
   });
 });
 
-// ─── getDaiNexusRoot ────────────────────────────────────────────
+// ─── getDaiHarnessRoot ────────────────────────────────────────────
 
-describe('getDaiNexusRoot', () => {
+describe('getDaiHarnessRoot', () => {
   it('should return a non-empty string', () => {
-    const root = getDaiNexusRoot();
+    const root = getDaiHarnessRoot();
     expect(root).toBeTruthy();
     expect(typeof root).toBe('string');
     expect(root.length).toBeGreaterThan(0);
   });
 
-  it('should return DAINEXUS_ROOT env var when set', () => {
-    const prev = process.env.DAINEXUS_ROOT;
-    process.env.DAINEXUS_ROOT = '/custom/path';
+  it('should return DAIHARNESS_ROOT env var when set', () => {
+    const prev = process.env.DAIHARNESS_ROOT;
+    process.env.DAIHARNESS_ROOT = '/custom/path';
     // Note: requires module reload to pick up new env
-    expect(getDaiNexusRoot()).toBeTruthy();
+    expect(getDaiHarnessRoot()).toBeTruthy();
     if (prev !== undefined) {
-      process.env.DAINEXUS_ROOT = prev;
+      process.env.DAIHARNESS_ROOT = prev;
     } else {
-      delete process.env.DAINEXUS_ROOT;
+      delete process.env.DAIHARNESS_ROOT;
     }
   });
 });
@@ -106,34 +106,34 @@ describe('ErrorCode', () => {
   });
 });
 
-// ─── DaiNexusError ───────────────────────────────────────────────
+// ─── DaiHarnessError ───────────────────────────────────────────────
 
-describe('DaiNexusError', () => {
+describe('DaiHarnessError', () => {
   it('should create error with code and message', () => {
-    const err = new DaiNexusError(ErrorCode.TOOL_NOT_FOUND, 'Tool not found');
+    const err = new DaiHarnessError(ErrorCode.TOOL_NOT_FOUND, 'Tool not found');
     expect(err.code).toBe('FW301');
     expect(err.message).toBe('Tool not found');
-    expect(err.name).toBe('DaiNexusError');
+    expect(err.name).toBe('DaiHarnessError');
     expect(err.recoverable).toBe(true);
   });
 
   it('should include optional context', () => {
-    const err = new DaiNexusError(ErrorCode.STATE_SAVE_ERROR, 'Save failed', {
+    const err = new DaiHarnessError(ErrorCode.STATE_SAVE_ERROR, 'Save failed', {
       file: '/path.json',
     });
     expect(err.context).toEqual({ file: '/path.json' });
   });
 
   it('should allow non-recoverable errors', () => {
-    const err = new DaiNexusError(ErrorCode.TOOL_EXECUTION_ERROR, 'Failed', {}, false);
+    const err = new DaiHarnessError(ErrorCode.TOOL_EXECUTION_ERROR, 'Failed', {}, false);
     expect(err.recoverable).toBe(false);
   });
 
   it('should serialize to JSON with all fields', () => {
-    const err = new DaiNexusError(ErrorCode.SKILL_NOT_FOUND, 'Missing', { skill: 'test' });
+    const err = new DaiHarnessError(ErrorCode.SKILL_NOT_FOUND, 'Missing', { skill: 'test' });
     const json = err.toJSON();
     expect(json).toMatchObject({
-      name: 'DaiNexusError',
+      name: 'DaiHarnessError',
       code: 'FW401',
       message: 'Missing',
     });
@@ -142,17 +142,17 @@ describe('DaiNexusError', () => {
   });
 
   it('should format to string with and without context', () => {
-    const err1 = new DaiNexusError(ErrorCode.TOOL_NOT_FOUND, 'Tool missing', { tool: 'fake' });
+    const err1 = new DaiHarnessError(ErrorCode.TOOL_NOT_FOUND, 'Tool missing', { tool: 'fake' });
     expect(err1.toString()).toBe('[FW301] Tool missing ({"tool":"fake"})');
 
-    const err2 = new DaiNexusError(ErrorCode.TOOL_NOT_FOUND, 'Tool missing');
+    const err2 = new DaiHarnessError(ErrorCode.TOOL_NOT_FOUND, 'Tool missing');
     expect(err2.toString()).toBe('[FW301] Tool missing');
   });
 
   it('should be instanceof Error', () => {
-    const err = new DaiNexusError(ErrorCode.MCP_SERVER_ERROR, 'Server error');
+    const err = new DaiHarnessError(ErrorCode.MCP_SERVER_ERROR, 'Server error');
     expect(err).toBeInstanceOf(Error);
-    expect(err).toBeInstanceOf(DaiNexusError);
+    expect(err).toBeInstanceOf(DaiHarnessError);
   });
 });
 
@@ -212,34 +212,34 @@ describe('SkillError', () => {
   });
 });
 
-// ─── isDaiNexusError ─────────────────────────────────────────────
+// ─── isDaiHarnessError ─────────────────────────────────────────────
 
-describe('isDaiNexusError', () => {
-  it('should return true for all DaiNexusError subclasses', () => {
-    expect(isDaiNexusError(new DaiNexusError(ErrorCode.MCP_SERVER_ERROR, 'test'))).toBe(true);
-    expect(isDaiNexusError(new StateError(ErrorCode.STATE_SAVE_ERROR, 'test'))).toBe(true);
-    expect(isDaiNexusError(new PipelineError(ErrorCode.PIPELINE_INVALID_MODE, 'test'))).toBe(
+describe('isDaiHarnessError', () => {
+  it('should return true for all DaiHarnessError subclasses', () => {
+    expect(isDaiHarnessError(new DaiHarnessError(ErrorCode.MCP_SERVER_ERROR, 'test'))).toBe(true);
+    expect(isDaiHarnessError(new StateError(ErrorCode.STATE_SAVE_ERROR, 'test'))).toBe(true);
+    expect(isDaiHarnessError(new PipelineError(ErrorCode.PIPELINE_INVALID_MODE, 'test'))).toBe(
       true,
     );
-    expect(isDaiNexusError(new ToolError(ErrorCode.TOOL_NOT_FOUND, 'test'))).toBe(true);
-    expect(isDaiNexusError(new SkillError(ErrorCode.SKILL_NOT_FOUND, 'test'))).toBe(true);
+    expect(isDaiHarnessError(new ToolError(ErrorCode.TOOL_NOT_FOUND, 'test'))).toBe(true);
+    expect(isDaiHarnessError(new SkillError(ErrorCode.SKILL_NOT_FOUND, 'test'))).toBe(true);
   });
 
-  it('should return false for non-DaiNexusError values', () => {
-    expect(isDaiNexusError(new Error('plain'))).toBe(false);
-    expect(isDaiNexusError('string error')).toBe(false);
-    expect(isDaiNexusError({ code: 'FW001', message: 'test' })).toBe(false);
-    expect(isDaiNexusError(null)).toBe(false);
-    expect(isDaiNexusError(undefined)).toBe(false);
-    expect(isDaiNexusError(123)).toBe(false);
+  it('should return false for non-DaiHarnessError values', () => {
+    expect(isDaiHarnessError(new Error('plain'))).toBe(false);
+    expect(isDaiHarnessError('string error')).toBe(false);
+    expect(isDaiHarnessError({ code: 'FW001', message: 'test' })).toBe(false);
+    expect(isDaiHarnessError(null)).toBe(false);
+    expect(isDaiHarnessError(undefined)).toBe(false);
+    expect(isDaiHarnessError(123)).toBe(false);
   });
 });
 
 // ─── getErrorMessage ────────────────────────────────────────────────
 
 describe('getErrorMessage', () => {
-  it('should format DaiNexusError with code', () => {
-    const err = new DaiNexusError(ErrorCode.TOOL_NOT_FOUND, 'Tool missing', { tool: 'x' });
+  it('should format DaiHarnessError with code', () => {
+    const err = new DaiHarnessError(ErrorCode.TOOL_NOT_FOUND, 'Tool missing', { tool: 'x' });
     expect(getErrorMessage(err)).toBe('[FW301] Tool missing ({"tool":"x"})');
   });
 

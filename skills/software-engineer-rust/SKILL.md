@@ -3,7 +3,7 @@ name: software-engineer-rust
 extends: software-engineer
 language: rust
 version: 1.0.0
-author: dai-nexus
+author: dai-harness
 tags: [rust, backend, api, services, clean-architecture, tdd, safety]
 file_patterns: ["*.rs", "Cargo.toml", "Cargo.lock", "rustfmt.toml", ".rustfmt.toml"]
 linter: clippy

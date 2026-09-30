@@ -203,7 +203,7 @@ Write the following disaster recovery documents:
 
 For each service identified in the architecture, generate a directory under `docs/runbooks/<service-name>/` at the project root. Each runbook MUST follow this template:
 
-```markdown
+````markdown
 # Runbook: <Alert Name>
 
 ## Alert Details
@@ -275,7 +275,7 @@ kubectl rollout status deployment/<service> -n production --timeout=120s
 - [ ] Create postmortem document
 - [ ] File follow-up tickets
 - [ ] Update this runbook if new information discovered
-```
+````
 
 Generate at minimum these runbooks per service:
 - `high-error-rate.md` — elevated 5xx responses

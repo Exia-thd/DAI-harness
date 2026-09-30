@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { removeQuietly, renameWithRetry } from "../src/fs-safe.js";
 
 function workspace(): string {
-  return fs.mkdtempSync(join(tmpdir(), "dai-nexus-fs-safe-"));
+  return fs.mkdtempSync(join(tmpdir(), "dai-harness-fs-safe-"));
 }
 
 afterEach(() => {
@@ -81,7 +81,7 @@ describe("removeQuietly", () => {
 
   it("does not object to a path that is already gone", () => {
     expect(() =>
-      removeQuietly(join(tmpdir(), "dai-nexus-fs-safe-absent-path")),
+      removeQuietly(join(tmpdir(), "dai-harness-fs-safe-absent-path")),
     ).not.toThrow();
   });
 });

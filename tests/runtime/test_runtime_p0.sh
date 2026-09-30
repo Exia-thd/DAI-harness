@@ -3,8 +3,8 @@
 # test_runtime_p0.sh — Runtime Lifecycle Guard, P0 + P0.5 test suite
 # Plan: docs/adr/ADR-010-runtime-lifecycle-guard.md
 #
-# Runs fully isolated: DAINEXUS_RLG_HOME and the install target both point
-# into a temp dir, so the suite never touches ~/.dainexus or real processes.
+# Runs fully isolated: DAIHARNESS_RLG_HOME and the install target both point
+# into a temp dir, so the suite never touches ~/.daiharness or real processes.
 # Every process it creates is its own `sleep`, and it cleans them up.
 #
 # Usage: bash tests/runtime/test_runtime_p0.sh
@@ -19,8 +19,8 @@ INSTALL="$RT/runtime-install.sh"
 INVENTORY="$RT/runtime-inventory.sh"
 
 SANDBOX="$(mktemp -d "${TMPDIR:-/tmp}/rlg-test.XXXXXX")"
-export DAINEXUS_RLG_HOME="$SANDBOX/rlg-home"
-export DAINEXUS_SESSION_ID="test-session-$$"
+export DAIHARNESS_RLG_HOME="$SANDBOX/rlg-home"
+export DAIHARNESS_SESSION_ID="test-session-$$"
 export NO_COLOR=1
 
 # Spawned pids are tracked in a FILE, not a shell array. spawn() runs inside a
@@ -169,18 +169,18 @@ bash "$LEASE" release --lease "$lease3" >/dev/null 2>&1
 section "kill-switch, 3 tiers"
 
 PID4="$(spawn)"
-DAINEXUS_RLG=off bash "$LEASE" acquire --role web-dev --project "$PROJ_A" --pid "$PID4" >/dev/null 2>&1
-assert_rc "$?" "3" "tier 1: DAINEXUS_RLG=off disables the guard"
+DAIHARNESS_RLG=off bash "$LEASE" acquire --role web-dev --project "$PROJ_A" --pid "$PID4" >/dev/null 2>&1
+assert_rc "$?" "3" "tier 1: DAIHARNESS_RLG=off disables the guard"
 
-touch "$DAINEXUS_RLG_HOME/DISABLED"
+touch "$DAIHARNESS_RLG_HOME/DISABLED"
 bash "$LEASE" acquire --role web-dev --project "$PROJ_A" --pid "$PID4" >/dev/null 2>&1
 assert_rc "$?" "3" "tier 2: DISABLED file disables the guard"
-rm -f "$DAINEXUS_RLG_HOME/DISABLED"
+rm -f "$DAIHARNESS_RLG_HOME/DISABLED"
 
-mkdir -p "$PROJ_A/.dainexus" && touch "$PROJ_A/.dainexus/rlg-optout"
+mkdir -p "$PROJ_A/.daiharness" && touch "$PROJ_A/.daiharness/rlg-optout"
 bash "$LEASE" acquire --role web-dev --project "$PROJ_A" --pid "$PID4" >/dev/null 2>&1
 assert_rc "$?" "3" "tier 3: per-project rlg-optout disables the guard"
-rm -f "$PROJ_A/.dainexus/rlg-optout"
+rm -f "$PROJ_A/.daiharness/rlg-optout"
 
 bash "$LEASE" acquire --role web-dev --project "$PROJ_A" --pid "$PID4" >/dev/null 2>&1
 assert_rc "$?" "0" "guard active again once switches are cleared"
@@ -236,8 +236,8 @@ bash "$INSTALL" --link --from "$FAKE_REPO" --target "$TARGET" >/dev/null 2>&1
 # Regression: a manifest that yields no entries must FAIL, never report a
 # vacuous PASS. The first version of --verify had a broken extractor and
 # "passed" while checking nothing.
-cp "$DAINEXUS_RLG_HOME/INSTALLED_FROM" "$SANDBOX/installed.bak"
-python3 - "$DAINEXUS_RLG_HOME/INSTALLED_FROM" <<'PY'
+cp "$DAIHARNESS_RLG_HOME/INSTALLED_FROM" "$SANDBOX/installed.bak"
+python3 - "$DAIHARNESS_RLG_HOME/INSTALLED_FROM" <<'PY'
 import json, sys
 p = sys.argv[1]
 d = json.load(open(p))
@@ -247,7 +247,7 @@ PY
 out="$(bash "$INSTALL" --verify 2>&1)"; rc=$?
 assert_rc "$rc" "1" "--verify FAILS on an empty manifest (no vacuous PASS)"
 assert_contains "$out" "EMPTY" "empty manifest is named explicitly"
-cp "$SANDBOX/installed.bak" "$DAINEXUS_RLG_HOME/INSTALLED_FROM"
+cp "$SANDBOX/installed.bak" "$DAIHARNESS_RLG_HOME/INSTALLED_FROM"
 
 # Unmanaged file dropped into the install dir.
 touch "$TARGET/rogue-script.sh"
@@ -259,7 +259,7 @@ rm -f "$TARGET/rogue-script.sh"
 # ══ 7. Allowlist ═════════════════════════════════════════════════════════════
 section "allowlist"
 
-printf '# comment\n5432\t# postgres\n3040\n' > "$DAINEXUS_RLG_HOME/port-allowlist.txt"
+printf '# comment\n5432\t# postgres\n3040\n' > "$DAIHARNESS_RLG_HOME/port-allowlist.txt"
 (
   # shellcheck source=scripts/runtime/runtime-common.sh
   . "$RT/runtime-common.sh"

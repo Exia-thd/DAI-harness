@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DaiNexus.Gameplay
+namespace DaiHarness.Gameplay
 {
     /// <summary>
     /// Professional State-Machine Combat Controller for Unity.

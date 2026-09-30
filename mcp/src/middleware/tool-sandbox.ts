@@ -77,7 +77,7 @@ const DEFAULT_CONFIG: Required<
   SandboxConfig & { tool_overrides: SandboxConfig['tool_overrides'] }
 > = {
   enabled: true,
-  audit_log_dir: '.dainexus/audit',
+  audit_log_dir: '.daiharness/audit',
   max_raw_size: 10_240, // 10KB
   max_summary_size: 512, // chars
   enable_audit: true,

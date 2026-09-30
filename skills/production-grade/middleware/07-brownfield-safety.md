@@ -9,15 +9,15 @@
 ```
 1. Regression check (brownfield only)
    → Run existing test suite
-   → Compare with baseline from .dainexus/baseline-{session}.json
+   → Compare with baseline from .daiharness/baseline-{session}.json
    → If previously-passing test now fails → REGRESSION → STOP
    
 2. Protected paths enforcement
-   → Check .dainexus/project-profile.json → risk.protected_paths
+   → Check .daiharness/project-profile.json → risk.protected_paths
    → Verify no modifications to protected files
    
 3. Change manifest update
-   → Log all file operations to .dainexus/change-manifest-{session}.json
+   → Log all file operations to .daiharness/change-manifest-{session}.json
    
 4. Merge readiness check (pre-Gate 3)
    → Full regression + quality check

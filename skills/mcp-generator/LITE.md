@@ -29,7 +29,7 @@ Format: `n. ACTION | TARGET | CHECK`
 
 ### Step 1: Ground the active MCP workspace profile settings
 ```bash
-cat .dainexus/project-profile.json
+cat .daiharness/project-profile.json
 cat .production-grade.yaml | grep -E "(expertMode|default_model)"
 ```
 ```yaml
@@ -43,7 +43,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
 const server = new McpServer({
-  name: "dai-nexus-fetch-service",
+  name: "dai-harness-fetch-service",
   version: "1.0.0"
 });
 
@@ -80,7 +80,7 @@ Append configuration to `~/.cursor/mcp.json`:
 ```json
 {
   "mcpServers": {
-    "dai-nexus-fetch-service": {
+    "dai-harness-fetch-service": {
       "command": "npx",
       "args": [
         "tsx",

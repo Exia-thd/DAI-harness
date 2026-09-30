@@ -1,7 +1,7 @@
 # Tiểu My — Revenue Strategy Comparison
 
 **Date:** 2026-04-17
-**Evaluator:** Tiểu My / DAI Nexus AntiGravity
+**Evaluator:** Tiểu My / DAI Harness AntiGravity
 **Status:** URGENT — $10/month cost, $0 revenue
 
 ---
@@ -162,7 +162,7 @@
 
 ## Scoring: Shopee Affiliate via Midscene
 
-Using DAI Nexus SCORE (8 criteria, 1-10):
+Using DAI Harness SCORE (8 criteria, 1-10):
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
@@ -180,7 +180,7 @@ Using DAI Nexus SCORE (8 criteria, 1-10):
 
 ## Scoring: Lifestyle Audience Building
 
-Using DAI Nexus SCORE (8 criteria, 1-10):
+Using DAI Harness SCORE (8 criteria, 1-10):
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
@@ -269,4 +269,4 @@ Using DAI Nexus SCORE (8 criteria, 1-10):
 
 ---
 
-*Last updated: 2026-04-17 | Owner: Tiểu My / DAI Nexus AntiGravity*
+*Last updated: 2026-04-17 | Owner: Tiểu My / DAI Harness AntiGravity*

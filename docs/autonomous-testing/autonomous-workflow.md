@@ -298,7 +298,7 @@ dai ci deploy                    # Deploy after green
 ## Configuration
 
 ```yaml
-# .dainexus/autonomous.yaml
+# .daiharness/autonomous.yaml
 autonomous:
   enabled: true
   maxAutoFixAttempts: 3

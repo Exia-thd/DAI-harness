@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# checkpoint-extract.sh — Semantic Checkpoint Extraction for DAI Nexus
+# checkpoint-extract.sh — Semantic Checkpoint Extraction for DAI Harness
 # Extracts WHY, not just WHAT — key decisions, blockers, architectural choices
 # Usage: bash checkpoint-extract.sh [--reason "<reason>"] [--session "<session-id>"]
 # Output: Structured JSON with semantic context for memory checkpointing
@@ -7,8 +7,8 @@
 set -euo pipefail
 
 # ── Config ────────────────────────────────────────────────────────────────
-DAINEXUS_DIR="${DAINEXUS_WORKSPACE:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
-SESSION_LOG="$DAINEXUS_DIR/.dainexus/session-log.json"
+DAIHARNESS_DIR="${DAIHARNESS_WORKSPACE:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+SESSION_LOG="$DAIHARNESS_DIR/.daiharness/session-log.json"
 MAX_FILES_SHOWN=10
 # ── Helpers ──────────────────────────────────────────────────────────────
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'

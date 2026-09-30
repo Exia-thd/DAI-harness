@@ -62,18 +62,18 @@ describe('MCP Server Integration', () => {
   });
 
   describe('Error Handling', () => {
-    it('DaiNexusError serializes correctly', async () => {
-      const { DaiNexusError, ErrorCode } = await import('../../mcp/build/errors.js');
-      const err = new DaiNexusError(ErrorCode.TOOL_NOT_FOUND, 'Tool missing', { tool: 'test' });
+    it('DaiHarnessError serializes correctly', async () => {
+      const { DaiHarnessError, ErrorCode } = await import('../../mcp/build/errors.js');
+      const err = new DaiHarnessError(ErrorCode.TOOL_NOT_FOUND, 'Tool missing', { tool: 'test' });
       const json = err.toJSON();
       expect(json.code).toBe('FW301');
       expect(json.context).toBeDefined();
     });
 
-    it('isDaiNexusError detects error types', async () => {
-      const { isDaiNexusError, DaiNexusError, ErrorCode } = await import('../../mcp/build/errors.js');
-      expect(isDaiNexusError(new DaiNexusError(ErrorCode.MCP_SERVER_ERROR, 'test'))).toBe(true);
-      expect(isDaiNexusError(new Error('plain'))).toBe(false);
+    it('isDaiHarnessError detects error types', async () => {
+      const { isDaiHarnessError, DaiHarnessError, ErrorCode } = await import('../../mcp/build/errors.js');
+      expect(isDaiHarnessError(new DaiHarnessError(ErrorCode.MCP_SERVER_ERROR, 'test'))).toBe(true);
+      expect(isDaiHarnessError(new Error('plain'))).toBe(false);
     });
   });
 });

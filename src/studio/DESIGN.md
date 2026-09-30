@@ -1,6 +1,6 @@
-# DAI Nexus Studio Design System
+# DAI Harness Studio Design System
 
-This design specification adapts the **VoltAgent** design system preset from the `awesome-design-md` catalog specifically for the DAI Nexus Studio UI dashboard.
+This design specification adapts the **VoltAgent** design system preset from the `awesome-design-md` catalog specifically for the DAI Harness Studio UI dashboard.
 
 ---
 

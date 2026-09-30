@@ -70,12 +70,12 @@ const fixtureRoot = join(
 const tempRoots: string[] = [];
 
 function tempProject(name: string): string {
-  const root = mkdtempSync(join(tmpdir(), `dai-nexus-docs-${name}-`));
+  const root = mkdtempSync(join(tmpdir(), `dai-harness-docs-${name}-`));
   tempRoots.push(root);
   return root;
 }
 
-function copyFixture(name: "dainexus" | "pixelworld"): string {
+function copyFixture(name: "daiharness" | "pixelworld"): string {
   const root = tempProject(name);
   cpSync(join(fixtureRoot, name), root, { recursive: true });
   return root;
@@ -87,7 +87,7 @@ function writeJson(path: string, value: unknown): void {
 }
 
 afterEach(() => {
-  delete process.env.DAINEXUS_HOME;
+  delete process.env.DAIHARNESS_HOME;
   for (const root of tempRoots.splice(0)) {
     rmSync(root, { recursive: true, force: true });
   }
@@ -95,7 +95,7 @@ afterEach(() => {
 
 describe("docs manifest and registry", () => {
   it("initializes idempotently without overwriting an existing manifest", () => {
-    const root = copyFixture("dainexus");
+    const root = copyFixture("daiharness");
     const first = initManifest(root);
     expect(first.status).toBe("created");
     const customized = {
@@ -129,7 +129,7 @@ describe("docs manifest and registry", () => {
   });
 
   it("creates a canonical project state non-destructively", () => {
-    const root = copyFixture("dainexus");
+    const root = copyFixture("daiharness");
     const first = initManifest(root);
     expect(first.manifest.project_docs).toEqual({
       schema_version: 1,
@@ -153,8 +153,8 @@ describe("docs manifest and registry", () => {
   });
 
   it("migrates an existing manifest to the mandatory project docs contract", () => {
-    const root = copyFixture("dainexus");
-    const manifestPath = join(root, ".dainexus", "docs-manifest.json");
+    const root = copyFixture("daiharness");
+    const manifestPath = join(root, ".daiharness", "docs-manifest.json");
     writeJson(manifestPath, {
       schema_version: 1,
       project: { id: "legacy-project", title: "Legacy Project" },
@@ -178,7 +178,7 @@ describe("docs manifest and registry", () => {
   });
 
   it("validates the complete project-state contract and rejects malformed sections", () => {
-    const root = copyFixture("dainexus");
+    const root = copyFixture("daiharness");
     const state = createDefaultProjectState(root);
     expect(validateProjectState(state)).toEqual(state);
     expect(() =>
@@ -283,7 +283,7 @@ describe("docs manifest and registry", () => {
   itSymlink(
     "rejects canonical state files reached through file or directory symlinks",
     () => {
-      const root = copyFixture("dainexus");
+      const root = copyFixture("daiharness");
       const realDirectory = join(root, "real-state");
       mkdirSync(realDirectory);
       writeJson(
@@ -307,10 +307,10 @@ describe("docs manifest and registry", () => {
   );
 
   it("adds, canonicalizes, lists, updates and removes registry projects", () => {
-    const root = copyFixture("dainexus");
+    const root = copyFixture("daiharness");
     initManifest(root);
     const home = tempProject("home");
-    process.env.DAINEXUS_HOME = home;
+    process.env.DAIHARNESS_HOME = home;
     const registryPath = join(home, "docs-hub", "projects.json");
 
     const added = addRegistryProject(root, registryPath);
@@ -325,8 +325,8 @@ describe("docs manifest and registry", () => {
   });
 
   it("rejects duplicate project IDs for different registry roots", () => {
-    const firstRoot = copyFixture("dainexus");
-    const secondRoot = copyFixture("dainexus");
+    const firstRoot = copyFixture("daiharness");
+    const secondRoot = copyFixture("daiharness");
     initManifest(firstRoot);
     initManifest(secondRoot);
     const home = tempProject("duplicate-id-home");
@@ -345,18 +345,18 @@ describe("docs manifest and registry", () => {
 
 describe("privacy-safe scanning and deterministic normalization", () => {
   it("supports Docs, docs, README-only and empty legacy projects", () => {
-    const daiNexus = copyFixture("dainexus");
+    const daiHarness = copyFixture("daiharness");
     const pixelworld = copyFixture("pixelworld");
     const readmeOnly = tempProject("readme");
     writeFileSync(join(readmeOnly, "README.md"), "# Readme only\n", "utf8");
     const empty = tempProject("empty");
 
-    const daiNexusCatalog = scanProject(daiNexus);
-    expect(daiNexusCatalog.documents.map((doc) => doc.sourcePath)).toEqual(
+    const daiHarnessCatalog = scanProject(daiHarness);
+    expect(daiHarnessCatalog.documents.map((doc) => doc.sourcePath)).toEqual(
       expect.arrayContaining(["README.md", "docs/architecture.md"]),
     );
     expect(
-      daiNexusCatalog.diagnostics.some(
+      daiHarnessCatalog.diagnostics.some(
         (diagnostic) => diagnostic.code === "BROKEN_LINK",
       ),
     ).toBe(false);
@@ -383,7 +383,7 @@ describe("privacy-safe scanning and deterministic normalization", () => {
       "# SECRET_DO_NOT_INGEST\n",
       "utf8",
     );
-    writeJson(join(root, ".dainexus", "docs-manifest.json"), {
+    writeJson(join(root, ".daiharness", "docs-manifest.json"), {
       schema_version: 1,
       project: { id: "sensitive", title: "Sensitive" },
       sources: [
@@ -461,7 +461,7 @@ describe("privacy-safe scanning and deterministic normalization", () => {
   });
 
   it("keeps stable IDs and catalog fingerprints across repeated scans", () => {
-    const root = copyFixture("dainexus");
+    const root = copyFixture("daiharness");
     initManifest(root);
     const first = scanProject(root);
     const second = scanProject(root);
@@ -477,7 +477,7 @@ describe("privacy-safe scanning and deterministic normalization", () => {
   itSymlink(
     "loads project state, reports contract failures, and fingerprints state content",
     () => {
-      const root = copyFixture("dainexus");
+      const root = copyFixture("daiharness");
       initManifest(root);
       const first = scanProject(root);
       expect(first.project.state).not.toBeNull();
@@ -545,7 +545,7 @@ describe("privacy-safe scanning and deterministic normalization", () => {
         "PROJECT_STATE_REFERENCE_UNAVAILABLE",
       );
 
-      const manifestPath = join(root, ".dainexus", "docs-manifest.json");
+      const manifestPath = join(root, ".daiharness", "docs-manifest.json");
       const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as Record<
         string,
         unknown
@@ -628,7 +628,7 @@ describe("privacy-safe scanning and deterministic normalization", () => {
     const loaded = loadManifest(root);
     expect(loaded.legacy).toBe(true);
     expect(loaded.manifestPath).toBeNull();
-    expect(existsSync(join(root, ".dainexus", "docs-manifest.json"))).toBe(
+    expect(existsSync(join(root, ".daiharness", "docs-manifest.json"))).toBe(
       false,
     );
   });
@@ -641,7 +641,7 @@ describe("privacy-safe scanning and deterministic normalization", () => {
     }
     writeFileSync(
       join(projectA, "Docs", "a.md"),
-      "# A\n\n[Project B](dai-nexus://project-b/Docs/b.md#target)\n",
+      "# A\n\n[Project B](dai-harness://project-b/Docs/b.md#target)\n",
       "utf8",
     );
     writeFileSync(join(projectB, "Docs", "b.md"), "# B\n\n## Target\n", "utf8");
@@ -764,10 +764,10 @@ describe("privacy-safe scanning and deterministic normalization", () => {
   });
 
   it("preserves successful project output when another batch project fails", () => {
-    const validRoot = copyFixture("dainexus");
+    const validRoot = copyFixture("daiharness");
     initManifest(validRoot);
     const invalidRoot = tempProject("invalid-batch-project");
-    writeJson(join(invalidRoot, ".dainexus", "docs-manifest.json"), {
+    writeJson(join(invalidRoot, ".daiharness", "docs-manifest.json"), {
       schema_version: 99,
       project: { id: "invalid", title: "Invalid" },
       sources: [],
@@ -778,10 +778,10 @@ describe("privacy-safe scanning and deterministic normalization", () => {
     const result = executeDocsBuild([validRoot, invalidRoot], output);
     expect(result.failures).toHaveLength(1);
     expect(result.buildResult?.projects.map((project) => project.id)).toEqual([
-      "dai-nexus-fixture",
+      "dai-harness-fixture",
     ]);
     expect(
-      existsSync(join(output, "projects", "dai-nexus-fixture", "index.html")),
+      existsSync(join(output, "projects", "dai-harness-fixture", "index.html")),
     ).toBe(true);
   });
 });

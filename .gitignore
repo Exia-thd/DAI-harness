@@ -13,46 +13,46 @@ __pycache__/
 # ─── Secrets & local config ────────────────────────────────────────────────
 .env
 .env.*
-.dainexus/settings.env
+.daiharness/settings.env
 
 # ─── Machine-local runtime state ───────────────────────────────────────────
 # Generated per-run and per-machine. Committing these also breaks the runtime
 # lease check, which asserts no runtime state is tracked.
-.dainexus/verify/
-.dainexus/runtime/
-.dainexus/escalations/
-.dainexus/pipeline-state.json
-.dainexus/leases.json
-.dainexus/memory.db*
+.daiharness/verify/
+.daiharness/runtime/
+.daiharness/escalations/
+.daiharness/pipeline-state.json
+.daiharness/leases.json
+.daiharness/memory.db*
 memory.db
-.dainexus/logs/
-.dainexus/audit/
-.dainexus/metrics/
-.dainexus/telemetry/
-.dainexus/cache/
-.dainexus/local-ci-venv/
-.dainexus/mcp-server/node_modules/
+.daiharness/logs/
+.daiharness/audit/
+.daiharness/metrics/
+.daiharness/telemetry/
+.daiharness/cache/
+.daiharness/local-ci-venv/
+.daiharness/mcp-server/node_modules/
 
 # ─── Generated evidence & report artifacts ─────────────────────────────────
-.dainexus/reports/
-.dainexus/docs-hub/
-.dainexus/guardrail-log.jsonl
-.dainexus/policy-log.jsonl
-.dainexus/rule-ledger.jsonl
-.dainexus/quality-history.json
-.dainexus/quality-gate-events.jsonl
-.dainexus/verification-events.jsonl
-.dainexus/quality-report-*.json
-.dainexus/baseline-*.json
-.dainexus/change-manifest-*.json
-.dainexus/git-baseline.json
-.dainexus/session-log.json
-.dainexus/events.log
-.dainexus/bookkeep.log
+.daiharness/reports/
+.daiharness/docs-hub/
+.daiharness/guardrail-log.jsonl
+.daiharness/policy-log.jsonl
+.daiharness/rule-ledger.jsonl
+.daiharness/quality-history.json
+.daiharness/quality-gate-events.jsonl
+.daiharness/verification-events.jsonl
+.daiharness/quality-report-*.json
+.daiharness/baseline-*.json
+.daiharness/change-manifest-*.json
+.daiharness/git-baseline.json
+.daiharness/session-log.json
+.daiharness/events.log
+.daiharness/bookkeep.log
 ruff_errors.json
 
 # Workspace-local MCP runtime evidence
-mcp/.dainexus/
+mcp/.daiharness/
 
 # ─── Parallel dispatch worktrees ───────────────────────────────────────────
 .worktrees/

@@ -2,11 +2,11 @@
   "task": "pm-mcp-integration",
   "status": "completed",
   "files_created": [
-    ".dainexus/project-manager/mcp/README.md",
-    ".dainexus/project-manager/mcp/LINEAR.md",
-    ".dainexus/project-manager/mcp/GITHUB.md",
-    ".dainexus/project-manager/mcp/JIRA.md",
-    ".dainexus/project-manager/mcp/QUICKREF.md"
+    ".daiharness/project-manager/mcp/README.md",
+    ".daiharness/project-manager/mcp/LINEAR.md",
+    ".daiharness/project-manager/mcp/GITHUB.md",
+    ".daiharness/project-manager/mcp/JIRA.md",
+    ".daiharness/project-manager/mcp/QUICKREF.md"
   ],
   "files_updated": [
     "skills/project-manager/SKILL.md"
