@@ -26,6 +26,21 @@ COMPLETION_AXES = {
     "production_evidence": {"verified", "missing", "not-required"},
     "outcome": {"met", "met-locally", "partially-met", "not-measured", "not-met"},
 }
+# One replay of the roadmap runner on this repository, measured: 269s. It copies the
+# worktree, fingerprints the copy three times and the source twice, runs the
+# verifier, then deletes the copy -- 21s to copy, 24s to delete, and the rest is
+# fingerprinting a git worktree whose index and file cache are both cold.
+#
+# 240s cut into that, and the test reported TimeoutExpired as though the contract had
+# broken. The budget is not what these two runs check: they assert what the runner
+# refuses and what it reports, not how fast it does either.
+#
+# The next reduction is not a larger number here. node_modules is 208MB and 35,244
+# files of that copy and the snapshot only reads it, so mounting it the way
+# _mount_verifier_volatiles already mounts caches would remove the copy, the delete,
+# and most of the cold fingerprint.
+RUNNER_TIMEOUT_SECS = 600
+
 REPORT_CONTRACT = {
     "schema": "dai-nexus-roadmap-verification/v1",
     "producer": "scripts/ci/verify-roadmap-completion.py",
@@ -194,7 +209,7 @@ def test_roadmap_verifier_contract_and_failure_path_are_executable(
         cwd=ROOT,
         capture_output=True,
         text=True,
-        timeout=240,
+        timeout=RUNNER_TIMEOUT_SECS,
         check=False,
     )
     assert failed.returncode != 0
@@ -239,7 +254,7 @@ def test_roadmap_verifier_contract_and_failure_path_are_executable(
             cwd=ROOT,
             capture_output=True,
             text=True,
-            timeout=240,
+            timeout=RUNNER_TIMEOUT_SECS,
             check=False,
         )
     finally:

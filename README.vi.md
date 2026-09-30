@@ -9,13 +9,13 @@
 <p align="center">
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" /></a>
   <img src="https://img.shields.io/badge/version-8.7.0-blue.svg" alt="Version" />
-  <img src="https://img.shields.io/badge/skills-83-brightgreen.svg" alt="Skills" />
+  <img src="https://img.shields.io/badge/skills-87-brightgreen.svg" alt="Skills" />
   <img src="https://img.shields.io/badge/modes-24-blueviolet.svg" alt="Modes" />
-  <img src="https://img.shields.io/badge/protocols-29-00CED1.svg" alt="Protocols" />
+  <img src="https://img.shields.io/badge/protocols-59-00CED1.svg" alt="Protocols" />
   <img src="https://img.shields.io/badge/Game_Dev-Unity·Unreal·Godot·Roblox-FF4500.svg" alt="Game Dev" />
   <img src="https://img.shields.io/badge/Code_Intelligence-DAI%20memory-4B0082.svg" alt="Code Intelligence" />
   <img src="https://img.shields.io/badge/Memory-Persistent%20(memory)-00CED1.svg" alt="Memory" />
-  <img src="https://img.shields.io/badge/MCP-12%20Tools-orange.svg" alt="MCP" />
+  <img src="https://img.shields.io/badge/MCP-8%20Tools-orange.svg" alt="MCP" />
 </p>
 
 ---

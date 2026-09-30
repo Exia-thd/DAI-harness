@@ -764,5 +764,4 @@ const motionPresets = {
 - [ ] Handoff specs delivered to Frontend Engineer
 - [ ] Interaction glossary created for design system consistency
 - [ ] Test scenarios documented for QA
-```
 

@@ -645,4 +645,3 @@ Ask "what if" questions:
 | Generic options like "Tell me more" | Options must be specific |
 | Staying in one mode when conversation shifts | Be fluid. Load new mode file when needed. |
 | Pre-flight that feels like interrogation | Max 2-3 quick exchanges with options |
-```

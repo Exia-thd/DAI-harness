@@ -995,14 +995,26 @@
     "lifecycle": "active",
     "health": "on_track",
     "phase": "SUSTAIN",
-    "summary": "GitNexus is gone: memory and code intelligence run on the DAI memory plugin, now a git submodule (vendor/dai-memory, pinned to one commit of Exia-thd/DAI-memory-layer-plugin; changes land in the plugin first) installed outside the repository by scripts/lite/dai_memory.py install, one directory per commit. The MCP setup registers a dai-memory server in every client and removes gitnexus entries it wrote before; the guard, orchestrator, sequence generator, docs hub (adapters.dai_memory reading .memory/meta.json), skills and docs use the layer. The retired memory stores are migrated and removed; the session machinery they shared (memory-session, memory-middleware, continuity, memory-trace) is kept and records into the layer. The pinned plugin commit is 15d7ba7: a full `dai-memory ingest` records the commit it read, so `status` and the docs hub's code-index adapter stop calling a current index stale, and the install declares its script exceptions in all three places pnpm 9, 10 and 12 read, so the engine no longer installs with a native module it cannot load.",
-    "updated_at": "2026-09-28T14:56:49+07:00",
+    "summary": "GitNexus is gone: memory and code intelligence run on the DAI memory plugin, now a git submodule (vendor/dai-memory, pinned to one commit of Exia-thd/DAI-memory-layer-plugin; changes land in the plugin first) installed outside the repository by scripts/lite/dai_memory.py install, one directory per commit. The MCP setup registers a dai-memory server in every client and removes gitnexus entries it wrote before; the guard, orchestrator, sequence generator, docs hub (adapters.dai_memory reading .memory/meta.json), skills and docs use the layer. The retired memory stores are migrated and removed; the session machinery they shared (memory-session, memory-middleware, continuity, memory-trace) is kept and records into the layer. The pinned plugin commit is 705f62f. It carries three things the harness depends on: a full `dai-memory ingest` records the commit it read, so `status` and the docs hub's code-index adapter stop calling a current index stale; the install declares its script exceptions in all three places pnpm 9, 10 and 12 read, so the engine no longer installs with a native module it cannot load; and the MCP tool list costs 12,795 characters a session instead of 16,900, with the workflows served as MCP prompts so a client other than Claude Code can reach them.",
+    "updated_at": "2026-09-30T11:13:30+07:00",
     "blockers": [],
     "risks": [],
     "next_actions": [
       {
         "id": "trajectory-lifecycle",
         "title": "Implement the H2 TrajectoryLedger, cancellation/disposer semantics, and quiescence receipts.",
+        "owner": "Runtime maintainers",
+        "due_date": null
+      },
+      {
+        "id": "markdown-fence-backlog",
+        "title": "Repair the nine Markdown files whose code fences still do not pair; tests/markdown_fence_baseline.txt names where each inversion starts, and the guard test fails once a listed file is fixed.",
+        "owner": "Docs maintainers",
+        "due_date": null
+      },
+      {
+        "id": "snapshot-mount-node-modules",
+        "title": "Mount node_modules into the roadmap replay snapshot instead of copying it: 208MB and 35,244 files of every replay, read-only, and _mount_verifier_volatiles already mounts caches that way.",
         "owner": "Runtime maintainers",
         "due_date": null
       }

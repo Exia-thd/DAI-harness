@@ -136,8 +136,33 @@ def fchmod(fd: int, mode: int, path: Path | str | None = None) -> None:
 # git timeout, which surfaced as the gate reporting its own slowness as a
 # verification failure. The reference carries the same design and never felt it:
 # that tree has no node_modules.
+# Trees whose contents are derived: installed dependencies, generated stores, and
+# git's own directory. The names live here once and are used twice -- as the filter
+# every path is checked against, and as the pathspec that keeps git from listing
+# them in the first place.
+_DERIVED_TREE_DIR_NAMES = (
+    "node_modules",
+    ".gitnexus",
+    ".memory",
+    ".venv",
+    "venv",
+    ".git",
+)
+
 _DERIVED_TREE_RE = re.compile(
-    r"(?:^|/)(?:node_modules|\.gitnexus|\.memory|\.venv|venv|\.git)(?:/|$)"
+    r"(?:^|/)(?:"
+    + "|".join(re.escape(name) for name in _DERIVED_TREE_DIR_NAMES)
+    + r")(?:/|$)"
+)
+
+# Asking git for every ignored file and discarding 99% of the answer is most of the
+# cost of a fingerprint: 28,267 paths listed to keep 186 on this repository, walked
+# again for every fingerprint in a run. The exclusions below express the filter
+# above as a pathspec, so the kept set is the same by construction.
+_DERIVED_TREE_PATHSPEC = tuple(
+    pattern
+    for name in _DERIVED_TREE_DIR_NAMES
+    for pattern in (f":(exclude){name}/**", f":(exclude)**/{name}/**")
 )
 
 _DERIVED_CACHE_RE = re.compile(
@@ -936,10 +961,20 @@ def _untracked_record(workspace: Path, relative: str) -> list[str]:
     return records
 
 
-def _git_paths(workspace: Path, args: list[str]) -> list[str]:
+def _git_paths(
+    workspace: Path, args: list[str], *, skip_derived: bool = False
+) -> list[str]:
+    """Paths from a NUL-separated `git ls-files`.
+
+    `skip_derived` adds the derived-tree pathspec. It is an optimisation with no
+    effect on the result: every path it removes is a path `_ignored_verify_path`
+    rejects, and the caller applies that filter anyway.
+    """
+
+    argv = [*args, "--", *_DERIVED_TREE_PATHSPEC] if skip_derived else args
     return [
         item.decode("utf-8", "surrogateescape")
-        for item in _run_git(workspace, args).split(b"\0")
+        for item in _run_git(workspace, argv).split(b"\0")
         if item
     ]
 
@@ -1016,13 +1051,16 @@ def worktree_fingerprint(workspace: Path) -> str:
                 index_records.append("index|" + relative + "|" + metadata_text)
                 if metadata_text.startswith("160000 "):
                     submodule_paths.append(relative)
-        tracked = _git_paths(workspace, ["ls-files", "-z"])
+        tracked = _git_paths(workspace, ["ls-files", "-z"], skip_derived=True)
         untracked = _git_paths(
-            workspace, ["ls-files", "--others", "--exclude-standard", "-z"]
+            workspace,
+            ["ls-files", "--others", "--exclude-standard", "-z"],
+            skip_derived=True,
         )
         ignored = _git_paths(
             workspace,
             ["ls-files", "--others", "--ignored", "--exclude-standard", "-z"],
+            skip_derived=True,
         )
         records = [f"HEAD|{head}", *sorted(index_records)]
         records.extend(

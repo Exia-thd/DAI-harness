@@ -4,7 +4,7 @@
     {
       "path": "README.md",
       "classification": "public-product",
-      "requiredMarker": "không\n  được cưỡng chế ở mọi nhánh",
+      "requiredMarker": "are not enforced on every branch",
       "forbiddenPatterns": [
         "ensures\\s+the\\s+AI\\s+never\\s+edits"
       ]

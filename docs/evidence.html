@@ -143,7 +143,7 @@ khi chạy từ git hook.</p>
 <div class="callout warn"><div class="title">Nguyên tắc</div>Một kỳ vọng <em>không kiểm chứng được</em> phải là FAIL, không phải pass im lặng. Mọi cơ chế trong trang này đều theo hướng đó.</div>
 
 <h2><span class="num">06</span> Tự kiểm tra</h2>
-<p><code>tests/smoke.py</code> — 59 phép kiểm tra, 872 dòng, không gọi model,
+<p><code>tests/smoke.py</code> — 59 phép kiểm tra, 894 dòng, không gọi model,
 không cần dịch vụ ngoài. Trong đó có cả các test <em>meta</em>: gate có thật sự chặn evidence giả không,
 adapter im lặng có fail không, mọi đường dẫn skill trong routing có tồn tại không.</p>
 <div class="code-block"><div class="code-head"><span class="file">chạy</span></div><pre><code>python scripts/lite/run_check.py -- python tests/smoke.py</code></pre></div>

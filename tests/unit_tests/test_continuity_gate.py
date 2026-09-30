@@ -157,6 +157,9 @@ def _docs_contract(
         )
 
 
+STOP_GATE_TIMEOUT_SECS = 60
+
+
 def _run_stop(
     path: Path,
     payload: object,
@@ -185,7 +188,13 @@ def _run_stop(
         input=raw,
         text=True,
         capture_output=True,
-        timeout=10,
+        # A hang guard, not an assertion about speed. The gate this spawns starts
+        # bash, then python, then git, then the rule validator, and may replay the
+        # evidence it is checking. 10s covered that on an idle machine and not while
+        # the rest of this suite was running: the gate produced no stdout in time,
+        # json.loads saw an empty string, and a passing gate was reported as a
+        # broken one. 60s still fails a gate that has actually hung.
+        timeout=STOP_GATE_TIMEOUT_SECS,
     )
 
 

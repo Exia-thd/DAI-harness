@@ -1,10 +1,13 @@
 # DAI Nexus
 
-**Một câu yêu cầu → một app được ship, có kiểm chứng.**
+**One sentence of intent → one shipped application, with the evidence to show it.**
 
-DAI Nexus là một hệ điều hành cho AI coding agents: kernel bất biến nạp mỗi phiên, thư viện skill chuyên gia load theo nhu cầu, và một runtime Python thuần cưỡng bức bằng chứng — agent không được phép nói "xong rồi" nếu không có evidence do máy sinh ra.
+DAI Nexus is an operating harness for AI coding agents: a fixed kernel loaded every
+session, a library of specialist skills loaded on demand, and a dependency-free Python
+runtime that enforces evidence — an agent may not say "done" without a record the
+machine wrote itself.
 
-## Kiến trúc 3 tầng
+## Three layers
 
 > **An AI harness that records failures and reuses verified lessons.** DAI Nexus is designed to reduce repeated failure patterns; recurrence is measured rather than assumed away.
 
@@ -192,7 +195,8 @@ Please ensure the following dependencies are installed and available in your sys
 - **Git**: v2.30+ (required for repository management and history tracking).
 - **Python**: v3.8+ (harness scripts and gates; memory itself is the DAI memory layer on Node.js).
 
-> Windows không có alias `python`? Thay `python` bằng `py -3` trong mọi lệnh dưới (hook trong `.claude/settings.json` đã dùng `py -3` sẵn).
+> No `python` alias on Windows? Use `py -3` in every command below. The hooks in
+> `.claude/settings.json` already do.
 - **Supported IDE**: Cursor, Claude Desktop, or Codex CLI.
 
 ### Verified Install Paths for Supported IDEs
@@ -396,37 +400,40 @@ bash scripts/runtime/runtime-reap.sh                                     # dry-r
 bash scripts/runtime/disk-budget.sh                                      # footprint vs budget
 touch ~/.dainexus/runtime/DISABLED                                    # stop the guard, instantly
 ```
-TẦNG 1 — KERNEL (luôn load, <7k token)
+```text
+LAYER 1 - KERNEL (always loaded, inside the 7k-token budget sync-kernel.py enforces)
   kernel/{ENTRY, SOLVE, VERIFY, ESCALATE, CLARIFY, AUDIT, POLICY}.md
-  → 6 Hard Rules · Boot Sequence (kèm Memory Load bắt buộc) · SOLVE loop
-  → VERIFY/AUDIT contract · TURN-CLOSE memory save · Execution policy
+  -> 6 hard rules - boot sequence - the SOLVE loop
+  -> the VERIFY/AUDIT contract and the execution policy
 
-TẦNG 2 — SKILLS (1 orchestrator + ~86 chuyên gia, load on-demand)
-  skills/pipeline/{LITE.md, SKILL.md, phases/}   ← orchestrator chính
-  → modes: QUICK | REVIEW | TEST | FEATURE | SHIP | FULL_BUILD
-  → FULL_BUILD: DEFINE → BUILD → HARDEN → SHIP với 3 gate user-approve
-  skills/<role>/LITE.md — overlay chuyên gia (GROUND/DECOMPOSE slots theo domain)
-  → routing lõi: debugger · software-engineer · ui-designer · code-reviewer
-                 · qa-engineer · devops
-  → pipeline roles: product-manager · solution-architect · security-engineer
-                    · frontend-engineer
-  → domain: game (unity/unreal/godot/roblox...), data/AI, mobile, growth,
-            per-language (go/python/rust)...
-  skills/_shared/protocols/ — ~50 protocol dùng chung (guardrail kill switch,
+LAYER 2 - SKILLS (1 orchestrator + 86 specialist overlays, loaded on demand)
+  skills/pipeline/{LITE.md, SKILL.md, phases/}   <- the orchestrator
+  -> modes: QUICK | REVIEW | TEST | FEATURE | SHIP | FULL_BUILD
+  -> FULL_BUILD: DEFINE -> BUILD -> HARDEN -> SHIP, three gates the user approves
+  skills/<role>/LITE.md - a specialist overlay: GROUND and DECOMPOSE per domain
+  -> core routing: debugger - software-engineer - ui-designer - code-reviewer
+                   - qa-engineer - devops
+  -> pipeline roles: product-manager - solution-architect - security-engineer
+                     - frontend-engineer
+  -> domains: game (unity/unreal/godot/roblox...), data/AI, mobile, growth,
+              per-language (go/python/rust)...
+  skills/_shared/protocols/ - 59 shared protocols (guardrail kill switch,
   parallel-dispatch, self-healing, quality-gate, brownfield-safety...)
 
-TẦNG 3 — RUNTIME (Python thuần, zero-dependency, Windows/macOS/Linux)
-  scripts/lite/sync-kernel.py       → sinh CLAUDE.md / AGENTS.md / GEMINI.md từ kernel
-  scripts/lite/run_check.py         → ghi evidence JSON (machine-written, atomic, redacted)
-  scripts/lite/verify_gate.py       → Stop-hook gate: chặn turn nếu thiếu/giả/hết hạn evidence
-  scripts/lite/dai_memory.py        → memory: the DAI memory layer (submodule vendor/dai-memory)
-  scripts/lite/escalate.py          → HARD-step escalation qua expert CLI, budget-enforced
-  scripts/lite/worktree_manager.py  → parallel dispatch: contract → validate → merge arbiter
-  scripts/lite/policy_check.py      → execution policy gate (deny patterns, fail-closed)
-  scripts/lite/runtime_lease.py     → runtime lease guard: chống leak dev server/process
-  scripts/lite/rule_ledger.py       → ledger tự khai vi phạm rule (JSONL, stats)
-  scripts/lite/validate_overlays.py → linter overlay: chặn evidence giả, path chết, bảng hỏng
-  mcp/server.py                     → MCP server (stdio) 8 dn_* tools: pipeline state + memory
+LAYER 3 - RUNTIME (plain Python, no dependencies, Windows/macOS/Linux)
+  scripts/lite/sync-kernel.py       -> generates CLAUDE.md / AGENTS.md / GEMINI.md
+  scripts/lite/run_check.py         -> writes evidence JSON: machine-written, atomic, redacted
+  scripts/lite/verify_gate.py       -> Stop-hook gate: blocks a turn on missing, forged or stale evidence
+  scripts/lite/dai_memory.py        -> memory and the code graph, from the pinned plugin
+                                       in vendor/dai-memory: five retrieval branches
+                                       fused with RRF, embeddings on a local model
+  scripts/lite/escalate.py          -> HARD-step escalation through an expert CLI, budget-enforced
+  scripts/lite/worktree_manager.py  -> parallel dispatch: contract -> validate -> merge arbiter
+  scripts/lite/policy_check.py      -> execution policy gate: deny patterns, fail-closed
+  scripts/lite/runtime_lease.py     -> runtime lease guard against leaked dev servers and processes
+  scripts/lite/rule_ledger.py       -> the ledger a rule violation is recorded in (JSONL, stats)
+  scripts/lite/validate_overlays.py -> overlay linter: forged evidence, dead paths, broken tables
+  mcp/server.py                     -> MCP server over stdio, 8 dn_* tools: pipeline state and memory
 ```
 
 ### 10. Game Studio Control Plane
@@ -511,15 +518,15 @@ For a deterministic, model-free CLI path, use `forge --json init .` followed by 
 Run multiple tasks concurrently via the command line manager to speed up large refactors.
 
 ```bash
-# 1. Sinh boot files từ kernel (chạy lại mỗi khi sửa kernel/)
+# 1. Generate the boot files from the kernel. Re-run after editing kernel/.
 python scripts/lite/sync-kernel.py
 
-# 2. Tự kiểm tra toàn hệ thống (68 checks)
+# 2. Check the whole harness end to end.
 python tests/smoke.py
 
-# 3. Dùng: mở Claude Code (hoặc Cursor/Gemini CLI) tại repo này.
-#    CLAUDE.md/AGENTS.md/GEMINI.md được đọc tự động; Stop hook cưỡng bức
-#    evidence; MCP server đăng ký sẵn trong .mcp.json.
+# 3. Use it: open Claude Code (or Cursor, or the Gemini CLI) in this repository.
+#    CLAUDE.md / AGENTS.md / GEMINI.md are read for you, the Stop hook enforces
+#    evidence, and the MCP server is already registered in .mcp.json.
 ```
 
 ### Build the Local Docs Hub
@@ -558,7 +565,7 @@ Mermaid-derived static SVG and remain readable without client-side JavaScript.
 
 **[Read the Docs Hub Guide ➔](docs/guides/docs-hub.md)**
 
-Site tài liệu nằm ở `docs/` — mở `docs/index.html` bằng browser, hoặc:
+The documentation site lives in `docs/`. Open `docs/index.html` in a browser, or:
 
 ```bash
 python -m http.server 8000 --directory docs
@@ -603,46 +610,77 @@ python -m http.server 8000 --directory docs
 
 ## Documentation Map
 
-Ngoài ra có `docs/memory-standalone.html` — **bản một-file của đúng trang đó**: không nav, không link
-sang trang nào, CSS nhúng sẵn. Không trang nào trong site trỏ tới nó; nó tồn tại để gửi đi một mình
-(đính kèm email, dán vào ticket, copy sang máy khác) mà vẫn hiển thị đầy đủ.
+There is also `docs/memory-standalone.html`, a **single-file copy of that same page**:
+no navigation, no links out, CSS inlined. Nothing in the site points at it. It exists to
+be sent on its own — attached to an email, pasted into a ticket, copied to another
+machine — and still render completely.
 
-Toàn bộ số liệu và code excerpt trong đó được **sinh từ source lúc build** (`docs/build_docs.py`),
-nên không thể drift khỏi code. `python docs/build_docs.py --check` sẽ fail nếu trang đã cũ —
-smoke suite kiểm tra điều này mỗi lần chạy.
+Every figure and code excerpt on those pages is **generated from the source at build
+time** by `docs/build_docs.py`, so a page cannot drift away from the code it describes.
+`python docs/build_docs.py --check` fails when a page is behind, and `tests/smoke.py`
+runs that check, so a stale page is a failing check rather than a quiet inaccuracy.
 
-## Chống ảo giác — 4 lớp
+## Four layers against a confident guess
 
-> Bằng chứng theo **tỉ lệ rủi ro**: `QUICK` (1–3 action, một check gọn) · `STANDARD` (≤7 action) · `DEEP` (≤10 action, review độc lập).
-> Payment/billing/checkout luôn là `DEEP` bất kể số file. Sửa lỗi phải cho thấy **RED rồi mới GREEN** — cùng một lệnh.
+> Evidence is **proportional to risk**: `QUICK` (1-3 actions, one focused check) ·
+> `STANDARD` (up to 7 actions) · `DEEP` (up to 10 actions, independent review).
+> Payment, billing and checkout are always `DEEP`, whatever the file count. A fix must
+> show **RED before GREEN** — from the same command, unchanged.
 
-1. **Evidence-first**: VERIFY bắt buộc, evidence do `run_check.py` ghi theo schema v2 (tree-sha, timestamp, `output_sha256`) — gõ tay hoặc sửa tay đều bị bắt là FORGED.
-2. **Stop-hook gate**: `verify_gate.py` chặn kết thúc turn khi có code đổi mà thiếu/giả/hết hạn evidence, hoặc còn stub TODO/FIXME.
-3. **Execution policy fail-closed**: `policy_check.py` chặn lệnh phá hoại theo deny-pattern; file policy hỏng = chặn luôn.
-4. **Runtime ledger**: process dài hạn phải có lease; cuối turn `status` phải CLEAN — "tests passed" không chứng minh máy sạch.
+1. **Evidence first.** VERIFY is mandatory and `run_check.py` writes the record itself
+   in schema v2 (tree sha, timestamp, `output_sha256`). A record typed or edited by hand
+   is caught as FORGED.
+2. **Stop-hook gate.** `verify_gate.py` blocks the end of a turn when code changed and
+   the evidence is missing, forged or stale, or when a TODO/FIXME stub is still in it.
+3. **Execution policy, fail-closed.** `policy_check.py` blocks destructive commands by
+   deny pattern, and an unreadable policy file blocks rather than allows.
+4. **Runtime ledger.** A long-running process needs a lease, and `status` must read
+   CLEAN at the end of a turn: "tests passed" does not prove the machine was left clean.
 
-## Tools MCP (`.mcp.json` đã đăng ký sẵn)
+## MCP tools (already registered in `.mcp.json`)
 
-`dn_start_pipeline` · `dn_get_state` · `dn_advance_phase` (bị chặn nếu gate chưa approve) · `dn_request_gate_approval` · `dn_approve_gate` · `dn_fail_pipeline` · `dn_memory_add` · `dn_memory_search`
+`dn_start_pipeline` · `dn_get_state` · `dn_advance_phase` (refused until the gate is
+approved) · `dn_request_gate_approval` · `dn_approve_gate` · `dn_fail_pipeline` ·
+`dn_memory_add` · `dn_memory_search`
 
-## Giới hạn đã biết
+The two memory tools go through `scripts/lite/dai_memory.py` into the pinned plugin, so
+what an agent records here and what the CLI records are the same store.
 
-Đây là ranh giới thật của sản phẩm, không phải phần đính kèm cho đẹp:
+## Known limits
 
-- **Gate chặn tuyên bố không bằng chứng, không chặn được mọi bug.** Verify gate bắt buộc
-  evidence quan sát được từ workspace hiện tại; nó không bảo đảm không còn lỗi thoát ra production.
-- **Impact analysis không được cưỡng chế toàn diện.** Kernel yêu cầu chạy impact analysis trước
-  khi sửa symbol; các đường tương thích và override của người dùng không
-  được cưỡng chế ở mọi nhánh.
-- **Index có thể cũ hoặc không đầy đủ.** Truy vấn đồ thị bổ sung chứ không thay thế tìm kiếm
-  văn bản; index lỗi thời là một ranh giới bằng chứng được nêu rõ.
-- **Bộ `tests/unit_tests/` có baseline đỏ kế thừa.** 64 test đã đỏ ngay tại thời điểm import;
-  chúng được ghi trong `tests/known_failures.txt` để gate báo *regression mới* thay vì đỏ sẵn.
+These are the real edges of the thing, not a disclaimer section:
+
+- **The gate blocks unevidenced claims, not every bug.** It requires evidence observed in
+  the current workspace. It does not promise that nothing broken reaches production.
+- **Impact analysis is not enforced everywhere.** The kernel requires it before a symbol
+  changes, but compatibility paths and user overrides are not enforced on every branch.
+- **The index can be stale or incomplete.** A graph query adds to text search rather than
+  replacing it, and a stale index is stated as a limit of the evidence rather than hidden.
+- **`tests/unit_tests/` carries an inherited red baseline.** 56 tests were already failing
+  when they were imported. They are listed in `tests/known_failures.txt` so the gate
+  reports a *new* regression instead of the inherited red, and that list is meant to
+  shrink.
+- **Some Markdown still has unpaired code fences.** Nine files are listed in
+  `tests/markdown_fence_baseline.txt` with where each inversion starts; the guard test
+  fails on new breakage and on a listed file that has been fixed.
 
 ## Roadmap
 
-1. **Vector search** — nhánh embedding thứ hai cho RRF fusion (hiện fuse BM25 + importance/recency).
-2. **ASIP** — self-improving loop: extract lessons từ failure, evolve skill.
-3. **Dashboard** — UI đọc `.dainexus/pipeline-state.json` qua MCP.
-4. **Reviewer attestation** — chữ ký Ed25519 cho review độc lập ở tier `DEEP` (hiện review là fresh-context, chưa ký).
-5. **Mutation backcheck** — tự động hoá `RED → GREEN → đột biến phải fail → GREEN` để chứng minh test không rỗng.
+1. **ASIP** — a self-improving loop: take the lesson out of a failure, evolve the skill.
+2. **Dashboard** — a view over `.dainexus/pipeline-state.json` through MCP.
+3. **Reviewer attestation.** `scripts/lite/review_attest.py` verifies an OpenSSH Ed25519
+   signature against an allowed-signers file, but the verify gate still reports HARD
+   completion — signed `review-2`, the RED->GREEN chain, the mutation backcheck — as
+   unimplemented in this tree, so a `DEEP` review is fresh-context and unsigned in
+   practice.
+4. **Mutation backcheck.** `run_check.py` already accepts `--red-evidence`,
+   `--mutation-evidence`, `--mutation-target` and `--pre-mutation-tree-sha`; what is
+   missing is running `RED -> GREEN -> mutation must fail -> GREEN` without a person
+   driving each step.
+5. **Cheaper replay.** `verify-roadmap-completion.py` copies the worktree for every
+   replay. `.memory` is no longer copied; `node_modules` still is, 208MB and 35,244 files
+   of it, and mounting it the way the verifier already mounts caches would remove the
+   copy, the delete, and most of a cold fingerprint.
+
+Vector search is no longer on this list: the pinned memory plugin fuses five retrieval
+branches, semantic among them, on a local 384-dimension model.

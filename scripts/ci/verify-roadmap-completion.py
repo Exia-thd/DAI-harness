@@ -257,6 +257,36 @@ def _run_verifier(
     return entry
 
 
+# Directories the snapshot does not need, because the fingerprint already excludes
+# them and no roadmap verifier reads them.
+#
+# `.memory` is the code-graph store. It arrived with the memory layer and is now
+# 483MB of this 836MB worktree, so the replay copied it, the fingerprint dropped
+# it, and the copy was pure cost -- enough of it that a git call inside the
+# snapshot's own fingerprint stopped answering inside its 45s budget and the
+# verifier refused to emit a fingerprint at all. The failure read as a broken
+# gate rather than as a slow copy.
+#
+# Leaving it out is safe in the only way that matters here: the fingerprint of a
+# snapshot with it and without it is the same digest, which is the property
+# `snapshot_matches_source` rests on. Verified on this repository --
+# TREE:fb79e0f1 both ways -- and tests/unit_tests/test_roadmap_completion.py
+# holds it.
+SNAPSHOT_EXCLUDED_DIRS = (".memory",)
+
+
+def _drop_excluded_dirs(snapshot: Path) -> None:
+    """Remove the excluded trees from a snapshot that copied them anyway.
+
+    robocopy is told to skip them; `cp` has no exclude, so on those platforms the
+    bytes are copied and then dropped. The snapshot ends up identical either way,
+    which keeps one shape to reason about instead of one per host.
+    """
+
+    for name in SNAPSHOT_EXCLUDED_DIRS:
+        shutil.rmtree(snapshot / name, ignore_errors=True)
+
+
 def _clone_workspace(destination: Path) -> tuple[Path, str]:
     snapshot = destination / "workspace"
     clone_command: list[str] | None = None
@@ -284,6 +314,8 @@ def _clone_workspace(destination: Path) -> tuple[Path, str]:
             "/NJH",
             "/NJS",
             "/NP",
+            "/XD",
+            *(str(ROOT / name) for name in SNAPSHOT_EXCLUDED_DIRS),
         ]
         strategy = "robocopy"
     elif os.name == "posix":
@@ -307,12 +339,19 @@ def _clone_workspace(destination: Path) -> tuple[Path, str]:
             result.returncode < 8 if strategy == "robocopy" else result.returncode == 0
         )
         if succeeded:
+            _drop_excluded_dirs(snapshot)
             return snapshot, strategy
         shutil.rmtree(snapshot, ignore_errors=True)
     try:
-        shutil.copytree(ROOT, snapshot, symlinks=True)
+        shutil.copytree(
+            ROOT,
+            snapshot,
+            symlinks=True,
+            ignore=shutil.ignore_patterns(*SNAPSHOT_EXCLUDED_DIRS),
+        )
     except OSError as error:
         raise RuntimeError(f"isolated workspace copy failed: {error}") from error
+    _drop_excluded_dirs(snapshot)
     return snapshot, "python-copytree"
 
 
@@ -424,6 +463,12 @@ def main() -> int:
             execution_before = worktree_fingerprint(workspace)
             environment = os.environ.copy()
             environment["PYTHONDONTWRITEBYTECODE"] = "1"
+            # A verifier verdict must not depend on the console codepage it
+            # inherited. Without this, a verifier that prints a non-cp1252
+            # character -- the arrows in README.md reach a test through the
+            # validator -- raised UnicodeEncodeError on Windows and the runner
+            # recorded a passing check as exit 1.
+            environment["PYTHONUTF8"] = "1"
             environment["TMPDIR"] = str(replay_root / "tmp")
             Path(environment["TMPDIR"]).mkdir(parents=True, exist_ok=True)
             results = [_run_verifier(item, workspace, environment) for item in selected]

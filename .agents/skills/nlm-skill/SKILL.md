@@ -121,7 +121,6 @@ Or manually save cookies via MCP (fallback):
 # Extract cookies from Chrome DevTools and save
 mcp__notebooklm-mcp__save_auth_tokens(cookies="<cookie_header>")
 ```
-```
 
 #### CLI Authentication
 

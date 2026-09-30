@@ -924,4 +924,3 @@ This statement was last updated on [Date].
 - [ ] axe-core in test pipeline configured
 - [ ] Accessibility statement page created
 - [ ] Audit scheduled quarterly
-```

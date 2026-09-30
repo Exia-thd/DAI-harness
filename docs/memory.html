@@ -23,12 +23,12 @@
 
 <h2><span class="num">01</span> Nó nằm ở đâu</h2>
 <p>Engine là plugin
-<code>https://github.com/Exia-thd/DAI-memory-layer-plugin.git</code>, ghim ở commit <code>a0a3b9976c9d</code>,
+<code>https://github.com/Exia-thd/DAI-memory-layer-plugin.git</code>, ghim ở commit <code>705f62f5d061</code>,
 gắn vào <code>vendor/dai-memory</code> dưới dạng git submodule — harness chỉ ghi một con trỏ
 commit, mọi thay đổi của memory làm ở repo plugin trước. Bản cài đặt nằm <b>ngoài</b> repo,
 mỗi commit một thư mục — cài xong khoảng 500 MB, mà các verifier của dự án chép và băm toàn
 bộ cây làm việc:</p>
-<div class="code-block"><div class="code-head"><span class="file">scripts/lite/dai_memory.py:61</span></div><pre><code>def engine_dir() -&gt; Path:
+<div class="code-block"><div class="code-head"><span class="file">scripts/lite/dai_memory.py:60</span></div><pre><code>def engine_dir() -&gt; Path:
     """Where the vendored layer is installed and built.
 
     Outside the repository on purpose. Installed, the layer is ~500 MB of
@@ -48,7 +48,7 @@ bộ cây làm việc:</p>
 <h2><span class="num">02</span> Ba lớp ký ức</h2>
 <table><thead><tr><th>Lớp</th><th>Chứa gì</th><th>Ví dụ</th></tr></thead><tbody><tr><td><code>semantic</code></td><td>Điều đúng cho tới khi bị thay thế</td><td>quyết định, ràng buộc, quy ước</td></tr><tr><td><code>episodic</code></td><td>Điều đã xảy ra</td><td>sự cố, lỗi, phiên làm việc</td></tr><tr><td><code>procedural</code></td><td>Cách làm một việc</td><td>quy trình, hướng dẫn</td></tr></tbody></table>
 <p>Harness gọi qua một chỗ duy nhất, nên ánh xạ category sang lớp chỉ tồn tại một bản:</p>
-<div class="code-block"><div class="code-head"><span class="file">scripts/lite/dai_memory.py:140</span></div><pre><code>CATEGORY_LAYERS = {
+<div class="code-block"><div class="code-head"><span class="file">scripts/lite/dai_memory.py:141</span></div><pre><code>CATEGORY_LAYERS = {
     "decision": "semantic",
     "decisions": "semantic",
     "convention": "semantic",

@@ -1,0 +1,22 @@
+# Markdown files whose code fences do not pair, inherited rather than introduced.
+#
+# An odd number of ``` markers means every block after the first mistake is
+# inverted: prose renders as code and code renders as prose. In a SKILL.md that is
+# not cosmetic -- it is the file an agent reads as instructions.
+#
+# Each entry carries where the inversion starts, so fixing one is a bounded job
+# rather than a re-investigation. When a file is fixed, delete its line here: the
+# test fails on a baselined file that has started passing, the same way
+# scripts/ci/pytest_gate.py does, so this list can only shrink.
+#
+# Format: <path>  # <diagnosis>
+
+antigravity/planning/dainexus-v8-improve/implementation-plan.md  # 5 markers; inversion starts at line 204, file ends inside a block opened at 209
+antigravity/planning/unity-mcp-integration/PLAN.md  # 21 markers; inversion starts at line 118 ('```markdown' read as a close)
+skills/_shared/protocols/game-test-protocol.md  # 47 markers; inversion starts at line 329 ('```csharp' read as a close)
+skills/code-reviewer/SKILL.md  # 47 markers; inversion starts at line 169 ('```typescript' read as a close)
+skills/conversion-optimizer/SKILL.md  # 45 markers; inversion starts at line 456 ('```javascript' read as a close)
+skills/database-engineer/SKILL.md  # 47 markers; inversion starts at line 514 ('```sql' read as a close)
+skills/growth-marketer/SKILL.md  # 35 markers; inversion starts at line 359
+skills/level-designer/SKILL.md  # 47 markers; inversion starts at line 437; also has doubled closing fences at 408, 476, 495, 517
+skills/technical-writer/SKILL.md  # 77 markers; inversion starts at line 469

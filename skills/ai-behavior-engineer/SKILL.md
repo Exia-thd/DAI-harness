@@ -1193,4 +1193,3 @@ class AILODManager {
 - [ ] Unit tests for BT execution, GOAP planning, Perception
 - [ ] AI behavior documented per NPC type
 - [ ] Test scenarios for each difficulty level
-```
