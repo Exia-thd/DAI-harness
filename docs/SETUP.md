@@ -492,14 +492,14 @@ dai-memory group list
 |----------|-------------|---------|
 | `DAIHARNESS_WORKSPACE` | Override workspace detection | Auto-detected |
 | `MCP_WORKSPACE_ROOT` | MCP standard workspace | Auto-detected |
-| `FW_MCP_VERBOSE` | Enable debug output | 0 |
-| `FW_MCP_FORCE` | Force operations | 0 |
+| `DAIHARNESS_MCP_VERBOSE` | Enable debug output | 0 |
+| `DAIHARNESS_MCP_FORCE` | Force operations | 0 |
 
 ### Debug Mode
 
 ```bash
 # Enable verbose output
-FW_MCP_VERBOSE=1 bash daiharness-mcp-setup.sh --diagnose
+DAIHARNESS_MCP_VERBOSE=1 bash daiharness-mcp-setup.sh --diagnose
 
 # Or use --verbose flag
 bash daiharness-mcp-setup.sh --diagnose

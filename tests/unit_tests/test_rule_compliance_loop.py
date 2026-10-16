@@ -437,11 +437,11 @@ def test_context_manager_uses_project_root_tail_keywords_and_global_cap(
 
 def test_canonical_scripts_target_validated_workspace(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
-    fw_dir = workspace / ".daiharness"
-    memory_dir = fw_dir / "memory-bank"
-    fw_dir.mkdir(parents=True)
+    dh_dir = workspace / ".daiharness"
+    memory_dir = dh_dir / "memory-bank"
+    dh_dir.mkdir(parents=True)
     memory_dir.mkdir(parents=True)
-    (fw_dir / "execution-policy.yaml").write_text(
+    (dh_dir / "execution-policy.yaml").write_text(
         policy(tmp_path).read_text(encoding="utf-8"), encoding="utf-8"
     )
     (memory_dir / "activeContext.md").write_text(
@@ -472,7 +472,7 @@ def test_canonical_scripts_target_validated_workspace(tmp_path: Path) -> None:
         env=env,
     )
     assert added.returncode == 0, added.stderr
-    ledger = fw_dir / "rule-ledger.jsonl"
+    ledger = dh_dir / "rule-ledger.jsonl"
     assert ledger.is_file()
 
     emitted = run(
@@ -484,7 +484,7 @@ def test_canonical_scripts_target_validated_workspace(tmp_path: Path) -> None:
         env=env,
     )
     assert emitted.returncode == 0, emitted.stderr
-    assert list((fw_dir / "telemetry").glob("events-*.jsonl"))
+    assert list((dh_dir / "telemetry").glob("events-*.jsonl"))
 
     invalid = run(
         sys.executable,
@@ -583,3 +583,66 @@ def test_isolated_rule_loop_does_not_touch_tracked_runtime_files(
     assert result.returncode == 0, result.stdout + result.stderr
     after = {path: path.read_bytes() if path.exists() else None for path in before}
     assert after == before
+
+
+def test_windows_executable_paths_and_jq_optional_fallback(tmp_path: Path) -> None:
+    """A command is what it is, however it was spelled, and jq is not required.
+
+    Both halves were real failures on Windows: `C:\\...\\git.exe reset --hard`
+    slipped past a gate that compared basenames POSIX-style, and every script
+    that formatted JSON exited 127 on a host without jq - so the gate could be
+    written to and never read.
+    """
+
+    script = ROOT / "scripts/lite/policy-check.sh"
+    telemetry_script = ROOT / "scripts/lite/telemetry.sh"
+    ledger_script = ROOT / "scripts/lite/rule-ledger.sh"
+    env = {
+        "DAIHARNESS_POLICY_FILE": str(policy(tmp_path)),
+        "DAIHARNESS_TELEMETRY_DIR": str(tmp_path / "telemetry"),
+        "DAIHARNESS_RULE_LEDGER": str(tmp_path / "ledger.jsonl"),
+    }
+    for cmd in (
+        r"C:\Program Files\Git\cmd\git.exe reset --hard",
+        r"C:\Windows\System32\rm.exe -r -f target",
+        "git.cmd push --force origin main",
+    ):
+        res = run("bash", str(script), "check", "run_command", cmd, env=env)
+        assert res.returncode == 1, (cmd, res.stdout, res.stderr)
+
+    emitted = run(
+        "bash",
+        str(telemetry_script),
+        "emit",
+        "windows.fallback.test",
+        # json.dumps, never a compact literal: a JSON string with no spaces in
+        # it reaches MSYS bash as an empty argument, because the Windows
+        # command line only quotes an argument that contains a space. The
+        # script then correctly refuses an empty payload, and the test would be
+        # measuring argument passing rather than telemetry.
+        json.dumps({"api_key": "secret", "ok": True}),
+        env=env,
+    )
+    assert emitted.returncode == 0, emitted.stderr
+    assert "***REDACTED***" in emitted.stdout
+
+    added = run(
+        "bash",
+        str(ledger_script),
+        "add",
+        "HR1",
+        "hit",
+        "windows-ready",
+        env=env,
+    )
+    assert added.returncode == 0, added.stderr
+
+    # Reading it back is the half upstream left out: `add` fell back to a
+    # interpreter when jq was missing, while `top` and `recent` did not.
+    listed = run("bash", str(ledger_script), "top", "3", env=env)
+    assert listed.returncode == 0, listed.stderr
+    assert "HR1" in listed.stdout, listed.stdout
+
+    recent = run("bash", str(ledger_script), "recent", "3", "hit", env=env)
+    assert recent.returncode == 0, recent.stderr
+    assert "windows-ready" in recent.stdout, recent.stdout

@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────
-# fw-migrate-global — Migrate Existing Projects to Global Setup
+# daiharness-migrate-global — Migrate Existing Projects to Global Setup
 #
 # Migrates projects from per-project setup to global setup.
 # Removes .antigravity/mcp-manifest.json and .daiharness/mcp-server/
 # from each project, moving to global configuration.
 #
 # USAGE:
-#   fw-migrate-global.sh --dry-run               # Preview changes
-#   fw-migrate-global.sh                         # Interactive migration
-#   fw-migrate-global.sh --all                  # Migrate all projects
-#   fw-migrate-global.sh /path/to/project        # Migrate specific project
-#   fw-migrate-global.sh --rollback              # Rollback last migration
+#   daiharness-migrate-global.sh --dry-run               # Preview changes
+#   daiharness-migrate-global.sh                         # Interactive migration
+#   daiharness-migrate-global.sh --all                  # Migrate all projects
+#   daiharness-migrate-global.sh /path/to/project        # Migrate specific project
+#   daiharness-migrate-global.sh --rollback              # Rollback last migration
 #
 # ─────────────────────────────────────────────────────────────────
 
@@ -45,10 +45,10 @@ MIGRATION_LOG="${BACKUP_DIR}/migration-log.json"
 
 show_help() {
     cat << 'EOF'
-fw-migrate-global — Migrate to Global DAI Harness MCP Setup
+daiharness-migrate-global — Migrate to Global DAI Harness MCP Setup
 
 SYNOPSIS
-    fw-migrate-global.sh [OPTIONS] [project_path]
+    daiharness-migrate-global.sh [OPTIONS] [project_path]
 
 DESCRIPTION
     Migrates existing projects from per-project setup to global setup.
@@ -68,16 +68,16 @@ ARGUMENTS
 
 EXAMPLES
     # Preview migration for current project
-    fw-migrate-global.sh --dry-run
+    daiharness-migrate-global.sh --dry-run
 
     # Migrate all registered projects
-    fw-migrate-global.sh --all
+    daiharness-migrate-global.sh --all
 
     # Migrate specific project
-    fw-migrate-global.sh /path/to/project
+    daiharness-migrate-global.sh /path/to/project
 
     # Rollback last migration
-    fw-migrate-global.sh --rollback
+    daiharness-migrate-global.sh --rollback
 
 WHAT GETS REMOVED (per project)
     .antigravity/mcp-manifest.json
@@ -226,7 +226,7 @@ try {
     
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
-    echo "  To migrate: bash scripts/fw-migrate-global.sh --all"
+    echo "  To migrate: bash scripts/daiharness-migrate-global.sh --all"
     echo ""
 }
 

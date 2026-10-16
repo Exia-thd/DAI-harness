@@ -77,7 +77,7 @@ New (recommended):
 
 ### Config Priority (highest to lowest)
 
-1. \`FORGE_*\` environment variables
+1. \`DAI_*\` environment variables (the former prefix is still read)
 2. \`~/.config/dai-harness/config.json\`
 3. Process environment
 4. \`.env\` files
@@ -87,7 +87,7 @@ New (recommended):
 
 \`\`\`bash
 # Set via environment
-export FORGE_DEBUG=1
+export DAI_DEBUG=1
 
 # Set via config file
 dai config set dai.debug true
@@ -110,7 +110,7 @@ dai --debug validate
 
 If you need legacy behavior:
 \`\`\`bash
-FORGE_LEGACY_OUTPUT=1 dai validate
+DAI_LEGACY_OUTPUT=1 dai validate
 \`\`\`
 
 ## Examples

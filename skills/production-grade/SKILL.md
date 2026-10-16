@@ -25,9 +25,9 @@ Adaptive meta-skill orchestrator for software/product delivery. It analyzes the 
 
 ### ⚠️ MANDATORY: Pipeline State Management (MCP Tools)
 If you are running in an environment with the DAI Harness MCP Server connected, YOU MUST explicitly manage the pipeline state using the exposed `fw_*` tools. This ensures any connected IDE or Dashboard accurately tracks your progress.
-1. For substantial tracked work, call `fw_start_pipeline` when starting a new goal/session.
+1. For substantial tracked work, call `dh_start_pipeline` when starting a new goal/session.
 2. Advance state only through phases the work actually enters; compressed `QUICK` work does not need artificial phase transitions.
-3. Use `fw_request_gate_approval` only for an actual human-approval contract, not merely because a phase exists.
+3. Use `dh_request_gate_approval` only for an actual human-approval contract, not merely because a phase exists.
 If state telemetry is unavailable, report the observability degradation when material; do not convert it into a false product failure.
 
 ### Provider / Model Runtime Policy

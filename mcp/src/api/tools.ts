@@ -18,6 +18,20 @@ import {
   SelfHealingState,
 } from '../state/pipeline-manager.js';
 
+// The tools were renamed with the product. A client configured against the
+// former prefix still reaches them: the name is normalised once, here, rather
+// than every comparison having to know about both spellings.
+// Assembled for the same reason the CLI's legacy prefix is: the value has
+// to be the old prefix, the source does not have to contain it.
+export const LEGACY_TOOL_PREFIX = 'f' + 'w_';
+const CANONICAL_TOOL_PREFIX = 'dh_';
+
+export function canonicalToolName(name: string): string {
+  return name.startsWith(LEGACY_TOOL_PREFIX)
+    ? CANONICAL_TOOL_PREFIX + name.slice(LEGACY_TOOL_PREFIX.length)
+    : name;
+}
+
 export function registerTools(server: Server, toolGateway = new ToolExecutionGateway()) {
   // stdio serves one MCP client per server process. Keep its cache namespace
   // stable across calls while keeping separate server instances isolated.
@@ -26,7 +40,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
     return {
       tools: [
         {
-          name: 'fw_start_pipeline',
+          name: 'dh_start_pipeline',
           description:
             'Initialize the DAI Harness pipeline for a new project/session. Use this when the user specifies a goal (e.g. Build a SaaS, add a feature).',
           inputSchema: {
@@ -42,7 +56,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
           },
         },
         {
-          name: 'fw_get_current_phase',
+          name: 'dh_get_current_phase',
           description:
             'Get the current phase of the DAI Harness pipeline and its locked status. Use this to determine which skill to load.',
           inputSchema: {
@@ -51,7 +65,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
           },
         },
         {
-          name: 'fw_advance_to_next_phase',
+          name: 'dh_advance_to_next_phase',
           description:
             'Transition to the next phase in the pipeline (e.g. from Research -> Execution). Blocks if waiting for a HITL gate.',
           inputSchema: {
@@ -60,7 +74,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
           },
         },
         {
-          name: 'fw_request_gate_approval',
+          name: 'dh_request_gate_approval',
           description:
             'Lock the pipeline when you have completed work and need the explicit human user to approve it before continuing to the next phase. This is mandatory for production-grade robustness.',
           inputSchema: {
@@ -97,7 +111,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
           },
         },
         {
-          name: 'fw_approve_gate',
+          name: 'dh_approve_gate',
           description:
             'Call this ONLY when the user says "I approve" or "Looks good". Unlocks the pipeline.',
           inputSchema: {
@@ -106,7 +120,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
           },
         },
         {
-          name: 'fw_update_subtask',
+          name: 'dh_update_subtask',
           description:
             'Update the inner action details and progress of the current pipeline phase.',
           inputSchema: {
@@ -126,7 +140,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
           },
         },
         {
-          name: 'fw_update_self_healing',
+          name: 'dh_update_self_healing',
           description: 'Update the self-healing status (ASIP Loop) of the pipeline.',
           inputSchema: {
             type: 'object',
@@ -147,7 +161,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
           },
         },
         {
-          name: 'fw_fail_pipeline',
+          name: 'dh_fail_pipeline',
           description:
             'Set the pipeline status to FAILED and record the reason in the execution history.',
           inputSchema: {
@@ -161,7 +175,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
           },
         },
         {
-          name: 'fw_log_token_usage',
+          name: 'dh_log_token_usage',
           description: 'Log LLM token usage details for Console UI tracking.',
           inputSchema: {
             type: 'object',
@@ -177,7 +191,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
           },
         },
         {
-          name: 'fw_update_status_and_log_usage',
+          name: 'dh_update_status_and_log_usage',
           description:
             'Update the active subtask action, phase progress, and log token usage in a single call.',
           inputSchema: {
@@ -202,7 +216,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
           },
         },
         {
-          name: 'fw_check_pipeline_compliance',
+          name: 'dh_check_pipeline_compliance',
           description:
             'Check whether DAI Harness pipeline activation state is healthy and not stale. Use before closing substantial work.',
           inputSchema: {
@@ -230,13 +244,14 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
           turnNumber: 1,
         },
         async () => {
+          const toolName = canonicalToolName(request.params.name);
           try {
-            if (request.params.name === 'fw_start_pipeline') {
+            if (toolName === 'dh_start_pipeline') {
               const result = await startPipeline(request.params.arguments?.mode as string);
               return { content: [{ type: 'text', text: result }] };
             }
 
-            if (request.params.name === 'fw_get_current_phase') {
+            if (toolName === 'dh_get_current_phase') {
               const state = await getState();
               const phaseName = PIPELINE_PHASES[state.currentPhase] || 'Unknown Phase';
               let msg = `Mode: ${state.currentMode || 'None'}\nPhase: ${phaseName}\nStatus: ${state.status}`;
@@ -270,12 +285,12 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
               return { content: [{ type: 'text', text: msg }] };
             }
 
-            if (request.params.name === 'fw_advance_to_next_phase') {
+            if (toolName === 'dh_advance_to_next_phase') {
               const result = await advancePhase();
               return { content: [{ type: 'text', text: result }] };
             }
 
-            if (request.params.name === 'fw_request_gate_approval') {
+            if (toolName === 'dh_request_gate_approval') {
               const message = request.params.arguments?.message as string;
               const qualityGate = request.params.arguments?.qualityGate as
                 QualityGateState | undefined;
@@ -283,12 +298,12 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
               return { content: [{ type: 'text', text: result }] };
             }
 
-            if (request.params.name === 'fw_approve_gate') {
+            if (toolName === 'dh_approve_gate') {
               const result = await approveGate();
               return { content: [{ type: 'text', text: result }] };
             }
 
-            if (request.params.name === 'fw_update_subtask') {
+            if (toolName === 'dh_update_subtask') {
               const activeAction = request.params.arguments?.activeAction as string | null;
               const phaseProgress = request.params.arguments?.phaseProgress as number | null;
               await updateSubTask(activeAction, phaseProgress);
@@ -302,7 +317,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
               };
             }
 
-            if (request.params.name === 'fw_update_self_healing') {
+            if (toolName === 'dh_update_self_healing') {
               const selfHealing = request.params.arguments?.selfHealing as SelfHealingState | null;
               await updateSelfHealing(selfHealing);
               return {
@@ -317,13 +332,13 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
               };
             }
 
-            if (request.params.name === 'fw_fail_pipeline') {
+            if (toolName === 'dh_fail_pipeline') {
               const reason = request.params.arguments?.reason as string | undefined;
               const result = await failPipeline(reason);
               return { content: [{ type: 'text', text: result }] };
             }
 
-            if (request.params.name === 'fw_log_token_usage') {
+            if (toolName === 'dh_log_token_usage') {
               const inputTokens = request.params.arguments?.inputTokens as number;
               const outputTokens = request.params.arguments?.outputTokens as number;
               const model = request.params.arguments?.model as string;
@@ -347,7 +362,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
               };
             }
 
-            if (request.params.name === 'fw_update_status_and_log_usage') {
+            if (toolName === 'dh_update_status_and_log_usage') {
               const activeAction = request.params.arguments?.activeAction as string | null;
               const phaseProgress = request.params.arguments?.phaseProgress as number | null;
               const inputTokens = request.params.arguments?.inputTokens as number;
@@ -381,7 +396,7 @@ export function registerTools(server: Server, toolGateway = new ToolExecutionGat
               };
             }
 
-            if (request.params.name === 'fw_check_pipeline_compliance') {
+            if (toolName === 'dh_check_pipeline_compliance') {
               const maxStateAgeMinutes =
                 (request.params.arguments?.maxStateAgeMinutes as number | undefined) ?? 120;
               const report = await checkPipelineCompliance(maxStateAgeMinutes);

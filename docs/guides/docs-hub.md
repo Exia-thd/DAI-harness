@@ -32,19 +32,19 @@ freshness.
 For every material project update, the Docs Hub is refreshed at explicit
 lifecycle events so the user can inspect the whole project as it changes. If a
 project has no manifest/canonical state, or remains legacy/proportional, first
-run the non-destructive `forge docs init [target]` migration; legacy readability
+run the non-destructive `dai docs init [target]` migration; legacy readability
 does not waive the HTML control center or strict final gate:
 
 1. **Before editing:** check the current canonical state with strict doctor,
-   then run a persistent `forge docs build [target]` and retain the baseline
+   then run a persistent `dai docs build [target]` and retain the baseline
    result.
 2. **At each material checkpoint:** update the canonical `project-state.json`
-   and any affected source truth first, then run persistent `forge docs build
+   and any affected source truth first, then run persistent `dai docs build
    [target]`. A checkpoint is a meaningful implementation, documentation,
    schema, workflow, or handoff boundary—not each keystroke.
 3. **Before handoff/completion:** update the final canonical state, run strict
-   `forge docs gate [target]` for the selected view, and then run one final
-   persistent `forge docs build [target]` so the generated site matches the
+   `dai docs gate [target]` for the selected view, and then run one final
+   persistent `dai docs build [target]` so the generated site matches the
    approved sources.
 
 Missing baseline, checkpoint, or final refresh evidence blocks handoff. The

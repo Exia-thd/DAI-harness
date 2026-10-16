@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────
-# fw-global-launcher — Global Adaptive MCP Launcher for DAI Harness
+# daiharness-global-launcher — Global Adaptive MCP Launcher for DAI Harness
 #
 # A universal launcher that works with ANY project without per-project
 # setup. Uses environment variables and git root detection to find
@@ -17,16 +17,16 @@
 #     "mcpServers": {
 #       "dai-harness": {
 #         "command": "bash",
-#         "args": ["/path/to/fw-global-launcher.sh"]
+#         "args": ["/path/to/daiharness-global-launcher.sh"]
 #       }
 #     }
 #   }
 #
 # DEBUG MODE:
-#   DAIHARNESS_DEBUG=1 fw-global-launcher.sh
+#   DAIHARNESS_DEBUG=1 daiharness-global-launcher.sh
 #
 # TEST MODE:
-#   fw-global-launcher.sh --dry-run
+#   daiharness-global-launcher.sh --dry-run
 #
 # ─────────────────────────────────────────────────────────────────
 
@@ -52,17 +52,17 @@ DRY_RUN="${DAIHARNESS_DRY_RUN:-0}"
 
 log_debug() {
     if [[ "$DEBUG" == "1" ]]; then
-        echo "[fw-global DEBUG] $*" >&2
+        echo "[daiharness-global DEBUG] $*" >&2
     fi
 }
 
 log_error() {
-    echo "[fw-global ERROR] $*" >&2
+    echo "[daiharness-global ERROR] $*" >&2
 }
 
 log_info() {
     if [[ "$DEBUG" == "1" ]]; then
-        echo "[fw-global] $*" >&2
+        echo "[daiharness-global] $*" >&2
     fi
 }
 
@@ -84,17 +84,17 @@ DAIHARNESS_CANDIDATES=(
 # ─── Version/Dry-Run Mode ────────────────────────────────────────────────────
 
 cmd_version() {
-    echo "fw-global-launcher v${VERSION}"
+    echo "daiharness-global-launcher v${VERSION}"
     echo "Global config: ${GLOBAL_CONFIG_DIR}"
     exit 0
 }
 
 cmd_help() {
     cat << 'EOF'
-fw-global-launcher — Global Adaptive MCP Launcher for DAI Harness
+daiharness-global-launcher — Global Adaptive MCP Launcher for DAI Harness
 
 USAGE
-    fw-global-launcher.sh [OPTIONS]
+    daiharness-global-launcher.sh [OPTIONS]
 
 OPTIONS
     --dry-run     Show what would be launched (no execution)
@@ -464,7 +464,7 @@ cmd_dry_run() {
     local launch_cmd="$4"
     
     echo ""
-    echo -e "${CYAN}━━━ fw-global-launcher Dry Run ━━━${NC}"
+    echo -e "${CYAN}━━━ daiharness-global-launcher Dry Run ━━━${NC}"
     echo ""
     echo "  Workspace:    $workspace"
     echo "  DAI Harness:  $dai_harness"
@@ -494,7 +494,7 @@ main() {
         esac
     done
     
-    log_debug "=== fw-global-launcher v${VERSION} ==="
+    log_debug "=== daiharness-global-launcher v${VERSION} ==="
     log_debug "DAIHARNESS_WORKSPACE: ${DAIHARNESS_WORKSPACE:-<not set>}"
     log_debug "MCP_WORKSPACE_ROOT: ${MCP_WORKSPACE_ROOT:-<not set>}"
     log_debug "PWD: $(pwd)"
@@ -522,7 +522,7 @@ main() {
         log_error "MCP server not found"
         log_info ""
         log_info "Run global setup first:"
-        log_info "  bash scripts/fw-global-setup.sh"
+        log_info "  bash scripts/daiharness-global-setup.sh"
         exit 1
     }
     

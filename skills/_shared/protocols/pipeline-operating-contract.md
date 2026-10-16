@@ -115,19 +115,19 @@ proportional behavior.
 For every material project update, the pipeline first resolves the Docs Hub
 contract and then uses event-driven refresh boundaries. A project without a
 manifest/canonical state, or still in legacy/proportional mode, must be
-non-destructively initialized or migrated with `forge docs init [target]`
+non-destructively initialized or migrated with `dai docs init [target]`
 before the first material edit; legacy readability is not permission to skip
 the HTML control center. From that boundary the project is continuous.
-“Persistent build” means `forge docs build [target]` writes the
+“Persistent build” means `dai docs build [target]` writes the
 normal project output (normally `.daiharness/docs-hub/site/`) so the current
 project view is inspectable by the user; it does not make generated output a
 source or authorize editing it.
 
 | Event | Required action and evidence | Fail-closed condition |
 |---|---|---|
-| **Baseline before edit** | Resolve or non-destructively initialize/migrate the manifest and canonical state, check the current state with `forge docs doctor [target] --strict --json`, then run a persistent `forge docs build [target] --json` before the first edit. Record the state/build result and output location in task state. | Do not begin or dispatch edits when initialization/migration, the baseline state check, or the baseline build is missing, invalid, or fails. |
-| **Material checkpoint** | At each meaningful implementation, documentation, schema, workflow, or handoff boundary, update the impacted canonical Markdown/JSON and `project-state` first, then run a persistent `forge docs build [target] --json`. Record the checkpoint and build evidence before continuing. | Do not dispatch, hand off, or claim the checkpoint when canonical state or the persistent rebuild is missing or fails. |
-| **Final handoff/completion** | Update final canonical state, run the strict `forge docs gate [target]` for the selected view, then run a final persistent `forge docs build [target] --json` so the inspectable site matches the approved sources. | Do not hand off or complete when the strict gate or final persistent build is missing or fails. |
+| **Baseline before edit** | Resolve or non-destructively initialize/migrate the manifest and canonical state, check the current state with `dai docs doctor [target] --strict --json`, then run a persistent `dai docs build [target] --json` before the first edit. Record the state/build result and output location in task state. | Do not begin or dispatch edits when initialization/migration, the baseline state check, or the baseline build is missing, invalid, or fails. |
+| **Material checkpoint** | At each meaningful implementation, documentation, schema, workflow, or handoff boundary, update the impacted canonical Markdown/JSON and `project-state` first, then run a persistent `dai docs build [target] --json`. Record the checkpoint and build evidence before continuing. | Do not dispatch, hand off, or claim the checkpoint when canonical state or the persistent rebuild is missing or fails. |
+| **Final handoff/completion** | Update final canonical state, run the strict `dai docs gate [target]` for the selected view, then run a final persistent `dai docs build [target] --json` so the inspectable site matches the approved sources. | Do not hand off or complete when the strict gate or final persistent build is missing or fails. |
 
 These are material-event boundaries, not a per-keystroke loop: batch local
 edits until a meaningful checkpoint, then refresh once. The gate’s temporary

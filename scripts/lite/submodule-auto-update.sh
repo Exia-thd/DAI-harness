@@ -7,8 +7,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-FW_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-cd "$FW_ROOT"
+DAIHARNESS_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+cd "$DAIHARNESS_ROOT"
 
 SUPERPROJECT="$(git rev-parse --show-superproject-working-tree 2>/dev/null || true)"
 if [[ -z "$SUPERPROJECT" ]]; then
@@ -17,7 +17,7 @@ fi
 
 LOCK_FILE="$(git rev-parse --git-path dai-harness-auto-update.lock)"
 if [[ "$LOCK_FILE" != /* ]]; then
-    LOCK_FILE="$FW_ROOT/$LOCK_FILE"
+    LOCK_FILE="$DAIHARNESS_ROOT/$LOCK_FILE"
 fi
 OWNER_FILE="${LOCK_FILE}.owner.$$"
 printf '%s\n' "$$" > "$OWNER_FILE"
@@ -77,12 +77,12 @@ fi
 NEW_HEAD="$(git rev-parse HEAD)"
 echo "✅ [DAI Harness] Đã tự động cập nhật submodule lên ${NEW_HEAD:0:8}."
 
-INSTALLER="$FW_ROOT/scripts/daiharness-install.sh"
-DOCTOR="$FW_ROOT/scripts/daiharness-hook-doctor.sh"
-MCP_SETUP="$FW_ROOT/scripts/daiharness-mcp-setup.sh"
+INSTALLER="$DAIHARNESS_ROOT/scripts/daiharness-install.sh"
+DOCTOR="$DAIHARNESS_ROOT/scripts/daiharness-hook-doctor.sh"
+MCP_SETUP="$DAIHARNESS_ROOT/scripts/daiharness-mcp-setup.sh"
 
 if [[ -x "$INSTALLER" ]]; then
-    if ! DAIHARNESS_SOURCE_DIR="$FW_ROOT" bash "$INSTALLER" \
+    if ! DAIHARNESS_SOURCE_DIR="$DAIHARNESS_ROOT" bash "$INSTALLER" \
         --profile minimal --yes --skip-mcp --skip-skills --skip-config; then
         echo "❌ [DAI Harness] Code đã cập nhật nhưng không refresh được global hook runtime." >&2
         exit 1

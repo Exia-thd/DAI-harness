@@ -1,6 +1,6 @@
 /**
  * The comparator is the only thing standing between "our engine works" and
- * ForgeNexus's 0/30 that meant nothing. So it is tested for the property that
+ * the retired engine's 0/30 that meant nothing. So it is tested for the property
  * actually matters: it must fail when the graph is wrong, and say why.
  */
 

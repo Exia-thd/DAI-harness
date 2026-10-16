@@ -205,9 +205,8 @@ def _code_files(files: list[str]) -> list[str]:
 # ── evidence lookup & validation ──────────────────────────────────────────────
 
 
-# Ported from the reference. The previous version joined the turn straight
-# onto the verify directory with no validation and, with no turn given, took
-# whatever file was newest. So a payload turn of "../../elsewhere" escaped the
+# An earlier version joined the turn straight onto the verify directory with
+# no validation and, with no turn given, took whatever file was newest. So a payload turn of "../../elsewhere" escaped the
 # directory, a record whose internal turn disagreed with its filename was
 # accepted, and a turn with no evidence of its own silently inherited a record
 # from days earlier — which is what blocked every turn of this session with
@@ -261,7 +260,8 @@ def _find_evidence(project_root: Path, turn_env: str) -> Path | None:
     return None
 
 
-# Replay bounds, matching the reference implementation.
+# Replay bounds. A replay that cannot finish in five minutes is a replay
+# nobody will wait for, and an unbounded one turns a gate into a hang.
 MAX_REPLAY_TIMEOUT_SECS = 300.0
 DEFAULT_REPLAY_TIMEOUT_SECS = 300.0
 MAX_REPLAY_DETAIL_CHARS = 4096
@@ -286,7 +286,7 @@ def _validate_schema(ev: dict) -> list[str]:
     return schema_errors(ev)
 
 
-# ── final-command replay (ported from the reference implementation) ─────────
+# ── final-command replay ────────────────────────────────────────────────────
 # Every other check verifies the record's internal consistency. This one is the
 # only check of the world: it re-runs the exact stored argv and requires the
 # stored exit code. Without it a hand-written record that is merely

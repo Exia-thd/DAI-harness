@@ -19,7 +19,7 @@ if (!process.argv.includes('--skip-build')) {
 }
 const mcpOnly = spawnSync(process.execPath, [script, '--mcp-only'], { cwd: root, encoding: 'utf8' });
 assert.equal(mcpOnly.status, 0, mcpOnly.stderr);
-assert.equal(JSON.parse(mcpOnly.stdout).mcp.nonMutatingTool, 'fw_get_current_phase');
+assert.equal(JSON.parse(mcpOnly.stdout).mcp.nonMutatingTool, 'dh_get_current_phase');
 
 const denied = spawnSync(process.execPath, [script, '--live'], { cwd: root, encoding: 'utf8', env: { ...process.env, DAIHARNESS_LIVE_SMOKE: '' } });
 assert.notEqual(denied.status, 0);

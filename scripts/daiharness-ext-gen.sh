@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # THIS_FILE_IS_A_MIGRATION_SHIM
-echo "WARNING: fw-ext-gen.sh has been moved to utilities/fw-ext-gen.sh. This shim will be removed in the next release." >&2
+echo "WARNING: daiharness-ext-gen.sh has been moved to utilities/daiharness-ext-gen.sh. This shim will be removed in the next release." >&2
 if [ -n "${BASH_SOURCE[0]:-}" ]; then
     _SHIM_SOURCE="${BASH_SOURCE[0]}"
 elif [ -n "${ZSH_VERSION:-}" ]; then
@@ -10,7 +10,7 @@ else
 fi
 DIR="$( cd "$( dirname "$_SHIM_SOURCE" )" && pwd )"
 if [[ "$_SHIM_SOURCE" != "${0}" ]]; then
-    source "$DIR/utilities/fw-ext-gen.sh" "$@"
+    source "$DIR/utilities/daiharness-ext-gen.sh" "$@"
 else
-    exec "$DIR/utilities/fw-ext-gen.sh" "$@"
+    exec "$DIR/utilities/daiharness-ext-gen.sh" "$@"
 fi

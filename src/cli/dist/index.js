@@ -842,7 +842,8 @@ var CONFIG_PATHS = {
   PROJECT_ENV: ".env",
   PROJECT_ENV_LOCAL: ".env.local"
 };
-var ENV_PREFIX = "FORGE_";
+var ENV_PREFIX = "DAI_";
+var LEGACY_ENV_PREFIX = "FORGE_";
 var ConfigStore = class {
   values = /* @__PURE__ */ new Map();
   constructor() {
@@ -944,10 +945,12 @@ var ConfigStore = class {
    * Load environment variables
    */
   loadEnvVars() {
-    for (const [key, value] of Object.entries(process.env)) {
-      if (key.startsWith(ENV_PREFIX) && value !== void 0) {
-        const configKey = key.slice(ENV_PREFIX.length).toLowerCase().replace(/_/g, ".");
-        this.set(configKey, this.parseValue(value), "OS_ENV");
+    for (const prefix of [LEGACY_ENV_PREFIX, ENV_PREFIX]) {
+      for (const [key, value] of Object.entries(process.env)) {
+        if (key.startsWith(prefix) && value !== void 0) {
+          const configKey = key.slice(prefix.length).toLowerCase().replace(/_/g, ".");
+          this.set(configKey, this.parseValue(value), "OS_ENV");
+        }
       }
     }
   }
@@ -1371,7 +1374,12 @@ function checkDaiHarness() {
   };
 }
 function checkConfig() {
-  const userConfig = resolve(homedir(), ".config", "dai-harness", "config.json");
+  const userConfig = resolve(
+    homedir(),
+    ".config",
+    "dai-harness",
+    "config.json"
+  );
   const legacyConfig = resolve(homedir(), ".daiharness", "config.json");
   if (existsSync(userConfig)) {
     return {
@@ -1956,10 +1964,13 @@ async function runTraceabilityChecks() {
   }
   if (existsSync("scripts/pipeline-preflight.sh")) {
     try {
-      execSync("bash scripts/pipeline-preflight.sh --max-state-age-minutes 240 --json-only", {
-        stdio: "pipe",
-        timeout: 15e3
-      });
+      execSync(
+        "bash scripts/pipeline-preflight.sh --max-state-age-minutes 240 --json-only",
+        {
+          stdio: "pipe",
+          timeout: 15e3
+        }
+      );
       checks.push({
         name: "Pipeline Activation",
         status: "pass",
@@ -3959,7 +3970,7 @@ function buildDelegationBlock(config) {
   ].join("\n");
 }
 function detectControllerCli(environment = process.env) {
-  const explicit = environment.FORGE_CONTROLLER_CLI?.toLowerCase();
+  const explicit = environment.DAI_CONTROLLER_CLI?.toLowerCase();
   if (explicit === "codex" || explicit === "claude") {
     return explicit;
   }
@@ -4226,7 +4237,7 @@ function maybeNotifyAutoDelegation(argv = process.argv, environment = process.en
   const activation = resolveCurrentDelegation();
   const isModeMutation = argv.includes("delegate") && argv.some((argument) => ["auto", "on", "off", "model"].includes(argument));
   const notice = formatDelegationNotice(activation);
-  if (notice && !isModeMutation && environment.FORGE_DELEGATION_NOTICE !== "0") {
+  if (notice && !isModeMutation && environment.DAI_DELEGATION_NOTICE !== "0") {
     process.stderr.write(`${pc7.cyan("\u2139")} ${notice}
 `);
   }
@@ -8793,7 +8804,9 @@ function runDocsGate(projectRootInput, options = {}) {
       diagnostics: [...doctorReport.diagnostics]
     };
     if (doctorReport.status === "fail") return result;
-    const temporaryParent = mkdtempSync(join(tmpdir(), "dai-harness-docs-gate-"));
+    const temporaryParent = mkdtempSync(
+      join(tmpdir(), "dai-harness-docs-gate-")
+    );
     try {
       const outputDir = join(temporaryParent, "site");
       buildDocsHub([catalog], outputDir);
@@ -9539,9 +9552,9 @@ Agent Mode:
     done
 
 Environment Variables:
-  FORGE_DEBUG=1                       # Enable debug mode
+  DAI_DEBUG=1                       # Enable debug mode
   NO_COLOR=1                          # Disable colors
-  FORGE_LEGACY_OUTPUT=1               # Force legacy output mode
+  DAI_LEGACY_OUTPUT=1               # Force legacy output mode
 `
   );
   return program;

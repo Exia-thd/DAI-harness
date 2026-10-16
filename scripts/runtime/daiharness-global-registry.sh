@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────
-# fw-global-registry — Project Registry CLI for DAI Harness
+# daiharness-global-registry — Project Registry CLI for DAI Harness
 #
 # Manages the central project registry for global MCP setup.
 # Tracks which projects have been set up with DAI Harness.
 #
 # USAGE:
-#   fw-global-registry.sh list                    # List all registered projects
-#   fw-global-registry.sh add [path]             # Register a project
-#   fw-global-registry.sh remove [path]          # Unregister a project
-#   fw-global-registry.sh check [path]           # Check if project is registered
-#   fw-global-registry.sh update [path]          # Update project info
-#   fw-global-registry.sh clean                   # Remove stale entries
-#   fw-global-registry.sh export [file]           # Export registry
-#   fw-global-registry.sh import [file]           # Import registry
+#   daiharness-global-registry.sh list                    # List all registered projects
+#   daiharness-global-registry.sh add [path]             # Register a project
+#   daiharness-global-registry.sh remove [path]          # Unregister a project
+#   daiharness-global-registry.sh check [path]           # Check if project is registered
+#   daiharness-global-registry.sh update [path]          # Update project info
+#   daiharness-global-registry.sh clean                   # Remove stale entries
+#   daiharness-global-registry.sh export [file]           # Export registry
+#   daiharness-global-registry.sh import [file]           # Import registry
 #
 # ─────────────────────────────────────────────────────────────────
 
@@ -43,10 +43,10 @@ GLOBAL_REGISTRY="${GLOBAL_CONFIG_DIR}/registry.json"
 
 show_help() {
     cat << 'EOF'
-fw-global-registry — Project Registry CLI for DAI Harness
+daiharness-global-registry — Project Registry CLI for DAI Harness
 
 SYNOPSIS
-    fw-global-registry.sh <command> [options]
+    daiharness-global-registry.sh <command> [options]
 
 COMMANDS
     list                      List all registered projects
@@ -61,22 +61,22 @@ COMMANDS
 
 EXAMPLES
     # List all projects
-    fw-global-registry.sh list
+    daiharness-global-registry.sh list
 
     # Register current project
-    fw-global-registry.sh add
+    daiharness-global-registry.sh add
 
     # Register specific project
-    fw-global-registry.sh add /path/to/project
+    daiharness-global-registry.sh add /path/to/project
 
     # Check if project is registered
-    fw-global-registry.sh check /path/to/project
+    daiharness-global-registry.sh check /path/to/project
 
     # Clean stale entries
-    fw-global-registry.sh clean
+    daiharness-global-registry.sh clean
 
     # Export for backup
-    fw-global-registry.sh export ~/dai-harness-registry-backup.json
+    daiharness-global-registry.sh export ~/dai-harness-registry-backup.json
 
 EOF
 }
@@ -159,7 +159,7 @@ try {
         log_info "No projects registered"
         log_info ""
         log_info "Register a project:"
-        log_info "  fw-global-registry.sh add /path/to/project"
+        log_info "  daiharness-global-registry.sh add /path/to/project"
         echo ""
         return 0
     fi
@@ -263,7 +263,7 @@ cmd_remove() {
     
     if [[ -z "$path" ]]; then
         log_error "Path required"
-        log_info "Usage: fw-global-registry.sh remove /path/to/project"
+        log_info "Usage: daiharness-global-registry.sh remove /path/to/project"
         exit 1
     fi
     

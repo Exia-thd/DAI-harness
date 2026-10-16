@@ -1,4 +1,4 @@
-"""The product is DAI Harness; its former name survives only where it must.
+"""The product is DAI Harness; two other names survive only where they must.
 
 The rename touched display text, identifiers, environment variables, runtime
 directories, script names and the MCP tool prefix at once. Three kinds of
@@ -9,7 +9,9 @@ reference to the old name are still correct, and each is pinned here:
 - the changelog entry that records the rename.
 
 Everything else naming it is a regression, so the first test scans every
-tracked text file. The name is assembled from fragments: a repo-wide rename
+tracked text file. A second scan does the same for the name of the project this
+one was built from, which had no guard at all until changes started being
+carried across from it. The name is assembled from fragments: a repo-wide rename
 once rewrote a guard's own token list and turned the guard against every file.
 """
 
@@ -28,6 +30,20 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 OLD = "ne" + "xus"
 OLD_NAME = re.compile("dai[ _.-]?" + OLD, re.IGNORECASE)
+
+# The project this one was built from. Its author gave permission to reuse the
+# source; the name still does not belong in this tree, and the only enforcement
+# until now was remembering. Fragments, so a rename cannot rewrite the guard.
+UPSTREAM = re.compile(
+    "|".join(
+        [
+            "forge" + "wright",
+            "forge" + "nexus",
+            "forge" + "17",
+        ]
+    ),
+    re.IGNORECASE,
+)
 LEGACY_DIR = ".dai" + OLD
 BASH = shutil.which("bash")
 
@@ -78,6 +94,33 @@ def test_no_tracked_file_or_path_uses_the_former_name():
                 offenders.append(f"{relative}:{number}: {line.strip()[:100]}")
                 break
     assert not offenders, "The former product name is back:\n" + "\n".join(
+        f"  {entry}" for entry in offenders
+    )
+
+
+def test_no_tracked_file_or_path_names_the_upstream_project():
+    """No exemptions. The whole tree, including the frozen graph snapshot.
+
+    The snapshot once held a handful of C# namespaces carrying the name, from
+    template files this tree no longer has. They were dropped rather than
+    renamed - renaming would have made the record claim symbols that never
+    existed under those names, and a reference oracle is worth nothing if it is
+    not true. Nothing else has any reason to name it.
+    """
+    offenders = []
+    for relative in tracked():
+        if UPSTREAM.search(relative):
+            offenders.append(f"{relative}: in the path")
+            continue
+        path = ROOT / relative
+        if path.suffix.lower() in BINARY_SUFFIXES or not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for number, line in enumerate(text.splitlines(), 1):
+            if UPSTREAM.search(line):
+                offenders.append(f"{relative}:{number}: {line.strip()[:100]}")
+                break
+    assert not offenders, "The upstream project is named in this tree:\n" + "\n".join(
         f"  {entry}" for entry in offenders
     )
 

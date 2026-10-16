@@ -63,16 +63,16 @@ never hand-edited.
 
 The continuous contract is event-driven for every material project update. A
 project without a manifest/canonical state, or still in legacy/proportional
-mode, is first non-destructively initialized or migrated with `forge docs init
+mode, is first non-destructively initialized or migrated with `dai docs init
 [target]`; legacy readability does not waive the HTML control center:
 
 1. Before the first edit, inspect the current canonical state with strict
-   doctor and run a persistent `forge docs build [target]` baseline.
+   doctor and run a persistent `dai docs build [target]` baseline.
 2. After every material checkpoint, update canonical state/source truth and run
-   a persistent `forge docs build [target]` so the user-visible project view is
+   a persistent `dai docs build [target]` so the user-visible project view is
    current.
-3. Before handoff/completion, run the strict `forge docs gate [target]`, then
-   run a final persistent `forge docs build [target]`.
+3. Before handoff/completion, run the strict `dai docs gate [target]`, then
+   run a final persistent `dai docs build [target]`.
 
 The lifecycle is intentionally boundary-based rather than per-keystroke.
 Missing baseline, checkpoint, or final refresh evidence fails closed. Persistent

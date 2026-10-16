@@ -31,7 +31,7 @@ khiến người ta bỏ qua đúng những chỗ quan trọng.</p>
 <h2><span class="num">01</span> Lớp 1 — Evidence do máy ghi</h2>
 <p>Agent không tự viết bằng chứng. Nó chạy lệnh kiểm chứng qua <code>run_check.py</code>,
 script này thực thi, thu output, <strong>redact secret trong bộ nhớ</strong>, rồi ghi JSON nguyên tử:</p>
-<div class="code-block"><div class="code-head"><span class="file">scripts/lite/run_check.py:254</span><span class=cap>schema bằng chứng</span></div><pre><code>ev = {
+<div class="code-block"><div class="code-head"><span class="file">scripts/lite/run_check.py:256</span><span class=cap>schema bằng chứng</span></div><pre><code>ev = {
     "schema_version": SCHEMA_VERSION,
     "acceptance_criteria": acceptance,
     "command": command,
@@ -78,17 +78,18 @@ Deny-pattern hiện hành đọc từ <code>.daiharness/execution-policy.yaml</c
 <ul class="rules"><li><code>rm\s+(-[a-zA-Z]*r[a-zA-Z]*f|-[a-zA-Z]*f[a-zA-Z]*r)</code></li><li><code>git\s+push\s+.*(--force|\s-f(\s|$))</code></li><li><code>git\s+reset\s+--hard</code></li><li><code>git\s+clean\s+-[a-zA-Z]*f</code></li><li><code>DROP\s+(TABLE|DATABASE)</code></li><li><code>curl\s+[^|]*\|\s*(ba|z)?sh</code></li><li><code>wget\s+[^|]*\|\s*(ba|z)?sh</code></li><li><code>chmod\s+777</code></li><li><code>Remove-Item\s+.*-Recurse\s+.*-Force</code></li></ul>
 <p>Điểm quan trọng là <strong>hướng fail</strong>: file policy thiếu, rỗng, hỏng, hay mode lạ đều
 <em>chặn</em> chứ không cho qua:</p>
-<div class="code-block"><div class="code-head"><span class="file">scripts/lite/policy_check.py:85</span></div><pre><code>def cmd_check(tool: str, args: list[str]) -&gt; int:
+<div class="code-block"><div class="code-head"><span class="file">scripts/lite/policy_check.py:95</span></div><pre><code>def cmd_check(tool: str, args: list[str]) -&gt; int:
     policy = load_policy()
     if policy is None:
-        print(f"[POLICY] ERROR: policy file missing/empty/malformed at {POLICY_FILE} — "
-              f"DENY (fail-closed).", file=sys.stderr)
+        print(
+            f"[POLICY] ERROR: policy file missing/empty/malformed at {POLICY_FILE} — "
+            f"DENY (fail-closed).",
+            file=sys.stderr,
+        )
         _log_event("deny-failclosed", tool, " ".join(args))
         return 1
 
-    mode = policy.get("mode", "strict")
-    if mode not in VALID_MODES:
-        mode = "strict"  # unknown mode fails closed</code></pre></div>
+    mode = policy.get("mode", "strict")</code></pre></div>
 
 <h2><span class="num">04</span> Lớp 4 — Runtime ledger</h2>
 <p>Một dev server bị bỏ quên vô hình với mọi loại test: build xanh, test pass, RAM cứ leo.
@@ -102,20 +103,20 @@ VERDICT: CLEAN | LEAKED</code></pre></div>
 <p>Lệnh <code>run</code> tái dùng instance đang sống thay vì mở cái thứ hai; <code>reap</code> dọn mọi lease
 không phải <code>policy=keep</code>. Trên Windows, kiểm tra process sống <strong>không</strong> được dùng
 <code>os.kill(pid, 0)</code> — nó gọi TerminateProcess và giết thật:</p>
-<div class="code-block"><div class="code-head"><span class="file">scripts/lite/runtime_lease.py:39</span></div><pre><code>def pid_alive(pid: int) -&gt; bool:
+<div class="code-block"><div class="code-head"><span class="file">scripts/lite/runtime_lease.py:40</span></div><pre><code>def pid_alive(pid: int) -&gt; bool:
     if pid &lt;= 0:
         return False
     if os.name == "nt":
         r = subprocess.run(
             ["tasklist", "/FI", f"PID eq {pid}", "/NH", "/FO", "CSV"],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         return f'"{pid}"' in r.stdout
     try:
         os.kill(pid, 0)
-        return True
-    except ProcessLookupError:
-        return False</code></pre></div>
+        return True</code></pre></div>
 
 <h2><span class="num">04b</span> Sửa lỗi: phải thấy ĐỎ rồi mới XANH</h2>
 <p>Một bản vá không được chứng minh bằng một test xanh. Chạy <strong>đúng cùng một lệnh</strong> và cho thấy:

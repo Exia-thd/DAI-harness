@@ -7,7 +7,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DAIHARNESS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-FW_DIR="${DAIHARNESS_DIR}/dai-harness"
+HARNESS_ROOT="${DAIHARNESS_DIR}/dai-harness"
 
 # Detect dai-harness location (submodule vs standalone)
 if [ -d "$DAIHARNESS_DIR/.git" ]; then
@@ -18,15 +18,15 @@ elif [ -f "$DAIHARNESS_DIR/.git" ] || git -C "$DAIHARNESS_DIR" rev-parse --is-in
     # Inside a git repo — find dai-harness submodule
     PROJECT_DIR="$DAIHARNESS_DIR"
     if [ -d "$PROJECT_DIR/dai-harness" ]; then
-        FW_DIR="$PROJECT_DIR/dai-harness"
-        SKILLS_DIR="$FW_DIR/skills"
+        HARNESS_ROOT="$PROJECT_DIR/dai-harness"
+        SKILLS_DIR="$HARNESS_ROOT/skills"
     else
         SKILLS_DIR="$PROJECT_DIR/skills"
     fi
 else
-    FW_DIR="$DAIHARNESS_DIR"
+    HARNESS_ROOT="$DAIHARNESS_DIR"
     PROJECT_DIR="$DAIHARNESS_DIR"
-    SKILLS_DIR="$FW_DIR/skills"
+    SKILLS_DIR="$HARNESS_ROOT/skills"
 fi
 
 # Git Bash on Windows reports MSYS-style paths (/c/Users/...). Native Windows

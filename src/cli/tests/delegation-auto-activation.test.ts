@@ -64,7 +64,7 @@ delegationMode:
   it("uses the explicit controller override", () => {
     expect(
       detectControllerCli({
-        FORGE_CONTROLLER_CLI: "claude",
+        DAI_CONTROLLER_CLI: "claude",
         CODEX_THREAD_ID: "thread-1",
       }),
     ).toBe("claude");

@@ -169,7 +169,7 @@ describe('SessionDeduplicationMiddleware', () => {
       pendingRead.sessionId = 'session-a';
       expect(mw.before_tool(pendingRead).action).toBe('pass');
 
-      const mutation = makeCtx('fw_advance_to_next_phase');
+      const mutation = makeCtx('dh_advance_to_next_phase');
       mutation.sessionId = 'session-a';
       mutation.call.result = { content: [{ type: 'text', text: 'advanced' }] };
       expect(mw.before_tool(mutation).action).toBe('pass');

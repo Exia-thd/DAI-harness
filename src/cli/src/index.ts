@@ -92,9 +92,9 @@ Agent Mode:
     done
 
 Environment Variables:
-  FORGE_DEBUG=1                       # Enable debug mode
+  DAI_DEBUG=1                       # Enable debug mode
   NO_COLOR=1                          # Disable colors
-  FORGE_LEGACY_OUTPUT=1               # Force legacy output mode
+  DAI_LEGACY_OUTPUT=1               # Force legacy output mode
 `,
   );
 

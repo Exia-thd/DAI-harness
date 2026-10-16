@@ -10,12 +10,26 @@ import { registerPrompts } from './prompts.js';
 import * as skillParser from '../parsers/skill-parser.js';
 import * as pipelineManager from '../state/pipeline-manager.js';
 
-// Mock Server from SDK
-class MockServer {
-  listPromptsHandler!: Function;
-  getPromptHandler!: Function;
+// Mock Server from SDK.
+//
+// The handlers are typed by what the tests actually do with them - call one
+// with a request and await a result - rather than as `Function`, which accepts
+// any callable, including a class that would throw when invoked without `new`.
+// The shape the tests read back: a prompt result carries messages whose
+// content is text. Typing it this way keeps the assertions checked instead of
+// pushing them through `unknown`.
+interface PromptResult {
+  messages: { content: { text: string } }[];
+  [key: string]: unknown;
+}
 
-  setRequestHandler(schema: unknown, handler: Function) {
+type RequestHandler = (request: unknown) => Promise<PromptResult>;
+
+class MockServer {
+  listPromptsHandler!: RequestHandler;
+  getPromptHandler!: RequestHandler;
+
+  setRequestHandler(schema: unknown, handler: RequestHandler) {
     if (schema === ListPromptsRequestSchema) {
       this.listPromptsHandler = handler;
     } else if (schema === GetPromptRequestSchema) {
@@ -81,7 +95,7 @@ describe('registerPrompts', () => {
 
     // Request UI Designer prompt
     const res = await handler({
-      params: { name: 'fw_skill_ui-designer' },
+      params: { name: 'dh_skill_ui-designer' },
     });
 
     expect(res.messages[0].content.text).toContain('UI Designer Content');
@@ -90,14 +104,14 @@ describe('registerPrompts', () => {
     );
   });
 
-  it('should inject DESIGN.md into fw_orchestrator if it exists', async () => {
+  it('should inject DESIGN.md into dh_orchestrator if it exists', async () => {
     fs.writeFileSync(tempDesignMdPath, 'my-mock-design-tokens', 'utf-8');
 
     registerPrompts(mockServer as unknown as Server);
     const handler = mockServer.getPromptHandler;
 
     const res = await handler({
-      params: { name: 'fw_orchestrator' },
+      params: { name: 'dh_orchestrator' },
     });
 
     expect(res.messages[0].content.text).toContain('Orchestrator Content');
@@ -112,7 +126,7 @@ describe('registerPrompts', () => {
     const handler = mockServer.getPromptHandler;
 
     const res = await handler({
-      params: { name: 'fw_skill_ui-designer' },
+      params: { name: 'dh_skill_ui-designer' },
     });
 
     expect(res.messages[0].content.text).toContain('UI Designer Content');
@@ -136,7 +150,7 @@ describe('registerPrompts', () => {
     const handler = mockServer.getPromptHandler;
 
     const res = await handler({
-      params: { name: 'fw_skill_database-engineer' },
+      params: { name: 'dh_skill_database-engineer' },
     });
 
     expect(res.messages[0].content.text).toContain('DB Content');

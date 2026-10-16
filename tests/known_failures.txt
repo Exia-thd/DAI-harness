@@ -1,6 +1,6 @@
 # Known-red tests, recorded so the gate reports regressions instead of
-# inherited failures. Every entry here also fails in the upstream tree
-# this suite was imported from. Target: tests/unit_tests/
+# inherited failures. Each entry was already red when it was recorded,
+# so the gate fails only on something new. Target: tests/unit_tests/
 # Regenerate: python scripts/ci/pytest_gate.py <target> --baseline <this file> --write-baseline
 #
 # Entries here were diagnosed, not merely recorded. The upstream port of

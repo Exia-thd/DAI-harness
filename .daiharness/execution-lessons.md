@@ -39,7 +39,7 @@
 ### Problem: Coding agents generated inconsistent user interfaces because they lacked access to a centralized design system source-of-truth.
 ### Failed Attempts: N/A
 ### Research Source: N/A
-### Solution: Updated DAI Harness Global MCP prompt server to automatically detect `DESIGN.md` in the workspace root and inject it into the prompt context for `fw_orchestrator` and styling-related skills (e.g., `ui-designer`, `frontend-engineer`).
+### Solution: Updated DAI Harness Global MCP prompt server to automatically detect `DESIGN.md` in the workspace root and inject it into the prompt context for `dh_orchestrator` and styling-related skills (e.g., `ui-designer`, `frontend-engineer`).
 ### Key Insight: Centralized design documents (e.g., DESIGN.md standard by Google Stitch) can be injected transparently at the MCP layer, giving all downstream coding agents a unified visual source-of-truth.
 ### Apply When: Building UI components or orchestrating front-end tasks in agentic pipelines.
 ### Planning Review Trigger:

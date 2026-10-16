@@ -16,13 +16,13 @@
 
 <section class="hero compact">
   <span class="tag">TẦNG 3</span>
-  <h1>Runtime — <span class="accent">22 công cụ, 9936 dòng</span></h1>
+  <h1>Runtime — <span class="accent">22 công cụ, 10138 dòng</span></h1>
   <p class="lead">Python thuần, <strong>zero-dependency</strong>, chạy trên Windows/macOS/Linux.
   Không cần npm install, không cần venv, không có gói ngoài nào.</p>
 </section>
 
 <h2><span class="num">01</span> Bộ công cụ</h2>
-<table><thead><tr><th>Script</th><th>Vai trò</th><th>Kích thước</th></tr></thead><tbody><tr><td><code>context-manager.py</code></td><td>—</td><td>159 dòng</td></tr><tr><td><code>continuity_check.py</code></td><td>—</td><td>1346 dòng</td></tr><tr><td><code>dai_memory.py</code></td><td>—</td><td>296 dòng</td></tr><tr><td><code>escalate.py</code></td><td>Leo thang bước HARD sang expert CLI, có ngân sách + timeout + lease</td><td>375 dòng</td></tr><tr><td><code>evidence_common.py</code></td><td>—</td><td>1309 dòng</td></tr><tr><td><code>migrate-memory.py</code></td><td>—</td><td>143 dòng</td></tr><tr><td><code>policy_check.py</code></td><td>Cổng execution policy, fail-closed, hot-reload</td><td>164 dòng</td></tr><tr><td><code>repair-overlays.py</code></td><td>—</td><td>353 dòng</td></tr><tr><td><code>review_attest.py</code></td><td>—</td><td>399 dòng</td></tr><tr><td><code>rule-context-hook.py</code></td><td>—</td><td>704 dòng</td></tr><tr><td><code>rule-validator.py</code></td><td>—</td><td>605 dòng</td></tr><tr><td><code>rule_ledger.py</code></td><td>Sổ tự khai vi phạm rule (JSONL) + thống kê ứng viên cần siết</td><td>109 dòng</td></tr><tr><td><code>rule_validator.py</code></td><td>—</td><td>220 dòng</td></tr><tr><td><code>run_check.py</code></td><td>Ghi evidence JSON nguyên tử (schema v1, redact secret, cap 16KB)</td><td>483 dòng</td></tr><tr><td><code>runtime_lease.py</code></td><td>Lease cho process dài hạn: run/status/release/reap</td><td>232 dòng</td></tr><tr><td><code>stop_gate.py</code></td><td>—</td><td>845 dòng</td></tr><tr><td><code>sync-kernel.py</code></td><td>Sinh CLAUDE/AGENTS/GEMINI.md từ kernel, ép ngân sách 7k token</td><td>192 dòng</td></tr><tr><td><code>upgrade-skills.py</code></td><td>—</td><td>244 dòng</td></tr><tr><td><code>validate-overlays.py</code></td><td>—</td><td>256 dòng</td></tr><tr><td><code>validate_overlays.py</code></td><td>Linter overlay: chặn evidence giả, path chết, bảng hỏng</td><td>165 dòng</td></tr><tr><td><code>verify_gate.py</code></td><td>Stop-hook: xác thực evidence, chặn stub, quyết định mở/chặn lượt</td><td>1009 dòng</td></tr><tr><td><code>worktree_manager.py</code></td><td>Vòng đời parallel dispatch + merge arbiter</td><td>328 dòng</td></tr></tbody></table>
+<table><thead><tr><th>Script</th><th>Vai trò</th><th>Kích thước</th></tr></thead><tbody><tr><td><code>context-manager.py</code></td><td>—</td><td>161 dòng</td></tr><tr><td><code>continuity_check.py</code></td><td>—</td><td>1346 dòng</td></tr><tr><td><code>dai_memory.py</code></td><td>—</td><td>296 dòng</td></tr><tr><td><code>escalate.py</code></td><td>Leo thang bước HARD sang expert CLI, có ngân sách + timeout + lease</td><td>438 dòng</td></tr><tr><td><code>evidence_common.py</code></td><td>—</td><td>1308 dòng</td></tr><tr><td><code>migrate-memory.py</code></td><td>—</td><td>143 dòng</td></tr><tr><td><code>policy_check.py</code></td><td>Cổng execution policy, fail-closed, hot-reload</td><td>187 dòng</td></tr><tr><td><code>repair-overlays.py</code></td><td>—</td><td>353 dòng</td></tr><tr><td><code>review_attest.py</code></td><td>—</td><td>399 dòng</td></tr><tr><td><code>rule-context-hook.py</code></td><td>—</td><td>704 dòng</td></tr><tr><td><code>rule-validator.py</code></td><td>—</td><td>605 dòng</td></tr><tr><td><code>rule_ledger.py</code></td><td>Sổ tự khai vi phạm rule (JSONL) + thống kê ứng viên cần siết</td><td>124 dòng</td></tr><tr><td><code>rule_validator.py</code></td><td>—</td><td>281 dòng</td></tr><tr><td><code>run_check.py</code></td><td>Ghi evidence JSON nguyên tử (schema v1, redact secret, cap 16KB)</td><td>485 dòng</td></tr><tr><td><code>runtime_lease.py</code></td><td>Lease cho process dài hạn: run/status/release/reap</td><td>264 dòng</td></tr><tr><td><code>stop_gate.py</code></td><td>—</td><td>845 dòng</td></tr><tr><td><code>sync-kernel.py</code></td><td>Sinh CLAUDE/AGENTS/GEMINI.md từ kernel, ép ngân sách 7k token</td><td>192 dòng</td></tr><tr><td><code>upgrade-skills.py</code></td><td>—</td><td>244 dòng</td></tr><tr><td><code>validate-overlays.py</code></td><td>—</td><td>256 dòng</td></tr><tr><td><code>validate_overlays.py</code></td><td>Linter overlay: chặn evidence giả, path chết, bảng hỏng</td><td>170 dòng</td></tr><tr><td><code>verify_gate.py</code></td><td>Stop-hook: xác thực evidence, chặn stub, quyết định mở/chặn lượt</td><td>1009 dòng</td></tr><tr><td><code>worktree_manager.py</code></td><td>Vòng đời parallel dispatch + merge arbiter</td><td>328 dòng</td></tr></tbody></table>
 
 <div class="callout tip"><div class="title">Vì sao zero-dependency</div>Một agent OS mà cài đặt phức tạp thì sẽ không được dùng. Toàn bộ tầng runtime chỉ cần Python trong stdlib — kể cả MCP server (tự viết JSON-RPC) và bộ đọc YAML (parser giới hạn cho đúng schema policy/contract).</div>
 
@@ -34,14 +34,15 @@
   <li><strong>Timeout</strong> — cấu hình được, kẹp trong [1, 3600] giây.</li>
   <li><strong>Lease</strong> — provider chạy dưới lease; treo thì bị giết, trả 124, và gỡ lease.</li>
 </ul>
-<div class="code-block"><div class="code-head"><span class="file">scripts/lite/escalate.py:171</span></div><pre><code>def provider_timeout_seconds(cfg: dict) -&gt; int:
+<div class="code-block"><div class="code-head"><span class="file">scripts/lite/escalate.py:197</span></div><pre><code>def provider_timeout_seconds(cfg: dict) -&gt; int:
     """Provider wall-clock cap. Env wins over config; always clamped to [1, 3600]."""
     raw = os.environ.get("DAIHARNESS_ESCALATION_TIMEOUT_SECS")
     try:
-        value = int(raw) if raw is not None else int(cfg.get("providerTimeoutSeconds", 120))
+        value = (
+            int(raw) if raw is not None else int(cfg.get("providerTimeoutSeconds", 120))
+        )
     except (TypeError, ValueError):
-        value = 120
-    return max(1, min(value, 3600))</code></pre></div>
+        value = 120</code></pre></div>
 <div class="callout warn"><div class="title">Bẫy Windows đã gặp</div>Prompt nhiều dòng truyền qua argv bị cmd.exe nghiền nát khi CLI là shim <code>.CMD</code> của npm — lần gọi đầu tiên expert nhận được prompt rỗng và trả lời lạc đề. Nay prompt đi qua stdin.</div>
 
 <h2><span class="num">03</span> Parallel dispatch</h2>

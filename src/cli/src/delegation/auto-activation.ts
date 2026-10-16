@@ -74,7 +74,7 @@ export function buildDelegationBlock(config: DelegationConfig): string {
 export function detectControllerCli(
   environment: Record<string, string | undefined> = process.env,
 ): ControllerCli {
-  const explicit = environment.FORGE_CONTROLLER_CLI?.toLowerCase();
+  const explicit = environment.DAI_CONTROLLER_CLI?.toLowerCase();
   if (explicit === "codex" || explicit === "claude") {
     return explicit;
   }

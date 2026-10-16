@@ -5,7 +5,7 @@
  * 1. Default config (built-in)
  * 2. User config (~/.config/dai-harness/sandbox.yaml)
  * 3. Project config (.daiharness/sandbox.yaml)
- * 4. Environment variables (FORGE_SANDBOX_*)
+ * 4. Environment variables (DAI_SANDBOX_*)
  * 5. Inline config (highest priority)
  */
 
@@ -143,51 +143,51 @@ export class ConfigLoader {
     const config: Partial<SandboxConfig> = {};
 
     // Feature toggle
-    if (process.env.FORGE_SANDBOX_ENABLED !== undefined) {
-      config.enabled = process.env.FORGE_SANDBOX_ENABLED === "true";
+    if (process.env.DAI_SANDBOX_ENABLED !== undefined) {
+      config.enabled = process.env.DAI_SANDBOX_ENABLED === "true";
     }
 
     // Mode
-    if (process.env.FORGE_SANDBOX_MODE !== undefined) {
-      config.mode = process.env.FORGE_SANDBOX_MODE as
+    if (process.env.DAI_SANDBOX_MODE !== undefined) {
+      config.mode = process.env.DAI_SANDBOX_MODE as
         | "preview"
         | "strict"
         | "disabled";
     }
 
     // Isolation level
-    if (process.env.FORGE_SANDBOX_ISOLATION_LEVEL !== undefined) {
+    if (process.env.DAI_SANDBOX_ISOLATION_LEVEL !== undefined) {
       config.isolation = {
         ...config.isolation,
-        level: process.env.FORGE_SANDBOX_ISOLATION_LEVEL as any,
+        level: process.env.DAI_SANDBOX_ISOLATION_LEVEL as any,
       };
     }
 
     // Filesystem paths
-    if (process.env.FORGE_SANDBOX_ALLOWED_PATHS !== undefined) {
+    if (process.env.DAI_SANDBOX_ALLOWED_PATHS !== undefined) {
       config.filesystem = {
         ...config.filesystem,
-        allowedPaths: process.env.FORGE_SANDBOX_ALLOWED_PATHS.split(",").map(
+        allowedPaths: process.env.DAI_SANDBOX_ALLOWED_PATHS.split(",").map(
           (p) => p.trim()
         ),
       };
     }
 
     // Network domains
-    if (process.env.FORGE_SANDBOX_ALLOWED_DOMAINS !== undefined) {
+    if (process.env.DAI_SANDBOX_ALLOWED_DOMAINS !== undefined) {
       config.network = {
         ...config.network,
-        allowedDomains: process.env.FORGE_SANDBOX_ALLOWED_DOMAINS.split(",").map(
+        allowedDomains: process.env.DAI_SANDBOX_ALLOWED_DOMAINS.split(",").map(
           (d) => d.trim()
         ),
       };
     }
 
     // Shell commands
-    if (process.env.FORGE_SANDBOX_ALLOWED_COMMANDS !== undefined) {
+    if (process.env.DAI_SANDBOX_ALLOWED_COMMANDS !== undefined) {
       config.shell = {
         ...config.shell,
-        allowedCommands: process.env.FORGE_SANDBOX_ALLOWED_COMMANDS.split(
+        allowedCommands: process.env.DAI_SANDBOX_ALLOWED_COMMANDS.split(
           ","
         ).map((c) => c.trim()),
       };

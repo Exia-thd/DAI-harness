@@ -37,10 +37,9 @@ MAX_EVIDENCE_BYTES = 4 * 1024 * 1024
 
 # --- Portable filesystem primitives -----------------------------------------
 #
-# The reference tree is POSIX-only: it locks with fcntl and refuses to touch a
-# path without O_NOFOLLOW.  Neither exists on Windows, and degrading to
-# "cannot check" would silently turn a gate into a no-op, so provide real
-# equivalents instead.
+# fcntl locking and O_NOFOLLOW are POSIX-only, and this runs on Windows too.
+# Degrading to "cannot check" there would silently turn a gate into a no-op,
+# so each primitive has a real equivalent rather than a stub.
 
 try:
     import fcntl as _fcntl

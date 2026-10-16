@@ -17,23 +17,23 @@ DAIHARNESS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 if [ -f "$DAIHARNESS_DIR/VERSION" ] || [ -f "$DAIHARNESS_DIR/skills/production-grade/SKILL.md" ]; then
     # dai-harness is the project root
     PROJECT_DIR="$DAIHARNESS_DIR"
-    FW_DIR="$DAIHARNESS_DIR"
+    HARNESS_ROOT="$DAIHARNESS_DIR"
 elif [ -d "$DAIHARNESS_DIR/dai-harness" ]; then
     # dai-harness is a submodule inside the project
     PROJECT_DIR="$DAIHARNESS_DIR"
-    FW_DIR="$PROJECT_DIR/dai-harness"
+    HARNESS_ROOT="$PROJECT_DIR/dai-harness"
 else
     echo "ERROR: Cannot detect dai-harness location. Run from within the dai-harness directory." >&2
     exit 1
 fi
 
-FW_DIR="${DAIHARNESS_DIR}"  # always point to dai-harness root for file ops
+HARNESS_ROOT="${DAIHARNESS_DIR}"  # always point to dai-harness root for file ops
 
-STATE_FILE="$FW_DIR/.daiharness/asip-state.json"
-METRICS_FILE="$FW_DIR/.daiharness/asip-metrics.json"
-LESSON_PLAN="$FW_DIR/.daiharness/plan-lessons.md"
-LESSON_EXEC="$FW_DIR/.daiharness/execution-lessons.md"
-SESSION_TRACK="$FW_DIR/.daiharness/session-track.json"
+STATE_FILE="$HARNESS_ROOT/.daiharness/asip-state.json"
+METRICS_FILE="$HARNESS_ROOT/.daiharness/asip-metrics.json"
+LESSON_PLAN="$HARNESS_ROOT/.daiharness/plan-lessons.md"
+LESSON_EXEC="$HARNESS_ROOT/.daiharness/execution-lessons.md"
+SESSION_TRACK="$HARNESS_ROOT/.daiharness/session-track.json"
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
 
@@ -179,7 +179,7 @@ EOF
 }
 
 bootstrap_migration_state() {
-    local mig_file="$FW_DIR/.daiharness/lesson-migration-state.json"
+    local mig_file="$HARNESS_ROOT/.daiharness/lesson-migration-state.json"
     mkdir -p "$(dirname "$mig_file")"
     if [ ! -f "$mig_file" ]; then
         cat > "$mig_file" << 'EOF'

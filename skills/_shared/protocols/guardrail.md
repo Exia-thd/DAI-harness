@@ -248,12 +248,12 @@ task-state `DOCUMENTATION_WRITE_DECISION`.
 The continuous HTML refresh lifecycle is also a fail-closed guardrail for every
 material project update. A project without a manifest/canonical state, or still
 in legacy/proportional mode, must first be non-destructively initialized or
-migrated with `forge docs init [target]`; legacy readability never waives the
+migrated with `dai docs init [target]`; legacy readability never waives the
 HTML control center. Before the first edit, the worker must prove a current-state
-baseline and a persistent `forge docs build [target]`. After
+baseline and a persistent `dai docs build [target]`. After
 each material checkpoint, the canonical state and affected source truth must
 be updated before another persistent build. Before handoff or completion,
-`forge docs gate [target]` must pass and a final persistent build must leave the
+`dai docs gate [target]` must pass and a final persistent build must leave the
 user-visible site current. These are event boundaries rather than a
 per-keystroke build loop.
 

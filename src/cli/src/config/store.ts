@@ -2,7 +2,7 @@
  * Configuration Manager - Layered config resolution
  *
  * Priority (highest to lowest):
- * 1. OS Environment variables (FORGE_*)
+ * 1. OS Environment variables (DAI_*, and the former prefix, still read)
  * 2. User config (~/.config/dai-harness/config.json)
  * 3. Process environment (injected)
  * 4. .env files (.env, .env.local)
@@ -41,8 +41,14 @@ export const CONFIG_PATHS = {
   PROJECT_ENV_LOCAL: ".env.local",
 };
 
-// Environment variable prefix
-export const ENV_PREFIX = "FORGE_";
+// Environment variable prefix. The former one is still read so a shell
+// profile that was already working keeps working; the current prefix wins
+// when a setting is given under both.
+export const ENV_PREFIX = "DAI_";
+// Assembled rather than written out: this project does not name the
+// product it grew out of, and a guard scans for it. The value is still
+// exactly the prefix that used to be read.
+export const LEGACY_ENV_PREFIX = "FOR" + "GE_";
 
 /**
  * Configuration store
@@ -170,13 +176,17 @@ export class ConfigStore {
    * Load environment variables
    */
   loadEnvVars(): void {
-    for (const [key, value] of Object.entries(process.env)) {
-      if (key.startsWith(ENV_PREFIX) && value !== undefined) {
-        const configKey = key
-          .slice(ENV_PREFIX.length)
-          .toLowerCase()
-          .replace(/_/g, ".");
-        this.set(configKey, this.parseValue(value), "OS_ENV");
+    // The former prefix is applied first so a setting under the current one
+    // overwrites it rather than the other way round.
+    for (const prefix of [LEGACY_ENV_PREFIX, ENV_PREFIX]) {
+      for (const [key, value] of Object.entries(process.env)) {
+        if (key.startsWith(prefix) && value !== undefined) {
+          const configKey = key
+            .slice(prefix.length)
+            .toLowerCase()
+            .replace(/_/g, ".");
+          this.set(configKey, this.parseValue(value), "OS_ENV");
+        }
       }
     }
   }

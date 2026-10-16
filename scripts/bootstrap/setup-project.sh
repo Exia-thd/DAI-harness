@@ -164,16 +164,16 @@ detect_tech_stack() {
 # ─── Create .daiharness Directory ──────────────────────────────────────
 
 create_dai_harness_dir() {
-    local fw_dir="$TARGET_PROJECT/.daiharness"
+    local dh_dir="$TARGET_PROJECT/.daiharness"
     
-    if [ -d "$fw_dir" ]; then
+    if [ -d "$dh_dir" ]; then
         log_warn ".daiharness/ already exists in this project"
         log_info "Skipping profile generation."
         return
     fi
 
     log_info "Creating .daiharness/ directory..."
-    mkdir -p "$fw_dir"
+    mkdir -p "$dh_dir"
 
     # Detect tech stack
     read -r lang framework <<< "$(detect_tech_stack)"
@@ -183,7 +183,7 @@ create_dai_harness_dir() {
     log_ok "Detected: $lang / $framework"
 
     # Generate project-profile.json
-    cat > "$fw_dir/project-profile.json" <<EOF
+    cat > "$dh_dir/project-profile.json" <<EOF
 {
   "project": "$project_name",
   "language": "$lang",

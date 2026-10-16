@@ -264,7 +264,7 @@
 **Subtasks:**
 - [ ] Add feature flags
 - [ ] Implement legacy mode
-- [ ] Add `FORGE_LEGACY_OUTPUT=1`
+- [ ] Add `DAI_LEGACY_OUTPUT=1`
 - [ ] Test all existing commands
 
 **Acceptance:**

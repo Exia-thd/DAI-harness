@@ -109,11 +109,11 @@ async function runMcpSmoke() {
     const initialized = await call('initialize', { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'dai-harness-runtime-smoke', version: '1' } });
     child.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized', params: {} })}\n`);
     const tools = await call('tools/list', {});
-    const current = await call('tools/call', { name: 'fw_get_current_phase', arguments: {} });
+    const current = await call('tools/call', { name: 'dh_get_current_phase', arguments: {} });
     if (initialized.error || tools.error || current.error || current.result?.isError) throw new Error(`MCP boundary rejected smoke call: ${stderr}`);
     const toolCount = tools.result?.tools?.length;
     if (!Number.isInteger(toolCount) || toolCount < 1) throw new Error('MCP tools/list returned no tools');
-    return { protocol: initialized.result?.protocolVersion, toolCount, nonMutatingTool: 'fw_get_current_phase' };
+    return { protocol: initialized.result?.protocolVersion, toolCount, nonMutatingTool: 'dh_get_current_phase' };
   } finally {
     clearTimeout(timer);
     child.kill('SIGTERM');

@@ -1230,7 +1230,6 @@
 {"from":"Class:tests/lite/test_gate.py:TestEvidenceValidation","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_final_replay_fails_closed_for_timeout_and_missing_command#0","toLabel":"Method","confidence":1}
 {"from":"Class:tests/lite/test_gate.py:TestEvidenceValidation","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_final_replay_rejects_hand_authored_pass_in_both_validators#0","toLabel":"Method","confidence":1}
 {"from":"Class:tests/lite/test_gate.py:TestEvidenceValidation","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_final_replay_rejects_project_owned_check_mutating_worktree#0","toLabel":"Method","confidence":1}
-{"from":"Class:tests/lite/test_gate.py:TestEvidenceValidation","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_forged_shape_output_blocked#1","toLabel":"Method","confidence":1}
 {"from":"Class:tests/lite/test_gate.py:TestEvidenceValidation","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_future_timestamp_blocked#0","toLabel":"Method","confidence":1}
 {"from":"Class:tests/lite/test_gate.py:TestEvidenceValidation","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_missing_evidence_blocked#0","toLabel":"Method","confidence":1}
 {"from":"Class:tests/lite/test_gate.py:TestEvidenceValidation","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_no_turn_ignores_newer_review_and_historical_records#0","toLabel":"Method","confidence":1}
@@ -1364,9 +1363,6 @@
 {"from":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter.decide#1","toLabel":"Method","confidence":1}
 {"from":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter.make_event#5","toLabel":"Method","confidence":1}
 {"from":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter.run_participant#1","toLabel":"Method","confidence":1}
-{"from":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:ForgedPeer","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:ForgedPeer.cancel#1","toLabel":"Method","confidence":1}
-{"from":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:ForgedPeer","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:ForgedPeer.decide#1","toLabel":"Method","confidence":1}
-{"from":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:ForgedPeer","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:ForgedPeer.run_participant#1","toLabel":"Method","confidence":1}
 {"from":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:SleepingAdapter","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:SleepingAdapter.__init__#0","toLabel":"Method","confidence":1}
 {"from":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:SleepingAdapter","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:SleepingAdapter.cancel#1","toLabel":"Method","confidence":1}
 {"from":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:SleepingAdapter","fromLabel":"Class","type":"HAS_METHOD","to":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:SleepingAdapter.decide#1","toLabel":"Method","confidence":1}
@@ -1979,7 +1975,6 @@
 {"from":"File:docs/guides/floating-origin.md","fromLabel":"File","type":"IMPORTS","to":"File:docs/coordinate-systems/cheatsheet.md","toLabel":"File","confidence":0.8}
 {"from":"File:docs/guides/floating-origin.md","fromLabel":"File","type":"IMPORTS","to":"File:docs/coordinate-systems/templates/floating-origin-godot.md","toLabel":"File","confidence":0.8}
 {"from":"File:docs/guides/floating-origin.md","fromLabel":"File","type":"IMPORTS","to":"File:docs/coordinate-systems/templates/floating-origin-unity.md","toLabel":"File","confidence":0.8}
-{"from":"File:docs/guides/forge-init-onboard.md","fromLabel":"File","type":"CONTAINS","to":"Section:docs/guides/forge-init-onboard.md:L1:Forge Init and Onboard Golden Path","toLabel":"Section","confidence":1}
 {"from":"File:docs/guides/gitnexus.md","fromLabel":"File","type":"CONTAINS","to":"Section:docs/guides/gitnexus.md:L1:GitNexus Guide","toLabel":"Section","confidence":1}
 {"from":"File:docs/guides/peer-collaboration.md","fromLabel":"File","type":"CONTAINS","to":"Section:docs/guides/peer-collaboration.md:L1:Peer Collaboration Guide","toLabel":"Section","confidence":1}
 {"from":"File:docs/guides/peer-collaboration.md","fromLabel":"File","type":"IMPORTS","to":"File:docs/adr/ADR-012-bounded-peer-collaboration.md","toLabel":"File","confidence":0.8}
@@ -2012,7 +2007,6 @@
 {"from":"File:docs/index.md","fromLabel":"File","type":"IMPORTS","to":"File:docs/adr/ADR-012-bounded-peer-collaboration.md","toLabel":"File","confidence":0.8}
 {"from":"File:docs/index.md","fromLabel":"File","type":"IMPORTS","to":"File:docs/architecture.md","toLabel":"File","confidence":0.8}
 {"from":"File:docs/index.md","fromLabel":"File","type":"IMPORTS","to":"File:docs/guides/docs-hub.md","toLabel":"File","confidence":0.8}
-{"from":"File:docs/index.md","fromLabel":"File","type":"IMPORTS","to":"File:docs/guides/forge-init-onboard.md","toLabel":"File","confidence":0.8}
 {"from":"File:docs/index.md","fromLabel":"File","type":"IMPORTS","to":"File:docs/guides/peer-collaboration.md","toLabel":"File","confidence":0.8}
 {"from":"File:docs/index.md","fromLabel":"File","type":"IMPORTS","to":"File:docs/migration/breaking-changes.md","toLabel":"File","confidence":0.8}
 {"from":"File:docs/index.md","fromLabel":"File","type":"IMPORTS","to":"File:docs/migration/v8-to-v9.md","toLabel":"File","confidence":0.8}
@@ -2661,17 +2655,6 @@
 {"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"DEFINES","to":"Const:mcp/src/api/tools.ts:selfHealing","toLabel":"Const","confidence":1}
 {"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"DEFINES","to":"Const:mcp/src/api/tools.ts:skill","toLabel":"Const","confidence":1}
 {"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"DEFINES","to":"Function:mcp/src/api/tools.ts:registerTools","toLabel":"Function","confidence":1}
-{"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"HANDLES_TOOL","to":"Tool:fw_advance_to_next_phase","toLabel":"Tool","confidence":1}
-{"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"HANDLES_TOOL","to":"Tool:fw_approve_gate","toLabel":"Tool","confidence":1}
-{"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"HANDLES_TOOL","to":"Tool:fw_check_pipeline_compliance","toLabel":"Tool","confidence":1}
-{"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"HANDLES_TOOL","to":"Tool:fw_fail_pipeline","toLabel":"Tool","confidence":1}
-{"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"HANDLES_TOOL","to":"Tool:fw_get_current_phase","toLabel":"Tool","confidence":1}
-{"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"HANDLES_TOOL","to":"Tool:fw_log_token_usage","toLabel":"Tool","confidence":1}
-{"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"HANDLES_TOOL","to":"Tool:fw_request_gate_approval","toLabel":"Tool","confidence":1}
-{"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"HANDLES_TOOL","to":"Tool:fw_start_pipeline","toLabel":"Tool","confidence":1}
-{"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"HANDLES_TOOL","to":"Tool:fw_update_self_healing","toLabel":"Tool","confidence":1}
-{"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"HANDLES_TOOL","to":"Tool:fw_update_status_and_log_usage","toLabel":"Tool","confidence":1}
-{"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"HANDLES_TOOL","to":"Tool:fw_update_subtask","toLabel":"Tool","confidence":1}
 {"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"IMPORTS","to":"File:mcp/src/runtime/tool-execution-gateway.ts","toLabel":"File","confidence":1}
 {"from":"File:mcp/src/api/tools.ts","fromLabel":"File","type":"IMPORTS","to":"File:mcp/src/state/pipeline-manager.ts","toLabel":"File","confidence":1}
 {"from":"File:mcp/src/core/models/PipelineState.ts","fromLabel":"File","type":"CALLS","to":"Function:mcp/src/core/models/PipelineState.ts:initializeDefaultPhases","toLabel":"Function","confidence":0.85}
@@ -3252,14 +3235,11 @@
 {"from":"File:playwright.config.ts","fromLabel":"File","type":"IMPORTS","to":"File:src/cli/src/commands/test.ts","toLabel":"File","confidence":1}
 {"from":"File:presets/gameplay/SaveSystemUnity.cs","fromLabel":"File","type":"DEFINES","to":"Class:presets/gameplay/SaveSystemUnity.cs:PlayerData","toLabel":"Class","confidence":1}
 {"from":"File:presets/gameplay/SaveSystemUnity.cs","fromLabel":"File","type":"DEFINES","to":"Class:presets/gameplay/SaveSystemUnity.cs:SaveSystemUnity","toLabel":"Class","confidence":1}
-{"from":"File:presets/gameplay/SaveSystemUnity.cs","fromLabel":"File","type":"DEFINES","to":"Namespace:presets/gameplay/SaveSystemUnity.cs:Forgewright.Gameplay","toLabel":"Namespace","confidence":1}
 {"from":"File:presets/gameplay/combat-state-machine-unity.cs","fromLabel":"File","type":"DEFINES","to":"Class:presets/gameplay/combat-state-machine-unity.cs:CombatStateMachineUnity","toLabel":"Class","confidence":1}
 {"from":"File:presets/gameplay/combat-state-machine-unity.cs","fromLabel":"File","type":"DEFINES","to":"Enum:presets/gameplay/combat-state-machine-unity.cs:CombatState","toLabel":"Enum","confidence":1}
-{"from":"File:presets/gameplay/combat-state-machine-unity.cs","fromLabel":"File","type":"DEFINES","to":"Namespace:presets/gameplay/combat-state-machine-unity.cs:Forgewright.Gameplay","toLabel":"Namespace","confidence":1}
 {"from":"File:presets/gameplay/combat-state-machine-unity.cs","fromLabel":"File","type":"DEFINES","to":"Struct:presets/gameplay/combat-state-machine-unity.cs:AttackStage","toLabel":"Struct","confidence":1}
 {"from":"File:presets/gameplay/projectile-unity.cs","fromLabel":"File","type":"DEFINES","to":"Class:presets/gameplay/projectile-unity.cs:ProjectileUnity","toLabel":"Class","confidence":1}
 {"from":"File:presets/gameplay/projectile-unity.cs","fromLabel":"File","type":"DEFINES","to":"Delegate:presets/gameplay/projectile-unity.cs:HitEventHandler","toLabel":"Delegate","confidence":1}
-{"from":"File:presets/gameplay/projectile-unity.cs","fromLabel":"File","type":"DEFINES","to":"Namespace:presets/gameplay/projectile-unity.cs:Forgewright.Gameplay","toLabel":"Namespace","confidence":1}
 {"from":"File:scripts/README.md","fromLabel":"File","type":"CONTAINS","to":"Section:scripts/README.md:L1:Scripts Directory","toLabel":"Section","confidence":1}
 {"from":"File:scripts/art-direction/asset-lifecycle.py","fromLabel":"File","type":"CALLS","to":"Function:scripts/art-direction/asset-lifecycle.py:main","toLabel":"Function","confidence":0.85}
 {"from":"File:scripts/art-direction/asset-lifecycle.py","fromLabel":"File","type":"DEFINES","to":"Class:scripts/art-direction/asset-lifecycle.py:LifecycleError","toLabel":"Class","confidence":1}
@@ -4017,7 +3997,6 @@
 {"from":"File:scripts/lite/verify_gate.py","fromLabel":"File","type":"DEFINES","to":"Variable:scripts/lite/verify_gate.py:SUPPORTED_SCHEMAS","toLabel":"Variable","confidence":1}
 {"from":"File:scripts/lite/verify_gate.py","fromLabel":"File","type":"DEFINES","to":"Variable:scripts/lite/verify_gate.py:_BINARY_EXTS","toLabel":"Variable","confidence":1}
 {"from":"File:scripts/lite/verify_gate.py","fromLabel":"File","type":"DEFINES","to":"Variable:scripts/lite/verify_gate.py:_DOC_EXTS","toLabel":"Variable","confidence":1}
-{"from":"File:scripts/lite/verify_gate.py","fromLabel":"File","type":"DEFINES","to":"Variable:scripts/lite/verify_gate.py:_FORGED_OUTPUT_PATTERNS","toLabel":"Variable","confidence":1}
 {"from":"File:scripts/lite/verify_gate.py","fromLabel":"File","type":"DEFINES","to":"Variable:scripts/lite/verify_gate.py:_SECRET_PATTERNS","toLabel":"Variable","confidence":1}
 {"from":"File:scripts/lite/verify_gate.py","fromLabel":"File","type":"DEFINES","to":"Variable:scripts/lite/verify_gate.py:_SKIP_PREFIXES","toLabel":"Variable","confidence":1}
 {"from":"File:scripts/lite/verify_gate.py","fromLabel":"File","type":"DEFINES","to":"Variable:scripts/lite/verify_gate.py:_STUB_PATTERN","toLabel":"Variable","confidence":1}
@@ -9110,23 +9089,19 @@
 {"from":"File:tests/game/engines/unity/balance/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/balance/_template.test.cs:Balance_EconomySinksSources","toLabel":"Class","confidence":1}
 {"from":"File:tests/game/engines/unity/balance/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/balance/_template.test.cs:Balance_EnemyScaling","toLabel":"Class","confidence":1}
 {"from":"File:tests/game/engines/unity/balance/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/balance/_template.test.cs:Balance_XPProgression","toLabel":"Class","confidence":1}
-{"from":"File:tests/game/engines/unity/balance/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Namespace:tests/game/engines/unity/balance/_template.test.cs:Forgewright.GameTest.Unity.Balance","toLabel":"Namespace","confidence":1}
 {"from":"File:tests/game/engines/unity/integration/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/integration/_template.test.cs:Integration_CombatPlusInventory","toLabel":"Class","confidence":1}
 {"from":"File:tests/game/engines/unity/integration/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/integration/_template.test.cs:Integration_EconomyPlusProgression","toLabel":"Class","confidence":1}
 {"from":"File:tests/game/engines/unity/integration/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/integration/_template.test.cs:Integration_SaveLoad","toLabel":"Class","confidence":1}
 {"from":"File:tests/game/engines/unity/integration/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/integration/_template.test.cs:Integration_UIPlusGameplay","toLabel":"Class","confidence":1}
-{"from":"File:tests/game/engines/unity/integration/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Namespace:tests/game/engines/unity/integration/_template.test.cs:Forgewright.GameTest.Unity.Integration","toLabel":"Namespace","confidence":1}
 {"from":"File:tests/game/engines/unity/mechanics/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/mechanics/_template.test.cs:AI_SystemTests","toLabel":"Class","confidence":1}
 {"from":"File:tests/game/engines/unity/mechanics/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/mechanics/_template.test.cs:Combat_SystemTests","toLabel":"Class","confidence":1}
 {"from":"File:tests/game/engines/unity/mechanics/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/mechanics/_template.test.cs:Economy_SystemTests","toLabel":"Class","confidence":1}
 {"from":"File:tests/game/engines/unity/mechanics/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/mechanics/_template.test.cs:Movement_SystemTests","toLabel":"Class","confidence":1}
 {"from":"File:tests/game/engines/unity/mechanics/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/mechanics/_template.test.cs:Progression_SystemTests","toLabel":"Class","confidence":1}
 {"from":"File:tests/game/engines/unity/mechanics/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/mechanics/_template.test.cs:UI_SystemTests","toLabel":"Class","confidence":1}
-{"from":"File:tests/game/engines/unity/mechanics/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Namespace:tests/game/engines/unity/mechanics/_template.test.cs:Forgewright.GameTest.Unity.Mechanics","toLabel":"Namespace","confidence":1}
 {"from":"File:tests/game/engines/unity/performance/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/performance/_template.test.cs:Performance_FPS","toLabel":"Class","confidence":1}
 {"from":"File:tests/game/engines/unity/performance/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/performance/_template.test.cs:Performance_LoadTime","toLabel":"Class","confidence":1}
 {"from":"File:tests/game/engines/unity/performance/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Class:tests/game/engines/unity/performance/_template.test.cs:Performance_Memory","toLabel":"Class","confidence":1}
-{"from":"File:tests/game/engines/unity/performance/_template.test.cs","fromLabel":"File","type":"DEFINES","to":"Namespace:tests/game/engines/unity/performance/_template.test.cs:Forgewright.GameTest.Unity.Performance","toLabel":"Namespace","confidence":1}
 {"from":"File:tests/game/engines/unreal/README.md","fromLabel":"File","type":"CONTAINS","to":"Section:tests/game/engines/unreal/README.md:L1:Unreal Engine Game Test Templates","toLabel":"Section","confidence":1}
 {"from":"File:tests/game/engines/unreal/README.md","fromLabel":"File","type":"CONTAINS","to":"Section:tests/game/engines/unreal/README.md:L34:Unreal Editor (Automation)","toLabel":"Section","confidence":1}
 {"from":"File:tests/game/engines/unreal/README.md","fromLabel":"File","type":"CONTAINS","to":"Section:tests/game/engines/unreal/README.md:L37:Functional Testing Plugin","toLabel":"Section","confidence":1}
@@ -9135,29 +9110,6 @@
 {"from":"File:tests/game/visual/README.md","fromLabel":"File","type":"CONTAINS","to":"Section:tests/game/visual/README.md:L1:Game Visual Test Templates","toLabel":"Section","confidence":1}
 {"from":"File:tests/game/visual/godot/_template.midscene.ts","fromLabel":"File","type":"DEFINES","to":"Const:tests/game/visual/godot/_template.midscene.ts:test","toLabel":"Const","confidence":1}
 {"from":"File:tests/game/visual/godot/_template.midscene.ts","fromLabel":"File","type":"IMPORTS","to":"File:src/cli/src/commands/test.ts","toLabel":"File","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"CALLS","to":"Function:tests/golden/forge-init-onboard.test.mjs:assertEnvelope","toLabel":"Function","confidence":0.85}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"CALLS","to":"Function:tests/golden/forge-init-onboard.test.mjs:runForge","toLabel":"Function","confidence":0.85}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:cliPath","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:fixtureRoot","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:forcedInit","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:forcedOnboard","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:guide","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:init","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:initAgain","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:manifestBytes","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:manifestPath","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:missingManifest","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:missingManifestTarget","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:onboard","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:onboardAgain","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:profileBytes","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:profilePath","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:protectedOnboard","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:repoRoot","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:startedAt","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/forge-init-onboard.test.mjs:target","toLabel":"Const","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Function:tests/golden/forge-init-onboard.test.mjs:assertEnvelope","toLabel":"Function","confidence":1}
-{"from":"File:tests/golden/forge-init-onboard.test.mjs","fromLabel":"File","type":"DEFINES","to":"Function:tests/golden/forge-init-onboard.test.mjs:runForge","toLabel":"Function","confidence":1}
 {"from":"File:tests/golden/runtime-smoke.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/runtime-smoke.test.mjs:denied","toLabel":"Const","confidence":1}
 {"from":"File:tests/golden/runtime-smoke.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/runtime-smoke.test.mjs:mcpOnly","toLabel":"Const","confidence":1}
 {"from":"File:tests/golden/runtime-smoke.test.mjs","fromLabel":"File","type":"DEFINES","to":"Const:tests/golden/runtime-smoke.test.mjs:missingKey","toLabel":"Const","confidence":1}
@@ -9169,7 +9121,6 @@
 {"from":"File:tests/integration/mcp-integration.test.ts","fromLabel":"File","type":"CALLS","to":"Method:mcp/src/errors.ts:DaiNexusError.toJSON#0","toLabel":"Method","confidence":0.85}
 {"from":"File:tests/integration/mcp-integration.test.ts","fromLabel":"File","type":"IMPORTS","to":"File:tests/integration/setup.ts","toLabel":"File","confidence":1}
 {"from":"File:tests/integration/setup.ts","fromLabel":"File","type":"DEFINES","to":"Const:tests/integration/setup.ts:COMPOSE_FILE","toLabel":"Const","confidence":1}
-{"from":"File:tests/integration/setup.ts","fromLabel":"File","type":"DEFINES","to":"Function:tests/integration/setup.ts:getForgenexusDBUrl","toLabel":"Function","confidence":1}
 {"from":"File:tests/integration/setup.ts","fromLabel":"File","type":"DEFINES","to":"Function:tests/integration/setup.ts:getMcpDBUrl","toLabel":"Function","confidence":1}
 {"from":"File:tests/integration/setup.ts","fromLabel":"File","type":"DEFINES","to":"Function:tests/integration/setup.ts:startServices","toLabel":"Function","confidence":1}
 {"from":"File:tests/integration/setup.ts","fromLabel":"File","type":"DEFINES","to":"Function:tests/integration/setup.ts:stopServices","toLabel":"Function","confidence":1}
@@ -9692,7 +9643,6 @@
 {"from":"File:tests/unit_tests/test_orchestration_skill_dispatch.py","fromLabel":"File","type":"IMPORTS","to":"File:scripts/runtime/orchestration_policy.py","toLabel":"File","confidence":1}
 {"from":"File:tests/unit_tests/test_parallel_dispatch_runner.py","fromLabel":"File","type":"DEFINES","to":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:BrokenAdapter","toLabel":"Class","confidence":1}
 {"from":"File:tests/unit_tests/test_parallel_dispatch_runner.py","fromLabel":"File","type":"DEFINES","to":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter","toLabel":"Class","confidence":1}
-{"from":"File:tests/unit_tests/test_parallel_dispatch_runner.py","fromLabel":"File","type":"DEFINES","to":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:ForgedPeer","toLabel":"Class","confidence":1}
 {"from":"File:tests/unit_tests/test_parallel_dispatch_runner.py","fromLabel":"File","type":"DEFINES","to":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:SleepingAdapter","toLabel":"Class","confidence":1}
 {"from":"File:tests/unit_tests/test_parallel_dispatch_runner.py","fromLabel":"File","type":"DEFINES","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:_reviewer_fixture","toLabel":"Function","confidence":1}
 {"from":"File:tests/unit_tests/test_parallel_dispatch_runner.py","fromLabel":"File","type":"DEFINES","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:base_request","toLabel":"Function","confidence":1}
@@ -9706,7 +9656,6 @@
 {"from":"File:tests/unit_tests/test_parallel_dispatch_runner.py","fromLabel":"File","type":"DEFINES","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_collaboration_execute_fails_closed_before_agnostic_agy_spawn","toLabel":"Function","confidence":1}
 {"from":"File:tests/unit_tests/test_parallel_dispatch_runner.py","fromLabel":"File","type":"DEFINES","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_collaboration_role_mismatch_is_serial_fallback_in_runner","toLabel":"Function","confidence":1}
 {"from":"File:tests/unit_tests/test_parallel_dispatch_runner.py","fromLabel":"File","type":"DEFINES","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_external_execution_requires_both_explicit_flags","toLabel":"Function","confidence":1}
-{"from":"File:tests/unit_tests/test_parallel_dispatch_runner.py","fromLabel":"File","type":"DEFINES","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_forged_manifest_capability_cannot_authorize_model_flag","toLabel":"Function","confidence":1}
 {"from":"File:tests/unit_tests/test_parallel_dispatch_runner.py","fromLabel":"File","type":"DEFINES","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_hung_trusted_adapter_is_cut_off_at_policy_deadline","toLabel":"Function","confidence":1}
 {"from":"File:tests/unit_tests/test_parallel_dispatch_runner.py","fromLabel":"File","type":"DEFINES","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_peer_host_error_cancels_and_routes_serial_once","toLabel":"Function","confidence":1}
 {"from":"File:tests/unit_tests/test_parallel_dispatch_runner.py","fromLabel":"File","type":"DEFINES","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_peer_returned_data_cannot_select_sender_or_controller","toLabel":"Function","confidence":1}
@@ -10295,7 +10244,6 @@
 {"from":"Folder:docs/coordinate-systems/templates","fromLabel":"Folder","type":"CONTAINS","to":"File:docs/coordinate-systems/templates/floating-origin.gd","toLabel":"File","confidence":1}
 {"from":"Folder:docs/guides","fromLabel":"Folder","type":"CONTAINS","to":"File:docs/guides/docs-hub.md","toLabel":"File","confidence":1}
 {"from":"Folder:docs/guides","fromLabel":"Folder","type":"CONTAINS","to":"File:docs/guides/floating-origin.md","toLabel":"File","confidence":1}
-{"from":"Folder:docs/guides","fromLabel":"Folder","type":"CONTAINS","to":"File:docs/guides/forge-init-onboard.md","toLabel":"File","confidence":1}
 {"from":"Folder:docs/guides","fromLabel":"Folder","type":"CONTAINS","to":"File:docs/guides/gitnexus.md","toLabel":"File","confidence":1}
 {"from":"Folder:docs/guides","fromLabel":"Folder","type":"CONTAINS","to":"File:docs/guides/peer-collaboration.md","toLabel":"File","confidence":1}
 {"from":"Folder:docs/guides","fromLabel":"Folder","type":"CONTAINS","to":"File:docs/guides/testing-stack.md","toLabel":"File","confidence":1}
@@ -10547,7 +10495,6 @@
 {"from":"Folder:scripts","fromLabel":"Folder","type":"CONTAINS","to":"File:scripts/dycp.test.py","toLabel":"File","confidence":1}
 {"from":"Folder:scripts","fromLabel":"Folder","type":"CONTAINS","to":"File:scripts/ensure-mem0.sh","toLabel":"File","confidence":1}
 {"from":"Folder:scripts","fromLabel":"Folder","type":"CONTAINS","to":"File:scripts/export-memory-diagnostic.sh","toLabel":"File","confidence":1}
-{"from":"Folder:scripts","fromLabel":"Folder","type":"CONTAINS","to":"File:scripts/forge-validate.sh","toLabel":"File","confidence":1}
 {"from":"Folder:scripts","fromLabel":"Folder","type":"CONTAINS","to":"File:scripts/fw-ext-gen.sh","toLabel":"File","confidence":1}
 {"from":"Folder:scripts","fromLabel":"Folder","type":"CONTAINS","to":"File:scripts/fw-global-launcher.sh","toLabel":"File","confidence":1}
 {"from":"Folder:scripts","fromLabel":"Folder","type":"CONTAINS","to":"File:scripts/fw-global-registry.sh","toLabel":"File","confidence":1}
@@ -10821,7 +10768,6 @@
 {"from":"Folder:scripts/utilities","fromLabel":"Folder","type":"CONTAINS","to":"File:scripts/utilities/dep-graph.sh","toLabel":"File","confidence":1}
 {"from":"Folder:scripts/utilities","fromLabel":"Folder","type":"CONTAINS","to":"File:scripts/utilities/dycp.py","toLabel":"File","confidence":1}
 {"from":"Folder:scripts/utilities","fromLabel":"Folder","type":"CONTAINS","to":"File:scripts/utilities/dycp.test.py","toLabel":"File","confidence":1}
-{"from":"Folder:scripts/utilities","fromLabel":"Folder","type":"CONTAINS","to":"File:scripts/utilities/forge-validate.sh","toLabel":"File","confidence":1}
 {"from":"Folder:scripts/utilities","fromLabel":"Folder","type":"CONTAINS","to":"File:scripts/utilities/fw-ext-gen.sh","toLabel":"File","confidence":1}
 {"from":"Folder:scripts/utilities","fromLabel":"Folder","type":"CONTAINS","to":"File:scripts/utilities/generate-sequence.ts","toLabel":"File","confidence":1}
 {"from":"Folder:scripts/utilities","fromLabel":"Folder","type":"CONTAINS","to":"File:scripts/utilities/generate-template.ts","toLabel":"File","confidence":1}
@@ -11427,9 +11373,6 @@
 {"from":"Folder:src/cli","fromLabel":"Folder","type":"CONTAINS","to":"Folder:src/cli/completions","toLabel":"Folder","confidence":1}
 {"from":"Folder:src/cli","fromLabel":"Folder","type":"CONTAINS","to":"Folder:src/cli/src","toLabel":"Folder","confidence":1}
 {"from":"Folder:src/cli","fromLabel":"Folder","type":"CONTAINS","to":"Folder:src/cli/tests","toLabel":"Folder","confidence":1}
-{"from":"Folder:src/cli/completions","fromLabel":"Folder","type":"CONTAINS","to":"File:src/cli/completions/forge.bash","toLabel":"File","confidence":1}
-{"from":"Folder:src/cli/completions","fromLabel":"Folder","type":"CONTAINS","to":"File:src/cli/completions/forge.fish","toLabel":"File","confidence":1}
-{"from":"Folder:src/cli/completions","fromLabel":"Folder","type":"CONTAINS","to":"File:src/cli/completions/forge.zsh","toLabel":"File","confidence":1}
 {"from":"Folder:src/cli/src","fromLabel":"Folder","type":"CONTAINS","to":"File:src/cli/src/exit-codes.ts","toLabel":"File","confidence":1}
 {"from":"Folder:src/cli/src","fromLabel":"Folder","type":"CONTAINS","to":"File:src/cli/src/index.ts","toLabel":"File","confidence":1}
 {"from":"Folder:src/cli/src","fromLabel":"Folder","type":"CONTAINS","to":"File:src/cli/src/migration-guide.ts","toLabel":"File","confidence":1}
@@ -11977,7 +11920,6 @@
 {"from":"Folder:tests/game/visual","fromLabel":"Folder","type":"CONTAINS","to":"Folder:tests/game/visual/roblox","toLabel":"Folder","confidence":1}
 {"from":"Folder:tests/game/visual/godot","fromLabel":"Folder","type":"CONTAINS","to":"File:tests/game/visual/godot/_template.midscene.ts","toLabel":"File","confidence":1}
 {"from":"Folder:tests/game/visual/roblox","fromLabel":"Folder","type":"CONTAINS","to":"File:tests/game/visual/roblox/_template.midscene.ts","toLabel":"File","confidence":1}
-{"from":"Folder:tests/golden","fromLabel":"Folder","type":"CONTAINS","to":"File:tests/golden/forge-init-onboard.test.mjs","toLabel":"File","confidence":1}
 {"from":"Folder:tests/golden","fromLabel":"Folder","type":"CONTAINS","to":"File:tests/golden/runtime-smoke.test.mjs","toLabel":"File","confidence":1}
 {"from":"Folder:tests/integration","fromLabel":"Folder","type":"CONTAINS","to":"File:tests/integration/__init__.py","toLabel":"File","confidence":1}
 {"from":"Folder:tests/integration","fromLabel":"Folder","type":"CONTAINS","to":"File:tests/integration/docker-compose.test.yml","toLabel":"File","confidence":1}
@@ -17013,11 +16955,6 @@
 {"from":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_external_execution_requires_both_explicit_flags","fromLabel":"Function","type":"CALLS","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:run_runner","toLabel":"Function","confidence":0.85}
 {"from":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_external_execution_requires_both_explicit_flags","fromLabel":"Function","type":"CALLS","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:write_manifest","toLabel":"Function","confidence":0.85}
 {"from":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_external_execution_requires_both_explicit_flags","fromLabel":"Function","type":"MEMBER_OF","to":"comm_452","toLabel":"Community","confidence":1}
-{"from":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_forged_manifest_capability_cannot_authorize_model_flag","fromLabel":"Function","type":"CALLS","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:base_request","toLabel":"Function","confidence":0.85}
-{"from":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_forged_manifest_capability_cannot_authorize_model_flag","fromLabel":"Function","type":"CALLS","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:install_trusted_agy","toLabel":"Function","confidence":0.85}
-{"from":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_forged_manifest_capability_cannot_authorize_model_flag","fromLabel":"Function","type":"CALLS","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:run_runner","toLabel":"Function","confidence":0.85}
-{"from":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_forged_manifest_capability_cannot_authorize_model_flag","fromLabel":"Function","type":"CALLS","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:write_manifest","toLabel":"Function","confidence":0.85}
-{"from":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_forged_manifest_capability_cannot_authorize_model_flag","fromLabel":"Function","type":"MEMBER_OF","to":"comm_452","toLabel":"Community","confidence":1}
 {"from":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_hung_trusted_adapter_is_cut_off_at_policy_deadline","fromLabel":"Function","type":"CALLS","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:collaboration_request","toLabel":"Function","confidence":0.85}
 {"from":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_hung_trusted_adapter_is_cut_off_at_policy_deadline","fromLabel":"Function","type":"CALLS","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:runner_module","toLabel":"Function","confidence":0.85}
 {"from":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_hung_trusted_adapter_is_cut_off_at_policy_deadline","fromLabel":"Function","type":"CALLS","to":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:write_manifest","toLabel":"Function","confidence":0.85}
@@ -20433,9 +20370,6 @@
 {"from":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_final_replay_rejects_project_owned_check_mutating_worktree#0","fromLabel":"Method","type":"CALLS","to":"Function:tests/lite/test_gate.py:_make_evidence","toLabel":"Function","confidence":0.85}
 {"from":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_final_replay_rejects_project_owned_check_mutating_worktree#0","fromLabel":"Method","type":"CALLS","to":"Function:tests/lite/test_gate.py:_run_validate","toLabel":"Function","confidence":0.85}
 {"from":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_final_replay_rejects_project_owned_check_mutating_worktree#0","fromLabel":"Method","type":"MEMBER_OF","to":"comm_408","toLabel":"Community","confidence":1}
-{"from":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_forged_shape_output_blocked#1","fromLabel":"Method","type":"CALLS","to":"Function:tests/lite/test_gate.py:_make_evidence","toLabel":"Function","confidence":0.85}
-{"from":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_forged_shape_output_blocked#1","fromLabel":"Method","type":"CALLS","to":"Function:tests/lite/test_gate.py:_run_validate","toLabel":"Function","confidence":0.85}
-{"from":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_forged_shape_output_blocked#1","fromLabel":"Method","type":"MEMBER_OF","to":"comm_408","toLabel":"Community","confidence":1}
 {"from":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_future_timestamp_blocked#0","fromLabel":"Method","type":"CALLS","to":"Function:tests/lite/test_gate.py:_make_evidence","toLabel":"Function","confidence":0.85}
 {"from":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_future_timestamp_blocked#0","fromLabel":"Method","type":"CALLS","to":"Function:tests/lite/test_gate.py:_run_validate","toLabel":"Function","confidence":0.85}
 {"from":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_future_timestamp_blocked#0","fromLabel":"Method","type":"MEMBER_OF","to":"comm_408","toLabel":"Community","confidence":1}
@@ -20587,9 +20521,6 @@
 {"from":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter.run_participant#1","fromLabel":"Method","type":"CALLS","to":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter.make_event#5","toLabel":"Method","confidence":0.85}
 {"from":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter.run_participant#1","fromLabel":"Method","type":"CALLS","to":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter.make_event#5","toLabel":"Method","confidence":0.85}
 {"from":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter.run_participant#1","fromLabel":"Method","type":"MEMBER_OF","to":"comm_207","toLabel":"Community","confidence":1}
-{"from":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:ForgedPeer.run_participant#1","fromLabel":"Method","type":"CALLS","to":"Method:scripts/runtime/peer_collaboration.py:PeerEvent.create#14","toLabel":"Method","confidence":0.85}
-{"from":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:ForgedPeer.run_participant#1","fromLabel":"Method","type":"CALLS","to":"Method:scripts/runtime/peer_collaboration.py:PeerEvent.to_dict#0","toLabel":"Method","confidence":0.85}
-{"from":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:ForgedPeer.run_participant#1","fromLabel":"Method","type":"MEMBER_OF","to":"comm_207","toLabel":"Community","confidence":1}
 {"from":"Method:tests/unit_tests/test_pbt_example.py:TestPropertyBasedTokenAnalyzer.test_cost_linearity#2","fromLabel":"Method","type":"CALLS","to":"Function:tests/unit_tests/test_pbt_example.py:TestPropertyBasedTokenAnalyzer.make_record#2","toLabel":"Function","confidence":0.85}
 {"from":"Method:tests/unit_tests/test_pbt_example.py:TestPropertyBasedTokenAnalyzer.test_cost_linearity#2","fromLabel":"Method","type":"MEMBER_OF","to":"comm_453","toLabel":"Community","confidence":1}
 {"from":"Property:mcp/src/infrastructure/adapters/FileSystemStateRepository.ts:FileSystemStateRepository.parseState","fromLabel":"Property","type":"STEP_IN_PROCESS","to":"proc_232_save","toLabel":"Process","confidence":1}
@@ -21130,9 +21061,6 @@
 {"from":"Section:antigravity/planning/agent-first-cli/SCOPE.md:L8:1. In Scope","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/agent-first-cli/SCOPE.md:L37:Testing","toLabel":"Section","confidence":1}
 {"from":"Section:antigravity/planning/agent-first-cli/TASKS.md:L142:Phase 2: Enhanced CLI (14h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/agent-first-cli/TASKS.md:L144:Task 2.1: Config Layering (3h)","toLabel":"Section","confidence":1}
 {"from":"Section:antigravity/planning/agent-first-cli/TASKS.md:L142:Phase 2: Enhanced CLI (14h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/agent-first-cli/TASKS.md:L163:Task 2.2: Input Conventions (2h)","toLabel":"Section","confidence":1}
-{"from":"Section:antigravity/planning/agent-first-cli/TASKS.md:L142:Phase 2: Enhanced CLI (14h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/agent-first-cli/TASKS.md:L182:Task 2.3: Forge Config Commands (2h)","toLabel":"Section","confidence":1}
-{"from":"Section:antigravity/planning/agent-first-cli/TASKS.md:L142:Phase 2: Enhanced CLI (14h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/agent-first-cli/TASKS.md:L201:Task 2.4: Forge Doctor (1h)","toLabel":"Section","confidence":1}
-{"from":"Section:antigravity/planning/agent-first-cli/TASKS.md:L142:Phase 2: Enhanced CLI (14h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/agent-first-cli/TASKS.md:L220:Task 2.5: Forge Validate JSON (2h)","toLabel":"Section","confidence":1}
 {"from":"Section:antigravity/planning/agent-first-cli/TASKS.md:L142:Phase 2: Enhanced CLI (14h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/agent-first-cli/TASKS.md:L239:Task 2.6: Migration Guide (1h)","toLabel":"Section","confidence":1}
 {"from":"Section:antigravity/planning/agent-first-cli/TASKS.md:L142:Phase 2: Enhanced CLI (14h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/agent-first-cli/TASKS.md:L258:Task 2.7: Backward Compatibility (3h)","toLabel":"Section","confidence":1}
 {"from":"Section:antigravity/planning/agent-first-cli/TASKS.md:L1:Tasks: Agent-First CLI — Phase Breakdown","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/agent-first-cli/TASKS.md:L142:Phase 2: Enhanced CLI (14h)","toLabel":"Section","confidence":1}
@@ -21339,12 +21267,10 @@
 {"from":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L51:Phase 1: Documentation & Standards (4h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L59:Task 1.2: Engine Import Settings Doc (1.5h)","toLabel":"Section","confidence":1}
 {"from":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L51:Phase 1: Documentation & Standards (4h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L65:Task 1.3: Axis Conversion Reference (1h)","toLabel":"Section","confidence":1}
 {"from":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L51:Phase 1: Documentation & Standards (4h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L70:Task 1.4: Integration into Skills (INTEGRATION) → Phase 5","toLabel":"Section","confidence":1}
-{"from":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L74:Phase 2: Validation CLI (6h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L76:Task 2.1: `forge validate --asset-coords` Command (2h)","toLabel":"Section","confidence":1}
 {"from":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L74:Phase 2: Validation CLI (6h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L82:Task 2.2: Coordinate Bounds Checker (1.5h)","toLabel":"Section","confidence":1}
 {"from":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L74:Phase 2: Validation CLI (6h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L87:Task 2.3: Import Scale Detector (1.5h)","toLabel":"Section","confidence":1}
 {"from":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L74:Phase 2: Validation CLI (6h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L92:Task 2.4: Validation Test Suite (1h)","toLabel":"Section","confidence":1}
 {"from":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L99:Phase 3: Conversion Utilities (4h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L101:Task 3.1: Coordinate Conversion Library (2h)","toLabel":"Section","confidence":1}
-{"from":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L99:Phase 3: Conversion Utilities (4h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L108:Task 3.2: `forge coords convert` Command (1h)","toLabel":"Section","confidence":1}
 {"from":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L99:Phase 3: Conversion Utilities (4h)","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L113:Task 3.3: Batch Conversion Tool (1h)","toLabel":"Section","confidence":1}
 {"from":"Section:antigravity/planning/coordinate-system-fix/RESEARCH.md:L12:Findings","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/coordinate-system-fix/RESEARCH.md:L14:1. Unity Test Framework Capabilities","toLabel":"Section","confidence":1}
 {"from":"Section:antigravity/planning/coordinate-system-fix/RESEARCH.md:L12:Findings","fromLabel":"Section","type":"CONTAINS","to":"Section:antigravity/planning/coordinate-system-fix/RESEARCH.md:L25:2. Key Commands","toLabel":"Section","confidence":1}
@@ -23555,8 +23481,6 @@
 {"from":"Section:docs/guides/floating-origin.md:L51:floating_origin.gd - Add as Autoload","fromLabel":"Section","type":"CONTAINS","to":"Section:docs/guides/floating-origin.md:L142:Best Practices","toLabel":"Section","confidence":1}
 {"from":"Section:docs/guides/floating-origin.md:L51:floating_origin.gd - Add as Autoload","fromLabel":"Section","type":"CONTAINS","to":"Section:docs/guides/floating-origin.md:L69:Unity","toLabel":"Section","confidence":1}
 {"from":"Section:docs/guides/floating-origin.md:L9:The Problem","fromLabel":"Section","type":"CONTAINS","to":"Section:docs/guides/floating-origin.md:L21:Symptoms of Precision Loss","toLabel":"Section","confidence":1}
-{"from":"Section:docs/guides/forge-init-onboard.md:L1:Forge Init and Onboard Golden Path","fromLabel":"Section","type":"CONTAINS","to":"Section:docs/guides/forge-init-onboard.md:L11:Ten-Minute Sample Workflow","toLabel":"Section","confidence":1}
-{"from":"Section:docs/guides/forge-init-onboard.md:L1:Forge Init and Onboard Golden Path","fromLabel":"Section","type":"CONTAINS","to":"Section:docs/guides/forge-init-onboard.md:L5:Prerequisites","toLabel":"Section","confidence":1}
 {"from":"Section:docs/guides/gitnexus.md:L1:GitNexus Guide","fromLabel":"Section","type":"CONTAINS","to":"Section:docs/guides/gitnexus.md:L19:Safe Edit Loop","toLabel":"Section","confidence":1}
 {"from":"Section:docs/guides/gitnexus.md:L1:GitNexus Guide","fromLabel":"Section","type":"CONTAINS","to":"Section:docs/guides/gitnexus.md:L31:Repository Rules","toLabel":"Section","confidence":1}
 {"from":"Section:docs/guides/gitnexus.md:L1:GitNexus Guide","fromLabel":"Section","type":"CONTAINS","to":"Section:docs/guides/gitnexus.md:L7:Project Setup","toLabel":"Section","confidence":1}
@@ -29365,7 +29289,6 @@
 {"from":"Section:skills/security-engineer/phases/02-code-audit.md:L19:Workflow","fromLabel":"Section","type":"CONTAINS","to":"Section:skills/security-engineer/phases/02-code-audit.md:L72:Step 7: A07 -- Identification and Authentication Failures","toLabel":"Section","confidence":1}
 {"from":"Section:skills/security-engineer/phases/02-code-audit.md:L19:Workflow","fromLabel":"Section","type":"CONTAINS","to":"Section:skills/security-engineer/phases/02-code-audit.md:L79:Step 8: A08 -- Software and Data Integrity Failures","toLabel":"Section","confidence":1}
 {"from":"Section:skills/security-engineer/phases/02-code-audit.md:L19:Workflow","fromLabel":"Section","type":"CONTAINS","to":"Section:skills/security-engineer/phases/02-code-audit.md:L86:Step 9: A09 -- Security Logging and Monitoring Failures","toLabel":"Section","confidence":1}
-{"from":"Section:skills/security-engineer/phases/02-code-audit.md:L19:Workflow","fromLabel":"Section","type":"CONTAINS","to":"Section:skills/security-engineer/phases/02-code-audit.md:L95:Step 10: A10 -- Server-Side Request Forgery (SSRF)","toLabel":"Section","confidence":1}
 {"from":"Section:skills/security-engineer/phases/02-code-audit.md:L1:Phase 2: Code Security Audit","fromLabel":"Section","type":"CONTAINS","to":"Section:skills/security-engineer/phases/02-code-audit.md:L11:Inputs","toLabel":"Section","confidence":1}
 {"from":"Section:skills/security-engineer/phases/02-code-audit.md:L1:Phase 2: Code Security Audit","fromLabel":"Section","type":"CONTAINS","to":"Section:skills/security-engineer/phases/02-code-audit.md:L19:Workflow","toLabel":"Section","confidence":1}
 {"from":"Section:skills/security-engineer/phases/02-code-audit.md:L1:Phase 2: Code Security Audit","fromLabel":"Section","type":"CONTAINS","to":"Section:skills/security-engineer/phases/02-code-audit.md:L3:Objective","toLabel":"Section","confidence":1}
@@ -33312,61 +33235,6 @@
 {"from":"Section:workflows/ship-saas-mvp.md:L5:Ship SaaS MVP Workflow","fromLabel":"Section","type":"CONTAINS","to":"Section:workflows/ship-saas-mvp.md:L13:Steps","toLabel":"Section","confidence":1}
 {"from":"Section:workflows/ship-saas-mvp.md:L5:Ship SaaS MVP Workflow","fromLabel":"Section","type":"CONTAINS","to":"Section:workflows/ship-saas-mvp.md:L50:Recommended Config","toLabel":"Section","confidence":1}
 {"from":"Section:workflows/ship-saas-mvp.md:L5:Ship SaaS MVP Workflow","fromLabel":"Section","type":"CONTAINS","to":"Section:workflows/ship-saas-mvp.md:L9:Prerequisites","toLabel":"Section","confidence":1}
-{"from":"Tool:fw_advance_to_next_phase","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_107_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_advance_to_next_phase","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_108_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_advance_to_next_phase","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_109_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_advance_to_next_phase","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_110_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_advance_to_next_phase","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_29_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_approve_gate","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_107_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_approve_gate","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_108_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_approve_gate","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_109_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_approve_gate","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_110_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_approve_gate","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_29_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_check_pipeline_compliance","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_107_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_check_pipeline_compliance","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_108_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_check_pipeline_compliance","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_109_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_check_pipeline_compliance","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_110_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_check_pipeline_compliance","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_29_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_fail_pipeline","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_107_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_fail_pipeline","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_108_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_fail_pipeline","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_109_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_fail_pipeline","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_110_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_fail_pipeline","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_29_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_get_current_phase","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_107_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_get_current_phase","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_108_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_get_current_phase","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_109_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_get_current_phase","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_110_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_get_current_phase","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_29_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_log_token_usage","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_107_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_log_token_usage","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_108_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_log_token_usage","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_109_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_log_token_usage","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_110_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_log_token_usage","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_29_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_request_gate_approval","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_107_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_request_gate_approval","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_108_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_request_gate_approval","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_109_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_request_gate_approval","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_110_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_request_gate_approval","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_29_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_start_pipeline","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_107_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_start_pipeline","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_108_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_start_pipeline","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_109_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_start_pipeline","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_110_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_start_pipeline","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_29_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_update_self_healing","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_107_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_update_self_healing","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_108_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_update_self_healing","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_109_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_update_self_healing","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_110_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_update_self_healing","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_29_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_update_status_and_log_usage","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_107_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_update_status_and_log_usage","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_108_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_update_status_and_log_usage","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_109_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_update_status_and_log_usage","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_110_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_update_status_and_log_usage","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_29_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_update_subtask","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_107_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_update_subtask","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_108_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_update_subtask","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_109_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_update_subtask","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_110_registertools","toLabel":"Process","confidence":0.85}
-{"from":"Tool:fw_update_subtask","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_29_registertools","toLabel":"Process","confidence":0.85}
 {"from":"Tool:hashline_edit","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_233_handler","toLabel":"Process","confidence":0.85}
 {"from":"Tool:hashline_edit","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_26_handler","toLabel":"Process","confidence":0.85}
 {"from":"Tool:hashline_edit","fromLabel":"Tool","type":"ENTRY_POINT_OF","to":"proc_27_handler","toLabel":"Process","confidence":0.85}

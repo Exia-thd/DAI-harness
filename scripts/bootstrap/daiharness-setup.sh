@@ -90,11 +90,11 @@ detect_actual_project_root() {
 }
 
 jsonc_parser_module() {
-    local fw_dir candidate
-    fw_dir="$(detect_fw_dir 2>/dev/null || true)"
+    local dh_dir candidate
+    dh_dir="$(detect_fw_dir 2>/dev/null || true)"
     for candidate in \
         "$HOME/.daiharness/mcp-server/node_modules/jsonc-parser" \
-        "${fw_dir:+$fw_dir/mcp/node_modules/jsonc-parser}"; do
+        "${dh_dir:+$dh_dir/mcp/node_modules/jsonc-parser}"; do
         if [[ -n "$candidate" ]] && [[ -f "$candidate/lib/umd/main.js" ]]; then
             printf '%s\n' "$candidate"
             return 0
@@ -113,7 +113,7 @@ opencode_config_path() {
 }
 
 mcp_config_has_dai_harness() {
-    local path="${1:-}" parser_module schema canonical_setup fw_dir
+    local path="${1:-}" parser_module schema canonical_setup dh_dir
     [[ -n "$path" ]] && [[ -f "$path" ]] || return 1
 
     if [[ "$path" == *.toml ]]; then
@@ -146,8 +146,8 @@ PY
     schema="generic"
     [[ "$path" == */opencode/opencode.json || "$path" == */opencode/opencode.jsonc ]] && schema="opencode"
     [[ "$path" == */zed/settings.json || "$path" == */Zed/settings.json ]] && schema="zed"
-    fw_dir="$(detect_fw_dir 2>/dev/null || true)"
-    canonical_setup="${fw_dir}/scripts/mcp/daiharness-mcp-setup.sh"
+    dh_dir="$(detect_fw_dir 2>/dev/null || true)"
+    canonical_setup="${dh_dir}/scripts/mcp/daiharness-mcp-setup.sh"
     [[ -f "$canonical_setup" ]] || return 1
     if ! bash -c 'source "$1"; jsonc_self_contained verify "$2" "" "$3" dai-harness "$4" "$5"' \
         _ "$canonical_setup" "$path" "$schema" \
@@ -295,9 +295,9 @@ install_dai_harness() {
 }
 
 ensure_dai_harness() {
-    local fw_dir="$1"
+    local dh_dir="$1"
     
-    if [[ -z "$fw_dir" ]] || [[ ! -d "$fw_dir" ]]; then
+    if [[ -z "$dh_dir" ]] || [[ ! -d "$dh_dir" ]]; then
         warn "DAI Harness not found!"
         read -p "  Install DAI Harness now? [Y/n] " -n 1 -r
         echo
@@ -306,10 +306,10 @@ ensure_dai_harness() {
             exit 1
         fi
         install_dai_harness
-        fw_dir="${DAIHARNESS_DEFAULT}"
+        dh_dir="${DAIHARNESS_DEFAULT}"
     fi
     
-    echo "$fw_dir"
+    echo "$dh_dir"
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -317,8 +317,8 @@ ensure_dai_harness() {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 build_mcp_server() {
-    local fw_dir="$1"
-    local mcp_dir="${fw_dir}/mcp"
+    local dh_dir="$1"
+    local mcp_dir="${dh_dir}/mcp"
     
     info "Building DAI Harness MCP Server..."
     
@@ -373,10 +373,10 @@ build_mcp_server() {
 
 setup_mcp() {
     local project_root="$1"
-    local fw_dir="$2"
+    local dh_dir="$2"
     local force_refresh="$3"
     shift 3
-    local canonical_setup="${fw_dir}/scripts/mcp/daiharness-mcp-setup.sh"
+    local canonical_setup="${dh_dir}/scripts/mcp/daiharness-mcp-setup.sh"
     local client platform_flag
     local canonical_args=()
     
@@ -417,8 +417,8 @@ setup_mcp() {
 
 copy_project_files() {
     local project_root="$1"
-    local fw_dir="$2"
-    local policy_seeder="${fw_dir}/scripts/lite/ensure-project-policy.sh"
+    local dh_dir="$2"
+    local policy_seeder="${dh_dir}/scripts/lite/ensure-project-policy.sh"
     local policy_result
     
     info "Setting up project files..."
@@ -427,7 +427,7 @@ copy_project_files() {
         error "Execution-policy seeder not found: $policy_seeder"
         return 1
     fi
-    if ! policy_result=$(bash "$policy_seeder" "$fw_dir" "$project_root"); then
+    if ! policy_result=$(bash "$policy_seeder" "$dh_dir" "$project_root"); then
         error "Could not seed the project execution policy"
         return 1
     fi
@@ -437,18 +437,18 @@ copy_project_files() {
         *) error "Unexpected policy-seeder result: $policy_result"; return 1 ;;
     esac
     
-    if [[ -f "${fw_dir}/AGENTS.md" ]] && [[ ! -f "${project_root}/AGENTS.md" ]]; then
-        cp "${fw_dir}/AGENTS.md" "${project_root}/"
+    if [[ -f "${dh_dir}/AGENTS.md" ]] && [[ ! -f "${project_root}/AGENTS.md" ]]; then
+        cp "${dh_dir}/AGENTS.md" "${project_root}/"
         success "Copied AGENTS.md"
     fi
     
-    if [[ -f "${fw_dir}/CLAUDE.md" ]] && [[ ! -f "${project_root}/CLAUDE.md" ]]; then
-        cp "${fw_dir}/CLAUDE.md" "${project_root}/"
+    if [[ -f "${dh_dir}/CLAUDE.md" ]] && [[ ! -f "${project_root}/CLAUDE.md" ]]; then
+        cp "${dh_dir}/CLAUDE.md" "${project_root}/"
         success "Copied CLAUDE.md"
     fi
     
-    if [[ -f "${fw_dir}/.cursorrules" ]] && [[ ! -f "${project_root}/.cursorrules" ]]; then
-        cp "${fw_dir}/.cursorrules" "${project_root}/"
+    if [[ -f "${dh_dir}/.cursorrules" ]] && [[ ! -f "${project_root}/.cursorrules" ]]; then
+        cp "${dh_dir}/.cursorrules" "${project_root}/"
         success "Copied .cursorrules"
     fi
 }
@@ -459,8 +459,8 @@ copy_project_files() {
 
 cmd_check() {
     local project_root="${1:-$(pwd)}"
-    local fw_dir
-    fw_dir=$(detect_fw_dir) || fw_dir=""
+    local dh_dir
+    dh_dir=$(detect_fw_dir) || dh_dir=""
     
     echo ""
     echo -e "${BOLD}${CYAN}━━━ DAI Harness Status ━━━${NC}"
@@ -469,9 +469,9 @@ cmd_check() {
     info "Project: ${project_root}"
     echo ""
     
-    if [[ -n "$fw_dir" ]]; then
-        success "DAI Harness: ${fw_dir}"
-        if [[ -f "${fw_dir}/mcp/build/index.js" ]]; then
+    if [[ -n "$dh_dir" ]]; then
+        success "DAI Harness: ${dh_dir}"
+        if [[ -f "${dh_dir}/mcp/build/index.js" ]]; then
             success "MCP Server: Built"
         else
             warn "MCP Server: Not built"
@@ -511,8 +511,8 @@ cmd_check() {
 
 cmd_diagnose() {
     local project_root="${1:-$(pwd)}"
-    local fw_dir
-    fw_dir=$(detect_fw_dir) || fw_dir=""
+    local dh_dir
+    dh_dir=$(detect_fw_dir) || dh_dir=""
     
     echo ""
     echo -e "${BOLD}${CYAN}━━━ Diagnostics ━━━${NC}"
@@ -526,13 +526,13 @@ cmd_diagnose() {
     
     info "DAI Harness:"
     echo "  Searched:   ${DAIHARNESS_DEFAULT}"
-    echo "  Found:      ${fw_dir:-<not found>}"
+    echo "  Found:      ${dh_dir:-<not found>}"
     echo ""
     
     info "Files:"
     for f in \
-        "${fw_dir}/AGENTS.md" \
-        "${fw_dir}/mcp/build/index.js" \
+        "${dh_dir}/AGENTS.md" \
+        "${dh_dir}/mcp/build/index.js" \
         "$HOME/.daiharness/mcp-server/src/index.ts" \
         "${project_root}/.antigravity/mcp-manifest.json"; do
         if [[ -f "$f" ]]; then
@@ -618,8 +618,8 @@ main() {
     # Determine paths
     [[ -z "$project_path" ]] && project_path="$(pwd -P)"
     project_path="$(detect_actual_project_root "$project_path")" || exit 1
-    local fw_dir
-    fw_dir=$(detect_fw_dir) || fw_dir=""
+    local dh_dir
+    dh_dir=$(detect_fw_dir) || dh_dir=""
     
     # ── Header ──────────────────────────────────────────────────────────────
     
@@ -659,16 +659,16 @@ main() {
     
     # ── DAI Harness Installation ────────────────────────────────────────────
     
-    if [[ "$install_fw" == "true" ]] || [[ -z "$fw_dir" ]]; then
-        fw_dir=$(ensure_dai_harness "$fw_dir")
+    if [[ "$install_fw" == "true" ]] || [[ -z "$dh_dir" ]]; then
+        dh_dir=$(ensure_dai_harness "$dh_dir")
     fi
     
     echo ""
-    success "DAI Harness: ${fw_dir}"
+    success "DAI Harness: ${dh_dir}"
     
     # ── Copy Project Files ──────────────────────────────────────────────────
     
-    copy_project_files "$project_path" "$fw_dir"
+    copy_project_files "$project_path" "$dh_dir"
     echo ""
     
     # ── Setup MCP ───────────────────────────────────────────────────────────
@@ -684,7 +684,7 @@ main() {
             detected_clients+=("$client")
             configured_clients=$((configured_clients + 1))
         done <<< "$clients"
-        setup_mcp "$project_path" "$fw_dir" "$force" "${detected_clients[@]}"
+        setup_mcp "$project_path" "$dh_dir" "$force" "${detected_clients[@]}"
     fi
     echo ""
     

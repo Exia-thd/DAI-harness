@@ -94,11 +94,7 @@ export function maybeNotifyAutoDelegation(
     argv.some((argument) => ["auto", "on", "off", "model"].includes(argument));
   const notice = formatDelegationNotice(activation);
 
-  if (
-    notice &&
-    !isModeMutation &&
-    environment.FORGE_DELEGATION_NOTICE !== "0"
-  ) {
+  if (notice && !isModeMutation && environment.DAI_DELEGATION_NOTICE !== "0") {
     process.stderr.write(`${pc.cyan("ℹ")} ${notice}\n`);
   }
   return activation;

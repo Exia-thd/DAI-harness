@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # THIS_FILE_IS_A_MIGRATION_SHIM
-echo "WARNING: fw-global-registry.sh has been moved to runtime/fw-global-registry.sh. This shim will be removed in the next release." >&2
+echo "WARNING: daiharness-migrate-global.sh has been moved to bootstrap/daiharness-migrate-global.sh. This shim will be removed in the next release." >&2
 if [ -n "${BASH_SOURCE[0]:-}" ]; then
     _SHIM_SOURCE="${BASH_SOURCE[0]}"
 elif [ -n "${ZSH_VERSION:-}" ]; then
@@ -10,7 +10,7 @@ else
 fi
 DIR="$( cd "$( dirname "$_SHIM_SOURCE" )" && pwd )"
 if [[ "$_SHIM_SOURCE" != "${0}" ]]; then
-    source "$DIR/runtime/fw-global-registry.sh" "$@"
+    source "$DIR/bootstrap/daiharness-migrate-global.sh" "$@"
 else
-    exec "$DIR/runtime/fw-global-registry.sh" "$@"
+    exec "$DIR/bootstrap/daiharness-migrate-global.sh" "$@"
 fi

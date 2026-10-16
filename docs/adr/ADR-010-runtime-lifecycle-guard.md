@@ -122,7 +122,7 @@ Kể cả repo không phải dai-harness, kể cả lệnh không liên quan. R�
 
 ### G5 — Không dựa vào registry global hiện có
 
-`~/.daiharness/config/registry.json` **không tồn tại** (thư mục `config/` rỗng) dù `fw-global-registry.sh` có tham chiếu tới. ⇒ RLG tự duy trì `projects.index`, ghi lần đầu khi thấy một project root mới. Không sửa/bootstrap registry.json (ngoài phạm vi).
+`~/.daiharness/config/registry.json` **không tồn tại** (thư mục `config/` rỗng) dù `daiharness-global-registry.sh` có tham chiếu tới. ⇒ RLG tự duy trì `projects.index`, ghi lần đầu khi thấy một project root mới. Không sửa/bootstrap registry.json (ngoài phạm vi).
 
 ### G6 — Ownership theo session, không theo cwd
 

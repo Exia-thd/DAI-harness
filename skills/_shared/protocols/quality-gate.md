@@ -59,15 +59,15 @@ project-owned Markdown/JSON remains authoritative.
 
 For every material project update, quality evidence follows the continuous HTML
 refresh lifecycle. Missing/legacy/proportional projects must first run the
-non-destructive `forge docs init [target]` migration; readable legacy output
+non-destructive `dai docs init [target]` migration; readable legacy output
 does not waive the control center or strict final gate:
 
 1. **Baseline:** before edits, verify the current canonical state and run a
-   persistent `forge docs build [target]`.
+   persistent `dai docs build [target]`.
 2. **Material checkpoint:** update canonical state/source truth, then run a
-   persistent `forge docs build [target]` before the next handoff or phase.
-3. **Final:** run the strict `forge docs gate [target]`, then run the final
-   persistent `forge docs build [target]` to leave the user-visible site
+   persistent `dai docs build [target]` before the next handoff or phase.
+3. **Final:** run the strict `dai docs gate [target]`, then run the final
+   persistent `dai docs build [target]` to leave the user-visible site
    current.
 
 The lifecycle is event-driven, not per-keystroke. Missing baseline,

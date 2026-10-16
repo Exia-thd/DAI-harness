@@ -174,7 +174,6 @@
 {"label":"Class","id":"Class:tests/unit_tests/test_eval_comparable.py:TestRunEvalsSyntax","name":"TestRunEvalsSyntax","filePath":"tests/unit_tests/test_eval_comparable.py","startLine":40,"endLine":46,"isExported":true}
 {"label":"Class","id":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:BrokenAdapter","name":"BrokenAdapter","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1285,"endLine":1293,"isExported":true}
 {"label":"Class","id":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter","name":"FakeHostAdapter","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1058,"endLine":1172,"isExported":true}
-{"label":"Class","id":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:ForgedPeer","name":"ForgedPeer","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1231,"endLine":1261,"isExported":true}
 {"label":"Class","id":"Class:tests/unit_tests/test_parallel_dispatch_runner.py:SleepingAdapter","name":"SleepingAdapter","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1333,"endLine":1345,"isExported":true}
 {"label":"Class","id":"Class:tests/unit_tests/test_pbt_example.py:TestPropertyBasedTokenAnalyzer","name":"TestPropertyBasedTokenAnalyzer","filePath":"tests/unit_tests/test_pbt_example.py","startLine":26,"endLine":105,"isExported":true}
 {"label":"Class","id":"Class:tests/unit_tests/test_skill_routing_runtime.py:FakeClientSession","name":"FakeClientSession","filePath":"tests/unit_tests/test_skill_routing_runtime.py","startLine":221,"endLine":235,"isExported":true}
@@ -1150,25 +1149,6 @@
 {"label":"Const","id":"Const:tests/contracts/pact-setup.ts:matchers","name":"matchers","filePath":"tests/contracts/pact-setup.ts","startLine":34,"endLine":75}
 {"label":"Const","id":"Const:tests/contracts/pact-setup.ts:pactConfig","name":"pactConfig","filePath":"tests/contracts/pact-setup.ts","startLine":9,"endLine":13}
 {"label":"Const","id":"Const:tests/game/visual/godot/_template.midscene.ts:test","name":"test","filePath":"tests/game/visual/godot/_template.midscene.ts","startLine":24,"endLine":24}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:cliPath","name":"cliPath","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":16,"endLine":16}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:fixtureRoot","name":"fixtureRoot","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":17,"endLine":17}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:forcedInit","name":"forcedInit","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":62,"endLine":62}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:forcedOnboard","name":"forcedOnboard","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":107,"endLine":107}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:guide","name":"guide","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":113,"endLine":116}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:init","name":"init","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":49,"endLine":49}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:initAgain","name":"initAgain","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":56,"endLine":56}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:manifestBytes","name":"manifestBytes","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":54,"endLine":54}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:manifestPath","name":"manifestPath","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":53,"endLine":53}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:missingManifest","name":"missingManifest","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":69,"endLine":69}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:missingManifestTarget","name":"missingManifestTarget","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":67,"endLine":67}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:onboard","name":"onboard","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":81,"endLine":81}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:onboardAgain","name":"onboardAgain","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":96,"endLine":96}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:profileBytes","name":"profileBytes","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":85,"endLine":85}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:profilePath","name":"profilePath","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":84,"endLine":84}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:protectedOnboard","name":"protectedOnboard","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":102,"endLine":102}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:repoRoot","name":"repoRoot","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":15,"endLine":15}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:startedAt","name":"startedAt","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":18,"endLine":18}
-{"label":"Const","id":"Const:tests/golden/forge-init-onboard.test.mjs:target","name":"target","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":46,"endLine":46}
 {"label":"Const","id":"Const:tests/golden/runtime-smoke.test.mjs:denied","name":"denied","filePath":"tests/golden/runtime-smoke.test.mjs","startLine":13,"endLine":13}
 {"label":"Const","id":"Const:tests/golden/runtime-smoke.test.mjs:mcpOnly","name":"mcpOnly","filePath":"tests/golden/runtime-smoke.test.mjs","startLine":9,"endLine":9}
 {"label":"Const","id":"Const:tests/golden/runtime-smoke.test.mjs:missingKey","name":"missingKey","filePath":"tests/golden/runtime-smoke.test.mjs","startLine":17,"endLine":17}
@@ -1352,7 +1332,6 @@
 {"label":"File","id":"File:docs/game-build-gates.md","name":"game-build-gates.md","filePath":"docs/game-build-gates.md"}
 {"label":"File","id":"File:docs/guides/docs-hub.md","name":"docs-hub.md","filePath":"docs/guides/docs-hub.md"}
 {"label":"File","id":"File:docs/guides/floating-origin.md","name":"floating-origin.md","filePath":"docs/guides/floating-origin.md"}
-{"label":"File","id":"File:docs/guides/forge-init-onboard.md","name":"forge-init-onboard.md","filePath":"docs/guides/forge-init-onboard.md"}
 {"label":"File","id":"File:docs/guides/gitnexus.md","name":"gitnexus.md","filePath":"docs/guides/gitnexus.md"}
 {"label":"File","id":"File:docs/guides/peer-collaboration.md","name":"peer-collaboration.md","filePath":"docs/guides/peer-collaboration.md"}
 {"label":"File","id":"File:docs/guides/testing-stack.md","name":"testing-stack.md","filePath":"docs/guides/testing-stack.md"}
@@ -1653,7 +1632,6 @@
 {"label":"File","id":"File:scripts/dycp.test.py","name":"dycp.test.py","filePath":"scripts/dycp.test.py"}
 {"label":"File","id":"File:scripts/ensure-mem0.sh","name":"ensure-mem0.sh","filePath":"scripts/ensure-mem0.sh"}
 {"label":"File","id":"File:scripts/export-memory-diagnostic.sh","name":"export-memory-diagnostic.sh","filePath":"scripts/export-memory-diagnostic.sh"}
-{"label":"File","id":"File:scripts/forge-validate.sh","name":"forge-validate.sh","filePath":"scripts/forge-validate.sh"}
 {"label":"File","id":"File:scripts/fw-ext-gen.sh","name":"fw-ext-gen.sh","filePath":"scripts/fw-ext-gen.sh"}
 {"label":"File","id":"File:scripts/fw-global-launcher.sh","name":"fw-global-launcher.sh","filePath":"scripts/fw-global-launcher.sh"}
 {"label":"File","id":"File:scripts/fw-global-registry.sh","name":"fw-global-registry.sh","filePath":"scripts/fw-global-registry.sh"}
@@ -1836,7 +1814,6 @@
 {"label":"File","id":"File:scripts/utilities/dep-graph.sh","name":"dep-graph.sh","filePath":"scripts/utilities/dep-graph.sh"}
 {"label":"File","id":"File:scripts/utilities/dycp.py","name":"dycp.py","filePath":"scripts/utilities/dycp.py"}
 {"label":"File","id":"File:scripts/utilities/dycp.test.py","name":"dycp.test.py","filePath":"scripts/utilities/dycp.test.py"}
-{"label":"File","id":"File:scripts/utilities/forge-validate.sh","name":"forge-validate.sh","filePath":"scripts/utilities/forge-validate.sh"}
 {"label":"File","id":"File:scripts/utilities/fw-ext-gen.sh","name":"fw-ext-gen.sh","filePath":"scripts/utilities/fw-ext-gen.sh"}
 {"label":"File","id":"File:scripts/utilities/generate-sequence.ts","name":"generate-sequence.ts","filePath":"scripts/utilities/generate-sequence.ts"}
 {"label":"File","id":"File:scripts/utilities/generate-template.ts","name":"generate-template.ts","filePath":"scripts/utilities/generate-template.ts"}
@@ -2293,9 +2270,6 @@
 {"label":"File","id":"File:skills/xr-engineer/LITE.md","name":"LITE.md","filePath":"skills/xr-engineer/LITE.md"}
 {"label":"File","id":"File:skills/xr-engineer/SKILL.md","name":"SKILL.md","filePath":"skills/xr-engineer/SKILL.md"}
 {"label":"File","id":"File:src/cli/README.md","name":"README.md","filePath":"src/cli/README.md"}
-{"label":"File","id":"File:src/cli/completions/forge.bash","name":"forge.bash","filePath":"src/cli/completions/forge.bash"}
-{"label":"File","id":"File:src/cli/completions/forge.fish","name":"forge.fish","filePath":"src/cli/completions/forge.fish"}
-{"label":"File","id":"File:src/cli/completions/forge.zsh","name":"forge.zsh","filePath":"src/cli/completions/forge.zsh"}
 {"label":"File","id":"File:src/cli/package.json","name":"package.json","filePath":"src/cli/package.json"}
 {"label":"File","id":"File:src/cli/src/bench/compare.ts","name":"compare.ts","filePath":"src/cli/src/bench/compare.ts"}
 {"label":"File","id":"File:src/cli/src/bench/metrics.ts","name":"metrics.ts","filePath":"src/cli/src/bench/metrics.ts"}
@@ -2662,7 +2636,6 @@
 {"label":"File","id":"File:tests/game/visual/README.md","name":"README.md","filePath":"tests/game/visual/README.md"}
 {"label":"File","id":"File:tests/game/visual/godot/_template.midscene.ts","name":"_template.midscene.ts","filePath":"tests/game/visual/godot/_template.midscene.ts"}
 {"label":"File","id":"File:tests/game/visual/roblox/_template.midscene.ts","name":"_template.midscene.ts","filePath":"tests/game/visual/roblox/_template.midscene.ts"}
-{"label":"File","id":"File:tests/golden/forge-init-onboard.test.mjs","name":"forge-init-onboard.test.mjs","filePath":"tests/golden/forge-init-onboard.test.mjs"}
 {"label":"File","id":"File:tests/golden/runtime-smoke.test.mjs","name":"runtime-smoke.test.mjs","filePath":"tests/golden/runtime-smoke.test.mjs"}
 {"label":"File","id":"File:tests/integration/__init__.py","name":"__init__.py","filePath":"tests/integration/__init__.py"}
 {"label":"File","id":"File:tests/integration/docker-compose.test.yml","name":"docker-compose.test.yml","filePath":"tests/integration/docker-compose.test.yml"}
@@ -4782,9 +4755,6 @@
 {"label":"Function","id":"Function:tests/contracts/provider/skills-provider.verify.ts:skill non-existent does not exist","name":"skill non-existent does not exist","filePath":"tests/contracts/provider/skills-provider.verify.ts","startLine":31,"endLine":33,"isExported":false}
 {"label":"Function","id":"Function:tests/contracts/provider/skills-provider.verify.ts:skill software-engineer exists","name":"skill software-engineer exists","filePath":"tests/contracts/provider/skills-provider.verify.ts","startLine":28,"endLine":30,"isExported":false}
 {"label":"Function","id":"Function:tests/contracts/provider/skills-provider.verify.ts:skills exist","name":"skills exist","filePath":"tests/contracts/provider/skills-provider.verify.ts","startLine":24,"endLine":27,"isExported":false}
-{"label":"Function","id":"Function:tests/golden/forge-init-onboard.test.mjs:assertEnvelope","name":"assertEnvelope","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":31,"endLine":38,"isExported":false}
-{"label":"Function","id":"Function:tests/golden/forge-init-onboard.test.mjs:runForge","name":"runForge","filePath":"tests/golden/forge-init-onboard.test.mjs","startLine":20,"endLine":29,"isExported":false}
-{"label":"Function","id":"Function:tests/integration/setup.ts:getForgenexusDBUrl","name":"getForgenexusDBUrl","filePath":"tests/integration/setup.ts","startLine":58,"endLine":60,"isExported":true}
 {"label":"Function","id":"Function:tests/integration/setup.ts:getMcpDBUrl","name":"getMcpDBUrl","filePath":"tests/integration/setup.ts","startLine":62,"endLine":64,"isExported":true}
 {"label":"Function","id":"Function:tests/integration/setup.ts:startServices","name":"startServices","filePath":"tests/integration/setup.ts","startLine":10,"endLine":20,"isExported":true}
 {"label":"Function","id":"Function:tests/integration/setup.ts:stopServices","name":"stopServices","filePath":"tests/integration/setup.ts","startLine":22,"endLine":29,"isExported":true}
@@ -5132,7 +5102,6 @@
 {"label":"Function","id":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_collaboration_execute_fails_closed_before_agnostic_agy_spawn","name":"test_collaboration_execute_fails_closed_before_agnostic_agy_spawn","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":989,"endLine":1008,"isExported":true}
 {"label":"Function","id":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_collaboration_role_mismatch_is_serial_fallback_in_runner","name":"test_collaboration_role_mismatch_is_serial_fallback_in_runner","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1011,"endLine":1046,"isExported":true}
 {"label":"Function","id":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_external_execution_requires_both_explicit_flags","name":"test_external_execution_requires_both_explicit_flags","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":413,"endLine":429,"isExported":true}
-{"label":"Function","id":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_forged_manifest_capability_cannot_authorize_model_flag","name":"test_forged_manifest_capability_cannot_authorize_model_flag","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":578,"endLine":627,"isExported":true}
 {"label":"Function","id":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_hung_trusted_adapter_is_cut_off_at_policy_deadline","name":"test_hung_trusted_adapter_is_cut_off_at_policy_deadline","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1311,"endLine":1366,"isExported":true}
 {"label":"Function","id":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_peer_host_error_cancels_and_routes_serial_once","name":"test_peer_host_error_cancels_and_routes_serial_once","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1278,"endLine":1308,"isExported":true}
 {"label":"Function","id":"Function:tests/unit_tests/test_parallel_dispatch_runner.py:test_peer_returned_data_cannot_select_sender_or_controller","name":"test_peer_returned_data_cannot_select_sender_or_controller","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1222,"endLine":1275,"isExported":true}
@@ -6598,7 +6567,6 @@
 {"label":"Method","id":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_final_replay_fails_closed_for_timeout_and_missing_command#0","name":"test_final_replay_fails_closed_for_timeout_and_missing_command","filePath":"tests/lite/test_gate.py","startLine":688,"endLine":716,"isExported":true}
 {"label":"Method","id":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_final_replay_rejects_hand_authored_pass_in_both_validators#0","name":"test_final_replay_rejects_hand_authored_pass_in_both_validators","filePath":"tests/lite/test_gate.py","startLine":632,"endLine":653,"isExported":true}
 {"label":"Method","id":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_final_replay_rejects_project_owned_check_mutating_worktree#0","name":"test_final_replay_rejects_project_owned_check_mutating_worktree","filePath":"tests/lite/test_gate.py","startLine":667,"endLine":686,"isExported":true}
-{"label":"Method","id":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_forged_shape_output_blocked#1","name":"test_forged_shape_output_blocked","filePath":"tests/lite/test_gate.py","startLine":755,"endLine":759,"isExported":true}
 {"label":"Method","id":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_future_timestamp_blocked#0","name":"test_future_timestamp_blocked","filePath":"tests/lite/test_gate.py","startLine":769,"endLine":773,"isExported":true}
 {"label":"Method","id":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_missing_evidence_blocked#0","name":"test_missing_evidence_blocked","filePath":"tests/lite/test_gate.py","startLine":719,"endLine":722,"isExported":true}
 {"label":"Method","id":"Method:tests/lite/test_gate.py:TestEvidenceValidation.test_no_turn_ignores_newer_review_and_historical_records#0","name":"test_no_turn_ignores_newer_review_and_historical_records","filePath":"tests/lite/test_gate.py","startLine":588,"endLine":630,"isExported":true}
@@ -6732,9 +6700,6 @@
 {"label":"Method","id":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter.decide#1","name":"decide","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1149,"endLine":1169,"isExported":true}
 {"label":"Method","id":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter.make_event#5","name":"make_event","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1064,"endLine":1090,"isExported":true}
 {"label":"Method","id":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:FakeHostAdapter.run_participant#1","name":"run_participant","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1092,"endLine":1147,"isExported":true}
-{"label":"Method","id":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:ForgedPeer.cancel#1","name":"cancel","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1260,"endLine":1261,"isExported":true}
-{"label":"Method","id":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:ForgedPeer.decide#1","name":"decide","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1257,"endLine":1258,"isExported":true}
-{"label":"Method","id":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:ForgedPeer.run_participant#1","name":"run_participant","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1232,"endLine":1255,"isExported":true}
 {"label":"Method","id":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:SleepingAdapter.__init__#0","name":"__init__","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1334,"endLine":1335,"isExported":false}
 {"label":"Method","id":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:SleepingAdapter.cancel#1","name":"cancel","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1344,"endLine":1345,"isExported":true}
 {"label":"Method","id":"Method:tests/unit_tests/test_parallel_dispatch_runner.py:SleepingAdapter.decide#1","name":"decide","filePath":"tests/unit_tests/test_parallel_dispatch_runner.py","startLine":1341,"endLine":1342,"isExported":true}
@@ -6799,13 +6764,6 @@
 {"label":"Method","id":"Method:tests/unit_tests/test_token_api.py:TestUnifiedAggregator.test_get_summary_platforms_have_required_fields#0","name":"test_get_summary_platforms_have_required_fields","filePath":"tests/unit_tests/test_token_api.py","startLine":237,"endLine":244,"isExported":true}
 {"label":"Method","id":"Method:tests/unit_tests/test_token_api.py:TestUnifiedAggregator.test_get_summary_structure#0","name":"test_get_summary_structure","filePath":"tests/unit_tests/test_token_api.py","startLine":226,"endLine":235,"isExported":true}
 {"label":"Method","id":"Method:tests/unit_tests/test_token_api.py:TestUnifiedAggregator.test_init#0","name":"test_init","filePath":"tests/unit_tests/test_token_api.py","startLine":220,"endLine":224,"isExported":true}
-{"label":"Namespace","id":"Namespace:presets/gameplay/SaveSystemUnity.cs:Forgewright.Gameplay","name":"Forgewright.Gameplay","filePath":"presets/gameplay/SaveSystemUnity.cs","startLine":6,"endLine":132}
-{"label":"Namespace","id":"Namespace:presets/gameplay/combat-state-machine-unity.cs:Forgewright.Gameplay","name":"Forgewright.Gameplay","filePath":"presets/gameplay/combat-state-machine-unity.cs","startLine":5,"endLine":173}
-{"label":"Namespace","id":"Namespace:presets/gameplay/projectile-unity.cs:Forgewright.Gameplay","name":"Forgewright.Gameplay","filePath":"presets/gameplay/projectile-unity.cs","startLine":2,"endLine":123}
-{"label":"Namespace","id":"Namespace:tests/game/engines/unity/balance/_template.test.cs:Forgewright.GameTest.Unity.Balance","name":"Forgewright.GameTest.Unity.Balance","filePath":"tests/game/engines/unity/balance/_template.test.cs","startLine":3,"endLine":56}
-{"label":"Namespace","id":"Namespace:tests/game/engines/unity/integration/_template.test.cs:Forgewright.GameTest.Unity.Integration","name":"Forgewright.GameTest.Unity.Integration","filePath":"tests/game/engines/unity/integration/_template.test.cs","startLine":3,"endLine":57}
-{"label":"Namespace","id":"Namespace:tests/game/engines/unity/mechanics/_template.test.cs:Forgewright.GameTest.Unity.Mechanics","name":"Forgewright.GameTest.Unity.Mechanics","filePath":"tests/game/engines/unity/mechanics/_template.test.cs","startLine":4,"endLine":130}
-{"label":"Namespace","id":"Namespace:tests/game/engines/unity/performance/_template.test.cs:Forgewright.GameTest.Unity.Performance","name":"Forgewright.GameTest.Unity.Performance","filePath":"tests/game/engines/unity/performance/_template.test.cs","startLine":3,"endLine":59}
 {"label":"Process","id":"proc_0_registerdocscommands"}
 {"label":"Process","id":"proc_100_check"}
 {"label":"Process","id":"proc_101_check"}
@@ -8044,10 +8002,7 @@
 {"label":"Section","id":"Section:antigravity/planning/agent-first-cli/TASKS.md:L142:Phase 2: Enhanced CLI (14h)","name":"Phase 2: Enhanced CLI (14h)","filePath":"antigravity/planning/agent-first-cli/TASKS.md","startLine":142,"endLine":276}
 {"label":"Section","id":"Section:antigravity/planning/agent-first-cli/TASKS.md:L144:Task 2.1: Config Layering (3h)","name":"Task 2.1: Config Layering (3h)","filePath":"antigravity/planning/agent-first-cli/TASKS.md","startLine":144,"endLine":162}
 {"label":"Section","id":"Section:antigravity/planning/agent-first-cli/TASKS.md:L163:Task 2.2: Input Conventions (2h)","name":"Task 2.2: Input Conventions (2h)","filePath":"antigravity/planning/agent-first-cli/TASKS.md","startLine":163,"endLine":181}
-{"label":"Section","id":"Section:antigravity/planning/agent-first-cli/TASKS.md:L182:Task 2.3: Forge Config Commands (2h)","name":"Task 2.3: Forge Config Commands (2h)","filePath":"antigravity/planning/agent-first-cli/TASKS.md","startLine":182,"endLine":200}
 {"label":"Section","id":"Section:antigravity/planning/agent-first-cli/TASKS.md:L1:Tasks: Agent-First CLI — Phase Breakdown","name":"Tasks: Agent-First CLI — Phase Breakdown","filePath":"antigravity/planning/agent-first-cli/TASKS.md","startLine":1,"endLine":434}
-{"label":"Section","id":"Section:antigravity/planning/agent-first-cli/TASKS.md:L201:Task 2.4: Forge Doctor (1h)","name":"Task 2.4: Forge Doctor (1h)","filePath":"antigravity/planning/agent-first-cli/TASKS.md","startLine":201,"endLine":219}
-{"label":"Section","id":"Section:antigravity/planning/agent-first-cli/TASKS.md:L220:Task 2.5: Forge Validate JSON (2h)","name":"Task 2.5: Forge Validate JSON (2h)","filePath":"antigravity/planning/agent-first-cli/TASKS.md","startLine":220,"endLine":238}
 {"label":"Section","id":"Section:antigravity/planning/agent-first-cli/TASKS.md:L239:Task 2.6: Migration Guide (1h)","name":"Task 2.6: Migration Guide (1h)","filePath":"antigravity/planning/agent-first-cli/TASKS.md","startLine":239,"endLine":257}
 {"label":"Section","id":"Section:antigravity/planning/agent-first-cli/TASKS.md:L258:Task 2.7: Backward Compatibility (3h)","name":"Task 2.7: Backward Compatibility (3h)","filePath":"antigravity/planning/agent-first-cli/TASKS.md","startLine":258,"endLine":276}
 {"label":"Section","id":"Section:antigravity/planning/agent-first-cli/TASKS.md:L277:Phase 3: Polish (8h)","name":"Phase 3: Polish (8h)","filePath":"antigravity/planning/agent-first-cli/TASKS.md","startLine":277,"endLine":334}
@@ -8239,7 +8194,6 @@
 {"label":"Section","id":"Section:antigravity/planning/autonomous-testing/RESEARCH.md:L7:Statistics","name":"Statistics","filePath":"antigravity/planning/autonomous-testing/RESEARCH.md","startLine":7,"endLine":15}
 {"label":"Section","id":"Section:antigravity/planning/autonomous-testing/RESEARCH.md:L95:3. Risk-Based Execution","name":"3. Risk-Based Execution","filePath":"antigravity/planning/autonomous-testing/RESEARCH.md","startLine":95,"endLine":111}
 {"label":"Section","id":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L101:Task 3.1: Coordinate Conversion Library (2h)","name":"Task 3.1: Coordinate Conversion Library (2h)","filePath":"antigravity/planning/coordinate-system-fix/PLAN.md","startLine":101,"endLine":107}
-{"label":"Section","id":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L108:Task 3.2: `forge coords convert` Command (1h)","name":"Task 3.2: `forge coords convert` Command (1h)","filePath":"antigravity/planning/coordinate-system-fix/PLAN.md","startLine":108,"endLine":112}
 {"label":"Section","id":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L113:Task 3.3: Batch Conversion Tool (1h)","name":"Task 3.3: Batch Conversion Tool (1h)","filePath":"antigravity/planning/coordinate-system-fix/PLAN.md","startLine":113,"endLine":119}
 {"label":"Section","id":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L120:Phase 4: Floating Origin Support (4h)","name":"Phase 4: Floating Origin Support (4h)","filePath":"antigravity/planning/coordinate-system-fix/PLAN.md","startLine":120,"endLine":138}
 {"label":"Section","id":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L122:Task 4.1: Godot Floating Origin (1.5h)","name":"Task 4.1: Godot Floating Origin (1.5h)","filePath":"antigravity/planning/coordinate-system-fix/PLAN.md","startLine":122,"endLine":126}
@@ -8270,7 +8224,6 @@
 {"label":"Section","id":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L65:Task 1.3: Axis Conversion Reference (1h)","name":"Task 1.3: Axis Conversion Reference (1h)","filePath":"antigravity/planning/coordinate-system-fix/PLAN.md","startLine":65,"endLine":69}
 {"label":"Section","id":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L70:Task 1.4: Integration into Skills (INTEGRATION) → Phase 5","name":"Task 1.4: Integration into Skills (INTEGRATION) → Phase 5","filePath":"antigravity/planning/coordinate-system-fix/PLAN.md","startLine":70,"endLine":73}
 {"label":"Section","id":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L74:Phase 2: Validation CLI (6h)","name":"Phase 2: Validation CLI (6h)","filePath":"antigravity/planning/coordinate-system-fix/PLAN.md","startLine":74,"endLine":98}
-{"label":"Section","id":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L76:Task 2.1: `forge validate --asset-coords` Command (2h)","name":"Task 2.1: `forge validate --asset-coords` Command (2h)","filePath":"antigravity/planning/coordinate-system-fix/PLAN.md","startLine":76,"endLine":81}
 {"label":"Section","id":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L82:Task 2.2: Coordinate Bounds Checker (1.5h)","name":"Task 2.2: Coordinate Bounds Checker (1.5h)","filePath":"antigravity/planning/coordinate-system-fix/PLAN.md","startLine":82,"endLine":86}
 {"label":"Section","id":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L87:Task 2.3: Import Scale Detector (1.5h)","name":"Task 2.3: Import Scale Detector (1.5h)","filePath":"antigravity/planning/coordinate-system-fix/PLAN.md","startLine":87,"endLine":91}
 {"label":"Section","id":"Section:antigravity/planning/coordinate-system-fix/PLAN.md:L92:Task 2.4: Validation Test Suite (1h)","name":"Task 2.4: Validation Test Suite (1h)","filePath":"antigravity/planning/coordinate-system-fix/PLAN.md","startLine":92,"endLine":98}
@@ -10798,9 +10751,6 @@
 {"label":"Section","id":"Section:docs/guides/floating-origin.md:L5:What is Floating Origin?","name":"What is Floating Origin?","filePath":"docs/guides/floating-origin.md","startLine":5,"endLine":8}
 {"label":"Section","id":"Section:docs/guides/floating-origin.md:L69:Unity","name":"Unity","filePath":"docs/guides/floating-origin.md","startLine":69,"endLine":99}
 {"label":"Section","id":"Section:docs/guides/floating-origin.md:L9:The Problem","name":"The Problem","filePath":"docs/guides/floating-origin.md","startLine":9,"endLine":29}
-{"label":"Section","id":"Section:docs/guides/forge-init-onboard.md:L11:Ten-Minute Sample Workflow","name":"Ten-Minute Sample Workflow","filePath":"docs/guides/forge-init-onboard.md","startLine":11,"endLine":33}
-{"label":"Section","id":"Section:docs/guides/forge-init-onboard.md:L1:Forge Init and Onboard Golden Path","name":"Forge Init and Onboard Golden Path","filePath":"docs/guides/forge-init-onboard.md","startLine":1,"endLine":33}
-{"label":"Section","id":"Section:docs/guides/forge-init-onboard.md:L5:Prerequisites","name":"Prerequisites","filePath":"docs/guides/forge-init-onboard.md","startLine":5,"endLine":10}
 {"label":"Section","id":"Section:docs/guides/gitnexus.md:L19:Safe Edit Loop","name":"Safe Edit Loop","filePath":"docs/guides/gitnexus.md","startLine":19,"endLine":30}
 {"label":"Section","id":"Section:docs/guides/gitnexus.md:L1:GitNexus Guide","name":"GitNexus Guide","filePath":"docs/guides/gitnexus.md","startLine":1,"endLine":36}
 {"label":"Section","id":"Section:docs/guides/gitnexus.md:L31:Repository Rules","name":"Repository Rules","filePath":"docs/guides/gitnexus.md","startLine":31,"endLine":36}
@@ -18106,7 +18056,6 @@
 {"label":"Section","id":"Section:skills/security-engineer/phases/02-code-audit.md:L79:Step 8: A08 -- Software and Data Integrity Failures","name":"Step 8: A08 -- Software and Data Integrity Failures","filePath":"skills/security-engineer/phases/02-code-audit.md","startLine":79,"endLine":85}
 {"label":"Section","id":"Section:skills/security-engineer/phases/02-code-audit.md:L7:Context Bridge","name":"Context Bridge","filePath":"skills/security-engineer/phases/02-code-audit.md","startLine":7,"endLine":10}
 {"label":"Section","id":"Section:skills/security-engineer/phases/02-code-audit.md:L86:Step 9: A09 -- Security Logging and Monitoring Failures","name":"Step 9: A09 -- Security Logging and Monitoring Failures","filePath":"skills/security-engineer/phases/02-code-audit.md","startLine":86,"endLine":94}
-{"label":"Section","id":"Section:skills/security-engineer/phases/02-code-audit.md:L95:Step 10: A10 -- Server-Side Request Forgery (SSRF)","name":"Step 10: A10 -- Server-Side Request Forgery (SSRF)","filePath":"skills/security-engineer/phases/02-code-audit.md","startLine":95,"endLine":102}
 {"label":"Section","id":"Section:skills/security-engineer/phases/03-auth-review.md:L111:Step 4: Test Authorization Boundaries","name":"Step 4: Test Authorization Boundaries","filePath":"skills/security-engineer/phases/03-auth-review.md","startLine":111,"endLine":119}
 {"label":"Section","id":"Section:skills/security-engineer/phases/03-auth-review.md:L11:Inputs","name":"Inputs","filePath":"skills/security-engineer/phases/03-auth-review.md","startLine":11,"endLine":18}
 {"label":"Section","id":"Section:skills/security-engineer/phases/03-auth-review.md:L120:Output Deliverables","name":"Output Deliverables","filePath":"skills/security-engineer/phases/03-auth-review.md","startLine":120,"endLine":129}
@@ -23351,17 +23300,6 @@
 {"label":"Section","id":"Section:workflows/ship-saas-mvp.md:L66:Expected Timeline","name":"Expected Timeline","filePath":"workflows/ship-saas-mvp.md","startLine":66,"endLine":69}
 {"label":"Section","id":"Section:workflows/ship-saas-mvp.md:L9:Prerequisites","name":"Prerequisites","filePath":"workflows/ship-saas-mvp.md","startLine":9,"endLine":12}
 {"label":"Struct","id":"Struct:presets/gameplay/combat-state-machine-unity.cs:AttackStage","name":"AttackStage","filePath":"presets/gameplay/combat-state-machine-unity.cs","startLine":22,"endLine":30}
-{"label":"Tool","id":"Tool:fw_advance_to_next_phase","name":"fw_advance_to_next_phase","filePath":"mcp/src/api/tools.ts"}
-{"label":"Tool","id":"Tool:fw_approve_gate","name":"fw_approve_gate","filePath":"mcp/src/api/tools.ts"}
-{"label":"Tool","id":"Tool:fw_check_pipeline_compliance","name":"fw_check_pipeline_compliance","filePath":"mcp/src/api/tools.ts"}
-{"label":"Tool","id":"Tool:fw_fail_pipeline","name":"fw_fail_pipeline","filePath":"mcp/src/api/tools.ts"}
-{"label":"Tool","id":"Tool:fw_get_current_phase","name":"fw_get_current_phase","filePath":"mcp/src/api/tools.ts"}
-{"label":"Tool","id":"Tool:fw_log_token_usage","name":"fw_log_token_usage","filePath":"mcp/src/api/tools.ts"}
-{"label":"Tool","id":"Tool:fw_request_gate_approval","name":"fw_request_gate_approval","filePath":"mcp/src/api/tools.ts"}
-{"label":"Tool","id":"Tool:fw_start_pipeline","name":"fw_start_pipeline","filePath":"mcp/src/api/tools.ts"}
-{"label":"Tool","id":"Tool:fw_update_self_healing","name":"fw_update_self_healing","filePath":"mcp/src/api/tools.ts"}
-{"label":"Tool","id":"Tool:fw_update_status_and_log_usage","name":"fw_update_status_and_log_usage","filePath":"mcp/src/api/tools.ts"}
-{"label":"Tool","id":"Tool:fw_update_subtask","name":"fw_update_subtask","filePath":"mcp/src/api/tools.ts"}
 {"label":"Tool","id":"Tool:hashline_edit","name":"hashline_edit","filePath":"scripts/hashline/hashline-mcp-tools.ts"}
 {"label":"Tool","id":"Tool:hashline_read","name":"hashline_read","filePath":"scripts/hashline/hashline-mcp-tools.ts"}
 {"label":"Variable","id":"Variable:docs/build_docs.py:DOCS","name":"DOCS","filePath":"docs/build_docs.py","startLine":30,"endLine":30}
@@ -23591,7 +23529,6 @@
 {"label":"Variable","id":"Variable:scripts/lite/verify_gate.py:SUPPORTED_SCHEMAS","name":"SUPPORTED_SCHEMAS","filePath":"scripts/lite/verify_gate.py","startLine":173,"endLine":173}
 {"label":"Variable","id":"Variable:scripts/lite/verify_gate.py:_BINARY_EXTS","name":"_BINARY_EXTS","filePath":"scripts/lite/verify_gate.py","startLine":67,"endLine":71}
 {"label":"Variable","id":"Variable:scripts/lite/verify_gate.py:_DOC_EXTS","name":"_DOC_EXTS","filePath":"scripts/lite/verify_gate.py","startLine":72,"endLine":72}
-{"label":"Variable","id":"Variable:scripts/lite/verify_gate.py:_FORGED_OUTPUT_PATTERNS","name":"_FORGED_OUTPUT_PATTERNS","filePath":"scripts/lite/verify_gate.py","startLine":50,"endLine":56}
 {"label":"Variable","id":"Variable:scripts/lite/verify_gate.py:_SECRET_PATTERNS","name":"_SECRET_PATTERNS","filePath":"scripts/lite/verify_gate.py","startLine":58,"endLine":63}
 {"label":"Variable","id":"Variable:scripts/lite/verify_gate.py:_SKIP_PREFIXES","name":"_SKIP_PREFIXES","filePath":"scripts/lite/verify_gate.py","startLine":73,"endLine":73}
 {"label":"Variable","id":"Variable:scripts/lite/verify_gate.py:_STUB_PATTERN","name":"_STUB_PATTERN","filePath":"scripts/lite/verify_gate.py","startLine":65,"endLine":65}

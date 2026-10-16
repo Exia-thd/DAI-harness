@@ -304,7 +304,7 @@ codex mcp list
 | Variable | Values | Effect |
 |----------|--------|--------|
 | `DAIHARNESS_DEBUG` | 0, 1 | Enable debug output in launcher |
-| `FW_MCP_VERBOSE` | 0, 1 | Verbose output for daiharness-mcp-setup.sh |
+| `DAIHARNESS_MCP_VERBOSE` | 0, 1 | Verbose output for daiharness-mcp-setup.sh |
 
 ---
 
@@ -431,7 +431,7 @@ rm -rf /tmp/fw-test
 
 ```bash
 # Verbose output
-FW_MCP_VERBOSE=1 bash daiharness-mcp-setup.sh --diagnose
+DAIHARNESS_MCP_VERBOSE=1 bash daiharness-mcp-setup.sh --diagnose
 
 # Debug launcher
 DAIHARNESS_DEBUG=1 bash scripts/daiharness-mcp-launcher.sh

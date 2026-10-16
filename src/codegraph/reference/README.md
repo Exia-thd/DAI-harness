@@ -8,7 +8,7 @@ repository, plus a differ that scores any other engine against it.
 DAI Harness is dropping GitNexus: it is PolyForm Noncommercial, and this project
 intends to be commercial. The replacement is planned on tree-sitter and
 LadybugDB, both MIT — the same two components GitNexus itself stands on, and the
-same two the earlier in-house engine (ForgeNexus, on KuzuDB) stood on before
+same two the earlier in-house engine stood on, over KuzuDB, before
 Apple acquired Kuzu in October 2025 and archived it.
 
 That earlier engine was deleted in `927726d2` — 166 files, 60,724 lines. Reading

@@ -57,5 +57,5 @@ export function shouldUseColors(options: GlobalOptions): boolean {
  * Check if debug mode is enabled
  */
 export function isDebugMode(options: GlobalOptions): boolean {
-  return options.debug || process.env.FORGE_DEBUG === "1";
+  return options.debug || process.env.DAI_DEBUG === "1";
 }

@@ -85,14 +85,14 @@ def test_continuous_html_view_refreshes_at_baseline_checkpoints_and_completion()
         assert marker in pipeline
     assert "docs hub baseline/checkpoint/gate/final build" in entry
     assert "every material project update" in pipeline
-    assert "forge docs init" in pipeline
-    assert "forge docs build" in pipeline
+    assert "dai docs init" in pipeline
+    assert "dai docs build" in pipeline
     assert "every\nmaterial project update" in guardrail
-    assert "forge docs init" in guardrail
+    assert "dai docs init" in guardrail
     assert "baseline" in guardrail
     assert "material checkpoint" in guardrail
     assert "final persistent" in guardrail
-    assert "forge docs build" in quality
-    assert "forge docs init" in quality
+    assert "dai docs build" in quality
+    assert "dai docs init" in quality
     assert "continuous html refresh" in guide
     assert "every material project update" in guide

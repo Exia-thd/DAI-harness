@@ -17,7 +17,7 @@ tags: [orchestrator, meta, routing, pipeline]
 | DAI Harness workspace exists | `ls .daiharness/ 2>/dev/null` | ... | run the check command and paste output |
 | Config file present | `cat .production-grade.yaml 2>/dev/null` | ... | run the check command and paste output |
 | Skills registry exists | `cat skills/skills-registry.yaml 2>/dev/null \| head -5` | ... | run the check command and paste output |
-| MCP tools available | Check if `fw_start_pipeline` is callable | ... | run the check command and paste output |
+| MCP tools available | Check if `dh_start_pipeline` is callable | ... | run the check command and paste output |
 | Pipeline context is decision-ready | Read current request + workspace evidence and `pipeline-operating-contract.md` | ... | objective, acceptance, constraints/non-goals, safe scope, risk owners, research/visual basis as applicable |
 
 ## SOLVE Step 3: DECOMPOSE (Orchestrator Domain Slots)
@@ -33,9 +33,9 @@ Format: `n. ACTION | TARGET | CHECK`
 - `n. Select smallest specialist set | Compact routing table or INDEX.md | Skill path(s) identified and each receives PIPELINE_CONTEXT`
 
 ### Pipeline Management (if MCP tools available)
-- `n. Start pipeline | fw_start_pipeline | Pipeline ID returned`
-- `n. Advance phase | fw_advance_to_next_phase | Phase name updated`
-- `n. Request gate approval | fw_request_gate_approval | Gate status logged`
+- `n. Start pipeline | dh_start_pipeline | Pipeline ID returned`
+- `n. Advance phase | dh_advance_to_next_phase | Phase name updated`
+- `n. Request gate approval | dh_request_gate_approval | Gate status logged`
 
 ### Skill Dispatch
 - `n. Load specialist overlay | skills/<name>/LITE.md or SKILL.md | Overlay content loaded`

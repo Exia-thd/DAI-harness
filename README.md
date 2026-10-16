@@ -511,7 +511,7 @@ Once setup is complete, run the onboarding workflow to establish a baseline. In 
 
 *Creates a `.daiharness/project-profile.json` detailing your stack, coding conventions, and existing tech debt.*
 
-For a deterministic, model-free CLI path, use `forge --json init .` followed by `forge --json onboard .`. The [CLI init/onboard golden-path guide](docs/guides/forge-init-onboard.md) documents idempotency, overwrite behavior, recorded facts, and the required under-ten-minute test.
+For a deterministic, model-free CLI path, use `dai --json init .` followed by `dai --json onboard .`. The [CLI init/onboard golden-path guide](docs/guides/dai-init-onboard.md) documents idempotency, overwrite behavior, recorded facts, and the required under-ten-minute test.
 
 ### Parallel AI Worktrees
 
@@ -538,26 +538,26 @@ project work.
 
 ```bash
 # One-time initialization
-forge docs init .
-forge docs registry add .
+dai docs init .
+dai docs registry add .
 
 # Baseline before the first material edit
-forge docs doctor . --strict
-forge docs build .
+dai docs doctor . --strict
+dai docs build .
 
 # After each meaningful checkpoint, update canonical docs/project-state first
-forge docs build .
+dai docs build .
 
 # Final handoff
-forge docs gate . --worktree
-forge docs build .
+dai docs gate . --worktree
+dai docs build .
 ```
 
-Use `forge docs build --all` for every registered project and
-`forge docs export obsidian --all` when an optional Obsidian vault is needed.
+Use `dai docs build --all` for every registered project and
+`dai docs export obsidian --all` when an optional Obsidian vault is needed.
 The older `daiharness-wiki-sync*.sh` entry points remain legacy compatibility
 tools; new workflows should use the source-preserving Docs Hub.
-For material changes, `forge docs gate` is mandatory; it verifies the
+For material changes, `dai docs gate` is mandatory; it verifies the
 project-owned Markdown/JSON and canonical project state before accepting
 generated HTML/CSS output. The final persistent build ensures the user-facing
 portal matches the sources that passed the gate. Project flows are rendered as

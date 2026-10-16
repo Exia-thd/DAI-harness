@@ -58,8 +58,8 @@ def load_baseline(path: Path) -> set[str]:
 def write_baseline(path: Path, node_ids: set[str], target: str) -> None:
     header = (
         "# Known-red tests, recorded so the gate reports regressions instead of\n"
-        "# inherited failures. Every entry here also fails in the upstream tree\n"
-        f"# this suite was imported from. Target: {target}\n"
+        "# inherited failures. Each entry was already red when it was recorded,\n"
+        f"# so the gate fails only on something new. Target: {target}\n"
         "# Regenerate: python scripts/ci/pytest_gate.py <target> --baseline "
         "<this file> --write-baseline\n"
     )

@@ -46,7 +46,7 @@ export class ToolExecutionGateway {
         context_offload: { enabled: true, min_tokens_to_offload: 2_000 },
         session_deduplication: {
           enabled: true,
-          include_tools: ['fw_get_current_phase', 'fw_check_pipeline_compliance'],
+          include_tools: ['dh_get_current_phase', 'dh_check_pipeline_compliance'],
         },
       },
     });

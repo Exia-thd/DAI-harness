@@ -76,7 +76,7 @@ describe('ToolExecutionGateway', () => {
     });
     const original = 'large result line\n'.repeat(2_000);
     const result = await gateway.execute(
-      { name: 'fw_test', arguments: {}, sessionId: 'benchmark', turnNumber: 1 },
+      { name: 'dh_test', arguments: {}, sessionId: 'benchmark', turnNumber: 1 },
       async () => ({ content: [{ type: 'text', text: original }] }),
     );
     const returned = result.content[0].text;
@@ -92,7 +92,7 @@ describe('ToolExecutionGateway', () => {
       middleware: {
         session_deduplication: {
           enabled: true,
-          include_tools: ['fw_get_current_phase', 'fw_check_pipeline_compliance'],
+          include_tools: ['dh_get_current_phase', 'dh_check_pipeline_compliance'],
         },
         tool_sandbox: { enabled: false },
       },
@@ -100,7 +100,7 @@ describe('ToolExecutionGateway', () => {
     let reads = 0;
     const read = (sessionId: string) =>
       gateway.execute(
-        { name: 'fw_get_current_phase', arguments: {}, sessionId, turnNumber: 1 },
+        { name: 'dh_get_current_phase', arguments: {}, sessionId, turnNumber: 1 },
         async () => ({ content: [{ type: 'text' as const, text: `state-${++reads}` }] }),
       );
 
@@ -113,7 +113,7 @@ describe('ToolExecutionGateway', () => {
     expect(reads).toBe(1);
 
     await gateway.execute(
-      { name: 'fw_advance_to_next_phase', arguments: {}, sessionId: 'session-a', turnNumber: 2 },
+      { name: 'dh_advance_to_next_phase', arguments: {}, sessionId: 'session-a', turnNumber: 2 },
       async () => ({ content: [{ type: 'text', text: 'advanced' }] }),
     );
     await expect(read('session-a')).resolves.toMatchObject({
@@ -127,7 +127,7 @@ describe('ToolExecutionGateway', () => {
     expect(reads).toBe(3);
 
     await gateway.execute(
-      { name: 'fw_advance_to_next_phase', arguments: {}, sessionId: 'session-a', turnNumber: 3 },
+      { name: 'dh_advance_to_next_phase', arguments: {}, sessionId: 'session-a', turnNumber: 3 },
       async () => ({ content: [{ type: 'text', text: 'mutation failed' }], isError: true }),
     );
     await expect(read('session-a')).resolves.toMatchObject({
@@ -140,7 +140,7 @@ describe('ToolExecutionGateway', () => {
     const gateway = new ToolExecutionGateway({
       policyEvaluator: allowPolicy,
       middleware: {
-        session_deduplication: { enabled: true, include_tools: ['fw_get_current_phase'] },
+        session_deduplication: { enabled: true, include_tools: ['dh_get_current_phase'] },
         tool_sandbox: { enabled: false },
       },
     });
@@ -148,7 +148,7 @@ describe('ToolExecutionGateway', () => {
     let resolveSecond!: (result: { content: Array<{ type: 'text'; text: string }> }) => void;
     const first = gateway.execute(
       {
-        name: 'fw_get_current_phase',
+        name: 'dh_get_current_phase',
         arguments: { scope: 'first' },
         sessionId: 's',
         turnNumber: 1,
@@ -157,7 +157,7 @@ describe('ToolExecutionGateway', () => {
     );
     const second = gateway.execute(
       {
-        name: 'fw_get_current_phase',
+        name: 'dh_get_current_phase',
         arguments: { scope: 'second' },
         sessionId: 's',
         turnNumber: 1,
@@ -178,7 +178,7 @@ describe('ToolExecutionGateway', () => {
     await expect(
       gateway.execute(
         {
-          name: 'fw_get_current_phase',
+          name: 'dh_get_current_phase',
           arguments: { scope: 'second' },
           sessionId: 's',
           turnNumber: 2,
@@ -206,7 +206,7 @@ describe('ToolExecutionGateway', () => {
     });
     const result = await gateway.execute(
       {
-        name: 'fw_test',
+        name: 'dh_test',
         arguments: { apiKey: 'sk-abcdefghijklmnopqrstuvwxyz' },
         sessionId: 's',
         turnNumber: 1,
@@ -224,7 +224,7 @@ describe('ToolExecutionGateway', () => {
     expect(result.content[0].text.length).toBeLessThan(200);
     expect(result.content[0].text).toContain('[offloaded result: refs/');
     expect(JSON.stringify(telemetry)).not.toContain('supersecrettoken');
-    expect(telemetry[0]).toMatchObject({ tool: 'fw_test', verification: 'pass' });
+    expect(telemetry[0]).toMatchObject({ tool: 'dh_test', verification: 'pass' });
     await expect(
       gateway.execute(
         { name: 'forbidden', arguments: {}, sessionId: 's', turnNumber: 2 },

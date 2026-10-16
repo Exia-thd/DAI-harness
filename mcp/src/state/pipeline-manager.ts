@@ -230,17 +230,17 @@ export async function checkPipelineCompliance(
     stateAgeMinutes = Math.max(0, Math.floor(ageMs / 60000));
   } else {
     warnings.push('pipeline-state.json does not exist yet');
-    recommendations.push('Call fw_start_pipeline at the start of the next user request.');
+    recommendations.push('Call dh_start_pipeline at the start of the next user request.');
   }
 
   if (state.status === 'IDLE') {
     warnings.push('pipeline is idle');
-    recommendations.push('Call fw_start_pipeline before executing user work.');
+    recommendations.push('Call dh_start_pipeline before executing user work.');
   }
 
   if (state.status === 'IN_PROGRESS' && !state.currentMode) {
     issues.push('pipeline is in progress without a current mode');
-    recommendations.push('Restart the pipeline with fw_start_pipeline and a concrete mode.');
+    recommendations.push('Restart the pipeline with dh_start_pipeline and a concrete mode.');
   }
 
   if (
@@ -249,7 +249,7 @@ export async function checkPipelineCompliance(
     stateAgeMinutes > maxStateAgeMinutes
   ) {
     issues.push(`pipeline state is stale (${stateAgeMinutes}m > ${maxStateAgeMinutes}m)`);
-    recommendations.push('Update progress with fw_update_subtask or close the pipeline phase.');
+    recommendations.push('Update progress with dh_update_subtask or close the pipeline phase.');
   }
 
   if (state.status === 'WAITING_FOR_GATE') {

@@ -46,7 +46,7 @@ This document outlines the systematic approach to reducing DAI Harness's complex
 | **DAI Harness Core** | 10 | dai-harness-setup, dai-harness-update, dai-harness-mcp-setup, dai-harness-mcp-launcher, dai-harness-shell-filter, dai-harness-session-tracker, dai-harness-lesson-migrator, dai-harness-evolution-init, dai-harness-goal, dai-harness-compliance-enforcer |
 | **Git & Version** | 8 | validate-commit, validate-push, readme-check, convention-indexer, cleanup, circuit-breaker, brownfield-safety, guardrail |
 | **Testing & Validation** | 6 | test-runner, verify-skill-count, verify-skills-count, verify-ide-adaptability, validate-assets, run_shell_filter |
-| **Project Setup** | 4 | setup-project, fw-global-setup, fw-global-launcher, fw-ext-gen |
+| **Project Setup** | 4 | setup-project, daiharness-global-setup, daiharness-global-launcher, daiharness-ext-gen |
 | **Miscellaneous** | 12 | worktree-manager, mobile-test-setup, unity-workflow, checkpoint-extract, asip-deterministic-check, task-runner, check-status, statusline, quality-gate, daiharness-node-mcp-launcher, migrate-skills-to-files, session |
 
 ---
@@ -98,7 +98,7 @@ This document outlines the systematic approach to reducing DAI Harness's complex
 
 | Target | Merge Sources | New Name |
 |--------|---------------|----------|
-| `dai-harness-dev.sh` | dai-harness-setup, setup-project, fw-global-setup | `dai-harness-dev.sh` (unified setup) |
+| `dai-harness-dev.sh` | dai-harness-setup, setup-project, daiharness-global-setup | `dai-harness-dev.sh` (unified setup) |
 | `memory-tools.sh` | memory-local, memory-session, memory-hygiene | `memory-tools.sh` (unified memory ops) |
 | `validate.sh` | validate-commit, validate-push, validate-assets | `validate.sh` (unified validation) |
 

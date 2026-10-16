@@ -141,7 +141,7 @@ dai completion fish > ~/.config/fish/completions/dai.fish
 
 ### Config Sources (Priority)
 
-1. Environment variables (`FORGE_*`)
+1. Environment variables (`DAI_*`)
 2. User config (`~/.config/dai-harness/config.json`)
 3. Process environment
 4. `.env` files
@@ -150,8 +150,8 @@ dai completion fish > ~/.config/fish/completions/dai.fish
 ### Environment Variables
 
 ```bash
-FORGE_DEBUG=1           # Enable debug mode
-FORGE_LEGACY_OUTPUT=1   # Force legacy output
+DAI_DEBUG=1           # Enable debug mode
+DAI_LEGACY_OUTPUT=1   # Force legacy output
 NO_COLOR=1              # Disable colors
 ```
 

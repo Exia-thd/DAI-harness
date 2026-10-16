@@ -100,10 +100,10 @@ else
 fi
 
 # Get latest DAI Harness commit for reference
-FW_LATEST=""
+DAIHARNESS_LATEST=""
 if [[ -d "$HOME/GitHub/dai-harness/.git" ]]; then
-    FW_LATEST=$(cd "$HOME/GitHub/dai-harness" && git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-    info "DAI Harness latest: ${GREEN}$FW_LATEST${NC}"
+    DAIHARNESS_LATEST=$(cd "$HOME/GitHub/dai-harness" && git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    info "DAI Harness latest: ${GREEN}$DAIHARNESS_LATEST${NC}"
 fi
 
 echo ""

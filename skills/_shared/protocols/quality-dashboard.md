@@ -44,7 +44,7 @@ Generated at pipeline completion. Replaces the existing `Final Summary Template`
 
 ```
 ╔══════════════════════════════════════════════════════════════╗
-║              FORGE17 v7.0.0 — QUALITY DASHBOARD              ║
+║               DAI HARNESS — QUALITY DASHBOARD                ║
 ╠══════════════════════════════════════════════════════════════╣
 ║                                                              ║
 ║  📊 Overall Quality Score: [XX]/100  [progress bar]          ║

@@ -150,13 +150,13 @@ interface AgentEnvelope<T = unknown> {
 
 | Priority | Source | Example |
 |----------|--------|---------|
-| 1 (highest) | OS env | `FORGE_API_KEY=xxx` |
+| 1 (highest) | OS env | `DAI_API_KEY=xxx` |
 | 2 | User config | `~/.config/dai-harness/config.json` |
 | 3 | process.env | Injected at runtime |
 | 4 | .env files | `.env`, `.env.local` in CWD |
 | 5 (lowest) | Inline flags | `--api-key=xxx` |
 
-Override: `FORGE_INLINE_FIRST=1` inverts priority.
+Override: `DAI_INLINE_FIRST=1` inverts priority.
 
 ---
 
@@ -248,10 +248,10 @@ v3.0               → Legacy flags removed (if any)
 
 ```bash
 # Force legacy behavior if needed
-FORGE_LEGACY_OUTPUT=1 dai validate
+DAI_LEGACY_OUTPUT=1 dai validate
 
 # Force new behavior
-FORGE_NEW_OUTPUT=1 dai validate
+DAI_NEW_OUTPUT=1 dai validate
 ```
 
 ---
@@ -296,7 +296,7 @@ main
 ```yaml
 # .github/workflows/cli-test.yml
 - name: Test CLI (legacy mode)
-  run: FORGE_LEGACY_OUTPUT=1 ./scripts/dai-validate.sh --json
+  run: DAI_LEGACY_OUTPUT=1 ./scripts/dai-validate.sh --json
 
 - name: Test CLI (new mode)
   run: ./scripts/dai-validate.sh --json

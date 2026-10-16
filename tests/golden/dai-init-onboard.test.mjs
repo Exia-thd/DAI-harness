@@ -25,7 +25,7 @@ function runDai(...args) {
   const result = spawnSync(process.execPath, [cliPath, ...args], {
     cwd: fixtureRoot,
     encoding: "utf8",
-    env: { ...process.env, FORGE_DELEGATION_NOTICE: "0" },
+    env: { ...process.env, DAI_DELEGATION_NOTICE: "0" },
   });
   assert.equal(result.stderr, "", result.stderr);
   assert.notEqual(result.stdout, "", "dai must emit a JSON envelope");

@@ -29,14 +29,14 @@ export function registerPrompts(server: Server) {
       prompts: [
         // Always include the production-grade orchestrator first
         {
-          name: 'fw_orchestrator',
+          name: 'dh_orchestrator',
           description:
             'Load DAI Harness Orchestrator — the main skill that routes all requests to the correct domain skill.',
           arguments: [],
         },
         // Then all domain skills
         ...skills.map((skill) => ({
-          name: `fw_skill_${skill.name}`,
+          name: `dh_skill_${skill.name}`,
           description: `Load DAI Harness Skill: ${skill.name}. ${skill.description}`,
           arguments: [] as { name: string; description: string }[],
         })),
@@ -49,7 +49,7 @@ export function registerPrompts(server: Server) {
     const promptName = request.params.name;
 
     // Handle orchestrator
-    if (promptName === 'fw_orchestrator') {
+    if (promptName === 'dh_orchestrator') {
       const orchestratorSkill = skills.find((s) => s.name === 'production-grade');
       if (orchestratorSkill) {
         let text = `Please operate as the DAI Harness Orchestrator. Load and follow the production-grade skill instructions.\n\n${orchestratorSkill.content}`;
@@ -73,7 +73,7 @@ export function registerPrompts(server: Server) {
     }
 
     // Handle individual skills
-    const skill = skills.find((s) => `fw_skill_${s.name}` === promptName);
+    const skill = skills.find((s) => `dh_skill_${s.name}` === promptName);
 
     if (skill) {
       let text = `Please operate as the following DAI Harness Skill:\n\n${skill.content}\n\nExecute the duties for this role based on the current context.`;

@@ -203,7 +203,7 @@ def _run_sh(
 
 def _make_temp_git_repo() -> Path:
     """Create a deterministic temp git repo with one commit."""
-    tmp = Path(tempfile.mkdtemp(prefix="fw_gate_test_"))
+    tmp = Path(tempfile.mkdtemp(prefix="dh_gate_test_"))
     subprocess.run(
         ["git", "init", "-b", "main"], cwd=tmp, capture_output=True, check=True
     )
@@ -1209,7 +1209,7 @@ class TestDirtyBaseline:
         assert "exact worktree fingerprint" in result.stderr
 
     def test_dirty_submodule_content_changes_parent_fingerprint(self):
-        submodule_source = Path(tempfile.mkdtemp(prefix="fw_gate_submodule_"))
+        submodule_source = Path(tempfile.mkdtemp(prefix="dh_gate_submodule_"))
         try:
             subprocess.run(
                 ["git", "init", "-b", "main"],
@@ -2046,8 +2046,8 @@ class TestVerifyGateSh:
 
     def test_codex_custom_manifest_sources_skip_docs_but_keep_code_governed(self):
         """Manifest JSON/YAML/assets are continuity; a code file remains gated."""
-        forge = self.tmp / ".daiharness"
-        forge.mkdir()
+        harness_dir = self.tmp / ".daiharness"
+        harness_dir.mkdir()
         source = self.tmp / "knowledge"
         source.mkdir()
         (source / "guide.json").write_text('{"title":"Guide"}\n', encoding="utf-8")
@@ -2057,7 +2057,7 @@ class TestVerifyGateSh:
             json.dumps({"status": {"updated_at": "2026-08-25T00:00:00Z"}}),
             encoding="utf-8",
         )
-        (forge / "docs-manifest.json").write_text(
+        (harness_dir / "docs-manifest.json").write_text(
             json.dumps(
                 {
                     "schema_version": 1,
@@ -2329,7 +2329,7 @@ class TestVerifyGateSh:
         }
         state_dir = self.tmp / ".daiharness" / "runtime" / "stop-attempts"
         state_dir.mkdir(parents=True)
-        outside = Path(tempfile.mkdtemp(prefix="fw_external_stop_state_"))
+        outside = Path(tempfile.mkdtemp(prefix="dh_external_stop_state_"))
         try:
             outside_target = outside / "redirected-lock"
             if not _can_symlink(state_dir):
@@ -2503,7 +2503,7 @@ class TestVerifyGateSh:
         source.write_text("print('changed')\n")
         evidence = _make_evidence(self.tmp, turn="symlink-turn")
         response = _strict_response(evidence)
-        external_dir = Path(tempfile.mkdtemp(prefix="fw_external_evidence_"))
+        external_dir = Path(tempfile.mkdtemp(prefix="dh_external_evidence_"))
         try:
             external = external_dir / "symlink-turn.json"
             evidence.replace(external)
