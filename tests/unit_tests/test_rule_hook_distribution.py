@@ -34,6 +34,7 @@ def run_installer(home: Path, framework: Path) -> subprocess.CompletedProcess[st
         cwd=ROOT,
         env=env,
         text=True,
+        encoding="utf-8",
         capture_output=True,
         check=False,
     )
@@ -311,6 +312,7 @@ def test_installer_distributes_rule_runtime_and_preserves_user_hooks(
         env=off_env,
         input="{}",
         text=True,
+        encoding="utf-8",
         capture_output=True,
         check=False,
     )
@@ -354,6 +356,7 @@ def test_hook_doctor_reports_and_repairs_only_rule_lifecycle_hooks(
         cwd=ROOT,
         env=env,
         text=True,
+        encoding="utf-8",
         capture_output=True,
         check=False,
     )
@@ -365,6 +368,7 @@ def test_hook_doctor_reports_and_repairs_only_rule_lifecycle_hooks(
         cwd=ROOT,
         env=env,
         text=True,
+        encoding="utf-8",
         capture_output=True,
         check=False,
     )
@@ -416,6 +420,7 @@ def test_hook_doctor_repairs_missing_framework_runtime(tmp_path: Path) -> None:
         cwd=ROOT,
         env=env,
         text=True,
+        encoding="utf-8",
         capture_output=True,
         check=False,
     )
@@ -519,6 +524,7 @@ def test_hook_doctor_preserves_unrelated_verify_and_context_hooks(
         cwd=ROOT,
         env=env,
         text=True,
+        encoding="utf-8",
         capture_output=True,
         check=False,
     )
@@ -579,6 +585,7 @@ def test_hook_doctor_preserves_unrelated_codex_verify_hook(tmp_path: Path) -> No
         cwd=ROOT,
         env=env,
         text=True,
+        encoding="utf-8",
         capture_output=True,
         check=False,
     )
@@ -618,6 +625,7 @@ def test_hook_doctor_migrates_trusted_legacy_codex_verify_hook(tmp_path: Path) -
         cwd=ROOT,
         env=env,
         text=True,
+        encoding="utf-8",
         capture_output=True,
         check=False,
     )
@@ -675,6 +683,7 @@ def run_context_command(
         env=clean_env,
         input="{}",
         text=True,
+        encoding="utf-8",
         capture_output=True,
         check=False,
     )

@@ -379,7 +379,23 @@ import os
 import shutil
 import sys
 import tempfile
+import time
 from pathlib import Path
+
+
+def replace_with_retry(source, destination):
+    # Windows refuses to replace a file another process has open, and the
+    # usual holder is a scanner reading what was just written. It lets go
+    # within milliseconds; a real permission problem still fails.
+    for attempt in range(20):
+        try:
+            os.replace(source, destination)
+            return
+        except PermissionError:
+            if attempt == 19:
+                raise
+            time.sleep(0.1)
+
 
 source, target = map(Path, sys.argv[1:])
 target.parent.mkdir(parents=True, exist_ok=True)
@@ -392,7 +408,7 @@ try:
         shutil.copyfileobj(source_handle, handle)
         handle.flush()
         os.fsync(handle.fileno())
-    os.replace(temporary, target)
+    replace_with_retry(temporary, target)
     try:
         directory_fd = os.open(target.parent, os.O_RDONLY)
     except OSError:
@@ -427,7 +443,23 @@ atomic_write_text() {
 import os
 import sys
 import tempfile
+import time
 from pathlib import Path
+
+
+def replace_with_retry(source, destination):
+    # Windows refuses to replace a file another process has open, and the
+    # usual holder is a scanner reading what was just written. It lets go
+    # within milliseconds; a real permission problem still fails.
+    for attempt in range(20):
+        try:
+            os.replace(source, destination)
+            return
+        except PermissionError:
+            if attempt == 19:
+                raise
+            time.sleep(0.1)
+
 
 target = Path(sys.argv[1])
 target.parent.mkdir(parents=True, exist_ok=True)
@@ -441,7 +473,7 @@ try:
         handle.write(content if content.endswith("\n") else content + "\n")
         handle.flush()
         os.fsync(handle.fileno())
-    os.replace(temporary, target)
+    replace_with_retry(temporary, target)
     try:
         directory_fd = os.open(target.parent, os.O_RDONLY)
     except OSError:
@@ -978,7 +1010,23 @@ import re
 import shlex
 import sys
 import tempfile
+import time
 from pathlib import Path
+
+
+def replace_with_retry(source, destination):
+    # Windows refuses to replace a file another process has open, and the
+    # usual holder is a scanner reading what was just written. It lets go
+    # within milliseconds; a real permission problem still fails.
+    for attempt in range(20):
+        try:
+            os.replace(source, destination)
+            return
+        except PermissionError:
+            if attempt == 19:
+                raise
+            time.sleep(0.1)
+
 
 path = Path(sys.argv[1])
 text = path.read_text(encoding="utf-8")
@@ -1030,7 +1078,7 @@ try:
         handle.write(updated)
         handle.flush()
         os.fsync(handle.fileno())
-    os.replace(temporary, path)
+    replace_with_retry(temporary, path)
 except BaseException:
     try:
         os.unlink(temporary)
@@ -1079,7 +1127,23 @@ import os
 import re
 import sys
 import tempfile
+import time
 from pathlib import Path
+
+
+def replace_with_retry(source, destination):
+    # Windows refuses to replace a file another process has open, and the
+    # usual holder is a scanner reading what was just written. It lets go
+    # within milliseconds; a real permission problem still fails.
+    for attempt in range(20):
+        try:
+            os.replace(source, destination)
+            return
+        except PermissionError:
+            if attempt == 19:
+                raise
+            time.sleep(0.1)
+
 
 path = Path(sys.argv[1])
 text = path.read_text(encoding="utf-8") if path.exists() else ""
@@ -1163,7 +1227,7 @@ def atomic_write(target: Path, value: str) -> None:
             handle.write(value if value.endswith("\n") else value + "\n")
             handle.flush()
             os.fsync(handle.fileno())
-        os.replace(temporary, target)
+        replace_with_retry(temporary, target)
     except BaseException:
         try:
             os.unlink(temporary)

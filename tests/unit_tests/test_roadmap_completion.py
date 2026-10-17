@@ -4,6 +4,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from tests.timeouts import spawn_timeout
+
 
 ROOT = Path(__file__).resolve().parents[2]
 ROADMAP = ROOT / "docs" / "active-roadmap.md"
@@ -39,7 +41,7 @@ COMPLETION_AXES = {
 # files of that copy and the snapshot only reads it, so mounting it the way
 # _mount_verifier_volatiles already mounts caches would remove the copy, the delete,
 # and most of the cold fingerprint.
-RUNNER_TIMEOUT_SECS = 600
+RUNNER_TIMEOUT_SECS = spawn_timeout(600)
 
 REPORT_CONTRACT = {
     "schema": "dai-harness-roadmap-verification/v1",
@@ -155,7 +157,7 @@ def test_roadmap_verifier_contract_and_failure_path_are_executable(
         cwd=ROOT,
         capture_output=True,
         text=True,
-        timeout=30,
+        timeout=spawn_timeout(30),
         check=False,
     )
     assert checked.returncode == 0, checked.stderr
@@ -172,7 +174,7 @@ def test_roadmap_verifier_contract_and_failure_path_are_executable(
         cwd=ROOT,
         capture_output=True,
         text=True,
-        timeout=30,
+        timeout=spawn_timeout(30),
         check=False,
     )
     assert rejected_report.returncode != 0
@@ -279,7 +281,7 @@ def test_roadmap_verifier_contract_and_failure_path_are_executable(
         cwd=ROOT,
         capture_output=True,
         text=True,
-        timeout=30,
+        timeout=spawn_timeout(30),
         check=False,
     )
     assert rejected_escape.returncode != 0

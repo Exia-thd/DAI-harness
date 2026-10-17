@@ -11,6 +11,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.timeouts import spawn_timeout
+
 
 ROOT = Path(__file__).resolve().parents[2]
 STOP = ROOT / "scripts/lite/stop-gate.sh"
@@ -157,7 +159,7 @@ def _docs_contract(
         )
 
 
-STOP_GATE_TIMEOUT_SECS = 60
+STOP_GATE_TIMEOUT_SECS = spawn_timeout(60)
 
 
 def _run_stop(

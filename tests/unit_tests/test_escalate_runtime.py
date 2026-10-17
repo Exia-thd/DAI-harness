@@ -3,6 +3,8 @@ import subprocess
 import time
 from pathlib import Path
 
+from tests.timeouts import spawn_timeout
+
 
 ROOT = Path(__file__).resolve().parents[2]
 ESCALATE = ROOT / "scripts" / "lite" / "escalate.sh"
@@ -63,9 +65,10 @@ fi
         cwd=project,
         env=env,
         text=True,
+        encoding="utf-8",
         capture_output=True,
         check=False,
-        timeout=6,
+        timeout=spawn_timeout(6),
     )
     elapsed = time.monotonic() - started
 
@@ -97,9 +100,10 @@ exit 1
         cwd=project,
         env=env,
         text=True,
+        encoding="utf-8",
         capture_output=True,
         check=False,
-        timeout=6,
+        timeout=spawn_timeout(6),
     )
 
     assert result.returncode == 125, result.stdout + result.stderr

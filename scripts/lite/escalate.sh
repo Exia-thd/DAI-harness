@@ -303,10 +303,63 @@ def release_runtime_lease(lease_id, reason):
         )
 
 
+def taskkill_executable():
+    # PATH is not dependable here: the caller's environment reaches this
+    # process unmodified, and a PATH joined with the wrong separator leaves
+    # no System32 entry at all. The absolute path still works in that case.
+    root = os.environ.get("SystemRoot") or os.environ.get("windir") or r"C:\Windows"
+    candidate = os.path.join(root, "System32", "taskkill.exe")
+    return candidate if os.path.isfile(candidate) else "taskkill"
+
+
+def terminate_process_tree_windows(proc):
+    # Windows has no process group to signal, and no os.killpg. The provider
+    # itself goes down through the handle opened here, which needs no helper
+    # and no PATH, so it stops even when the environment is unusable. taskkill
+    # then sweeps whatever it started -- that is the only way to reach a
+    # grandchild, and it is what the POSIX branch uses the group for.
+    #
+    # Every bound below is short on purpose. The caller is already past its
+    # timeout, and a kill that takes longer than the wait it replaces has
+    # undone the timeout it serves.
+    try:
+        proc.kill()
+    except OSError:
+        pass
+    try:
+        subprocess.run(
+            [taskkill_executable(), "/PID", str(proc.pid), "/T", "/F"],
+            capture_output=True,
+            timeout=1,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        pass
+    try:
+        proc.wait(timeout=1)
+    except subprocess.TimeoutExpired:
+        pass
+
+
 def terminate_leased_process(proc):
+    """Stop the provider and anything it started.
+
+    The group is what matters: a provider that spawned children must not leave
+    them running once it has been given up on, because the lease is released
+    the moment this returns.
+
+    os.killpg does not exist on Windows, and calling it there raised
+    AttributeError from inside the timeout path -- so a hung provider exited 1
+    instead of 124, was reported as a broken escalation rather than a timed-out
+    one, and its lease stayed held.
+    """
+
+    if os.name == "nt":
+        terminate_process_tree_windows(proc)
+        return
     try:
         os.killpg(proc.pid, signal.SIGTERM)
-    except ProcessLookupError:
+    except (ProcessLookupError, PermissionError):
         return
     try:
         proc.wait(timeout=5)
@@ -315,9 +368,12 @@ def terminate_leased_process(proc):
         pass
     try:
         os.killpg(proc.pid, signal.SIGKILL)
-    except ProcessLookupError:
+    except (ProcessLookupError, PermissionError):
         return
-    proc.wait(timeout=5)
+    try:
+        proc.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        pass
 
 
 def run_provider(argv, env, timeout_seconds):
@@ -363,7 +419,12 @@ def run_provider(argv, env, timeout_seconds):
     except subprocess.TimeoutExpired:
         timed_out = True
         terminate_leased_process(proc)
-        stdout, stderr = proc.communicate()
+        try:
+            # Bounded: a descendant that outlived the kill still holds the
+            # pipe, and waiting on it would undo the timeout entirely.
+            stdout, stderr = proc.communicate(timeout=1)
+        except subprocess.TimeoutExpired:
+            stdout, stderr = "", ""
         message = f"[ESCALATE] ERROR: provider timed out after {timeout_seconds}s.\n"
         return subprocess.CompletedProcess(argv, 124, stdout, (stderr or "") + message)
     finally:
