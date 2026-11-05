@@ -115,15 +115,19 @@ def owner_is_current_user(info) -> bool:
     return info.st_uid == os.getuid()
 
 
-def private_mode_is_safe(info) -> bool:
-    """Whether the group/other permission bits are clear.
+def private_mode_is_safe(info, mask: int = 0o077) -> bool:
+    """Whether the permission bits in ``mask`` are clear.
+
+    Callers pass the mask they actually care about: 0o077 for "nobody else may
+    read it", 0o022 for "nobody else may write it".
 
     Windows does not carry these bits, so the test is reported as satisfied
-    there; the protection on that platform is the containing directory's ACL.
+    there; the protection on that platform is the containing directory's ACL,
+    and that is weaker than the POSIX check this stands in for.
     """
     if not HAS_UID:
         return True
-    return not info.st_mode & 0o077
+    return not info.st_mode & mask
 
 
 def peak_rss_mib() -> float | None:

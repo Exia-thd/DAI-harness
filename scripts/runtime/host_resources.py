@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 import os
+import process_census
 from pathlib import Path
 import re
 import subprocess
@@ -92,15 +93,9 @@ def inspect_process(pid: int) -> str | None:
             # the random per-lease owner token remains mandatory as well.
             identity = f"{pid}:" + " ".join(parts[:5] + parts[8:])
         elif os.name == "nt":
-            identity = command(
-                [
-                    "powershell",
-                    "-NoProfile",
-                    "-NonInteractive",
-                    "-Command",
-                    f"$p=Get-Process -Id {pid} -ErrorAction Stop; $p.Id; $p.StartTime.ToUniversalTime().Ticks; $p.Path",
-                ]
-            )
+            identity = process_census.process_identity(pid)
+            if identity is None:
+                return None
         else:
             return None
         return hashlib.sha256(identity.encode()).hexdigest()
