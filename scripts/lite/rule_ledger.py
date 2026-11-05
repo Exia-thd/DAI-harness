@@ -20,13 +20,37 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import time
 from collections import Counter
 from pathlib import Path
 
-LEDGER = Path(".daiharness") / "rule-ledger.jsonl"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+LEDGER_RELATIVE = Path(".daiharness") / "rule-ledger.jsonl"
 EVENTS = {"violation", "near-miss", "corrected"}
+
+
+def ledger_path() -> Path:
+    """Resolve the one ledger, the same way `rule-ledger.sh` resolves it.
+
+    This path used to be relative to the process's working directory, so the
+    same command read 43 entries from the repository root and 0 from
+    `scripts/` — and `add` quietly created a second ledger there. An audit
+    trail that forks per working directory is worse than no audit trail,
+    because each fork looks complete. Both tools now consult the same three
+    sources in the same order: an explicit file, a declared workspace, then
+    the repository that contains this script.
+    """
+    override = os.environ.get("DAIHARNESS_RULE_LEDGER", "").strip()
+    if override:
+        return Path(override).expanduser()
+    workspace = os.environ.get("DAIHARNESS_WORKSPACE", "").strip()
+    if workspace:
+        candidate = Path(workspace).expanduser()
+        if candidate.is_dir():
+            return candidate / LEDGER_RELATIVE
+    return PROJECT_ROOT / LEDGER_RELATIVE
 
 
 def read_entries() -> list[dict]:
@@ -37,10 +61,11 @@ def read_entries() -> list[dict]:
     history unreadable, so unknown shapes are normalised instead — `ts`/`rule`/
     `outcome` are the field names used by earlier writers.
     """
-    if not LEDGER.is_file():
+    path = ledger_path()
+    if not path.is_file():
         return []
     entries = []
-    for line in LEDGER.read_text(encoding="utf-8", errors="replace").splitlines():
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
         if not line.strip():
             continue
         try:
@@ -82,14 +107,15 @@ def main() -> None:
     args = p.parse_args()
 
     if args.cmd == "add":
-        LEDGER.parent.mkdir(parents=True, exist_ok=True)
+        path = ledger_path()
+        path.parent.mkdir(parents=True, exist_ok=True)
         entry = {
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "rule_id": args.rule_id,
             "event": args.event,
             "note": args.note[:300],
         }
-        with LEDGER.open("a", encoding="utf-8") as f:
+        with path.open("a", encoding="utf-8") as f:
             f.write(json.dumps(entry, ensure_ascii=False) + "\n")
         print(f"+ ledger: {args.rule_id} {args.event}")
     elif args.cmd == "list":

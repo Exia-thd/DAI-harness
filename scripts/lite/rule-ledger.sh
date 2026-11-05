@@ -54,6 +54,20 @@ cd "$PROJECT_ROOT"
 
 LEDGER_FILE="${DAIHARNESS_RULE_LEDGER:-.daiharness/rule-ledger.jsonl}"
 
+# An append-only log outlives the writer that started it. Earlier tools wrote
+# {timestamp, rule_id, event}; this one writes {ts, rule, outcome}. Reading only
+# the current names does not drop those records loudly — it files them under an
+# empty rule name and hides them from any outcome filter, so a rule that really
+# was violated stops appearing among the violations. Both readers below
+# normalise through a single definition, in their own language, and a test pins
+# the two definitions to each other.
+JQ_NORMALISE='def norm: {
+  ts: (.ts // .timestamp // ""),
+  rule: (.rule // .rule_id // ""),
+  outcome: (.outcome // .event // ""),
+  note: (.note // "")
+};'
+
 HAS_JQ=0
 command -v jq >/dev/null 2>&1 && HAS_JQ=1
 # Needed by the read paths as well as the write path, so it is resolved
@@ -159,6 +173,16 @@ path, mode = sys.argv[1], sys.argv[2]
 outcome = sys.argv[3] if len(sys.argv) > 3 else ""
 limit = int(sys.argv[4]) if len(sys.argv) > 4 else 0
 
+def norm(entry):
+    """The python half of JQ_NORMALISE; keep the two in step."""
+    return {
+        "ts": entry.get("ts") or entry.get("timestamp") or "",
+        "rule": entry.get("rule") or entry.get("rule_id") or "",
+        "outcome": entry.get("outcome") or entry.get("event") or "",
+        "note": entry.get("note") or "",
+    }
+
+
 rows = []
 with open(path, "r", encoding="utf-8", errors="replace") as handle:
     for line in handle:
@@ -170,7 +194,7 @@ with open(path, "r", encoding="utf-8", errors="replace") as handle:
         except ValueError:
             continue
         if isinstance(entry, dict):
-            rows.append(entry)
+            rows.append(norm(entry))
 
 if outcome:
     rows = [r for r in rows if r.get("outcome") == outcome]
@@ -228,9 +252,9 @@ cmd_stats() {
   echo ""
   echo "Per rule (count, outcome breakdown):"
   if [[ "$HAS_JQ" -eq 1 ]]; then
-    jq -sr '
-      group_by(.rule) | sort_by(-length) | .[]
-      | "\(.[] | .rule)\t\(length)\t\([group_by(.outcome)[] | "\(.[] | .outcome)=\(length)"] | join(", "))"
+    jq -sr "$JQ_NORMALISE"'
+      map(norm) | group_by(.rule) | sort_by(-length) | .[]
+      | "\(.[0].rule)\t\(length)\t\([group_by(.outcome)[] | "\(.[0].outcome)=\(length)"] | join(", "))"
     ' "$LEDGER_FILE"
   else
     _ledger_py stats
@@ -251,8 +275,8 @@ cmd_top() {
   _require_ledger
   echo "── Top ${n} rules by event count${outcome:+ [${outcome}]} ──────────────────────────"
   if [[ "$HAS_JQ" -eq 1 ]]; then
-    jq -sr --arg outcome "$outcome" '
-      map(select($outcome == "" or .outcome == $outcome))
+    jq -sr --arg outcome "$outcome" "$JQ_NORMALISE"'
+      map(norm) | map(select($outcome == "" or .outcome == $outcome))
       | group_by(.rule) | map({rule: (.[0].rule), n: length})
       | sort_by(-.n) | .[] | "\(.n)\t\(.rule)"
     ' "$LEDGER_FILE"
@@ -275,8 +299,8 @@ cmd_recent() {
   _require_ledger
   echo "── Recent ${n} ${outcome:-all} rule events ──────────────────────────"
   if [[ "$HAS_JQ" -eq 1 ]]; then
-    jq -sr --arg outcome "$outcome" --argjson n "$n" '
-      map(select($outcome == "" or .outcome == $outcome))
+    jq -sr --arg outcome "$outcome" --argjson n "$n" "$JQ_NORMALISE"'
+      map(norm) | map(select($outcome == "" or .outcome == $outcome))
       | sort_by(.ts) | reverse | .[:$n][]
       | [.ts, .rule, .outcome, .note] | @tsv
     ' "$LEDGER_FILE"
