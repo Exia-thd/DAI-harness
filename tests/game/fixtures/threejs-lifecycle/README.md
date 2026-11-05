@@ -1,0 +1,145 @@
+# Three.js lifecycle fixture
+
+Signal Dash is a small playable three-lane game. Steer through three clear gates,
+lose on collision, pause/resume or restart the same seed. The simulation uses
+fixed 1/60-second steps. A DOM HUD and large controls preserve the playfield at
+960×800 and 390×844. The palette uses a dark navy course, yellow ship and coral
+obstacles, with visible keyboard focus. Assets are locally generated geometry.
+
+## Run
+
+Use the repo's installed TypeScript compiler. Dependencies are pinned in
+package.json and package-lock.json. Install with lifecycle scripts disabled.
+The offline command below requires an existing npm cache. Browser tests also
+require the Chromium revision selected by the pinned Playwright package.
+Verify availability on each host before running or downloading a browser.
+
+```bash
+npm --prefix tests/game/fixtures/threejs-lifecycle ci --offline --ignore-scripts
+npm --prefix tests/game/fixtures/threejs-lifecycle run build
+npm --prefix tests/game/fixtures/threejs-lifecycle test
+npm --prefix tests/game/fixtures/threejs-lifecycle run check:skills
+npm --prefix tests/game/fixtures/threejs-lifecycle run test:browser
+npm --prefix tests/game/fixtures/threejs-lifecycle run serve
+```
+
+Browser testing acquires the shared host worker/heavy slots before creating its
+server or browser. It reuses one page and closes its owned context, browser and
+server before emitting PASS. Cleanup uncertainty quarantines capacity. The
+server binds only to loopback and serves an explicit file allowlist. No external
+asset or cloud service is involved. Unknown OS pressure blocks admission.
+For a separately verified host Chromium, set `DAIHARNESS_GAME_CHROMIUM` to its
+absolute executable path; this does not certify the pinned Playwright browser
+revision. These commands do not download a browser or open an interactive browser window.
+The interactive server defaults to `http://127.0.0.1:4173`. Stop it with Ctrl+C.
+
+## Acceptance and evidence
+
+- Damage `(50 × 1.5 − 20 × 0.5) × 2` is 130, with a minimum of one.
+- The typed pool bounds creation, reuses identity, handles duplicate release and
+  disposes once. Three.js disposal events prove API calls, not GPU byte recovery.
+- Unit tests check seeded determinism, win/lose, pause and twenty restarts.
+- The same `npm test` also compiles and executes the FollowCamera class extracted
+  from the shipped Three.js skill. It compares stationary-target poses after
+  equal elapsed time at 30/60/120Hz, checks zero time/rate, and preserves retarget,
+  offset and look-at behavior. The fixed-per-frame mutation fails this oracle.
+  These numerical checks do not prove rendered camera comfort or player feel;
+  the fixture gameplay does not use this example as its follow policy.
+- Browser tests use actual keyboard and touch-emulated controls, not state writes.
+  They cover boot, start, win/lose, three restarts, pause/resume and resize.
+- Console/page errors must be absent. Screenshots and the JSON receipt include a
+  SHA-256 build ID covering the served game and vendor bytes. Evidence is stored
+  in `.daiharness/runtime/game-host-upgrade/game-render/` at repo root.
+- Touch emulation is not a real mobile device. Mobile FPS, thermals, GPU memory,
+  Unity execution and production suitability remain UNVERIFIED.
+
+Recorded local runs have passed TypeScript, unit and desktop Chromium checks.
+The browser receipt records the served-byte build hash and rendered screenshots.
+Separate schema-v2 verification records bind the exact tested source tree.
+Current upgrade acceptance is tracked separately in the canonical
+`docs/project-state.json` metadata, available through the
+[Docs Hub guide](../../../../docs/guides/docs-hub.md).
+
+The observed unit and browser mutations changed the compiled win transition to
+a loss. Each failed its unchanged oracle, restored exact bytes and passed again.
+The browser run used the pinned Chromium revision and actual keyboard and
+emulated touch input. Physical mobile performance remains UNVERIFIED. Never
+weaken assertions to accept a mutation.
+
+## Frozen reference and approved polish
+
+The opt-in experiment uses `reference-contract.json`, pinned to the original
+served-byte build and source commit. Its expectations come from the fixed-step
+source rules; each run must still observe the reference before comparing the
+candidate. Inputs are fixed before candidate execution and never consult its
+next-lane hint. The original adaptive browser smoke remains separate.
+
+```bash
+npm --prefix tests/game/fixtures/threejs-lifecycle run build
+npm --prefix tests/game/fixtures/threejs-lifecycle run test:reference-contract
+npm --prefix tests/game/fixtures/threejs-lifecycle run test:reference
+```
+
+The comparison serves a separately identified visual-only candidate with a
+declared button-shadow delta and identical game code. It checks state, score,
+lane and protected tick snapshots, exact pause invariance, win/loss and restart.
+Snapshot tick tolerance is declared up front for animation-frame alignment;
+it is not removed by web normalization. There is no lives mechanic (N/A).
+Missing/stale build, environment, input/step, engine, playtest or cleanup evidence
+is UNVERIFIED; a mechanics mismatch is FAIL. The same validator command is a
+required evidence item in the existing studio clone/polish gate.
+
+One managed browser/context owns sequentially reused/closed pages and build-linked
+screenshots. PASS is emitted only after confirmed cleanup. Capacity/telemetry
+failure writes UNVERIFIED with no successful comparison claim. The new experiment
+has not obtained a fresh real-browser PASS in the current managed cloud because
+applicable Linux memory-pressure telemetry is unavailable; the host governor
+remains unchanged. Offline validator/served-build tests do not fill this gap.
+Only frozen input/snapshot order is checked; intra-step gameplay event order
+is unverified. Contracts declaring `requireGameplayEventTrace: true` stay
+UNVERIFIED until a separate observed trace verifier exists. Native engine/device
+performance and human game feel remain unverified.
+
+## Basis
+
+The [OpenAI game-studio routing reference](https://github.com/openai/plugins/tree/main/plugins/game-studio)
+supports vanilla Three.js for explicit 3D work and a DOM HUD alongside the canvas.
+Its [playtest guidance](https://github.com/openai/plugins/blob/main/plugins/game-studio/skills/game-playtest/SKILL.md)
+emphasizes real input and rendered screenshots. The fixture uses the
+[Playwright clock](https://playwright.dev/docs/clock) before loading game timers
+and [`hasTouch` emulation](https://playwright.dev/docs/api/class-touchscreen).
+These are design references, not installed plugins or proof of local execution.
+
+## Additional experience handoff and GLB pilot
+
+The optional experience entry keeps the original `index.html`, `src/`, server,
+reference contract and served-byte baseline unchanged. It adds a local original
+GLB courier with a named `hover` clip and owned geometry/material/mixer teardown,
+plus the common DOM settings kit. The existing gameplay model still owns rules.
+
+```sh
+npm --prefix tests/game/fixtures/threejs-lifecycle run build:experience
+npm --prefix tests/game/fixtures/threejs-lifecycle run test:asset
+python3 scripts/art-direction/game-experience.py validate tests/game/fixtures/threejs-lifecycle/experience.json --project-root . --stage implementation
+npm --prefix tests/game/fixtures/threejs-lifecycle run test:experience
+```
+
+The new experience runner recompiles its current TypeScript with the root's
+local compiler before admission (30-second timeout, 1 MiB output bound).
+Compile failure records `FAIL` before serving or opening a browser; stale
+compiled output cannot stand in for the current source. The original protected
+runner and reference entry remain unchanged.
+
+Use the repository root for the hash-bound experience refs. The handoff study,
+wireframe and approval documents are explicitly **synthetic conformance fixtures**,
+not live specialist outputs, actual user art approval or evidence of visual/player
+improvement. Source/contract checks compile locally. The new managed browser run
+returned `pi_host_capacity_timeout` before browser launch, so actual GLB render,
+animation and menu/input acceptance remain UNVERIFIED on this cloud. Existing
+historical browser records do not certify this new entry. No governor or frozen
+reference expectation was changed to accommodate it.
+
+The CPU-only asset test uses the pinned Three GLTFLoader and AnimationMixer to
+import the real local GLB and evaluate its `hover` position at half a second.
+It verifies loader/clip integration without a browser; GPU rendering/readability
+and actual page interaction remain unverified.

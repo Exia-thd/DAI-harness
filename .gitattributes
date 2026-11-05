@@ -14,3 +14,12 @@ src/cli/dist/** text eol=lf
 # keeps core.autocrlf from rewriting every record on checkout and reporting the
 # whole snapshot as permanently modified, the same reason src/cli/dist is pinned.
 src/codegraph/reference/snapshot/** text eol=lf
+
+# Digest-bound fixtures, templates and the pinned discovery catalog. Each of
+# these is referenced by a SHA-256 taken over its LF form, so a CRLF checkout
+# fails the integrity check on a file nobody edited. core.autocrlf is true on
+# this machine, which is exactly the conversion -text switches off.
+.daiharness/re-discovery-catalog.json -text
+templates/game/ui-kit/** -text
+tests/game/fixtures/phaser4-lifecycle/** -text
+tests/game/fixtures/threejs-lifecycle/** -text

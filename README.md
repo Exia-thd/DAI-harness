@@ -307,7 +307,7 @@ DAI Harness adapts to the scale of your project, offering different tiers of aut
 
 | Level | Features | Setup Required | Best For |
 | --- | --- | --- | --- |
-| **Level 1**<br/>Zero Setup | Basic chat, 84 auto-activated skills | Just run your AI chat | Quick questions, single-file scripts |
+| **Level 1**<br/>Zero Setup | Basic chat, 85 auto-activated skills | Just run your AI chat | Quick questions, single-file scripts |
 | **Level 2**<br/>Code Intelligence | `dai_memory_impact`, `dai_memory_query`, `dai_memory_rename` | `python scripts/lite/dai_memory.py install` | Refactoring, code reviews, debugging |
 | **Level 3**<br/>Continuity + GraphRAG | Event-driven bounded checkpoints plus optional local retrieval context | Python 3.8+ | Long-running projects, complex domains |
 | **Level 4**<br/>Full Power | Parallel dispatch, multi-repo support, full pipeline orchestration | MCP Setup script | Team projects, end-to-end autonomous dev |

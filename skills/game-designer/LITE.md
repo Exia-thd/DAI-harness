@@ -6,6 +6,11 @@ version: 3.0.0
 
 # Game Designer (LITE)
 
+## Packaged web-game domain route
+
+For Phaser 4/Three.js on Android/iOS, use [Mobile Monetization](../_shared/protocols/mobile-monetization.md) before generic examples. Own the per-game player/value, monetization and level/economy hypotheses; preserve the free path and approved reference mechanics. Use the existing studio gates and shared profile/game delta; `forge mobile doctor` reports assumptions and unresolved native/store prerequisites.
+
+
 ## Domain Authority
 Own **player-facing game-system design**: why play, what the player repeatedly does/decides, how systems interact over time, progression/economy/balance and what should be learned from playtests. Consume `PIPELINE_CONTEXT`; do not own engine architecture, art direction or generic cross-domain preflight. Return technical/art/security/monetization-policy dependencies as `DOMAIN_FINDING`.
 
@@ -17,7 +22,7 @@ Own **player-facing game-system design**: why play, what the player repeatedly d
 | Progression / economy | Inspect currencies, sources/sinks, unlocks, upgrade curves, reward cadence | ... | resource flow + progression gates/tunables |
 | Balance / difficulty variables | Inspect tables/configs/current telemetry/playtest notes | ... | tunable parameters + current values/baselines/unknowns |
 | Onboarding / learning sequence | Inspect early levels/tutorial/UI prompts | ... | mechanic introduction, mastery check and failure/recovery path |
-| Game-feel feedback contract | Inspect input timing, animation/VFX/audio/haptic events | ... | action→feedback timing/proportionality/distinctiveness |
+| Game-feel action contract | Inspect player intent, input/state traces, control/camera context and cue hierarchy | ... | foundation → fit → signature; distinguish incorrect control, deliberate commitment and missing feedback |
 | Playtest evidence | Read real playtest/session/retention/funnel data if available | ... | observed friction/mastery/engagement signal; no invented player data |
 
 ## SOLVE Step 3: DECOMPOSE (Game Designer Domain Slots)
@@ -30,7 +35,7 @@ Format: `n. ACTION | TARGET | CHECK`
 5. ECONOMY | Sources/sinks/stock/flow | Check faucet/sink balance, scarcity, pacing, hoarding/inflation/dead-resource risks and monetization interaction where applicable.
 6. BALANCE | Tunables/curves | Externalize parameters, derive expected relationships/ranges and identify telemetry/playtest evidence needed before claiming balance.
 7. ONBOARD | Learn → practice → prove → combine | Sequence mechanic introduction and mastery without unnecessary text/forced interruption.
-8. GAME FEEL | Input/action feedback | Specify snap/anticipation/impact/recovery, VFX/audio/haptic/camera timing and intensity proportional to gameplay significance.
+8. GAME FEEL | One affected action in its real loop | Diagnose intent/result mismatch before treatment; specify preview/commit, accepted/rejected/buffered input, contact, recovery and return-to-control. Fit timing/weight/contrast to the promise; derive signature from agency/mastery and coherent expression. Use the [action card and conditional checklist](references/game-feel.md) for material feel work; preserve protected mechanics and essential cues.
 9. PLAYTEST | Design hypotheses | Define task/cohort/scenario, observable behavior, success/failure signal and exact design decision the test can change.
 
 ## Domain Failure Modes
@@ -41,6 +46,8 @@ Format: `n. ACTION | TARGET | CHECK`
 - **Difficulty = HP inflation:** challenge grows numerically without introducing new patterns, pressure or decisions.
 - **Onboarding lecture:** tutorial explains before the player has context to act, practice or receive feedback.
 - **Juice without information:** shake/VFX/audio intensity obscures state/readability or every action receives the same emphasis.
+- **Fast by accident:** deleting commitment, extending buffers or changing hitboxes without design authority; a quiet or deliberate action can be correct.
+- **Feel from test counts:** green builds/replays prove their boundary; real player comfort/mastery and model uplift need separate observations.
 - **Balance by intuition:** exact values/retention/session targets are declared successful without simulation, telemetry or real playtest evidence.
 
 ## Game Studio Control Plane
@@ -49,3 +56,7 @@ For milestone/cross-discipline game work, the **pipeline** remains authoritative
 
 ## Domain Handoff
 Provide the design-ready handoff: player promise/pillars, loop/state diagrams, system rules, progression/economy model, tunable tables, onboarding sequence, game-feel event specs, acceptance and playtest hypotheses. Engineering/art/audio receive explicit implications; cross-domain discoveries return as `DOMAIN_FINDING`.
+
+## Playable-first web workflow
+
+Use the studio protocol’s isolated early-prototype branch for one risky core-loop hypothesis before committing production art/backlog. Iterate low-fi player/screen flow with the prototype; production promotion still requires approved concepts, Style DNA and design/implementation-ready handoffs. Map the declared required states/components/assets through `game-experience/v1`. For clone/polish keep fidelity and approved differentiation separate, with player-benefit evidence rather than inferred fun from tests.

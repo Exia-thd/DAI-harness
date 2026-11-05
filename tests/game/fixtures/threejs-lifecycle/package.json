@@ -1,0 +1,24 @@
+{
+  "name": "dai-harness-threejs-lifecycle-fixture",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node ../../../../node_modules/typescript/bin/tsc -p tsconfig.json",
+    "test": "node --test unit.test.mjs skill-follow-camera.test.mjs",
+    "serve": "node server.mjs",
+    "test:browser": "node browser.test.mjs",
+    "check:skills": "node check-skills.mjs",
+    "test:reference": "node reference-browser.test.mjs",
+    "test:reference-contract": "node --test reference.test.mjs ../../../../tests/runtime/game-reference.test.mjs",
+    "build:experience": "node ../../../../node_modules/typescript/bin/tsc -p tsconfig.experience.json",
+    "test:experience": "node experience-browser.test.mjs",
+    "test:asset": "node --test experience-asset.test.mjs"
+  },
+  "dependencies": {
+    "three": "0.183.2"
+  },
+  "devDependencies": {
+    "@types/three": "0.183.1",
+    "playwright": "1.59.1"
+  }
+}

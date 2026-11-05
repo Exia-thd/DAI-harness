@@ -48,6 +48,34 @@
     {
       "path": "product-manifest.json",
       "type": "metadata"
+    },
+    {
+      "path": "skills/_shared/protocols/mobile-monetization.md",
+      "type": "operations"
+    },
+    {
+      "path": "evals/skills/README.md",
+      "type": "operations"
+    },
+    {
+      "path": "skills/_shared/protocols/game-studio-pipeline.md",
+      "type": "operations"
+    },
+    {
+      "path": "skills/_shared/protocols/game-test-protocol.md",
+      "type": "operations"
+    },
+    {
+      "path": "skills/_shared/protocols/design-mindset-and-rules.md",
+      "type": "operations"
+    },
+    {
+      "path": "templates/game/mobile-monetization/README.md",
+      "type": "operations"
+    },
+    {
+      "path": "skills/game-designer/references/game-feel.md",
+      "type": "operations"
     }
   ],
   "project_docs": {
@@ -82,7 +110,14 @@
       "skills/_shared/protocols/peer-collaboration.md",
       "skills/_shared/protocols/documentation-governance.md",
       "docs/process/release-readiness.md",
-      "product-manifest.json"
+      "product-manifest.json",
+      "skills/_shared/protocols/mobile-monetization.md",
+      "evals/skills/README.md",
+      "skills/_shared/protocols/game-studio-pipeline.md",
+      "skills/_shared/protocols/game-test-protocol.md",
+      "skills/_shared/protocols/design-mindset-and-rules.md",
+      "templates/game/mobile-monetization/README.md",
+      "skills/game-designer/references/game-feel.md"
     ],
     "exclude": [
       "docs/archive/**",

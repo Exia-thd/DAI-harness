@@ -283,7 +283,7 @@ skills:
     type: canonical
     has_skill_md: true
     has_lite_md: true
-    version: 1.0.0
+    version: 3.0.0
 
   - name: mobile-engineer
     type: canonical
@@ -322,6 +322,12 @@ skills:
     version: 1.0.0
 
   - name: phaser3-engineer
+    type: canonical
+    has_skill_md: true
+    has_lite_md: true
+    version: 1.0.0
+
+  - name: phaser4-engineer
     type: canonical
     has_skill_md: true
     has_lite_md: true
@@ -451,7 +457,7 @@ skills:
     type: canonical
     has_skill_md: true
     has_lite_md: true
-    version: 1.0.0
+    version: 2.1.0
 
   - name: token-tracker
     type: canonical
