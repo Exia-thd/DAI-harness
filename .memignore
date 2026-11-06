@@ -8,3 +8,11 @@ credentials/
 *.log
 *.db
 *.sqlite
+
+# The frozen GitNexus reference oracle. Two JSONL data files, 57,249 records
+# between them, read only by src/codegraph/reference/compare.mjs to score a new
+# parser against the snapshot. Indexing them is both useless -- they are data,
+# not code anyone searches for -- and the one thing that makes a whole-repository
+# ingest die: every other directory in this repo ingests on its own, this one
+# exhausts native memory and takes the process down with an access violation.
+/src/codegraph/reference/snapshot/
