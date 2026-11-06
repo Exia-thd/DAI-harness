@@ -38,6 +38,10 @@
       "type": "operations"
     },
     {
+      "path": "docs/guides/self-learning-tools.md",
+      "type": "operations"
+    },
+    {
       "path": "skills/_shared/protocols/peer-collaboration.md",
       "type": "operations"
     },
@@ -112,6 +116,7 @@
       "docs/adr/ADR-012-bounded-peer-collaboration.md",
       "docs/adr/ADR-013-rule-evidence-not-policy.md",
       "docs/guides/peer-collaboration.md",
+      "docs/guides/self-learning-tools.md",
       "skills/_shared/protocols/peer-collaboration.md",
       "skills/_shared/protocols/documentation-governance.md",
       "docs/process/release-readiness.md",

@@ -29,11 +29,62 @@ fi
 
 HARNESS_ROOT="${DAIHARNESS_DIR}"  # always point to dai-harness root for file ops
 
+SCRIPTS_ROOT="$HARNESS_ROOT/scripts"
+
+# The three helpers this script drives live in different scripts/ subdirectories
+# since the layout was reorganised, and this file moved into scripts/runtime/
+# with only one of them. Looking beside this script therefore reported
+# asip-deterministic-check.sh and daiharness-lesson-migrator.sh as MISSING
+# while both were present, and declared the whole subsystem INCOMPLETE.
+# Resolve by name instead: any organised subdirectory first, in a deterministic
+# order, and the deprecated scripts/ shim only as a last resort.
+resolve_script() {
+    local name="$1" candidate
+    for candidate in "$SCRIPTS_ROOT"/*/"$name" "$SCRIPTS_ROOT/$name"; do
+        if [ -f "$candidate" ]; then
+            printf '%s\n' "$candidate"
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Every python helper below used to splice a shell path straight into the
+# program text. Under MSYS that path is /c/Users/..., which the native Windows
+# interpreter cannot open, so the metrics summary reported "No such file or
+# directory" for a file that was right there and --update-metrics silently did
+# nothing while printing success. Convert to a native path, and pass values as
+# arguments instead of splicing them into source: a skill name containing a
+# quote used to break the program.
+native_path() {
+    local value="$1"
+    if command -v cygpath >/dev/null 2>&1; then
+        cygpath -w "$value" 2>/dev/null || printf '%s' "$value"
+    else
+        printf '%s' "$value"
+    fi
+}
+
 STATE_FILE="$HARNESS_ROOT/.daiharness/asip-state.json"
 METRICS_FILE="$HARNESS_ROOT/.daiharness/asip-metrics.json"
 LESSON_PLAN="$HARNESS_ROOT/.daiharness/plan-lessons.md"
 LESSON_EXEC="$HARNESS_ROOT/.daiharness/execution-lessons.md"
 SESSION_TRACK="$HARNESS_ROOT/.daiharness/session-track.json"
+# The session tracker writes session-tracker-v2.json. This script only looked
+# for the v1 name, so a successful init still reported the tracker state as
+# missing. Accept either, newest schema first; the v1 path stays as the name
+# this script writes itself when the tracker is unavailable.
+SESSION_TRACK_V2="$HARNESS_ROOT/.daiharness/session-tracker-v2.json"
+
+session_track_file() {
+    if [ -f "$SESSION_TRACK_V2" ]; then
+        printf '%s\n' "$SESSION_TRACK_V2"
+    elif [ -f "$SESSION_TRACK" ]; then
+        printf '%s\n' "$SESSION_TRACK"
+    else
+        return 1
+    fi
+}
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
 
@@ -198,12 +249,13 @@ EOF
 }
 
 bootstrap_session_tracker() {
-    if [ -f "$SESSION_TRACK" ]; then
-        ok "session-track.json already exists"
+    local tracker existing
+    if existing="$(session_track_file)"; then
+        ok "session tracker state already exists ($(basename "$existing"))"
     else
         # Re-initialize via daiharness-session-tracker.sh
-        if [ -x "$SCRIPT_DIR/daiharness-session-tracker.sh" ]; then
-            bash "$SCRIPT_DIR/daiharness-session-tracker.sh" init 2>/dev/null || true
+        if tracker="$(resolve_script daiharness-session-tracker.sh)"; then
+            bash "$tracker" init 2>/dev/null || true
             ok "Initialized session-track.json"
         else
             # Fallback: create manually
@@ -222,13 +274,13 @@ bootstrap_scripts() {
     )
 
     for script in "${required_scripts[@]}"; do
-        local path="$SCRIPT_DIR/$script"
-        if [ -f "$path" ]; then
+        local path
+        if path="$(resolve_script "$script")"; then
             # Ensure executable
             chmod +x "$path" 2>/dev/null || true
             ok "Script $script: present"
         else
-            warn "Script $script: MISSING (expected at $path)"
+            warn "Script $script: MISSING (searched $SCRIPTS_ROOT)"
         fi
     done
 }
@@ -246,44 +298,65 @@ update_metrics() {
         bootstrap_asip_metrics
     fi
 
-    python3 -c "
+    if ! python3 - "$(native_path "$METRICS_FILE")" "$type" "$skill" "$value" <<'PYEOF'
 import json
-from datetime import datetime
+import sys
+from datetime import datetime, timezone
+
+path, kind, skill, raw_value = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+try:
+    value = int(raw_value)
+except ValueError:
+    sys.stderr.write(f"value must be an integer, got {raw_value!r}\n")
+    raise SystemExit(1)
 
 try:
-    with open('$METRICS_FILE') as f:
-        m = json.load(f)
-except:
-    m = {'projectAdaptation': {}, 'bySkill': {}, 'byBlockerType': {}, 'byWeakCriterion': {}}
+    with open(path, encoding="utf-8") as handle:
+        metrics = json.load(handle)
+except (OSError, ValueError):
+    metrics = {
+        "projectAdaptation": {},
+        "bySkill": {},
+        "byBlockerType": {},
+        "byWeakCriterion": {},
+    }
 
-pa = m.get('projectAdaptation', {})
-pa['lastUpdated'] = datetime.utcnow().isoformat() + 'Z'
+stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+adaptation = metrics.get("projectAdaptation", {})
+adaptation["lastUpdated"] = stamp
 
-if '$type' == 'research_gate':
-    pa['totalResearchGates'] = pa.get('totalResearchGates', 0) + int('$value')
-    pa['sessionsWithEvolution'] = pa.get('sessionsWithEvolution', 0) + 1
-elif '$type' == 'skill_update':
-    pa['totalSkillUpdates'] = pa.get('totalSkillUpdates', 0) + int('$value')
-elif '$type' == 'lesson_learned':
-    pa['lessonsLearned'] = pa.get('lessonsLearned', 0) + int('$value')
-elif '$type' == 'failure_avoided':
-    pa['failuresAvoided'] = pa.get('failuresAvoided', 0) + int('$value')
+counters = {
+    "research_gate": "totalResearchGates",
+    "skill_update": "totalSkillUpdates",
+    "lesson_learned": "lessonsLearned",
+    "failure_avoided": "failuresAvoided",
+}
+if kind not in counters:
+    sys.stderr.write(f"unknown metric type {kind!r}; expected one of {sorted(counters)}\n")
+    raise SystemExit(1)
+field = counters[kind]
+adaptation[field] = adaptation.get(field, 0) + value
+if kind == "research_gate":
+    adaptation["sessionsWithEvolution"] = adaptation.get("sessionsWithEvolution", 0) + 1
 
-if '$skill':
-    if '$skill' not in m.get('bySkill', {}):
-        m.setdefault('bySkill', {})['$skill'] = {'researchGates': 0, 'skillUpdates': 0}
-    s = m['bySkill']['$skill']
-    if '$type' == 'research_gate':
-        s['researchGates'] = s.get('researchGates', 0) + 1
-    elif '$type' == 'skill_update':
-        s['skillUpdates'] = s.get('skillUpdates', 0) + 1
+if skill:
+    by_skill = metrics.setdefault("bySkill", {})
+    entry = by_skill.setdefault(skill, {"researchGates": 0, "skillUpdates": 0})
+    if kind == "research_gate":
+        entry["researchGates"] = entry.get("researchGates", 0) + 1
+    elif kind == "skill_update":
+        entry["skillUpdates"] = entry.get("skillUpdates", 0) + 1
 
-m['projectAdaptation'] = pa
-m['lastUpdated'] = datetime.utcnow().isoformat() + 'Z'
-
-with open('$METRICS_FILE', 'w') as f:
-    json.dump(m, f, indent=2)
-" 2>/dev/null
+metrics["projectAdaptation"] = adaptation
+metrics["lastUpdated"] = stamp
+with open(path, "w", encoding="utf-8", newline="\n") as handle:
+    json.dump(metrics, handle, indent=2)
+    handle.write("\n")
+PYEOF
+    then
+        err "Metrics update failed: $type"
+        return 1
+    fi
 
     ok "Metrics updated: $type (+$value)"
 }
@@ -303,57 +376,92 @@ update_state() {
 
     if [ "$action" = "init" ]; then
         bootstrap_asip_state
-        python3 -c "
+        if ! python3 - "$(native_path "$STATE_FILE")" <<'PYEOF'
 import json
-from datetime import datetime
+import sys
+from datetime import datetime, timezone
+
+path = sys.argv[1]
 try:
-    with open('$STATE_FILE') as f: m = json.load(f)
-except: m = {}
-m['sessionId'] = datetime.utcnow().isoformat() + 'Z'
-m['lastUpdated'] = m['sessionId']
-with open('$STATE_FILE', 'w') as f: json.dump(m, f, indent=2)
-" 2>/dev/null
+    with open(path, encoding="utf-8") as handle:
+        state = json.load(handle)
+except (OSError, ValueError):
+    state = {}
+state["sessionId"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+state["lastUpdated"] = state["sessionId"]
+with open(path, "w", encoding="utf-8", newline="\n") as handle:
+    json.dump(state, handle, indent=2)
+    handle.write("\n")
+PYEOF
+        then
+            err "ASIP state init failed"
+            return 1
+        fi
         ok "ASIP state initialized"
         return
     fi
 
-    python3 -c "
+    if ! python3 - \
+        "$(native_path "$STATE_FILE")" "$action" "$skill" "$task" "$score" "$result" <<'PYEOF'
 import json
-from datetime import datetime
+import sys
+from datetime import datetime, timezone
 
+path, action, skill, task, score, result = sys.argv[1:7]
+stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 try:
-    with open('$STATE_FILE') as f: m = json.load(f)
-except:
-    m = {'sessionId': datetime.utcnow().isoformat() + 'Z', 'planAttempts': {}, 'executionAttempts': {}, 'totalResearchGates': 0}
+    with open(path, encoding="utf-8") as handle:
+        state = json.load(handle)
+except (OSError, ValueError):
+    state = {
+        "sessionId": stamp,
+        "planAttempts": {},
+        "executionAttempts": {},
+        "totalResearchGates": 0,
+    }
+state["lastUpdated"] = stamp
 
-m['lastUpdated'] = datetime.utcnow().isoformat() + 'Z'
+# Two attempts on the same task is the Stuck rule's threshold, which is what
+# researchGateTriggered records. It is a counter, not permission to research.
+GATE_AFTER_ATTEMPTS = 2
 
-if '$action' == 'record_plan':
-    key = 'planAttempts'
-    if '$skill' not in m.get(key, {}): m.setdefault(key, {})['$skill'] = {}
-    if '$task' not in m[key]['$skill']: m[key]['$skill']['$task'] = {'attempts': 0, 'lastScore': None, 'researchGateTriggered': False}
-    t = m[key]['$skill']['$task']
-    t['attempts'] = t.get('attempts', 0) + 1
-    t['lastScore'] = float('$score') if '$score' else t.get('lastScore')
-    if t['attempts'] >= 2: t['researchGateTriggered'] = True
+if action in {"record_plan", "record_exec"}:
+    if not skill or not task:
+        sys.stderr.write("record_plan/record_exec need both a skill and a task\n")
+        raise SystemExit(1)
+    key = "planAttempts" if action == "record_plan" else "executionAttempts"
+    entry = state.setdefault(key, {}).setdefault(skill, {}).setdefault(
+        task,
+        {"attempts": 0, "lastScore": None, "lastResult": None,
+         "researchGateTriggered": False},
+    )
+    entry["attempts"] = entry.get("attempts", 0) + 1
+    if action == "record_plan":
+        if score:
+            try:
+                entry["lastScore"] = float(score)
+            except ValueError:
+                sys.stderr.write(f"score must be a number, got {score!r}\n")
+                raise SystemExit(1)
+    else:
+        entry["lastResult"] = result
+    if entry["attempts"] >= GATE_AFTER_ATTEMPTS:
+        entry["researchGateTriggered"] = True
+elif action == "clear":
+    for key in ("planAttempts", "executionAttempts"):
+        state.get(key, {}).get(skill, {}).pop(task, None)
+else:
+    sys.stderr.write(f"unknown action {action!r}\n")
+    raise SystemExit(1)
 
-elif '$action' == 'record_exec':
-    key = 'executionAttempts'
-    if '$skill' not in m.get(key, {}): m.setdefault(key, {})['$skill'] = {}
-    if '$task' not in m[key]['$skill']: m[key]['$skill']['$task'] = {'attempts': 0, 'lastResult': None, 'researchGateTriggered': False}
-    t = m[key]['$skill']['$task']
-    t['attempts'] = t.get('attempts', 0) + 1
-    t['lastResult'] = '$result'
-    if t['attempts'] >= 2: t['researchGateTriggered'] = True
-
-elif '$action' == 'clear':
-    for key in ['planAttempts', 'executionAttempts']:
-        if '$skill' in m.get(key, {}):
-            if '$task' in m[key]['$skill']:
-                del m[key]['$skill']['$task']
-
-with open('$STATE_FILE', 'w') as f: json.dump(m, f, indent=2)
-" 2>/dev/null
+with open(path, "w", encoding="utf-8", newline="\n") as handle:
+    json.dump(state, handle, indent=2)
+    handle.write("\n")
+PYEOF
+    then
+        err "ASIP state update failed: $action"
+        return 1
+    fi
 
     ok "ASIP state updated: $action / $skill / $task"
 }
@@ -389,45 +497,51 @@ check_status() {
     echo ""
     echo "  Scripts:"
     for script in "asip-deterministic-check.sh" "daiharness-lesson-migrator.sh" "daiharness-session-tracker.sh"; do
-        local path="$SCRIPT_DIR/$script"
-        if [ -f "$path" ] && [ -x "$path" ]; then
-            echo -e "  ${GREEN}✓${NC} $script (executable)"
-        elif [ -f "$path" ]; then
-            echo -e "  ${YELLOW}⚠${NC} $script (not executable)"
-        else
+        local path
+        if ! path="$(resolve_script "$script")"; then
             echo -e "  ${RED}✗${NC} $script (MISSING)"
+        elif [ -x "$path" ]; then
+            echo -e "  ${GREEN}✓${NC} $script (executable)"
+        else
+            echo -e "  ${YELLOW}⚠${NC} $script (not executable)"
         fi
     done
 
-    # Check session-track.json
-    if [ -f "$SESSION_TRACK" ]; then
-        echo -e "  ${GREEN}✓${NC} session-track.json"
+    # Check the session tracker state under either schema name
+    local tracker_state
+    if tracker_state="$(session_track_file)"; then
+        echo -e "  ${GREEN}✓${NC} $(basename "$tracker_state")"
     else
-        echo -e "  ${YELLOW}⚠${NC} session-track.json (not found)"
+        echo -e "  ${YELLOW}⚠${NC} session tracker state (not found)"
     fi
 
     # Metrics summary (handle JSON with markdown comments)
     if [ -f "$METRICS_FILE" ]; then
         echo ""
         echo "  Metrics summary:"
-        python3 -c "
-import json, re
+        python3 - "$(native_path "$METRICS_FILE")" <<'PYEOF'
+import json
+import re
+import sys
+
 try:
-    with open('$METRICS_FILE') as f:
-        content = f.read()
-    # Strip markdown comments (lines starting with #)
-    content = re.sub(r'^#.*$', '', content, flags=re.MULTILINE)
-    m = json.loads(content)
-    pa = m.get('projectAdaptation', {})
-    print(f\"    Research gates: {pa.get('totalResearchGates', 0)}\")
-    print(f\"    Skill updates:  {pa.get('totalSkillUpdates', 0)}\")
-    print(f\"    Lessons learned: {pa.get('lessonsLearned', 0)}\")
-    print(f\"    Sessions evolved: {pa.get('sessionsWithEvolution', 0)}\")
-    print(f\"    Failures avoided: {pa.get('failuresAvoided', 0)}\")
-    print(f\"    Total migrations: {pa.get('totalMigrations', 0)}\")
-except Exception as e:
-    print(f'    (could not parse metrics: {e})')
-" 2>/dev/null
+    with open(sys.argv[1], encoding="utf-8") as handle:
+        content = handle.read()
+    # Some older metrics files carried markdown comment lines.
+    content = re.sub(r"^#.*$", "", content, flags=re.MULTILINE)
+    adaptation = json.loads(content).get("projectAdaptation", {})
+    for label, field in (
+        ("Research gates", "totalResearchGates"),
+        ("Skill updates", "totalSkillUpdates"),
+        ("Lessons learned", "lessonsLearned"),
+        ("Sessions evolved", "sessionsWithEvolution"),
+        ("Failures avoided", "failuresAvoided"),
+        ("Total migrations", "totalMigrations"),
+    ):
+        print(f"    {label}: {adaptation.get(field, 0)}")
+except (OSError, ValueError) as error:
+    print(f"    (could not parse metrics: {error})")
+PYEOF
     fi
 
     echo ""
@@ -456,8 +570,9 @@ self_verify() {
 
     log "Self-verification: checking referenced scripts..."
     for script in asip-deterministic-check.sh daiharness-lesson-migrator.sh daiharness-session-tracker.sh; do
-        if [ -f "$SCRIPT_DIR/$script" ]; then
-            if bash -n "$SCRIPT_DIR/$script" 2>/dev/null; then
+        local path
+        if path="$(resolve_script "$script")"; then
+            if bash -n "$path" 2>/dev/null; then
                 ok "  $script: valid"
             else
                 err "  $script: INVALID syntax"

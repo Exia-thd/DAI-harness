@@ -359,6 +359,25 @@
           "path": "docs/active-roadmap.md"
         }
       ]
+    },
+    {
+      "id": "self-learning-tools-usable",
+      "title": "Make the manually triggered self-learning tools work: helper resolution, native paths, a catalog CLI",
+      "status": "done",
+      "priority": "medium",
+      "owner": "Kernel maintainers",
+      "target_date": null,
+      "depends_on": [
+        "rule-evidence-in-session-context"
+      ],
+      "references": [
+        {
+          "path": "docs/guides/self-learning-tools.md"
+        },
+        {
+          "path": "docs/adr/ADR-013-rule-evidence-not-policy.md"
+        }
+      ]
     }
   ],
   "flows": [
@@ -1053,7 +1072,7 @@
     "lifecycle": "active",
     "health": "on_track",
     "phase": "SUSTAIN",
-    "summary": "The rule-compliance loop now closes. The ledger at .daiharness/rule-ledger.jsonl was the only learning surface in the repository with current data -- 43 entries against four rules, one of them violated forty times -- and none of it reached a session: the session hook injected the hand-authored manifest and never read the ledger. Two defects had also kept the data unreadable. rule-ledger.sh recognised only the current field names, so three violations recorded by an earlier tool were grouped under an empty rule name and excluded by every outcome filter, including the view that feeds an agent; and rule_ledger.py resolved its path against the working directory while ignoring DAIHARNESS_RULE_LEDGER, so the same ledger held 43 entries from the repository root and 0 from scripts/, where add quietly started an orphan second ledger. Both readers now normalise both field-name generations through one definition each, pinned to the hook's by a test, and there is one ledger per repository from any directory. The session hook appends observed violations aggregated per rule, ranked by count, after the canonical rule text and capped at a quarter of the remaining budget, so policy is never crowded out by evidence; notes are collapsed to one bounded line so no entry can forge the header or a record under it; and a missing, torn or unreadable ledger yields no history rather than a failed hook. ADR-013 fixes the direction of flow: the manifest is policy and stays hand-authored, the ledger is evidence and never rewrites a rule. The instinct subsystem was reviewed and deliberately not revived -- it has never recorded a pattern here or upstream, its hook invokes an observer.mjs that does not exist, its shell fallback computes a count and discards it, and nothing in the tree consumes its store.",
+    "summary": "The manually triggered self-learning tools now run. daiharness-evolution-init.sh looked for its three helper scripts beside itself; the layout was reorganised and it moved into scripts/runtime/ with only one of them, so it reported two present files as MISSING and declared the subsystem INCOMPLETE. It also spliced shell paths straight into the Python helpers it runs, and under MSYS that path is /c/Users/..., which the native interpreter cannot open: the metrics summary reported a missing file that was present and --update-metrics printed success while writing nothing, so every counter stayed at zero. Splicing also meant a skill name containing a quote broke the program. Helpers are now resolved by name with the deprecated scripts/ shim last, values are passed as arguments, paths are converted for the interpreter, and a refused update exits nonzero instead of reporting success. The check also accepts session-tracker-v2.json, the filename the tracker actually writes. reverse_engineering_intelligence.py had no entry point and no caller outside its own tests, so the pinned offline catalog could not be consulted by hand; it now has search, route, routes, digest and benchmark subcommands, and deliberately no flag that skips the catalog digest check. ASIP recovery state is initialised and gitignored as machine-local runtime state. Both pytest-gate baselines were regenerated so the tests that now pass are guarded instead of excused. docs/guides/self-learning-tools.md is the canonical list of what to trigger and what holds data; the instinct subsystem remains documented as non-functional.",
     "updated_at": "2026-11-05T16:27:18+07:00",
     "blockers": [],
     "risks": [],

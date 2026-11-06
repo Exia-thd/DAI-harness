@@ -13,10 +13,12 @@ Combines:
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import math
 import re
+import sys
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -696,3 +698,166 @@ def evaluate_re_benchmark_matrix(
         "rankings": rankings,
     }
     return {**report_core, "digest": _digest(report_core)}
+
+
+# ─── Command line ───────────────────────────────────────────────────────────
+#
+# Everything above was reachable only from Python, and nothing in the tree
+# called it, so the pinned catalog could not be consulted by hand. These
+# subcommands are a thin shell over the functions: they parse arguments,
+# print the returned record as JSON, and add no selection or scoring logic of
+# their own.
+#
+# The catalog digest stays mandatory. `--expect-sha256` can name a different
+# one, but there is deliberately no flag that skips the check: the pin is what
+# stops a tampered catalog from quietly routing an operator to another tool.
+# `digest` prints the current value so re-pinning an updated catalog is one
+# step rather than a guess.
+
+
+def _utf8_io() -> None:
+    """Windows consoles default to a legacy codepage; non-ASCII would crash."""
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
+
+def _emit(payload: Mapping[str, Any]) -> None:
+    json.dump(dict(payload), sys.stdout, indent=2, ensure_ascii=False)
+    sys.stdout.write("\n")
+
+
+def catalog_digest(catalog_path: Path = DEFAULT_PINNED_CATALOG_PATH) -> dict[str, Any]:
+    """Report a catalog's actual digest, entry count and whether it is the pin."""
+    path = Path(catalog_path)
+    if not path.is_file():
+        raise REIntelligenceError(f"pinned catalog not found: {path}")
+    raw = path.read_bytes()
+    actual = hashlib.sha256(raw).hexdigest()
+    try:
+        entries = json.loads(raw.decode("utf-8"))
+    except Exception as exc:
+        raise REIntelligenceError("malformed catalog JSON") from exc
+    if not isinstance(entries, list):
+        raise REIntelligenceError("catalog root must be a list of project entries")
+    return {
+        "schema": RE_DISCOVERY_SCHEMA,
+        "catalog_path": str(path),
+        "catalog_sha256": actual,
+        "entries": len(entries),
+        "matches_pinned_digest": actual == DEFAULT_PINNED_CATALOG_SHA256,
+        "pinned_digest": DEFAULT_PINNED_CATALOG_SHA256,
+    }
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="reverse_engineering_intelligence.py",
+        description=(
+            "Offline reverse-engineering intelligence: search the pinned "
+            "catalog, route a task to tools, inspect a catalog digest, or "
+            "rank benchmark runs. No subcommand performs network access."
+        ),
+    )
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    def add_catalog_options(target: argparse.ArgumentParser) -> None:
+        target.add_argument(
+            "--catalog",
+            type=Path,
+            default=DEFAULT_PINNED_CATALOG_PATH,
+            help="catalog file to read (default: the repository's pinned catalog)",
+        )
+
+    search = sub.add_parser("search", help="search the pinned catalog")
+    search.add_argument("query", help="free-text query, e.g. 'apk decompile'")
+    search.add_argument("--category", default=None)
+    search.add_argument("--lang", default=None)
+    search.add_argument("--min-stars", type=int, default=0)
+    search.add_argument("--include-archived", action="store_true")
+    search.add_argument("--limit", type=int, default=10)
+    add_catalog_options(search)
+    search.add_argument(
+        "--expect-sha256",
+        default=DEFAULT_PINNED_CATALOG_SHA256,
+        help=(
+            "digest the catalog must have; name the new one explicitly when "
+            "the catalog is updated (there is no way to skip the check)"
+        ),
+    )
+
+    digest = sub.add_parser("digest", help="print a catalog's actual digest")
+    add_catalog_options(digest)
+
+    sub.add_parser("routes", help="list the task names 'route' accepts")
+
+    route = sub.add_parser("route", help="tools and limitations for one task")
+    route.add_argument("task", help="one of the names printed by 'routes'")
+
+    benchmark = sub.add_parser("benchmark", help="rank benchmark runs for a role")
+    benchmark.add_argument("--role", required=True)
+    benchmark.add_argument(
+        "--runs",
+        required=True,
+        type=Path,
+        help="JSON file holding the list of run records",
+    )
+
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    _utf8_io()
+    args = build_parser().parse_args(list(argv) if argv is not None else None)
+    try:
+        if args.command == "search":
+            _emit(
+                search_pinned_re_catalog(
+                    query=args.query,
+                    category=args.category,
+                    lang=args.lang,
+                    min_stars=args.min_stars,
+                    include_archived=args.include_archived,
+                    limit=args.limit,
+                    catalog_path=args.catalog,
+                    expected_sha256=args.expect_sha256,
+                )
+            )
+        elif args.command == "digest":
+            _emit(catalog_digest(args.catalog))
+        elif args.command == "routes":
+            _emit(
+                {
+                    "schema": RE_DISCOVERY_SCHEMA,
+                    "tasks": sorted(CAPABILITY_MATRIX),
+                }
+            )
+        elif args.command == "route":
+            _emit(select_re_capability_route(args.task))
+        elif args.command == "benchmark":
+            path = Path(args.runs)
+            if not path.is_file():
+                raise REIntelligenceError(f"runs file not found: {path}")
+            try:
+                runs = json.loads(path.read_text(encoding="utf-8"))
+            except Exception as exc:
+                raise REIntelligenceError(f"malformed runs JSON: {path}") from exc
+            if not isinstance(runs, list):
+                raise REIntelligenceError("runs file must hold a JSON list")
+            _emit(evaluate_re_benchmark_matrix(runs, role=args.role))
+        else:  # pragma: no cover - argparse rejects anything else first
+            raise REIntelligenceError(f"unsupported command: {args.command}")
+    except REIntelligenceError as error:
+        # The module's own refusals are the useful part of this tool: a digest
+        # mismatch or an unknown task is a result, not a crash. Report it on
+        # stderr and exit nonzero so a caller can branch on it.
+        sys.stderr.write(f"re-intelligence: {error}\n")
+        return 2
+    except OSError as error:
+        sys.stderr.write(f"re-intelligence: {error}\n")
+        return 2
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -23,6 +23,12 @@ __pycache__/
 .daiharness/escalations/
 .daiharness/pipeline-state.json
 .daiharness/leases.json
+# ASIP recovery state, written by scripts/runtime/daiharness-evolution-init.sh
+# and the session tracker. Per-machine counters, not project truth.
+.daiharness/asip-state.json
+.daiharness/asip-metrics.json
+.daiharness/session-track.json
+.daiharness/session-tracker-v2.json
 .daiharness/memory.db*
 memory.db
 .daiharness/logs/
