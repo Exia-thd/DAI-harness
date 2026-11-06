@@ -42,6 +42,10 @@
       "type": "operations"
     },
     {
+      "path": "docs/guides/dai-memory.md",
+      "type": "operations"
+    },
+    {
       "path": "skills/_shared/protocols/peer-collaboration.md",
       "type": "operations"
     },
@@ -117,6 +121,7 @@
       "docs/adr/ADR-013-rule-evidence-not-policy.md",
       "docs/guides/peer-collaboration.md",
       "docs/guides/self-learning-tools.md",
+      "docs/guides/dai-memory.md",
       "skills/_shared/protocols/peer-collaboration.md",
       "skills/_shared/protocols/documentation-governance.md",
       "docs/process/release-readiness.md",
