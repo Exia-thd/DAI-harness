@@ -397,6 +397,22 @@
           "path": "docs/guides/dai-memory.md"
         }
       ]
+    },
+    {
+      "id": "windows-host-resource-audit",
+      "title": "Audit the host-resource runtime on Windows and fix the sensor and the batch-target spawn",
+      "status": "in_progress",
+      "priority": "critical",
+      "owner": "Runtime maintainers",
+      "target_date": null,
+      "depends_on": [
+        "host-resource-windows-port"
+      ],
+      "references": [
+        {
+          "path": "docs/guides/self-learning-tools.md"
+        }
+      ]
     }
   ],
   "flows": [
@@ -1091,7 +1107,7 @@
     "lifecycle": "active",
     "health": "on_track",
     "phase": "SUSTAIN",
-    "summary": "The code graph is current again: indexed at b350752, 6,425 declarations in 550 files with 16,523 calls, against 5,253 in 464 files before. One input was the whole problem. A unit-by-unit ingest, one process per directory and strictly sequential, ran 153 units and exactly one crashed: src/codegraph/reference/snapshot, the frozen GitNexus reference oracle, which is two JSONL data files holding 57,249 records between them. It died with an access violation after a native bad allocation, having produced tens of thousands of chunks and 384-dimension vectors in a single process; the rollback that follows failed with no active transaction, and MSYS reported the whole thing only as exit 127 with no output, which is what made it look like a silent failure for so long. That snapshot is read only by src/codegraph/reference/compare.mjs to score a new parser, so it is data nobody searches for and is now excluded in .memignore -- after which a whole-repository ingest completes and sets the index marker current. Three earlier readings were wrong and are withdrawn: V8 heap exhaustion (limit 4288 MB against a 1.15 GB peak), total repository volume (152 of 153 units ingest cleanly on their own), and stale checkpoint locks as the cause (a throwaway store with the same artifacts planted lets status exit 1 cleanly and ingest succeed and clear them). Capability parity with GitNexus was verified rather than assumed, and detect-changes does report a stale graph with explicit notes, so the gate stayed honest throughout.",
+    "summary": "An audit of the host-resource runtime on Windows found the runtime did not work there at all, and the cause was one missing environment variable. host_resources.command() hands its child only PATH, LC_ALL and LANG, and PowerShell cannot start without SystemRoot: the memory probe exited 0xFFFF0000 in 0.18s with 'Loading managed Windows PowerShell failed', the except clause swallowed it, and memory_snapshot() returned MemorySnapshot(0, 0, 'unknown', 'telemetry-unavailable'). Those zeros are not inert: select_jobs tests available_bytes - reserved - memory_bytes < headroom, which with available at 0 and headroom at 1 GiB holds for every row, so every job was denied insufficient-memory on a host with 31.8 GiB installed and 12.7 GiB free -- reproduced end to end. No test caught it because every test in the suite injects a synthetic sensor, one of them saying so outright. The probe now reads GlobalMemoryStatusEx in process: no child, so no environment, PATH, execution policy or startup cost to get wrong, and 8 ms instead of the 1.0-1.3s a PowerShell start measured here against a 2s timeout. Separately, an argv list stops being an argv list when the target is a batch file: Windows has no argv, list2cmdline quotes only on a space or tab, so x&echo.SPLIT arrives bare and cmd.exe splits it and runs the tail -- measured through both a %* and a %1 shim. validate() now refuses a .cmd or .bat target, because the runtime cannot control what the target does with its command line and the journal's argv_sha256 would otherwise describe an argv that is not what ran. Four other suspicions were measured and are not defects: st_dev gives distinct stable volume identities, O_EXCL still refuses an existing redirect where O_NOFOLLOW is absent, the POSIX ps PATH in resource_controls is unreachable on Windows, and host_inventory's /bin/ps raises but snapshot() catches it and reports sensor-unavailable rather than inventing rows. One finding is left for a decision rather than guessed at: a file created 0o600 lands 0o666 on Windows, private_mode_is_safe reports success there by design, and the journal home is redirectable through --home or DAIHARNESS_ADMISSION_HOME with no containment check, so unsafe-journal cannot fire.",
     "updated_at": "2026-11-05T16:27:18+07:00",
     "blockers": [],
     "risks": [],

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import hashlib
-import json
 import os
 import process_census
 from pathlib import Path
@@ -116,6 +115,71 @@ def darwin_swap_free_bytes() -> int | None:
     return None
 
 
+def windows_memory_snapshot() -> MemorySnapshot:
+    """Read the memory counters from the OS, in this process.
+
+    This used to shell out to `powershell -Command Get-CimInstance ...` through
+    `command()`, which hands the child an environment of PATH, LC_ALL and LANG
+    and nothing else. PowerShell cannot start without SystemRoot: it exited
+    0xFFFF0000 in 0.18s with "Loading managed Windows PowerShell failed with
+    error 8009001d", the except clause swallowed it, and the caller received
+    MemorySnapshot(0, 0, "unknown", "telemetry-unavailable").
+
+    Those zeros were not inert. `select_jobs` tests
+    `available_bytes - reserved - memory_bytes < headroom`, which with
+    available at 0 and headroom at 1 GiB is true for every row, so every job
+    was denied `insufficient-memory` on a host with 31 GiB free. No test caught
+    it because every other test in the suite injects a synthetic sensor.
+
+    GlobalMemoryStatusEx needs no child process, so there is no environment,
+    PATH, execution policy or startup cost to get wrong, and it answers in
+    microseconds instead of the 1.0-1.3s a PowerShell start measured here --
+    against the 2s timeout `command()` imposes. The same reasoning moved
+    process identity off PowerShell in process_census.
+
+    `dwMemoryLoad` is deliberately not read as pressure: it is a percentage of
+    physical use, not the stall signal Linux PSI reports, and inventing a
+    pressure model from it would change worker_limit and headroom on evidence
+    that does not support it.
+    """
+    import ctypes
+    from ctypes import wintypes
+
+    class MemoryStatusEx(ctypes.Structure):
+        _fields_ = [
+            ("dwLength", wintypes.DWORD),
+            ("dwMemoryLoad", wintypes.DWORD),
+            ("ullTotalPhys", ctypes.c_ulonglong),
+            ("ullAvailPhys", ctypes.c_ulonglong),
+            ("ullTotalPageFile", ctypes.c_ulonglong),
+            ("ullAvailPageFile", ctypes.c_ulonglong),
+            ("ullTotalVirtual", ctypes.c_ulonglong),
+            ("ullAvailVirtual", ctypes.c_ulonglong),
+            ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+        ]
+
+    status = MemoryStatusEx()
+    status.dwLength = ctypes.sizeof(MemoryStatusEx)
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel32.GlobalMemoryStatusEx.argtypes = [ctypes.POINTER(MemoryStatusEx)]
+    kernel32.GlobalMemoryStatusEx.restype = wintypes.BOOL
+    if not kernel32.GlobalMemoryStatusEx(ctypes.byref(status)):
+        raise OSError(ctypes.get_last_error(), "GlobalMemoryStatusEx failed")
+    total, available = int(status.ullTotalPhys), int(status.ullAvailPhys)
+    if total <= 0 or available < 0 or available > total:
+        raise ValueError("implausible-memory-counters")
+    # Page file free is the swap-equivalent signal the scheduler already knows
+    # how to treat as optional.
+    swap_free = int(status.ullAvailPageFile)
+    return MemorySnapshot(
+        total,
+        available,
+        "unknown",
+        "windows-globalmemorystatusex-pressure-unavailable",
+        swap_free_bytes=swap_free if swap_free >= 0 else None,
+    )
+
+
 def memory_snapshot() -> MemorySnapshot:
     """Use OS pressure and available/reclaimable memory, not free percent alone."""
     try:
@@ -200,23 +264,7 @@ def memory_snapshot() -> MemorySnapshot:
                 total, available, pressure, "linux-memavailable+psi", load_ratio
             )
         if os.name == "nt":
-            rows = json.loads(
-                command(
-                    [
-                        "powershell",
-                        "-NoProfile",
-                        "-NonInteractive",
-                        "-Command",
-                        "Get-CimInstance Win32_OperatingSystem | Select-Object TotalVisibleMemorySize,FreePhysicalMemory | ConvertTo-Json -Compress",
-                    ]
-                )
-            )
-            return MemorySnapshot(
-                int(rows["TotalVisibleMemorySize"]) * 1024,
-                int(rows["FreePhysicalMemory"]) * 1024,
-                "unknown",
-                "windows-cim-pressure-unavailable",
-            )
+            return windows_memory_snapshot()
     except (
         OSError,
         ValueError,

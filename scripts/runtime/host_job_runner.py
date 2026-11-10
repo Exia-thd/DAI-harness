@@ -177,6 +177,20 @@ def validate(request):
         or not 0 < request.wait_seconds <= 3600
     ):
         raise JobError("invalid-request")
+    # An argv list stops being an argv list when the target is a batch file.
+    # Windows has no argv: CreateProcess takes one string, subprocess builds it
+    # with list2cmdline, and that quotes an argument only when it holds a space
+    # or a tab. So `x&echo.SPLIT` arrives bare, and cmd.exe reads the `&` as a
+    # command separator -- measured here: the argument is truncated to `x` and
+    # the tail runs. A native executable parses the same string back by the
+    # rules list2cmdline followed and sees the original argument.
+    #
+    # Refusing is the only honest option left. Quoting for cmd as well cannot
+    # be done from here, because what the target does with its command line is
+    # the target's choice, and the journal's argv_sha256 would still describe
+    # an argv that is not what ran.
+    if Path(request.argv[0]).suffix.lower() in {".cmd", ".bat"}:
+        raise JobError("batch-target-unsupported")
     project, cwd = (
         request.project.resolve(strict=True),
         request.cwd.resolve(strict=True),
