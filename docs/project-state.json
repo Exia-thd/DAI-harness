@@ -400,8 +400,8 @@
     },
     {
       "id": "windows-host-resource-audit",
-      "title": "Audit the host-resource runtime on Windows and fix the sensor and the batch-target spawn",
-      "status": "in_progress",
+      "title": "Audit the host-resource runtime on Windows and fix the sensor, the batch-target spawn, and the journal privacy guard that could not refuse",
+      "status": "done",
       "priority": "critical",
       "owner": "Runtime maintainers",
       "target_date": null,
@@ -411,6 +411,25 @@
       "references": [
         {
           "path": "docs/guides/self-learning-tools.md"
+        },
+        {
+          "path": "docs/adr/ADR-014-windows-private-state-basis.md"
+        }
+      ]
+    },
+    {
+      "id": "windows-private-state-guards",
+      "title": "Decide and apply a Windows privacy basis for the remaining private state roots, where the owner and mode guards are still vacuous",
+      "status": "planned",
+      "priority": "high",
+      "owner": "Runtime maintainers",
+      "target_date": null,
+      "depends_on": [
+        "windows-host-resource-audit"
+      ],
+      "references": [
+        {
+          "path": "docs/adr/ADR-014-windows-private-state-basis.md"
         }
       ]
     }

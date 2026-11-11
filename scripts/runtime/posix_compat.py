@@ -27,6 +27,13 @@ What is equivalent, and what is not:
   so callers must not treat a True here as proof of ownership on Windows --
   that protection comes from the file living in the user's own profile with
   default ACLs, and it is weaker than the POSIX check.
+* ``private_root_is_verifiable`` -- checks the part of that last sentence that
+  can be checked. The profile assumption was stated here from the start and
+  never tested, while the runtime's private homes are redirectable by flag and
+  environment variable, so on Windows a caller pairing the two helpers above
+  could not refuse any path at all. This reports whether the path is inside the
+  profile, so such a caller can fail closed instead. It is no substitute for
+  the POSIX test and does not run there.
 * ``NOFOLLOW`` -- 0 where the platform lacks the flag, which is what this
   project already does. A caller that needs the guarantee must pair it with a
   symlink check before the open and an ``os.fstat`` identity check after it;
@@ -39,6 +46,7 @@ What is equivalent, and what is not:
 from __future__ import annotations
 
 import os
+from pathlib import Path
 import sys
 
 try:
@@ -128,6 +136,39 @@ def private_mode_is_safe(info, mask: int = 0o077) -> bool:
     if not HAS_UID:
         return True
     return not info.st_mode & mask
+
+
+def private_root_is_verifiable(path) -> bool:
+    """Whether ``path`` can be held private on this platform.
+
+    On POSIX this reports True and ``private_mode_is_safe`` remains the guard:
+    it reads permission bits the OS actually keeps, so it can refuse, and it
+    refuses a directory anyone may read wherever that directory sits.
+
+    On Windows there are no such bits to read. Measured here: a directory
+    created 0o700 reports 0o777 and a file created 0o600 reports 0o666, so a
+    mask test would refuse everything -- which is why ``private_mode_is_safe``
+    reports success there instead, and why a caller pairing it with
+    ``owner_is_current_user`` had no way to refuse anything at all.
+
+    This module's docstring already names what protects such a path on Windows:
+    "that protection comes from the file living in the user's own profile with
+    default ACLs". That assumption was stated and never checked. Without an ACL
+    API to read, the one part of it we can verify is the containment, so this
+    checks it and callers fail closed outside the profile rather than treating
+    an unverifiable path as private. It is not equivalent to the POSIX check: a
+    contained path inherits the profile's ACL, which is weaker than owner-plus-
+    mode, and this says nothing about an ACL edited after the fact.
+    """
+    if HAS_UID:
+        return True
+    try:
+        # strict on the profile: an unresolvable home is not a basis for trust.
+        user = Path.home().resolve(strict=True)
+        # Non-strict on the candidate: it is checked before it is created.
+        return Path(path).resolve().is_relative_to(user)
+    except (OSError, RuntimeError, ValueError):
+        return False
 
 
 def peak_rss_mib() -> float | None:

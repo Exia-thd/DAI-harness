@@ -15,7 +15,11 @@ import json
 import os
 import secure_paths
 import process_census
-from posix_compat import owner_is_current_user, private_mode_is_safe
+from posix_compat import (
+    owner_is_current_user,
+    private_mode_is_safe,
+    private_root_is_verifiable,
+)
 from pathlib import Path
 import secrets
 import shutil
@@ -131,6 +135,14 @@ def check_disk(paths, scratch_bytes, floor_bytes, probe=None, expected_devices=N
 
 def write_journal(home, record):
     folder = home / "jobs"
+    # Checked before the directory is created. On Windows the permission test
+    # below cannot refuse anything -- there are no bits to mask -- so
+    # containment in the user profile is the only basis available, and an
+    # uncontained journal must not be brought into existence on the way to
+    # being rejected. The home is redirectable through --home and
+    # DAIHARNESS_ADMISSION_HOME, so this is reachable in ordinary use.
+    if not private_root_is_verifiable(folder):
+        raise JobError("unsafe-journal")
     folder.mkdir(mode=0o700, exist_ok=True)
     info = folder.lstat()
     if (
@@ -286,7 +298,13 @@ def journal_released(admission, journal):
 
 def storage_journals(admission, current):
     journals = {}
-    for count, path in enumerate((admission.home / "jobs").glob("*.json")):
+    jobs = admission.home / "jobs"
+    # Same gap on the read side: the per-file owner and mode tests below are
+    # both vacuous on Windows, so without this the census would read whatever
+    # an uncontained journal directory happened to hold.
+    if not private_root_is_verifiable(jobs):
+        raise StorageError("unsafe-storage-journal")
+    for count, path in enumerate(jobs.glob("*.json")):
         if count >= 4096:
             raise StorageError("journal-census-incomplete")
         if path.stem == current["job_id"]:

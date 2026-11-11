@@ -34,6 +34,10 @@
       "type": "architecture"
     },
     {
+      "path": "docs/adr/ADR-014-windows-private-state-basis.md",
+      "type": "architecture"
+    },
+    {
       "path": "docs/guides/peer-collaboration.md",
       "type": "operations"
     },
@@ -119,6 +123,7 @@
       "docs/guides/docs-hub.md",
       "docs/adr/ADR-012-bounded-peer-collaboration.md",
       "docs/adr/ADR-013-rule-evidence-not-policy.md",
+      "docs/adr/ADR-014-windows-private-state-basis.md",
       "docs/guides/peer-collaboration.md",
       "docs/guides/self-learning-tools.md",
       "docs/guides/dai-memory.md",
