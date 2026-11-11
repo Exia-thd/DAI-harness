@@ -90,7 +90,29 @@ not a solved one, and closing it needs an actual ACL read
 (`GetNamedSecurityInfo` through ctypes) rather than a path test. It is tracked
 separately rather than papered over.
 
-Noted while surveying, and a different defect: `scripts/runtime/runtime_registry.py`
-resolves an RLG home from `DAIHARNESS_RLG_HOME` and writes `leases.jsonl` into
-it with **no** ownership or mode guard on any platform. That is an absent check
-rather than a vacuous one, so it is not fixed here.
+## The RLG lease log
+
+Found while surveying, and a different defect: `runtime_registry` resolved an
+RLG home from `DAIHARNESS_RLG_HOME` and wrote `leases.jsonl` into it with **no**
+ownership or mode guard on any platform — an absent check rather than a vacuous
+one. `mkdir(parents=True, exist_ok=True)` carried no mode, so the directory took
+the umask; the log was opened with `open(path, "a")`, so it took 0o666 before
+umask; and neither side used `O_NOFOLLOW`, so a redirect left in place of the
+log carried the append elsewhere. ADR-010 calls that file the audit trail of
+everything the guard ever opened: project paths, session ids, pids, command
+lines.
+
+`private_registry_home()` now establishes it with the same basis, and
+`append_event` / `read_events` open the log with `O_NOFOLLOW` and verify the
+descriptor. Two choices are worth recording:
+
+A directory or log that this user owns but left too open was created before the
+guard existed, so it is **tightened rather than refused**. Refusing would break
+every installation that already has one, and repairing what we own is not a
+bypass. A directory owned by anyone else is still refused, because that is not
+ours to repair.
+
+`rlg_home()` stays a pure path builder. `project_disk` and `project_storage`
+call it to locate `projects.index` and `budget.yaml`, so making it raise would
+change their contract; the guard belongs in the functions that create and read
+the log.

@@ -23,6 +23,13 @@ from __future__ import annotations
 import argparse
 import json
 import os
+from posix_compat import (
+    NOFOLLOW,
+    owner_is_current_user,
+    private_mode_is_safe,
+    private_root_is_verifiable,
+)
+import stat
 import sys
 import time
 from datetime import datetime, timezone
@@ -47,6 +54,44 @@ def leases_path() -> Path:
     return rlg_home() / "leases.jsonl"
 
 
+class RegistryError(RuntimeError):
+    pass
+
+
+def private_registry_home() -> Path:
+    """Resolve the RLG home and make it private, or refuse it.
+
+    `leases.jsonl` is the audit trail of everything the guard ever opened --
+    project paths, session ids, pids, command lines -- and it was written with
+    no guard at all, unlike the rest of the runtime: `mkdir` without a mode, so
+    the directory took the umask, and no owner, mode or redirect check on
+    either side. ADR-014's basis applies here as everywhere else: on Windows
+    the permission bits cannot be read, so containment in the user profile is
+    what is verified; on POSIX the bits are the guard.
+
+    A directory this user owns but left too open was created before this guard
+    existed, so it is tightened rather than refused -- refusing would break
+    every installation that already has one. A directory owned by anyone else
+    is refused, because that is not ours to repair.
+
+    `rlg_home()` deliberately stays a pure path builder: `project_disk` and
+    `project_storage` call it to locate `projects.index` and `budget.yaml`, and
+    making it raise would change their contract.
+    """
+    path = rlg_home()
+    if path.is_symlink() or not private_root_is_verifiable(path):
+        raise RegistryError("unsafe-registry-home")
+    path.mkdir(parents=True, mode=0o700, exist_ok=True)
+    info = path.lstat()
+    if not stat.S_ISDIR(info.st_mode) or not owner_is_current_user(info):
+        raise RegistryError("unsafe-registry-home")
+    if not private_mode_is_safe(info, 0o077):
+        os.chmod(path, 0o700)
+        if not private_mode_is_safe(path.lstat(), 0o077):
+            raise RegistryError("unsafe-registry-home")
+    return path
+
+
 # ── io ───────────────────────────────────────────────────────────────────────
 
 
@@ -68,21 +113,45 @@ def parse_ts(ts: str) -> float | None:
 def append_event(rec: dict) -> None:
     """Append one event. Single write() of a newline-terminated line so a
     concurrent writer can never interleave a partial record."""
-    path = leases_path()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    line = json.dumps(rec, ensure_ascii=False, sort_keys=True) + "\n"
-    with open(path, "a", encoding="utf-8") as fh:
-        fh.write(line)
-        fh.flush()
-        os.fsync(fh.fileno())
+    path = private_registry_home() / "leases.jsonl"
+    line = (json.dumps(rec, ensure_ascii=False, sort_keys=True) + "\n").encode("utf-8")
+    # O_NOFOLLOW so a redirect left in place of the log cannot carry the append
+    # elsewhere; O_BINARY so the newline this record is terminated by is the one
+    # that reaches the file on Windows too.
+    fd = os.open(
+        path,
+        os.O_WRONLY | os.O_CREAT | os.O_APPEND | NOFOLLOW | getattr(os, "O_BINARY", 0),
+        0o600,
+    )
+    try:
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode) or not owner_is_current_user(info):
+            raise RegistryError("unsafe-lease-log")
+        if not private_mode_is_safe(info, 0o077):
+            # Written before this guard existed; ours to tighten, as above.
+            os.fchmod(fd, 0o600)
+            if not private_mode_is_safe(os.fstat(fd), 0o077):
+                raise RegistryError("unsafe-lease-log")
+        # One write, so O_APPEND keeps a concurrent writer's record whole.
+        if os.write(fd, line) != len(line):
+            raise RegistryError("short-lease-write")
+        os.fsync(fd)
+    finally:
+        os.close(fd)
 
 
 def read_events() -> list[dict]:
-    path = leases_path()
+    path = private_registry_home() / "leases.jsonl"
     if not path.is_file():
         return []
     out: list[dict] = []
-    with open(path, "r", encoding="utf-8", errors="replace") as fh:
+    # O_NOFOLLOW here too: a redirect must not decide what the audit trail says.
+    with os.fdopen(
+        os.open(path, os.O_RDONLY | NOFOLLOW), "r", encoding="utf-8", errors="replace"
+    ) as fh:
+        info = os.fstat(fh.fileno())
+        if not stat.S_ISREG(info.st_mode) or not owner_is_current_user(info):
+            raise RegistryError("unsafe-lease-log")
         for lineno, raw in enumerate(fh, 1):
             raw = raw.strip()
             if not raw:
@@ -367,7 +436,13 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
-    return args.func(args)
+    try:
+        return args.func(args)
+    except RegistryError as error:
+        # A guard refusal is a usable answer, not a crash: runtime-lease.sh
+        # reads the exit code, and a traceback would bury the reason.
+        print(f"registry: {error}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

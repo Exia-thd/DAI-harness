@@ -451,8 +451,8 @@
     },
     {
       "id": "runtime-registry-lease-privacy",
-      "title": "Guard the RLG home: leases.jsonl is written to a redirectable directory with no ownership or mode check on any platform",
-      "status": "planned",
+      "title": "Guard the RLG home and the lease log, which had no ownership, mode or redirect check on any platform",
+      "status": "done",
       "priority": "high",
       "owner": "Runtime maintainers",
       "target_date": null,
