@@ -419,14 +419,44 @@
     },
     {
       "id": "windows-private-state-guards",
-      "title": "Decide and apply a Windows privacy basis for the remaining private state roots, where the owner and mode guards are still vacuous",
-      "status": "planned",
+      "title": "Apply the Windows privacy basis at every point that establishes a private state root",
+      "status": "done",
       "priority": "high",
       "owner": "Runtime maintainers",
       "target_date": null,
       "depends_on": [
         "windows-host-resource-audit"
       ],
+      "references": [
+        {
+          "path": "docs/adr/ADR-014-windows-private-state-basis.md"
+        }
+      ]
+    },
+    {
+      "id": "workspace-rooted-privacy-basis",
+      "title": "Read an ACL for workspace-rooted storage, where containment in the user profile is not an available basis",
+      "status": "planned",
+      "priority": "medium",
+      "owner": "Runtime maintainers",
+      "target_date": null,
+      "depends_on": [
+        "windows-private-state-guards"
+      ],
+      "references": [
+        {
+          "path": "docs/adr/ADR-014-windows-private-state-basis.md"
+        }
+      ]
+    },
+    {
+      "id": "runtime-registry-lease-privacy",
+      "title": "Guard the RLG home: leases.jsonl is written to a redirectable directory with no ownership or mode check on any platform",
+      "status": "planned",
+      "priority": "high",
+      "owner": "Runtime maintainers",
+      "target_date": null,
+      "depends_on": [],
       "references": [
         {
           "path": "docs/adr/ADR-014-windows-private-state-basis.md"

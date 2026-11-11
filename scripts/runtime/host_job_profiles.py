@@ -8,7 +8,11 @@ import hashlib
 import json
 import os
 import secure_paths
-from posix_compat import owner_is_current_user, private_mode_is_safe
+from posix_compat import (
+    owner_is_current_user,
+    private_mode_is_safe,
+    private_root_is_verifiable,
+)
 from pathlib import Path
 import re
 import stat
@@ -33,6 +37,13 @@ def private_dir(path):
     # Do not normalize away symlinks before checking each component.
     if any(secure_paths.entry_redirects(p) for p in [path, *path.parents]):
         raise ProfileError("unsafe-profile-path")
+    # Checked before the directory is created, so an unverifiable root is not
+    # brought into existence on the way to being refused. On Windows the owner
+    # and mode tests below cannot refuse anything, and every caller here passes
+    # a path derived from the admission home, which the user can redirect:
+    # containment in the user profile is the only basis available. ADR-014.
+    if not private_root_is_verifiable(path):
+        raise ProfileError("unsafe-profile-directory")
     path.mkdir(parents=True, mode=0o700, exist_ok=True)
     info = path.lstat()
     if (

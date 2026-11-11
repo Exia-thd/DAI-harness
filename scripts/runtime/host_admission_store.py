@@ -12,6 +12,7 @@ import stat
 import time
 
 from host_resources import MIB, inspect_process, memory_snapshot
+from posix_compat import private_root_is_verifiable
 
 SCHEMA = 1
 MAX_QUEUE = 128
@@ -38,6 +39,12 @@ class AdmissionStore:
             else Path.home() / ".daiharness/runtime/admission"
         )
         if path.is_symlink():
+            raise AdmissionError("unsafe-state-directory")
+        # The uid and mode tests below are vacuous on Windows, and this home is
+        # redirectable by argument and by DAIHARNESS_ADMISSION_HOME, so
+        # containment in the user profile is the only basis there. Checked
+        # before the directory and the database are created. ADR-014.
+        if not private_root_is_verifiable(path):
             raise AdmissionError("unsafe-state-directory")
         path.mkdir(parents=True, mode=0o700, exist_ok=True)
         info = path.lstat()
