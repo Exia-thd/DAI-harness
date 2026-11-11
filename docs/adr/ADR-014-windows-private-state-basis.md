@@ -78,17 +78,52 @@ file beneath a contained directory inherits the profile ACL.
 `recurrence` needs nothing: it hardcodes `~/.daiharness/runtime/admission` and
 ignores the environment override, so it is contained by construction.
 
-## What this basis cannot cover
+## Workspace-rooted storage: measured, and not a defect
+
+This section previously recorded the opposite, and was wrong.
 
 `artifact_pins`, `project_storage`, `project_recipe` and
 `resource_controls._bounded_file` anchor on the **workspace**, not on a private
-home — `artifact_lock(workspace)` is the shape of all of them. A project
-legitimately lives outside the user profile, so containment is not an available
-basis there and requiring it would refuse ordinary layouts. Their owner and
-mode guards therefore remain vacuous on Windows. That is a real remaining gap,
-not a solved one, and closing it needs an actual ACL read
-(`GetNamedSecurityInfo` through ctypes) rather than a path test. It is tracked
-separately rather than papered over.
+home — `artifact_lock(workspace)` is the shape of all of them. Containment is
+not an available basis there, because a project legitimately lives outside the
+profile, and the exposure looked serious: this machine's system drive grants
+`Users:(OI)(CI)(RX)` and `Authenticated Users:(OI)(CI)(IO)(M)`, both
+inheritable, so an existing `C:\Project` directory here carries them and job
+storage created under it would be readable by every local user and modifiable
+by any authenticated user.
+
+Before writing an ACL layer for it, the premise was measured. Under a workspace
+deliberately granting the local Users group inheritable read, listing every
+principal other than us, SYSTEM and Administrators:
+
+| Created as | Other principals with access |
+|---|---|
+| the workspace itself | `S-1-5-32-545` |
+| directory, no mode | `S-1-5-32-545` — inherits it |
+| **directory, `mode=0o700`** | **none** — the mode *is* translated |
+| directory, `mode=0o755` | `S-1-5-32-545` |
+| **file, `mode=0o600`** | **`S-1-5-32-545`** — the mode is *not* translated |
+| file inside the `0o700` directory | none — inherits the restriction |
+
+CPython translates a directory's POSIX mode into a restrictive DACL on Windows.
+`secure_paths.mkdir_at` passes `mode=0o700` by default, so every directory the
+runtime creates is already private — by the same mechanism POSIX uses, not a
+different one. `artifact_pins` is safe for that reason and not by accident: its
+lock lives in a `.daiharness/runtime` that `mkdir_at` created, never directly
+in the workspace.
+
+So this project writes no ACLs. Doing so would duplicate what the platform
+already did, and keeping an unused primitive whose purpose is to open or close
+permissions would be a liability. `windows_acl.py` is therefore a **reader**
+only, and `tests/unit_tests/test_windows_acl_job_storage.py` is the tripwire:
+the behaviour relied on is a platform detail, not a documented guarantee, and
+if a future CPython stops translating the mode then job storage silently
+becomes world-readable while every guard above it keeps reporting success.
+
+One rule falls out of the table and is worth keeping: **a file's own mode buys
+nothing on Windows.** Privacy comes from its directory, so code that needs a
+private file must create the directory holding it rather than trust the open
+mode. A test pins that too, so the day it stops being true is visible.
 
 ## The RLG lease log
 

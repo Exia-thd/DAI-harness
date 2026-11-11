@@ -435,8 +435,8 @@
     },
     {
       "id": "workspace-rooted-privacy-basis",
-      "title": "Read an ACL for workspace-rooted storage, where containment in the user profile is not an available basis",
-      "status": "planned",
+      "title": "Measure whether workspace-rooted job storage is private on Windows, and pin the mechanism it relies on",
+      "status": "done",
       "priority": "medium",
       "owner": "Runtime maintainers",
       "target_date": null,
