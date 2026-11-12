@@ -1034,10 +1034,26 @@ class LocalCI:
                 "tests/known_failures.txt",
             ],
             scrub_git_env=True,
-            # 414s idle, ~1760s when other suites compete for the box. The old
-            # 900s sat inside that spread, so a busy machine reported a timeout
-            # as if it were a test failure.
-            timeout=2700,
+            # Re-measured on 2026-11-12, because 2700s killed this step twice in
+            # a row and reported a suite that passes as a suite that hangs --
+            # the third time this file has been under-budget here.
+            #
+            # **2569s** (42m44s) for the whole suite with nothing else competing
+            # for the box, exit 1 on baselined failures only. The old comment's
+            # "414s idle" no longer describes anything: 2700s left 5% headroom
+            # over the idle cost, and this step runs twelfth, after the machine
+            # has already been working for twenty minutes. 3600s is 40% over the
+            # measured idle cost.
+            #
+            # Two tests are 21% of that: test_roadmap_completion's
+            # `..._contract_and_failure_path_are_executable` (290s) and
+            # `..._replay_on_unchanged_tree` (252s). Both clone the worktree, and
+            # the clone copies node_modules because it is in neither
+            # SNAPSHOT_EXCLUDED_DIRS nor VERIFIER_VOLATILE_MOUNTS. Mounting it
+            # instead -- recorded as `snapshot-mount-node-modules` -- is the
+            # structural repair and would bring the suite back under 2700s on its
+            # own. Until then the budget has to cover what the suite costs.
+            timeout=3600,
         )
 
     def commit_message(self, message_file: str) -> None:
