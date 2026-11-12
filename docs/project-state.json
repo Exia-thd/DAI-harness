@@ -462,6 +462,22 @@
           "path": "docs/adr/ADR-014-windows-private-state-basis.md"
         }
       ]
+    },
+    {
+      "id": "mcp-private-root-basis",
+      "title": "Give the MCP runtime a Windows private-state basis: Node ignores the directory mode there",
+      "status": "planned",
+      "priority": "high",
+      "owner": "Runtime maintainers",
+      "target_date": null,
+      "depends_on": [
+        "windows-private-state-guards"
+      ],
+      "references": [
+        {
+          "path": "docs/adr/ADR-014-windows-private-state-basis.md"
+        }
+      ]
     }
   ],
   "flows": [
@@ -1156,20 +1172,26 @@
     "lifecycle": "active",
     "health": "on_track",
     "phase": "SUSTAIN",
-    "summary": "The local precommit gate stopped being able to finish. `python-unit-tests` was killed at its 2700s budget twice in a row, on a two-line documentation change and then on an unrelated feature branch, and a killed step reports as `timeout; process tree terminated` with no output -- a suite that passes reading as a suite that hangs. Rather than retry a third time, the suite was measured on its own with nothing competing for the box: 2569s (42m44s), exit 1 on baselined failures only. The budget's own comment claimed 414s idle, which no longer describes anything; 2700s left 5% headroom over the real idle cost, for a step that runs twelfth after the machine has already been working for twenty minutes. It is now 3600s, 40% over the measured cost, and the comment records the measurement instead of a stale one. This is the third time this file has been under-budget on a pytest step. The measurement also found where the cost is. Two tests in test_roadmap_completion are 21% of the suite -- 290s and 252s -- and both clone the worktree, which copies node_modules because it is in neither SNAPSHOT_EXCLUDED_DIRS nor VERIFIER_VOLATILE_MOUNTS. Mounting it instead, already recorded as `snapshot-mount-node-modules`, is the structural repair and would bring the suite back under the old budget on its own; raising the budget is the smaller, safer change that unblocks the gate first. One finding is deliberately left unfixed because its cause is not known. The full-suite run showed a single failure outside the baseline, test_pbt_example's `test_cost_always_non_negative_and_no_crash`. The property itself holds: it was exercised over 20,128 cases, including every edge the strategy can reach, with no crash, no non-float and no negative cost. The test passes in isolation, Hypothesis stores reproducible counterexamples and there is no `.hypothesis/examples` database at all, and six runs under twelve-way CPU load did not reproduce it. The suite ran with `--tb=no`, so the exception was never printed. It is recorded as an intermittent failure of unknown cause rather than diagnosed from a guess or silenced into the baseline.",
-    "updated_at": "2026-11-12T16:06:50+07:00",
+    "summary": "H2's canonical trajectory ledger now exists. `HarnessAdapter v1` had shipped binding a resume token to `ledgerOffset` and `ledgerHeadHash` and returning a `ledgerOffset` from `checkpoint()`, while a repository-wide search for either field matched only the adapter and its own test: the contract referenced a ledger that was never built. `mcp/src/runtime/trajectory-ledger.ts` is that ledger, built to the shape H1 had already committed to. Three properties are tests rather than claims. Reconstruction is deterministic, because every event carries its own `atMs` and a hash over the previous head, so a recorded sequence replays to the identical head on any host at any later time; two ledgers driven through the same script with independent clocks agree, and one started at a different epoch does not. There is exactly one terminal event and it is last, because the closing path is its only writer and writes it after the disposers have run -- a nested scope writes `scope.closed` instead, since a child finishing is not the session finishing. Closing is idempotent, because a disposer that runs twice is how a lifecycle corrupts the resource it was meant to release. Twenty tests passing on the first run was treated as a weak signal: five mutations, one per load-bearing invariant, were each applied alone and each turned the suite red, and the restored file was checked byte-for-byte against the original. The ledger is not yet durable, so `trajectory-lifecycle` stays planned until it can answer the question `ResumeBinding.ledgerHeadHash` exists to ask. Durability needs a private directory, and measuring that premise before building on it found a separate defect. ADR-014 recorded that CPython translates a directory's `mode=0o700` into a restrictive Windows DACL. Node does not: measured under a workspace deliberately granting the local Users group inheritable read, `mkdir(mode 0o700)`, that same call followed by `chmod(0o700)`, a file opened `0o600`, and a file inside the `0o700` directory all left `S-1-5-32-545` with access, where CPython left none. `lifecycle-lease.ts` relies on exactly that pattern to protect a store holding each lease's `ownerToken`, a 32-byte capability secret, and its root is redirectable through `DAIHARNESS_MCP_LEASE_ROOT` with no containment check -- the same vacuous-guard-plus-redirectable-root shape already fixed on the Python side, in a language the earlier measurement did not cover. It is recorded as `mcp-private-root-basis` and is the first next action, because the durable journal must not be built on a mode that does nothing.",
+    "updated_at": "2026-11-12T17:39:35+07:00",
     "blockers": [],
     "risks": [],
     "next_actions": [
       {
+        "id": "mcp-private-root-basis",
+        "title": "Establish and verify a private root from Node before any durable MCP state depends on a directory mode, and apply it to the lease store's redirectable root.",
+        "owner": "Runtime maintainers",
+        "due_date": null
+      },
+      {
         "id": "trajectory-lifecycle",
-        "title": "Implement the H2 TrajectoryLedger, cancellation/disposer semantics, and quiescence receipts.",
+        "title": "Persist the TrajectoryLedger and wire its offset and head hash into the resume binding, so the H2 entry can close.",
         "owner": "Runtime maintainers",
         "due_date": null
       },
       {
         "id": "snapshot-mount-node-modules",
-        "title": "Mount node_modules into the roadmap replay snapshot instead of copying it: 208MB and 35,244 files of every replay, read-only, and _mount_verifier_volatiles already mounts caches that way.",
+        "title": "Mount node_modules into the roadmap replay snapshot instead of copying it: it is 21 percent of the unit suite's cost and is in neither SNAPSHOT_EXCLUDED_DIRS nor VERIFIER_VOLATILE_MOUNTS.",
         "owner": "Runtime maintainers",
         "due_date": null
       }
